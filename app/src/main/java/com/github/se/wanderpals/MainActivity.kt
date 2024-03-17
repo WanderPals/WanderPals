@@ -43,4 +43,5 @@ fun GreetingPreview() {
     WanderPalsTheme {
         Greeting("Android")
     }
+    
 }
