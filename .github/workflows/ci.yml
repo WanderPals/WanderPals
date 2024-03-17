@@ -73,6 +73,11 @@ jobs:
         run: |
           chmod +x ./gradlew
 
+      # Check formatting
+      - name: KTFmt Check
+        run: |
+          ./gradlew ktfmtCheck
+
       # This step runs gradle commands to build the application
       - name: Assemble
         run: |
