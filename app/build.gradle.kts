@@ -113,19 +113,16 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 }
 
 dependencies {
+    val composeBom = platform(libs.compose.bom)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(platform(libs.compose.bom))
-    testImplementation(libs.junit)
-    globalTestImplementation(libs.androidx.junit)
-    globalTestImplementation(libs.androidx.espresso.core)
 
     // ------------- Jetpack Compose ------------------
-    val composeBom = platform(libs.compose.bom)
     implementation(composeBom)
-    globalTestImplementation(composeBom)
 
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)
@@ -139,15 +136,23 @@ dependencies {
     implementation(libs.compose.preview)
     debugImplementation(libs.compose.tooling)
     // UI Tests
-    globalTestImplementation(libs.compose.test.junit)
     debugImplementation(libs.compose.test.manifest)
+    globalTestImplementation(libs.compose.test.junit)
 
     // --------- Kaspresso test framework ----------
     globalTestImplementation(libs.kaspresso)
     globalTestImplementation(libs.kaspresso.compose)
+    globalTestImplementation(composeBom)
+
+    // ---      Other globalTestImplementation  ----
+    globalTestImplementation(libs.androidx.junit)
+    globalTestImplementation(libs.androidx.espresso.core)
 
     // ----------       Robolectric     ------------
     testImplementation(libs.robolectric)
+
+    // ---------------       Junit     -------------
+    testImplementation(libs.junit)
 }
 
 tasks.withType<Test> {
@@ -159,6 +164,8 @@ tasks.withType<Test> {
 }
 
 tasks.register("jacocoTestReport", JacocoReport::class) {
+    description = "Generates Jacoco coverage reports for the debug build"
+    group = "verification"
     mustRunAfter("testDebugUnitTest", "connectedDebugAndroidTest")
 
     reports {
