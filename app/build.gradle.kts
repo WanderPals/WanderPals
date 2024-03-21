@@ -135,6 +135,14 @@ dependencies {
     implementation(libs.compose.viewmodel)
     // Android Studio Preview support
     implementation(libs.compose.preview)
+    // ---------------     Firebase     -------------
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.firestore)
+    // ---------------     google android Core     -------------
+    implementation(libs.core.ktx)
+
+
+
     debugImplementation(libs.compose.tooling)
     // UI Tests
     debugImplementation(libs.compose.test.manifest)
@@ -155,12 +163,7 @@ dependencies {
     // ---------------       Junit     -------------
     testImplementation(libs.junit)
 
-    // ---------------     Firebase     -------------
-    implementation(libs.firebase.database.ktx)
-    implementation(libs.firebase.firestore)
 
-    // ---------------     google android Core     -------------
-    implementation(libs.core.ktx)
 }
 
 tasks.withType<Test> {
