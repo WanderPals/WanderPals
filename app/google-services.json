@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "191381458285-ji5l0iqjhkfmta6nbjorgonk04i2og3q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.wanderpals",
+            "certificate_hash": "4cf4ccec201622546ff3ce17c22624ab261002d7"
+          }
+        },
+        {
+          "client_id": "191381458285-o95hn71d71mqt66d90pmhvcc4ah4tdie.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.wanderpals",
+            "certificate_hash": "9585ed4e9c34ba1527514be5925d3f44f1dfd27a"
+          }
+        },
+        {
           "client_id": "191381458285-sng6farjqkej7agsmlu7gnkvbp477u86.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
