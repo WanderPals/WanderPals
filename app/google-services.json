@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "191381458285",
+    "project_id": "wanderpals",
+    "storage_bucket": "wanderpals.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191381458285:android:9ce99782b2e840f75c9e64",
+        "android_client_info": {
+          "package_name": "com.github.se.wanderpals"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "191381458285-sng6farjqkej7agsmlu7gnkvbp477u86.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.wanderpals",
+            "certificate_hash": "29d81cd3daac7326aa858a57d443f9ce51203a86"
+          }
+        },
+        {
+          "client_id": "191381458285-07j99b293hg9n2vni391bl8m2igsip43.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWVeCFxl5zQjLB3enzuGs0ptpgLjTnOCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "191381458285-07j99b293hg9n2vni391bl8m2igsip43.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
