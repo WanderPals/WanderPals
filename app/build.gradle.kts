@@ -153,6 +153,11 @@ dependencies {
 
     // ---------------       Junit     -------------
     testImplementation(libs.junit)
+
+    // ---------------     Firebase     -------------
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.firestore)
+    implementation(libs.core.ktx)
 }
 
 tasks.withType<Test> {
