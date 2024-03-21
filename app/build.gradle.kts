@@ -158,6 +158,8 @@ dependencies {
     // ---------------     Firebase     -------------
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.firestore)
+
+    // ---------------     google android Core     -------------
     implementation(libs.core.ktx)
 }
 
