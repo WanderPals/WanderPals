@@ -1,6 +1,6 @@
 [versions]
-agp = "8.3.0"
-coreKtxVersion = "1.7.0"
+agp = "8.3.1"
+coreKtxVersion = "1.8.1"
 firebaseDatabaseKtx = "20.3.0"
 firebaseFirestore = "24.10.0"
 kotlin = "1.8.10"
@@ -19,6 +19,10 @@ kaspresso = "1.5.5"
 robolectric = "4.11.1"
 sonar = "4.4.1.3373"
 googleServices = "4.4.0"
+navigationCompose = "2.7.7"
+playServicesAuth = "21.0.0"
+navigationRuntimeKtx = "2.7.7"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +51,9 @@ kaspresso = { group = "com.kaspersky.android-components", name = "kaspresso", ve
 kaspresso-compose = { group = "com.kaspersky.android-components", name = "kaspresso-compose-support", version.ref = "kaspresso" }
 
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

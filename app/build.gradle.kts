@@ -116,6 +116,10 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 dependencies {
     val composeBom = platform(libs.compose.bom)
 
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.play.services.auth)
+    implementation(libs.androidx.navigation.compose)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
