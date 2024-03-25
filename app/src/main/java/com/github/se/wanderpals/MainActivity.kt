@@ -54,7 +54,6 @@ class MainActivity : ComponentActivity() {
         signInClient.signOut()
       }
 
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -90,9 +89,8 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
 /**
  * A composable that shows a Google sign in button.
-
-    * @param onClick the action to be executed when the button is clicked.
-
+ *
+ * @param onClick the action to be executed when the button is clicked.
  */
 @Composable
 fun GoogleButton(onClick: () -> Unit) {
