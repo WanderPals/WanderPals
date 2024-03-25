@@ -14,6 +14,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "191381458285-277nhvnjer6pd2ncj82mg6t0cjkrg0m6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.wanderpals",
+            "certificate_hash": "d93531c8178ecec8cdf1de6321f20b4363d7764d"
+          }
+        },
+        {
+          "client_id": "191381458285-bd0764goljhkg5upinju66llerq41bs8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.wanderpals",
+            "certificate_hash": "083ac86a3622b1fe65b15cfd097615b9fea06a31"
+          }
+        },
+        {
+          "client_id": "191381458285-di6dl2j59apjrkqedrfs5nub5fl5p7ka.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.github.se.wanderpals",
+            "certificate_hash": "bda6238b996aa48edfd134afa03a04d27fe9650d"
+          }
+        },
+        {
           "client_id": "191381458285-ji5l0iqjhkfmta6nbjorgonk04i2og3q.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

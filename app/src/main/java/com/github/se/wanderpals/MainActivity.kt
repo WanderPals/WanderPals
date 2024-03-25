@@ -54,6 +54,7 @@ class MainActivity : ComponentActivity() {
         signInClient.signOut()
       }
 
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -72,7 +73,7 @@ class MainActivity : ComponentActivity() {
           navController = rememberNavController()
           NavHost(navController = navController, startDestination = "sign_in") {
             composable("sign_in") {
-              Google_button(onClick = { launcher.launch(signInClient.signInIntent) })
+              GoogleButton(onClick = { launcher.launch(signInClient.signInIntent) })
             }
             composable("greeting") { Greeting("Android") }
           }
@@ -87,10 +88,16 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
   Text(text = "Hello $name!", modifier = modifier)
 }
 
+/**
+ * A composable that shows a Google sign in button.
+
+    * @param onClick the action to be executed when the button is clicked.
+
+ */
 @Composable
-fun Google_button(onClick: () -> Unit) {
+fun GoogleButton(onClick: () -> Unit) {
   Row(
-      horizontalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterHorizontally),
+      horizontalArrangement = Arrangement.Center,
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.padding(top = 200.dp)) {
         OutlinedButton(onClick = onClick, modifier = Modifier.padding(10.dp)) {
