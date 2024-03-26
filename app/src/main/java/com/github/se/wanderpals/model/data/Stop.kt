@@ -11,10 +11,15 @@ import java.time.LocalDate
  * @property location A name or title for the stop, providing a quick reference.
  * @property address The physical address of the stop for easier location and navigation.
  * @property time The scheduled date for the stop. This helps in planning the trip itinerary.
- * @property budget Estimated budget required for the stop, covering expenses like entry fees or activities.
- * @property description A brief overview or notes about the stop, offering more context or information.
- * @property geoCords Geographical coordinates (latitude and longitude) pinpointing the exact location.
- * @property website Optional. A URL to a website providing additional information about the stop. Empty by default.
+ * @property budget Estimated budget required for the stop, covering expenses like entry fees or
+ *   activities.
+ * @property description A brief overview or notes about the stop, offering more context or
+ *   information.
+ * @property geoCords Geographical coordinates (latitude and longitude) pinpointing the exact
+ *   location.
+ * @property website Optional. A URL to a website providing additional information about the stop.
+ *   Empty by default.
+ * @property imageUrl URL for an image of the stop, optional.
  */
 data class Stop(
     val stopId: String,
@@ -24,5 +29,6 @@ data class Stop(
     val budget: Double,
     val description: String,
     val geoCords: GeoCords,
-    val website: String = ""
+    val website: String = "",
+    val imageUrl: String = "",
 )

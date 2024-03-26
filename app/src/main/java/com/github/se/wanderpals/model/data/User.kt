@@ -7,7 +7,8 @@ package com.github.se.wanderpals.model.data
  * @property name User's full name for display and identification.
  * @property email User's email address, used for communication and login.
  * @property role User's role within the application, influencing access and capabilities.
- * @property permissions List of specific actions the user is permitted to perform, allowing for detailed access control.
+ * @property permissions List of specific actions the user is permitted to perform, allowing for
+ *   detailed access control.
  */
 data class User(
     val userId: String,
