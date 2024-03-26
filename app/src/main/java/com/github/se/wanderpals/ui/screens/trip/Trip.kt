@@ -11,17 +11,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
 
+/** The Trip screen. */
 @Composable
 fun Trip(oldNavActions: NavigationActions) {
   val navController = rememberNavController()
@@ -47,10 +46,12 @@ fun BottomBar(navActions: NavigationActions) {
       tonalElevation = NavigationBarDefaults.Elevation,
       windowInsets = NavigationBarDefaults.windowInsets,
   ) {
-
     TRIP_DESTINATIONS.forEach { destination ->
       NavigationBarItem(
-          selected = navActions.getCurrentDestination()?.hierarchy?.any { it.route == destination.route } == true,
+          selected =
+              navActions.getCurrentDestination()?.hierarchy?.any {
+                it.route == destination.route
+              } == true,
           onClick = { navActions.navigateTo(destination.route) },
           icon = { Image(imageVector = destination.icon, contentDescription = null) },
           label = { Text(text = destination.route) })
