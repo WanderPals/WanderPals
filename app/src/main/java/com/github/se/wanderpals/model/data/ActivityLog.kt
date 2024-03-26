@@ -12,8 +12,7 @@ import java.time.LocalDate
  * @param action Descriptive string of the action performed (e.g., "added_suggestion").
  * @param entityId Optional. The ID of the entity (trip, stop, suggestion, etc.) affected by the
  *   action.
- * @param entityType Optional. Type of the entity affected, helps in filtering logs by entity
- *   type.
+ * @param entityType Optional. Type of the entity affected, helps in filtering logs by entity type.
  * @param description Optional. Additional details or context about the action performed.
  * @param createdAt The date when the action was performed.
  */

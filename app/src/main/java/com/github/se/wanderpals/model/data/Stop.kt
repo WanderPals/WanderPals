@@ -15,8 +15,7 @@ import java.time.LocalDate
  *   activities.
  * @param description A brief overview or notes about the stop, offering more context or
  *   information.
- * @param geoCords Geographical coordinates (latitude and longitude) pinpointing the exact
- *   location.
+ * @param geoCords Geographical coordinates (latitude and longitude) pinpointing the exact location.
  * @param website Optional. A URL to a website providing additional information about the stop.
  *   Empty by default.
  * @param imageUrl URL for an image of the stop, optional.
