@@ -47,12 +47,10 @@ fun BottomBar(navActions: NavigationActions) {
       tonalElevation = NavigationBarDefaults.Elevation,
       windowInsets = NavigationBarDefaults.windowInsets,
   ) {
-    val navBackStackEntry by navActions.navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
 
     TRIP_DESTINATIONS.forEach { destination ->
       NavigationBarItem(
-          selected = currentDestination?.hierarchy?.any { it.route == destination.route } == true,
+          selected = navActions.getCurrentDestination()?.hierarchy?.any { it.route == destination.route } == true,
           onClick = { navActions.navigateTo(destination.route) },
           icon = { Image(imageVector = destination.icon, contentDescription = null) },
           label = { Text(text = destination.route) })

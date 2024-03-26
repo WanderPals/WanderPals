@@ -1,8 +1,11 @@
 package com.github.se.wanderpals.ui.navigation
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 class NavigationActions(val navController: NavHostController) {
   // Setup to avoid multiple instances of the same destination, restore previously selected item
@@ -19,7 +22,9 @@ class NavigationActions(val navController: NavHostController) {
     navController.navigateUp()
   }
 
+  @Composable
   fun getCurrentDestination(): NavDestination? {
-    return navController.currentBackStackEntry?.destination
+      val navBackStackEntry by navController.currentBackStackEntryAsState()
+      return navBackStackEntry?.destination
   }
 }
