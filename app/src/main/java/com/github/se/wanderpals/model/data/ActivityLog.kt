@@ -6,16 +6,16 @@ import java.time.LocalDate
  * Represents a log of activities performed by users within the application. Used to track user
  * interactions and changes to various entities like trips, stops, and suggestions.
  *
- * @property logId Unique identifier for the log entry.
- * @property userId Identifier of the user who performed the action.
- * @property userName Name of the user for easier identification in logs.
- * @property action Descriptive string of the action performed (e.g., "added_suggestion").
- * @property entityId Optional. The ID of the entity (trip, stop, suggestion, etc.) affected by the
+ * @param logId Unique identifier for the log entry.
+ * @param userId Identifier of the user who performed the action.
+ * @param userName Name of the user for easier identification in logs.
+ * @param action Descriptive string of the action performed (e.g., "added_suggestion").
+ * @param entityId Optional. The ID of the entity (trip, stop, suggestion, etc.) affected by the
  *   action.
- * @property entityType Optional. Type of the entity affected, helps in filtering logs by entity
+ * @param entityType Optional. Type of the entity affected, helps in filtering logs by entity
  *   type.
- * @property description Optional. Additional details or context about the action performed.
- * @property createdAt The date when the action was performed.
+ * @param description Optional. Additional details or context about the action performed.
+ * @param createdAt The date when the action was performed.
  */
 data class ActivityLog(
     val logId: String,
