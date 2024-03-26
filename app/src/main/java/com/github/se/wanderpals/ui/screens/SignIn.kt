@@ -31,7 +31,7 @@ import com.github.se.wanderpals.R
  */
 @Composable
 fun SignIn(onClick: () -> Unit) {
-    GoogleButton(onClick = onClick)
+  GoogleButton(onClick = onClick)
 }
 
 /**
@@ -41,33 +41,28 @@ fun SignIn(onClick: () -> Unit) {
  */
 @Composable
 fun GoogleButton(onClick: () -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(top = 200.dp)
-    ) {
+  Row(
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.padding(top = 200.dp)) {
         OutlinedButton(onClick = onClick, modifier = Modifier.padding(10.dp)) {
-            Image(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(id = R.drawable.logo_google),
-                contentDescription = "image description"
-            )
-            Text(
-                modifier = Modifier
-                    .width(125.dp)
-                    .height(17.dp),
-                text = "Sign in with Google",
-                style =
-                TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 17.sp,
-                    fontFamily = FontFamily(Font(DeviceFontFamilyName("sans-serif-condensed"))),
-                    fontWeight = FontWeight(500),
-                    color = Color(0xFF3C4043),
-                    textAlign = TextAlign.Center,
-                    letterSpacing = 0.25.sp,
-                )
-            )
+          Image(
+              modifier = Modifier.size(20.dp),
+              painter = painterResource(id = R.drawable.logo_google),
+              contentDescription = "image description")
+          Text(
+              modifier = Modifier.width(125.dp).height(17.dp),
+              text = "Sign in with Google",
+              style =
+                  TextStyle(
+                      fontSize = 14.sp,
+                      lineHeight = 17.sp,
+                      fontFamily = FontFamily(Font(DeviceFontFamilyName("sans-serif-condensed"))),
+                      fontWeight = FontWeight(500),
+                      color = Color(0xFF3C4043),
+                      textAlign = TextAlign.Center,
+                      letterSpacing = 0.25.sp,
+                  ))
         }
-    }
+      }
 }

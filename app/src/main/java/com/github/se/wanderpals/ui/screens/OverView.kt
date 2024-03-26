@@ -8,12 +8,11 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(text = "Hello $name!", modifier = modifier)
+  Text(text = "Hello $name!", modifier = modifier)
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
-    WanderPalsTheme { Greeting("Android") }
+  WanderPalsTheme { Greeting("Android") }
 }
-
