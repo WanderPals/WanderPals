@@ -145,6 +145,16 @@ dependencies {
     // ---------------     google android Core     -------------
     implementation(libs.core.ktx)
 
+    // ---------------     Kotlin coroutines     -------------
+    // Kotlin Coroutines Core
+    implementation(libs.kotlinx.coroutines.core)
+
+    // Kotlin Coroutines Android
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Coroutine support for Firebase (Play Services)
+    implementation(libs.kotlinx.coroutines.play.services)
+
 
 
     debugImplementation(libs.compose.tooling)
