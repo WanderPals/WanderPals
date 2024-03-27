@@ -20,6 +20,7 @@ data class Destination(val route: String, val icon: ImageVector, val text: Strin
 /** List of top level destinations in the app. */
 val TOP_LEVEL_DESTINATIONS =
     listOf(
+        Destination(route = Route.SIGN_IN, icon = Icons.Default.AccountBox, text = "Sign In"),
         Destination(route = Route.OVERVIEW, icon = Icons.Default.AccountBox, text = "Overview"),
         Destination(route = Route.TRIP, icon = Icons.Default.AccountBox, text = "Trip"),
     )
