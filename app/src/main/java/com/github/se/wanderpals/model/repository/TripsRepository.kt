@@ -1,7 +1,9 @@
 package com.github.se.wanderpals.model.repository
 
+import FirestoreTrip
 import com.github.se.wanderpals.model.data.Trip
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +20,8 @@ class TripsRepository(private val UID: String) {
     suspend fun getTrip(tripId: String): Trip? = withContext(Dispatchers.IO){
         try {
             val documentSnapshot = tripsCollection.document(tripId).get().await()
-            documentSnapshot.toObject(Trip::class.java)
+            val firestoreTrip = documentSnapshot.toObject(FirestoreTrip::class.java)
+            firestoreTrip?.toTrip()
         }catch (e: Exception){
             null
         }
@@ -36,20 +39,33 @@ class TripsRepository(private val UID: String) {
 
     suspend fun addTrip(trip: Trip): Boolean = withContext(Dispatchers.IO){
         try {
+            val firestoreTrip = FirestoreTrip.fromTrip(trip)
             // Assuming tripId is already set in the trip object.
-            tripsCollection.document(trip.tripId).set(trip).await()
+            tripsCollection.document(trip.tripId).set(firestoreTrip).await()
             true
         } catch (e: Exception) {
             false // Handle error or log exception
         }
     }
 
-    suspend fun updateTrip(trip: Trip){
-
+    suspend fun updateTrip(trip: Trip): Boolean = withContext(Dispatchers.IO){
+        try {
+            val firestoreTrip = FirestoreTrip.fromTrip(trip)
+            // Assuming tripId is already set in the trip object.
+            tripsCollection.document(trip.tripId).set(firestoreTrip).await()
+            true
+        } catch (e: Exception) {
+            false // Handle error or log exception
+        }
     }
 
-    suspend fun deleteTrip(trip: Trip){
-
+    suspend fun deleteTrip(tripId: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            tripsCollection.document(tripId).delete().await()
+            true
+        } catch (e: Exception) {
+            false // Handle error or log exception
+        }
     }
 
 
