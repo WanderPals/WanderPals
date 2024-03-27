@@ -25,43 +25,48 @@ data class FirestoreSuggestion(
     val createdAt: String = "", // Converted to String for Firestore compatibility
     val stop: FirestoreStop, // Using Firestore-compatible Stop object
     val comments: List<FirestoreComment> = emptyList() // Using Firestore-compatible Comment objects
-){
-    companion object {
-        /**
-         * Converts a Suggestion domain model to FirestoreSuggestion DTO.
-         *
-         * @param suggestion The Suggestion object to convert, including data models for Stop and Comments.
-         * @return A Firestore-compatible FirestoreSuggestion DTO.
-         */
-        fun fromSuggestion(suggestion: Suggestion): FirestoreSuggestion {
-            val formatter = DateTimeFormatter.ISO_LOCAL_DATE
-            return FirestoreSuggestion(
-                suggestionId = suggestion.suggestionId,
-                userId = suggestion.userId,
-                userName = suggestion.userName,
-                text = suggestion.text,
-                createdAt = suggestion.createdAt.format(formatter),
-                stop = FirestoreStop.fromStop(suggestion.stop), // Convert Stop to FirestoreStop
-                comments = suggestion.comments.map { FirestoreComment.fromComment(it) } // Convert each Comment to FirestoreComment
-            )
-        }
-    }
-
+) {
+  companion object {
     /**
-     * Converts this FirestoreSuggestion DTO back into a data model Suggestion.
+     * Converts a Suggestion domain model to FirestoreSuggestion DTO.
      *
-     * @return A Suggestion object with parsed LocalDate fields and converted Stop and Comment objects.
+     * @param suggestion The Suggestion object to convert, including data models for Stop and
+     *   Comments.
+     * @return A Firestore-compatible FirestoreSuggestion DTO.
      */
-    fun toSuggestion(): Suggestion {
-        val formatter = DateTimeFormatter.ISO_LOCAL_DATE
-        return Suggestion(
-            suggestionId = suggestionId,
-            userId = userId,
-            userName = userName,
-            text = text,
-            createdAt = LocalDate.parse(createdAt, formatter), // Parse date string back into LocalDate
-            stop = stop.toStop(), // Convert FirestoreStop back to Stop
-            comments = comments.map { it.toComment() } // Convert each FirestoreComment back to Comment
-        )
+    fun fromSuggestion(suggestion: Suggestion): FirestoreSuggestion {
+      val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+      return FirestoreSuggestion(
+          suggestionId = suggestion.suggestionId,
+          userId = suggestion.userId,
+          userName = suggestion.userName,
+          text = suggestion.text,
+          createdAt = suggestion.createdAt.format(formatter),
+          stop = FirestoreStop.fromStop(suggestion.stop), // Convert Stop to FirestoreStop
+          comments =
+              suggestion.comments.map {
+                FirestoreComment.fromComment(it)
+              } // Convert each Comment to FirestoreComment
+          )
     }
+  }
+
+  /**
+   * Converts this FirestoreSuggestion DTO back into a data model Suggestion.
+   *
+   * @return A Suggestion object with parsed LocalDate fields and converted Stop and Comment
+   *   objects.
+   */
+  fun toSuggestion(): Suggestion {
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+    return Suggestion(
+        suggestionId = suggestionId,
+        userId = userId,
+        userName = userName,
+        text = text,
+        createdAt = LocalDate.parse(createdAt, formatter), // Parse date string back into LocalDate
+        stop = stop.toStop(), // Convert FirestoreStop back to Stop
+        comments = comments.map { it.toComment() } // Convert each FirestoreComment back to Comment
+        )
+  }
 }

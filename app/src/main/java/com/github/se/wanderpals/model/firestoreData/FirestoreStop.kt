@@ -30,45 +30,43 @@ data class FirestoreStop(
     val website: String = "",
     val imageUrl: String = ""
 ) {
-    companion object {
-        /**
-         * Converts a Stop model to FirestoreStop DTO, adapting LocalDate to String.
-         *
-         * @param stop The Stop object to convert.
-         * @return A Firestore-compatible FirestoreStop DTO.
-         */
-        fun fromStop(stop: Stop): FirestoreStop {
-            val formatter = DateTimeFormatter.ISO_LOCAL_DATE
-            return FirestoreStop(
-                stopId = stop.stopId,
-                location = stop.location,
-                address = stop.address,
-                time = stop.time.format(formatter),
-                budget = stop.budget,
-                description = stop.description,
-                geoCords = stop.geoCords,
-                website = stop.website,
-                imageUrl = stop.imageUrl
-            )
-        }
-    }
+  companion object {
     /**
-     * Converts this FirestoreStop DTO back to a Stop model, parsing String to LocalDate.
+     * Converts a Stop model to FirestoreStop DTO, adapting LocalDate to String.
      *
-     * @return A Stop object with LocalDate fields.
+     * @param stop The Stop object to convert.
+     * @return A Firestore-compatible FirestoreStop DTO.
      */
-    fun toStop(): Stop {
-        val formatter = DateTimeFormatter.ISO_LOCAL_DATE
-        return Stop(
-            stopId = stopId,
-            location = location,
-            address = address,
-            time = LocalDate.parse(time, formatter),
-            budget = budget,
-            description = description,
-            geoCords = geoCords, // Assuming no conversion needed
-            website = website,
-            imageUrl = imageUrl
-        )
+    fun fromStop(stop: Stop): FirestoreStop {
+      val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+      return FirestoreStop(
+          stopId = stop.stopId,
+          location = stop.location,
+          address = stop.address,
+          time = stop.time.format(formatter),
+          budget = stop.budget,
+          description = stop.description,
+          geoCords = stop.geoCords,
+          website = stop.website,
+          imageUrl = stop.imageUrl)
     }
+  }
+  /**
+   * Converts this FirestoreStop DTO back to a Stop model, parsing String to LocalDate.
+   *
+   * @return A Stop object with LocalDate fields.
+   */
+  fun toStop(): Stop {
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+    return Stop(
+        stopId = stopId,
+        location = location,
+        address = address,
+        time = LocalDate.parse(time, formatter),
+        budget = budget,
+        description = description,
+        geoCords = geoCords, // Assuming no conversion needed
+        website = website,
+        imageUrl = imageUrl)
+  }
 }

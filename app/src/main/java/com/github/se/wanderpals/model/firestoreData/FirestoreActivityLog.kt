@@ -27,44 +27,42 @@ data class FirestoreActivityLog(
     val entityType: String? = null,
     val description: String? = null,
     val createdAt: String = ""
-){
-    companion object{
-        /**
-         * Converts a ActivityLog data model to a FirestoreActivityLog DTO.
-         *
-         * @param log The ActivityLog object to convert.
-         * @return A FirestoreActivityLog DTO with dates converted to String format.
-         */
-        fun fromActivityLog(log:ActivityLog):FirestoreActivityLog {
-            val formatter = DateTimeFormatter.ISO_LOCAL_DATE
-            return FirestoreActivityLog(
-                logId = log.logId,
-                userId = log.userId,
-                userName = log.userName,
-                action = log.action,
-                entityId = log.entityId,
-                entityType = log.entityType,
-                description = log.description,
-                createdAt = log.createdAt.format(formatter)
-            )
-        }
-    }
+) {
+  companion object {
     /**
-     * Converts this FirestoreActivityLog DTO back into a ActivityLog data model.
+     * Converts a ActivityLog data model to a FirestoreActivityLog DTO.
      *
-     * @return A ActivityLog object with LocalDate fields parsed from String.
+     * @param log The ActivityLog object to convert.
+     * @return A FirestoreActivityLog DTO with dates converted to String format.
      */
-    fun toActivityLog(): ActivityLog {
-        val formatter = DateTimeFormatter.ISO_LOCAL_DATE
-        return ActivityLog(
-            logId = logId,
-            userId = userId,
-            userName = userName,
-            action = action,
-            entityId = entityId,
-            entityType = entityType,
-            description = description,
-            createdAt = LocalDate.parse(createdAt, formatter)
-        )
+    fun fromActivityLog(log: ActivityLog): FirestoreActivityLog {
+      val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+      return FirestoreActivityLog(
+          logId = log.logId,
+          userId = log.userId,
+          userName = log.userName,
+          action = log.action,
+          entityId = log.entityId,
+          entityType = log.entityType,
+          description = log.description,
+          createdAt = log.createdAt.format(formatter))
     }
+  }
+  /**
+   * Converts this FirestoreActivityLog DTO back into a ActivityLog data model.
+   *
+   * @return A ActivityLog object with LocalDate fields parsed from String.
+   */
+  fun toActivityLog(): ActivityLog {
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE
+    return ActivityLog(
+        logId = logId,
+        userId = userId,
+        userName = userName,
+        action = action,
+        entityId = entityId,
+        entityType = entityType,
+        description = description,
+        createdAt = LocalDate.parse(createdAt, formatter))
+  }
 }
