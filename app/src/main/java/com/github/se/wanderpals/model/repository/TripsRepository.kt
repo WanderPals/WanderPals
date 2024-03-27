@@ -179,4 +179,38 @@ class TripsRepository(private val UID: String) {
             false
         }
     }
+
+    /**
+     * remove a trip ID from the current user's list of trip IDs in their document within the 'Users'
+     * collection.
+     * This operation is performed within a Firestore transaction to ensure atomicity and consistency.
+     *
+     * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
+     * @return Boolean indicating the success (true) or failure (false) of the operation.
+     */
+    suspend fun removeTripId(tripId: String):Boolean = withContext(Dispatchers.IO){
+        val userDocumentRef = usersCollection.document(UID)
+        try {
+            suspendCancellableCoroutine<Boolean> { continuation ->
+                firestore.runTransaction { transaction ->
+                    val snapshot = transaction.get(userDocumentRef)
+                    val existingTripIds = snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
+                    // Add the tripId to the list if it's not already present, then update the document.
+                    if(!existingTripIds.contains(tripId)){
+                        existingTripIds.remove(tripId)
+                        transaction.update(userDocumentRef,"tripIds",existingTripIds)
+                    }
+                }.addOnSuccessListener {
+                    // Resume coroutine with success if the transaction completes successfully.
+                    continuation.resume(true)
+                }.addOnFailureListener{exception->
+                    // Resume coroutine with exception if the transaction fails.
+                    continuation.resumeWithException(exception)
+                }
+            }
+        }catch (e: Exception){
+            // Return false if there's any exception during the coroutine execution.
+            false
+        }
+    }
 }
