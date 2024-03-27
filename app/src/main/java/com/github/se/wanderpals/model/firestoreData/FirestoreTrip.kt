@@ -33,7 +33,7 @@ data class FirestoreTrip(
 ){
     companion object {
         /**
-         * Converts a Trip domain model to a FirestoreTrip DTO.
+         * Converts a Trip data model to a FirestoreTrip DTO.
          *
          * @param trip The Trip object to convert.
          * @return A FirestoreTrip DTO with dates converted to String format.
@@ -56,7 +56,7 @@ data class FirestoreTrip(
     }
 
     /**
-     * Converts this FirestoreTrip DTO back into a Trip domain model.
+     * Converts this FirestoreTrip DTO back into a Trip data model.
      *
      * @return A Trip object with LocalDate fields parsed from String.
      */
