@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -63,6 +65,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
         }
     }
 
@@ -70,6 +74,11 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
+        }
+        packaging {
+            jniLibs {
+                useLegacyPackaging = true
+            }
         }
     }
 
@@ -167,7 +176,13 @@ dependencies {
     // ---------------       Junit     -------------
     testImplementation(libs.junit)
 
+    // Dependency for using Intents in instrumented tests
+    androidTestImplementation(libs.androidx.espresso.intents)
 
+    // Dependencies for using MockK in instrumented tests
+    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
 }
 
 tasks.withType<Test> {

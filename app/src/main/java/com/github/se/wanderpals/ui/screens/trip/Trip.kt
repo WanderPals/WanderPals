@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,21 +27,25 @@ fun Trip(oldNavActions: NavigationActions) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
 
-  Scaffold(topBar = {}, bottomBar = { BottomBar(navActions) }, floatingActionButton = {}) {
-      innerPadding ->
-    NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
-      composable(Route.DASHBOARD) { Dashboard() }
-      composable(Route.AGENDA) { Agenda() }
-      composable(Route.FINANCE) { Finance() }
-      composable(Route.MAP) { Map() }
-      composable(Route.NOTIFICATION) { Notification() }
-    }
-  }
+  Scaffold(
+      modifier = Modifier.testTag("tripScreen"),
+      topBar = {},
+      bottomBar = { BottomBar(navActions) },
+      floatingActionButton = {}) { innerPadding ->
+        NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
+          composable(Route.DASHBOARD) { Dashboard() }
+          composable(Route.AGENDA) { Agenda() }
+          composable(Route.FINANCE) { Finance() }
+          composable(Route.MAP) { Map() }
+          composable(Route.NOTIFICATION) { Notification() }
+        }
+      }
 }
 
 @Composable
 fun BottomBar(navActions: NavigationActions) {
   NavigationBar(
+      modifier = Modifier.testTag("bottomNav"),
       containerColor = NavigationBarDefaults.containerColor,
       contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
       tonalElevation = NavigationBarDefaults.Elevation,
@@ -48,6 +53,7 @@ fun BottomBar(navActions: NavigationActions) {
   ) {
     TRIP_DESTINATIONS.forEach { destination ->
       NavigationBarItem(
+          modifier = Modifier.testTag(destination.text),
           selected =
               navActions.getCurrentDestination()?.hierarchy?.any {
                 it.route == destination.route
