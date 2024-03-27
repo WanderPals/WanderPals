@@ -30,8 +30,7 @@ fun Trip(oldNavActions: NavigationActions) {
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),
       topBar = {},
-      bottomBar = { BottomBar(navActions) },
-      floatingActionButton = {}) { innerPadding ->
+      bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
           composable(Route.DASHBOARD) { Dashboard() }
           composable(Route.AGENDA) { Agenda() }
