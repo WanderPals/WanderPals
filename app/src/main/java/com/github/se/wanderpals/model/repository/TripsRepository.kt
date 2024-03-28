@@ -1,17 +1,13 @@
 package com.github.se.wanderpals.model.repository
 
 import FirestoreTrip
-import android.util.Log
 import com.github.se.wanderpals.model.data.Trip
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import java.util.UUID
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -31,18 +27,29 @@ class TripsRepository(private val UID: String) {
   // Reference to the 'Trips' collection in Firestore
   private lateinit var tripsCollection: CollectionReference
 
+  /**
+   * (Currently used only for unit tests)
+   *
+   * Initializes Firestore with a specified FirebaseApp. Sets up 'Users' and 'Trips' collection
+   * references. Use when working with a specific FirebaseApp instance.
+   *
+   * @param app The FirebaseApp instance for Firestore initialization.
+   */
   fun initFirestore(app: FirebaseApp) {
     firestore = FirebaseFirestore.getInstance(app)
     usersCollection = firestore.collection("Users")
     tripsCollection = firestore.collection("Trips")
   }
 
+  /**
+   * Initializes Firestore with the default FirebaseApp. Sets up 'Users' and 'Trips' collection
+   * references. Use for applications with a single Firebase project.
+   */
   fun initFirestore() {
     firestore = FirebaseFirestore.getInstance()
     usersCollection = firestore.collection("Users")
     tripsCollection = firestore.collection("Trips")
   }
-
 
   /**
    * Asynchronously retrieves a trip by its ID from Firestore and converts it to the data model.
@@ -57,7 +64,7 @@ class TripsRepository(private val UID: String) {
           val firestoreTrip =
               documentSnapshot.toObject<
                   FirestoreTrip>() // Converts Firestore document to FirestoreTrip DTO
-          firestoreTrip?.toTrip() // Converts FirestoreTrip DTO to Trip domain model
+          firestoreTrip?.toTrip() // Converts FirestoreTrip DTO to Trip data model
         } catch (e: Exception) {
           null // error
         }
@@ -93,7 +100,9 @@ class TripsRepository(private val UID: String) {
           var uniqueID = UUID.randomUUID().toString()
 
           var existingDocument = tripsCollection.document(uniqueID).get().await()
-          while (existingDocument.exists()) {
+          while (existingDocument
+              .exists()) { // if we somehow got the same Id, we just generate a new one,
+            // statistically improbable
             uniqueID = UUID.randomUUID().toString()
             existingDocument = tripsCollection.document(uniqueID).get().await()
           }
@@ -143,7 +152,7 @@ class TripsRepository(private val UID: String) {
   suspend fun deleteTrip(tripId: String): Boolean =
       withContext(Dispatchers.IO) {
         try {
-          removeTripId(tripId)
+          removeTripId(tripId) // remove the trip from the user
           tripsCollection.document(tripId).delete().await() // delete a given trip by its tripId
 
           true
@@ -199,20 +208,24 @@ class TripsRepository(private val UID: String) {
           userDocumentRef.set(mapOf("tripIds" to listOf<String>())).await()
         }
 
-          try {
-              val transactionResult = firestore.runTransaction { transaction ->
-                  val snapshot = transaction.get(userDocumentRef)
-                  val existingTripIds = snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
-                  if (!existingTripIds.contains(tripId)) {
+        try {
+          val transactionResult =
+              firestore
+                  .runTransaction { transaction ->
+                    val snapshot = transaction.get(userDocumentRef)
+                    val existingTripIds =
+                        snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
+                    if (!existingTripIds.contains(tripId)) {
                       existingTripIds.add(tripId)
                       transaction.update(userDocumentRef, "tripIds", existingTripIds)
                       true // Indicate success
-                  } else false // No change needed
-              }.await()
-              transactionResult
-          } catch (e: Exception) {
-              false // On error
-          }
+                    } else false // No change needed
+                  }
+                  .await()
+          transactionResult
+        } catch (e: Exception) {
+          false // On error
+        }
       }
 
   /**
@@ -227,20 +240,23 @@ class TripsRepository(private val UID: String) {
       withContext(Dispatchers.IO) {
         val userDocumentRef = usersCollection.document(UID)
 
-          try {
-              val transactionResult = firestore.runTransaction { transaction ->
-                  val snapshot = transaction.get(userDocumentRef)
-                  val existingTripIds = snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
-                  if (existingTripIds.contains(tripId)) {
+        try {
+          val transactionResult =
+              firestore
+                  .runTransaction { transaction ->
+                    val snapshot = transaction.get(userDocumentRef)
+                    val existingTripIds =
+                        snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
+                    if (existingTripIds.contains(tripId)) {
                       existingTripIds.remove(tripId)
                       transaction.update(userDocumentRef, "tripIds", existingTripIds)
                       true // Indicate success
-                  } else false // No change needed
-              }.await()
-              transactionResult
-          } catch (e: Exception) {
-              false // On error
-          }
-
+                    } else false // No change needed
+                  }
+                  .await()
+          transactionResult
+        } catch (e: Exception) {
+          false // On error
+        }
       }
 }
