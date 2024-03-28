@@ -9,6 +9,7 @@ import java.time.LocalDate
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
 import kotlin.system.measureTimeMillis
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
@@ -29,7 +30,8 @@ class TripsRepositoryTest {
 
   @Before
   fun setUp() {
-    repository = TripsRepository(testUid)
+
+    repository = TripsRepository(testUid, dispatcher = Dispatchers.IO)
     val app = FirebaseApp.initializeApp(context)!!
     repository.initFirestore(app)
   }

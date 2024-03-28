@@ -7,7 +7,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import java.util.UUID
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -17,9 +17,12 @@ import kotlinx.coroutines.withContext
  * abstracts away Firestore-specific details, offering a clean data model interface to the rest of
  * the application.
  *
- * @param UID Unique identifier of the current user. Used to fetch user-specific trip data.
+ * @param uid Unique identifier of the current user. Used to fetch user-specific trip data.
  */
-class TripsRepository(private val UID: String) {
+class TripsRepository(
+    private val uid: String,
+    private val dispatcher: CoroutineDispatcher // Inject dispatcher
+) {
 
   private lateinit var firestore: FirebaseFirestore
   // Reference to the 'Users' collection in Firestore
@@ -58,7 +61,7 @@ class TripsRepository(private val UID: String) {
    * @return The Trip object if found, null otherwise.
    */
   suspend fun getTrip(tripId: String): Trip? =
-      withContext(Dispatchers.IO) {
+      withContext(dispatcher) {
         try {
           val documentSnapshot = tripsCollection.document(tripId).get().await()
           val firestoreTrip =
@@ -77,7 +80,7 @@ class TripsRepository(private val UID: String) {
    * @return List of Trip objects.
    */
   suspend fun getAllTrips(tripIds: List<String>): List<Trip> =
-      withContext(Dispatchers.IO) {
+      withContext(dispatcher) {
         tripIds.mapNotNull { tripId ->
           try {
             getTrip(tripId) // Utilizes the getTrip method to fetch each trip individually
@@ -94,7 +97,7 @@ class TripsRepository(private val UID: String) {
    * @return Boolean indicating success or failure of the operation.
    */
   suspend fun addTrip(trip: Trip): Boolean =
-      withContext(Dispatchers.IO) {
+      withContext(dispatcher) {
         try {
           // Generate a unique ID for the trip
           var uniqueID = UUID.randomUUID().toString()
@@ -128,7 +131,7 @@ class TripsRepository(private val UID: String) {
    * @return Boolean indicating success or failure of the operation.
    */
   suspend fun updateTrip(trip: Trip): Boolean =
-      withContext(Dispatchers.IO) {
+      withContext(dispatcher) {
         try {
           val firestoreTrip =
               FirestoreTrip.fromTrip(trip) // Converts Trip data model to FirestoreTrip DTO
@@ -150,7 +153,7 @@ class TripsRepository(private val UID: String) {
    * @return Boolean indicating success or failure of the operation.
    */
   suspend fun deleteTrip(tripId: String): Boolean =
-      withContext(Dispatchers.IO) {
+      withContext(dispatcher) {
         try {
           removeTripId(tripId) // remove the trip from the user
           tripsCollection.document(tripId).delete().await() // delete a given trip by its tripId
@@ -170,9 +173,9 @@ class TripsRepository(private val UID: String) {
    *   exist or it doesn't contain any trip IDs.
    */
   suspend fun getTripsIds(): List<String> =
-      withContext(Dispatchers.IO) {
+      withContext(dispatcher) {
         try {
-          val document = usersCollection.document(UID).get().await()
+          val document = usersCollection.document(uid).get().await()
           if (document.exists()) {
             // Attempts to cast the retrieved 'tripIds' field to a List<String>.
             // If 'tripIds' does not exist or is not a list, returns an empty list.
@@ -197,8 +200,8 @@ class TripsRepository(private val UID: String) {
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
   suspend fun addTripId(tripId: String): Boolean =
-      withContext(Dispatchers.IO) {
-        val userDocumentRef = usersCollection.document(UID)
+      withContext(dispatcher) {
+        val userDocumentRef = usersCollection.document(uid)
 
         // Ensure the user's document exists before attempting to modify it.
         // If the document does not exist, create it with an initial empty list of tripIds.
@@ -237,8 +240,8 @@ class TripsRepository(private val UID: String) {
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
   suspend fun removeTripId(tripId: String): Boolean =
-      withContext(Dispatchers.IO) {
-        val userDocumentRef = usersCollection.document(UID)
+      withContext(dispatcher) {
+        val userDocumentRef = usersCollection.document(uid)
 
         try {
           val transactionResult =
