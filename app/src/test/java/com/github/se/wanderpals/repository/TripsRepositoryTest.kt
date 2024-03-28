@@ -113,7 +113,7 @@ class TripsRepositoryTest {
           if (getTrip != null) {
             assertTrue(getTrip.tripId == tripId)
           }
-          val getTrips = repository.getAllTrips(repository.getTripsIds())
+          val getTrips = repository.getAllTrips()
           assertTrue(getTrips.size == 2)
         }
 

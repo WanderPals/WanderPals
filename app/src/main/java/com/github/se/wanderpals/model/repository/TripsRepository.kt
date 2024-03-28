@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.repository
 
 import FirestoreTrip
+import android.util.Log
 import com.github.se.wanderpals.model.data.Trip
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
@@ -17,7 +18,8 @@ import kotlinx.coroutines.withContext
  * abstracts away Firestore-specific details, offering a clean data model interface to the rest of
  * the application.
  *
- * @param uid Unique identifier of the current user. Used to fetch user-specific trip data.
+ * @param uid Unique identifier of the current user. Used to fetch user-specific trip data.(UsersId
+ *   in short)
  */
 class TripsRepository(
     private val uid: String,
@@ -39,9 +41,10 @@ class TripsRepository(
    * @param app The FirebaseApp instance for Firestore initialization.
    */
   fun initFirestore(app: FirebaseApp) {
+    Log.d("TripsRepository", "initFirestore(app): Initializing with specific FirebaseApp instance.")
     firestore = FirebaseFirestore.getInstance(app)
-    usersCollection = firestore.collection("Users")
-    tripsCollection = firestore.collection("Trips")
+    usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
+    tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
   /**
@@ -49,9 +52,10 @@ class TripsRepository(
    * references. Use for applications with a single Firebase project.
    */
   fun initFirestore() {
+    Log.d("TripsRepository", "initFirestore: Initializing with default FirebaseApp.")
     firestore = FirebaseFirestore.getInstance()
-    usersCollection = firestore.collection("Users")
-    tripsCollection = firestore.collection("Trips")
+    usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
+    tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
   /**
@@ -63,12 +67,14 @@ class TripsRepository(
   suspend fun getTrip(tripId: String): Trip? =
       withContext(dispatcher) {
         try {
+          Log.d("TripsRepository", "getTrip: Retrieving trip with ID $tripId.")
           val documentSnapshot = tripsCollection.document(tripId).get().await()
           val firestoreTrip =
               documentSnapshot.toObject<
                   FirestoreTrip>() // Converts Firestore document to FirestoreTrip DTO
           firestoreTrip?.toTrip() // Converts FirestoreTrip DTO to Trip data model
         } catch (e: Exception) {
+          Log.e("TripsRepository", "getTrip: Failed to fetch trip with ID $tripId", e)
           null // error
         }
       }
@@ -76,15 +82,17 @@ class TripsRepository(
   /**
    * Fetches multiple trips by their IDs, leveraging the getTrip function for each ID.
    *
-   * @param tripIds List of trip IDs to fetch.
    * @return List of Trip objects.
    */
-  suspend fun getAllTrips(tripIds: List<String>): List<Trip> =
+  suspend fun getAllTrips(): List<Trip> =
       withContext(dispatcher) {
+        Log.d("TripsRepository", "getAllTrips: Fetching all trips for user $uid.")
+        val tripIds: List<String> = getTripsIds()
         tripIds.mapNotNull { tripId ->
           try {
             getTrip(tripId) // Utilizes the getTrip method to fetch each trip individually
           } catch (e: Exception) {
+            Log.e("TripsRepository", "getAllTrips: Failed to fetch all trips", e)
             null // error
           }
         }
@@ -99,16 +107,10 @@ class TripsRepository(
   suspend fun addTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
+          Log.d("TripsRepository", "addTrip: Adding a trip")
+
           // Generate a unique ID for the trip
           var uniqueID = UUID.randomUUID().toString()
-
-          var existingDocument = tripsCollection.document(uniqueID).get().await()
-          while (existingDocument
-              .exists()) { // if we somehow got the same Id, we just generate a new one,
-            // statistically improbable
-            uniqueID = UUID.randomUUID().toString()
-            existingDocument = tripsCollection.document(uniqueID).get().await()
-          }
 
           val firestoreTrip =
               FirestoreTrip.fromTrip(
@@ -118,8 +120,11 @@ class TripsRepository(
               .set(firestoreTrip)
               .await() // Stores the FirestoreTrip DTO in Firestore
           addTripId(uniqueID)
+          Log.d("TripsRepository", "addTrip: Trip added successfully with ID $uniqueID.")
+
           true
         } catch (e: Exception) {
+          Log.e("TripsRepository", "addTrip: Error adding trip", e)
           false // error
         }
       }
@@ -133,6 +138,7 @@ class TripsRepository(
   suspend fun updateTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
+          Log.d("TripsRepository", "updateTrip: Updating a trip")
           val firestoreTrip =
               FirestoreTrip.fromTrip(trip) // Converts Trip data model to FirestoreTrip DTO
           // Assuming tripId is already set in the trip object.
@@ -140,8 +146,11 @@ class TripsRepository(
               .document(trip.tripId)
               .set(firestoreTrip)
               .await() // Stores the FirestoreTrip DTO in Firestore
+          Log.d("TripsRepository", "updateTrip: Trip updated successfully for ID ${trip.tripId}.")
+
           true
         } catch (e: Exception) {
+          Log.e("TripsRepository", "updateTrip: Error updating trip with ID ${trip.tripId}", e)
           false // error
         }
       }
@@ -155,11 +164,13 @@ class TripsRepository(
   suspend fun deleteTrip(tripId: String): Boolean =
       withContext(dispatcher) {
         try {
+          Log.d("TripsRepository", "deleteTrip: Deleting trip")
           removeTripId(tripId) // remove the trip from the user
           tripsCollection.document(tripId).delete().await() // delete a given trip by its tripId
-
+          Log.d("TripsRepository", "deleteTrip: Trip deleted successfully for ID $tripId.")
           true
         } catch (e: Exception) {
+          Log.e("TripsRepository", "deleteTrip: Error deleting trip with ID $tripId", e)
           false // Handle error or log exception
         }
       }
@@ -175,16 +186,30 @@ class TripsRepository(
   suspend fun getTripsIds(): List<String> =
       withContext(dispatcher) {
         try {
+          Log.d("TripsRepository", "getTripsIds: Getting Trips linked to user")
           val document = usersCollection.document(uid).get().await()
           if (document.exists()) {
             // Attempts to cast the retrieved 'tripIds' field to a List<String>.
             // If 'tripIds' does not exist or is not a list, returns an empty list.
-            document["tripIds"] as? List<String> ?: emptyList()
+            val tripIds: MutableList<String> = mutableListOf()
+
+            val rawTripIds = document["tripIds"]
+            if (rawTripIds is List<*>) {
+              tripIds.addAll(rawTripIds.filterIsInstance<String>())
+            }
+            // Mutable list is a subclass of List, and will so
+            // tripIds will be automatically cast to List<String> when returned
+            Log.d("TripsRepository", "getTripsIds: Successfully retrieved trip IDs for user $uid.")
+            tripIds
           } else {
-            emptyList() // If any exception occurs during the Firestore operation, return an empty
+            Log.d(
+                "TripsRepository",
+                "getTripsIds: Failed to retrieved trip IDs for user $uid. (No document found)")
+            emptyList() // In the case that the collection doesn't exist, return an empty list.
             // list.
           }
         } catch (e: Exception) {
+          Log.e("TripsRepository", "getTripsIds: Error retrieving trip IDs for user $uid", e)
           emptyList()
         }
       }
@@ -201,6 +226,8 @@ class TripsRepository(
    */
   suspend fun addTripId(tripId: String): Boolean =
       withContext(dispatcher) {
+        Log.d("TripsRepository", "addTripId: Adding tripId to user")
+
         val userDocumentRef = usersCollection.document(uid)
 
         // Ensure the user's document exists before attempting to modify it.
@@ -216,17 +243,42 @@ class TripsRepository(
               firestore
                   .runTransaction { transaction ->
                     val snapshot = transaction.get(userDocumentRef)
-                    val existingTripIds =
-                        snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
+
+                    // Safely attempt to retrieve and cast the tripIds list from the snapshot.
+                    val existingTripIds: MutableList<String> = mutableListOf()
+
+                    val rawTripIds = snapshot["tripIds"]
+                    if (rawTripIds is List<*>) {
+                      // Filter non-null and String values only, safely adding them to
+                      // existingTripIds.
+                      existingTripIds.addAll(rawTripIds.filterIsInstance<String>())
+                    }
+
                     if (!existingTripIds.contains(tripId)) {
                       existingTripIds.add(tripId)
                       transaction.update(userDocumentRef, "tripIds", existingTripIds)
+                      Log.d(
+                          "TripsRepository",
+                          "addTripId: Successfully added trip ID $tripId to user $uid's document.")
                       true // Indicate success
-                    } else false // No change needed
+                    } else {
+                      Log.d(
+                          "TripsRepository",
+                          "addTripId: Failed trip ID $tripId with user $uid's already exist.")
+                      false
+                    } // No change needed
                   }
                   .await()
+          Log.d(
+              "TripsRepository",
+              "addTripId: Successfully added trip ID $tripId to user $uid's document.")
+
           transactionResult
         } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "addTripId: Error adding trip ID $tripId to user $uid's document",
+              e)
           false // On error
         }
       }
@@ -241,6 +293,8 @@ class TripsRepository(
    */
   suspend fun removeTripId(tripId: String): Boolean =
       withContext(dispatcher) {
+        Log.d("TripsRepository", "removeTripId: Removing tripId from user")
+
         val userDocumentRef = usersCollection.document(uid)
 
         try {
@@ -248,17 +302,39 @@ class TripsRepository(
               firestore
                   .runTransaction { transaction ->
                     val snapshot = transaction.get(userDocumentRef)
-                    val existingTripIds =
-                        snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
+
+                    // Safely attempt to retrieve and cast the tripIds list from the snapshot.
+                    val existingTripIds: MutableList<String> = mutableListOf()
+
+                    val rawTripIds = snapshot["tripIds"]
+                    if (rawTripIds is List<*>) {
+                      // Filter non-null and String values only, safely adding them to
+                      // existingTripIds.
+                      existingTripIds.addAll(rawTripIds.filterIsInstance<String>())
+                    }
+
                     if (existingTripIds.contains(tripId)) {
                       existingTripIds.remove(tripId)
                       transaction.update(userDocumentRef, "tripIds", existingTripIds)
+                      Log.d(
+                          "TripsRepository",
+                          "removeTripId: Successfully removed trip ID $tripId from user $uid's document.")
+
                       true // Indicate success
-                    } else false // No change needed
+                    } else {
+                      Log.d(
+                          "TripsRepository",
+                          "removeTripId: Failed to removed trip ID $tripId from user $uid's document. (it didn't exist)")
+                      false
+                    } // No change needed
                   }
                   .await()
           transactionResult
         } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "removeTripId: Error removing trip ID $tripId from user $uid's document",
+              e)
           false // On error
         }
       }
