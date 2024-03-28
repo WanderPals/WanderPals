@@ -145,27 +145,26 @@ class TripsRepositoryTest {
     println("testAddAndGetAndRemoveAndModifyAndGetAllTrip execution time: $elapsedTime ms")
   }
 
-    @After
-    fun tearDown() = runBlocking {
-        // Attempt to retrieve all trip IDs that might have been added during tests
-        val tripIds = try {
-            repository.getTripsIds()
+  @After
+  fun tearDown() = runBlocking {
+    // Attempt to retrieve all trip IDs that might have been added during tests
+    val tripIds =
+        try {
+          repository.getTripsIds()
         } catch (e: Exception) {
-            emptyList<String>() // In case of error, fallback to an empty list to avoid null issues
+          emptyList<String>() // In case of error, fallback to an empty list to avoid null issues
         }
 
-        // Loop through each trip ID and attempt to remove it for cleanup
-        tripIds.forEach { tripId ->
-            try {
-                repository.deleteTrip(tripId)
-                repository.removeTripId(tripId)
-            } catch (e: Exception) {
-                println("Error cleaning up trip ID: $tripId")
-            }
-        }
-
-        // Add any other cleanup logic here if necessary
+    // Loop through each trip ID and attempt to remove it for cleanup
+    tripIds.forEach { tripId ->
+      try {
+        repository.deleteTrip(tripId)
+        repository.removeTripId(tripId)
+      } catch (e: Exception) {
+        println("Error cleaning up trip ID: $tripId")
+      }
     }
 
-
+    // Add any other cleanup logic here if necessary
+  }
 }
