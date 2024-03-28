@@ -1,0 +1,154 @@
+package com.github.se.wanderpals.repository
+
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.repository.TripsRepository
+import com.google.firebase.FirebaseApp
+import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.fail
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import java.time.LocalDate
+import kotlin.system.measureTimeMillis
+
+@RunWith(RobolectricTestRunner::class)
+class TripsRepositoryTest {
+
+    private val context = ApplicationProvider.getApplicationContext<Context>()
+
+    private lateinit var repository: TripsRepository
+    private val testUid = "testUser123"
+    private val testTripId = "testTrip123"
+
+    @Before
+    fun setUp() {
+        repository = TripsRepository(testUid)
+        val app = FirebaseApp.initializeApp(context)!!
+        repository.initFirestore(app)
+    }
+
+    @Test
+    fun testAddAndGetAndRemoveTripId() = runBlocking {
+        val elapsedTime = measureTimeMillis {
+            try {
+                withTimeout(5000) {
+                    assertTrue(repository.addTripId(testTripId))
+                    val tripIds = repository.getTripsIds()
+                    assertTrue(tripIds.contains(testTripId))
+                }
+
+                withTimeout(5000) {
+                    assertTrue(repository.removeTripId(testTripId))
+                    val tripIds = repository.getTripsIds()
+                    assertTrue(!tripIds.contains(testTripId))
+                }
+
+            } catch (e: TimeoutCancellationException) {
+                // If a timeout occurs, fail the test
+                fail("The operation timed out after 5 seconds")
+            }
+        }
+        println("Test execution time: $elapsedTime ms")
+    }
+
+    @Test
+    fun testAddAndGetAndRemoveTrip() = runBlocking {
+
+        val trip =
+            Trip(
+                tripId = "trip123",
+                title = "Summer Vacation",
+                startDate = LocalDate.of(2024, 5, 20), // Assuming format is YYYY, MM, DD
+                endDate = LocalDate.of(2024, 6, 10),
+                totalBudget = 2000.0,
+                description = "Our summer vacation trip to Italy.",
+                imageUrl = "https://example.com/image.png",
+                stops = emptyList(),
+                users = emptyList(),
+                suggestions = emptyList())
+
+        val trip2 =
+            Trip(
+                tripId = "trip123",
+                title = "Summer Vacation",
+                startDate = LocalDate.of(2024, 5, 20), // Assuming format is YYYY, MM, DD
+                endDate = LocalDate.of(2024, 6, 10),
+                totalBudget = 2000.0,
+                description = "Our summer vacation trip to Italy.",
+                imageUrl = "https://example.com/image.png",
+                stops = emptyList(),
+                users = emptyList(),
+                suggestions = emptyList())
+
+        val updatedTrip2 =
+            Trip(
+                tripId = "Not a trip at all",
+                title = "Winter fun",
+                startDate = LocalDate.of(2028, 5, 20), // Assuming format is YYYY, MM, DD
+                endDate = LocalDate.of(2029, 6, 10),
+                totalBudget = 20000.0,
+                description = "TO MARS.",
+                imageUrl = "https://example.com/image.png))))",
+                stops = emptyList(),
+                users = emptyList(),
+                suggestions = emptyList())
+
+        val elapsedTime = measureTimeMillis {
+            try {
+                withTimeout(5000) {
+                    assertTrue(repository.addTrip(trip))
+                    assertTrue(repository.addTrip(trip2))
+
+                    val tripIds = repository.getTripsIds()
+                    val tripId = tripIds[0]
+
+                    val getTrip = repository.getTrip(tripId)
+                    if (getTrip != null) {
+                        assertTrue(getTrip.tripId == tripId)
+                    }
+                    val getTrips = repository.getAllTrips(repository.getTripsIds())
+                    assertTrue(getTrips.size == 2)
+
+
+                }
+
+                withTimeout(5000) {
+                    val tripIds = repository.getTripsIds()
+                    val tripId = tripIds[0]
+                    val tripId2 = tripIds[1]
+
+                    assertTrue(repository.updateTrip(updatedTrip2.copy(tripId = tripId2)))
+
+                    val getTrip = repository.getTrip(tripId)
+                    if (getTrip != null) {
+                        assertTrue(getTrip.title == trip2.title)
+                        assertTrue(getTrip.description == trip2.description)
+                        assertTrue(getTrip.totalBudget == trip2.totalBudget)
+                    }
+
+                    //assertTrue(repository.deleteTrip(tripId))
+                }
+
+
+                withTimeout(5000) {
+                    val tripIds = repository.getTripsIds()
+                    val tripId = tripIds[0]
+                    val tripId2 = tripIds[1]
+                    assertTrue(repository.deleteTrip(tripId))
+                    assertTrue(repository.deleteTrip(tripId2))
+                }
+
+            } catch (e: TimeoutCancellationException) {
+                // If a timeout occurs, fail the test
+                fail("The operation timed out after 5 seconds")
+            }
+        }
+        println("Test execution time: $elapsedTime ms")
+    }
+}

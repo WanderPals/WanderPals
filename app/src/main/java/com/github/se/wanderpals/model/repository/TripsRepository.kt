@@ -3,6 +3,8 @@ package com.github.se.wanderpals.model.repository
 import FirestoreTrip
 import android.util.Log
 import com.github.se.wanderpals.model.data.Trip
+import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import java.util.UUID
@@ -23,11 +25,24 @@ import kotlinx.coroutines.withContext
  */
 class TripsRepository(private val UID: String) {
 
-  private val firestore = FirebaseFirestore.getInstance()
+  private lateinit var firestore: FirebaseFirestore
   // Reference to the 'Users' collection in Firestore
-  private val usersCollection = firestore.collection("Users")
+  private lateinit var usersCollection: CollectionReference
   // Reference to the 'Trips' collection in Firestore
-  private val tripsCollection = firestore.collection("Trips")
+  private lateinit var tripsCollection: CollectionReference
+
+  fun initFirestore(app: FirebaseApp) {
+    firestore = FirebaseFirestore.getInstance(app)
+    usersCollection = firestore.collection("Users")
+    tripsCollection = firestore.collection("Trips")
+  }
+
+  fun initFirestore() {
+    firestore = FirebaseFirestore.getInstance()
+    usersCollection = firestore.collection("Users")
+    tripsCollection = firestore.collection("Trips")
+  }
+
 
   /**
    * Asynchronously retrieves a trip by its ID from Firestore and converts it to the data model.
@@ -184,35 +199,20 @@ class TripsRepository(private val UID: String) {
           userDocumentRef.set(mapOf("tripIds" to listOf<String>())).await()
         }
 
-        try {
-          // Use a Firestore transaction for atomicity. This ensures the read-modify-write cycle
-          // is executed as a single operation, preventing race conditions.
-          suspendCancellableCoroutine<Boolean> { continuation ->
-            firestore
-                .runTransaction { transaction ->
+          try {
+              val transactionResult = firestore.runTransaction { transaction ->
                   val snapshot = transaction.get(userDocumentRef)
-                  val existingTripIds =
-                      snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
-                  // Add the tripId to the list if it's not already present, then update the
-                  // document.
+                  val existingTripIds = snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
                   if (!existingTripIds.contains(tripId)) {
-                    existingTripIds.add(tripId)
-                    transaction.update(userDocumentRef, "tripIds", existingTripIds)
-                  }
-                }
-                .addOnSuccessListener {
-                  // Resume coroutine with success if the transaction completes successfully.
-                  continuation.resume(true)
-                }
-                .addOnFailureListener { exception ->
-                  // Resume coroutine with exception if the transaction fails.
-                  continuation.resumeWithException(exception)
-                }
+                      existingTripIds.add(tripId)
+                      transaction.update(userDocumentRef, "tripIds", existingTripIds)
+                      true // Indicate success
+                  } else false // No change needed
+              }.await()
+              transactionResult
+          } catch (e: Exception) {
+              false // On error
           }
-        } catch (e: Exception) {
-          // Return false if there's any exception during the coroutine execution.
-          false
-        }
       }
 
   /**
@@ -226,35 +226,21 @@ class TripsRepository(private val UID: String) {
   suspend fun removeTripId(tripId: String): Boolean =
       withContext(Dispatchers.IO) {
         val userDocumentRef = usersCollection.document(UID)
-        try {
-          suspendCancellableCoroutine<Boolean> { continuation ->
-            firestore
-                .runTransaction { transaction ->
+
+          try {
+              val transactionResult = firestore.runTransaction { transaction ->
                   val snapshot = transaction.get(userDocumentRef)
-                  var existingTripIds =
-                      snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
-                  // Add the tripId to the list if it's not already present, then update the
-                  // document.
-                  Log.d("TripsRepository", "Existing trip IDs before removal: $existingTripIds")
+                  val existingTripIds = snapshot["tripIds"] as? MutableList<String> ?: mutableListOf()
                   if (existingTripIds.contains(tripId)) {
-                    existingTripIds.remove(tripId)
-                    transaction.update(userDocumentRef, "tripIds", existingTripIds)
-                  }
-                  Log.d("TripsRepository", "Existing trip IDs after removal: $existingTripIds")
-                }
-                .addOnSuccessListener {
-                  // Resume coroutine with success if the transaction completes successfully.
-                  continuation.resume(true)
-                }
-                .addOnFailureListener { exception ->
-                  // Resume coroutine with exception if the transaction fails.
-                  Log.e("TripsRepository", "Failed to remove trip ID: $tripId", exception)
-                  continuation.resumeWithException(exception)
-                }
+                      existingTripIds.remove(tripId)
+                      transaction.update(userDocumentRef, "tripIds", existingTripIds)
+                      true // Indicate success
+                  } else false // No change needed
+              }.await()
+              transactionResult
+          } catch (e: Exception) {
+              false // On error
           }
-        } catch (e: Exception) {
-          // Return false if there's any exception during the coroutine execution.
-          false
-        }
+
       }
 }
