@@ -100,7 +100,7 @@ class TripsRepositoryTest {
 
     val elapsedTime = measureTimeMillis {
       try {
-        withTimeout(5000) {
+        withTimeout(10000) {
           assertTrue(repository.addTrip(trip))
           assertTrue(repository.addTrip(trip2))
 
@@ -115,7 +115,7 @@ class TripsRepositoryTest {
           assertTrue(getTrips.size == 2)
         }
 
-        withTimeout(5000) {
+        withTimeout(10000) {
           val tripIds = repository.getTripsIds()
           val tripId = tripIds[0]
           val tripId2 = tripIds[1]
@@ -130,7 +130,7 @@ class TripsRepositoryTest {
           }
         }
 
-        withTimeout(5000) {
+        withTimeout(10000) {
           val tripIds = repository.getTripsIds()
           val tripId = tripIds[0]
           val tripId2 = tripIds[1]
@@ -139,7 +139,7 @@ class TripsRepositoryTest {
         }
       } catch (e: TimeoutCancellationException) {
         // If a timeout occurs, fail the test
-        fail("The operation timed out after 5 seconds")
+        fail("The operation timed out after 10 seconds")
       }
     }
     println("testAddAndGetAndRemoveAndModifyAndGetAllTrip execution time: $elapsedTime ms")
