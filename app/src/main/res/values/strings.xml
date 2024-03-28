@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">WanderPals</string>
     <string name="web_client_id">191381458285-07j99b293hg9n2vni391bl8m2igsip43.apps.googleusercontent.com</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="ok">OK</string>
 </resources>
