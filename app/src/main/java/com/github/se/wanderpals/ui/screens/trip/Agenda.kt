@@ -40,47 +40,76 @@ import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.Year
 import java.time.YearMonth
 import java.util.Locale
 
 @Preview(showSystemUi = true)
 @Composable
-fun AgendaPreview() {
-  WanderPalsTheme { Agenda() }
+fun CalendarAppPreview() {
+  WanderPalsTheme {
+    Agenda()
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Agenda(
-    viewModel: AgendaViewModel = viewModel(),
+  viewModel: AgendaViewModel = viewModel(),
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+  val uiState by viewModel.uiState.collectAsState()
+
+  Scaffold(
+    topBar = {
+      TopAppBar(
+        title = { Text(
+            text = "Agenda",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        ) },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+          containerColor = MaterialTheme.colorScheme.primaryContainer
+        ))
+    }
+  ) { padding ->
 
     Surface(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+      modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())
+        .padding(padding)
     ) {
       CalendarWidget(
-          days = DateUtil.daysOfWeek,
-          yearMonth = uiState.yearMonth,
-          dates = uiState.dates,
-          onPreviousMonthButtonClicked = { prevMonth -> viewModel.toPreviousMonth(prevMonth) },
-          onNextMonthButtonClicked = { nextMonth -> viewModel.toNextMonth(nextMonth) },
-          onDateClickListener = { date -> viewModel.onDateSelected(date) }
+        days = DateUtil.daysOfWeek,
+        yearMonth = uiState.yearMonth,
+        dates = uiState.dates,
+        onPreviousMonthButtonClicked = { prevMonth ->
+          viewModel.toPreviousMonth(prevMonth)
+        },
+        onNextMonthButtonClicked = { nextMonth ->
+          viewModel.toNextMonth(nextMonth)
+        },
+        onDateClickListener = { date ->
+            viewModel.onDateSelected(date)
+        }
       )
     }
+  }
 }
 
 @Composable
 fun CalendarWidget(
-    days: Array<String>,
-    yearMonth: YearMonth,
-    dates: List<CalendarUiState.Date>,
-    onPreviousMonthButtonClicked: (YearMonth) -> Unit,
-    onNextMonthButtonClicked: (YearMonth) -> Unit,
-    onDateClickListener: (CalendarUiState.Date) -> Unit,
+  days: Array<String>,
+  yearMonth: YearMonth,
+  dates: List<CalendarUiState.Date>,
+  onPreviousMonthButtonClicked: (YearMonth) -> Unit,
+  onNextMonthButtonClicked: (YearMonth) -> Unit,
+  onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
-  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+  Column(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp)
+  ) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -88,35 +117,47 @@ fun CalendarWidget(
       }
     }
     Header(
-        yearMonth = yearMonth,
-        onPreviousMonthButtonClicked = onPreviousMonthButtonClicked,
-        onNextMonthButtonClicked = onNextMonthButtonClicked
+      yearMonth = yearMonth,
+      onPreviousMonthButtonClicked = onPreviousMonthButtonClicked,
+      onNextMonthButtonClicked = onNextMonthButtonClicked
     )
-    Content(dates = dates, onDateClickListener = onDateClickListener)
+    Content(
+      dates = dates,
+      onDateClickListener = onDateClickListener
+    )
   }
 }
 
 @Composable
 fun Header(
-    yearMonth: YearMonth,
-    onPreviousMonthButtonClicked: (YearMonth) -> Unit,
-    onNextMonthButtonClicked: (YearMonth) -> Unit,
+  yearMonth: YearMonth,
+  onPreviousMonthButtonClicked: (YearMonth) -> Unit,
+  onNextMonthButtonClicked: (YearMonth) -> Unit,
 ) {
   Row {
-    IconButton(onClick = { onPreviousMonthButtonClicked.invoke(yearMonth.minusMonths(1)) }) {
+    IconButton(onClick = {
+      onPreviousMonthButtonClicked.invoke(yearMonth.minusMonths(1))
+    }) {
       Icon(
-          imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-          contentDescription = stringResource(id = R.string.back))
+        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+        contentDescription = stringResource(id = R.string.back)
+      )
     }
     Text(
-        text = yearMonth.getDisplayName(),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier.weight(1f).align(Alignment.CenterVertically))
-    IconButton(onClick = { onNextMonthButtonClicked.invoke(yearMonth.plusMonths(1)) }) {
+      text = yearMonth.getDisplayName(),
+      textAlign = TextAlign.Center,
+      style = MaterialTheme.typography.bodyLarge,
+      modifier = Modifier
+        .weight(1f)
+        .align(Alignment.CenterVertically)
+    )
+    IconButton(onClick = {
+      onNextMonthButtonClicked.invoke(yearMonth.plusMonths(1))
+    }) {
       Icon(
-          imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-          contentDescription = stringResource(id = R.string.next))
+        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+        contentDescription = stringResource(id = R.string.next)
+      )
     }
   }
 }
@@ -125,17 +166,20 @@ fun Header(
 fun DayItem(day: String, modifier: Modifier = Modifier) {
   Box(modifier = modifier) {
     Text(
-        text = day,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.align(Alignment.Center).padding(10.dp))
+      text = day,
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.primary,
+      modifier = Modifier
+        .align(Alignment.Center)
+        .padding(10.dp)
+    )
   }
 }
 
 @Composable
 fun Content(
-    dates: List<CalendarUiState.Date>,
-    onDateClickListener: (CalendarUiState.Date) -> Unit,
+  dates: List<CalendarUiState.Date>,
+  onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
   Column {
     var index = 0
@@ -145,7 +189,10 @@ fun Content(
         repeat(7) {
           val item = if (index < dates.size) dates[index] else CalendarUiState.Date.Empty
           ContentItem(
-              date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f))
+            date = item,
+            onClickListener = onDateClickListener,
+            modifier = Modifier.weight(1f)
+          )
           index++
         }
       }
@@ -155,38 +202,50 @@ fun Content(
 
 @Composable
 fun ContentItem(
-    date: CalendarUiState.Date,
-    onClickListener: (CalendarUiState.Date) -> Unit,
-    modifier: Modifier = Modifier
+  date: CalendarUiState.Date,
+  onClickListener: (CalendarUiState.Date) -> Unit,
+  modifier: Modifier = Modifier
 ) {
   Box(
-      modifier =
-          modifier
-              .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
-              .clip(CircleShape) // Clips the Box into a Circle
-              .background(
-                  color =
-                      if (date.isSelected) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                      } else {
-                        Color.Transparent
-                      })
-              .clickable { onClickListener(date) }) {
-        Text(
-            text = date.dayOfMonth,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.Center).padding(10.dp))
-      }
+    modifier = modifier
+      .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
+      .clip(CircleShape) // Clips the Box into a Circle
+      .background(
+        color = if (date.isSelected) {
+          MaterialTheme.colorScheme.secondaryContainer
+        } else {
+          Color.Transparent
+        }
+      )
+      .clickable { onClickListener(date) }
+  ) {
+    Text(
+      text = date.dayOfMonth,
+      style = MaterialTheme.typography.bodyMedium,
+      modifier = Modifier
+        .align(Alignment.Center)
+        .padding(10.dp)
+    )
+  }
 }
 
-data class CalendarUiState(val yearMonth: YearMonth, val dates: List<Date>) {
+data class CalendarUiState(
+  val yearMonth: YearMonth,
+  val dates: List<Date>
+) {
   companion object {
-    val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
+    val Init = CalendarUiState(
+      yearMonth = YearMonth.now(),
+      dates = emptyList()
+    )
   }
-
-  data class Date(val dayOfMonth: String,val yearMonth: YearMonth, val year: Year, val isSelected: Boolean) {
+  data class Date(
+    val dayOfMonth: String,
+    val isSelected: Boolean,
+    val yearMonth: YearMonth
+  ) {
     companion object {
-      val Empty = Date("", YearMonth.now(), Year.now(),false)
+      val Empty = Date("", false, YearMonth.now())
     }
   }
 }
@@ -194,19 +253,18 @@ data class CalendarUiState(val yearMonth: YearMonth, val dates: List<Date>) {
 class CalendarDataSource {
 
   fun getDates(yearMonth: YearMonth): List<CalendarUiState.Date> {
-    return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
-      CalendarUiState.Date(
-          dayOfMonth =
-              if (date.monthValue == yearMonth.monthValue) {
-                "${date.dayOfMonth}"
-              } else {
-                "" // Fill with empty string for days outside the current month
-              },
-          yearMonth = yearMonth,
-          year = Year.of(date.year),
+    return yearMonth.getDayOfMonthStartingFromMonday()
+      .map { date ->
+        CalendarUiState.Date(
+          dayOfMonth = if (date.monthValue == yearMonth.monthValue) {
+            "${date.dayOfMonth}"
+          } else {
+            "" // Fill with empty string for days outside the current month
+          },
           isSelected = date.isEqual(LocalDate.now()) && date.monthValue == yearMonth.monthValue,
-      )
-    }
+          yearMonth = yearMonth
+        )
+      }
   }
 }
 
@@ -218,8 +276,7 @@ object DateUtil {
       val daysOfWeek = Array(7) { "" }
 
       for (dayOfWeek in DayOfWeek.values()) {
-        val localizedDayName =
-            dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault())
+        val localizedDayName = dayOfWeek.getDisplayName(java.time.format.TextStyle.SHORT, Locale.getDefault())
         daysOfWeek[dayOfWeek.value - 1] = localizedDayName
       }
 
@@ -233,10 +290,11 @@ fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
   val firstDayOfNextMonth = firstDayOfMonth.plusMonths(1)
 
   return generateSequence(firstMondayOfMonth) { it.plusDays(1) }
-      .takeWhile { it.isBefore(firstDayOfNextMonth) }
-      .toList()
+    .takeWhile { it.isBefore(firstDayOfNextMonth) }
+    .toList()
 }
 
 fun YearMonth.getDisplayName(): String {
   return "${month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())} $year"
 }
+
