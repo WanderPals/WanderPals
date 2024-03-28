@@ -1,6 +1,6 @@
 package com.github.se.wanderpals.ui.screens
 
-mport androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -207,6 +207,9 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
         )
 
         LazyColumn() {
+          items(tripList /*.filterToDosByTitle(searchText)*/) { trip ->
+            DisplayTrip(trip = trip, navigationActions)
+
 
           }
         }
@@ -215,3 +218,71 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
   }
 }
 
+@Composable
+fun DisplayTrip(trip: Trip, navigationActions: NavigationActions) {
+  Box(modifier = Modifier.fillMaxWidth()) {
+    Button(
+      onClick = { navigationActions.navigateTo(Route.TRIP + "/${trip.tripId}") },
+      modifier = Modifier
+        .align(Alignment.TopCenter)
+        .width(360.dp)
+        .height(100.dp)
+        .padding(top = 16.dp),
+      shape = RoundedCornerShape(size = 15.dp),
+      colors = ButtonDefaults.buttonColors(
+        containerColor = Color(0xFFEAEEFD)
+      )
+    ) {
+      Column(
+        modifier = Modifier.fillMaxSize(),
+      ) {
+        Text(
+          text = trip.title,
+          modifier = Modifier
+            .height(24.dp),
+          style =
+          TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight(500),
+            color = Color(0xFF000000),
+            letterSpacing = 0.5.sp,
+          )
+        )
+        Spacer(modifier = Modifier.height(3.dp))
+        Text(
+          text = "From : %s".format(
+            trip.startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+          ),
+          modifier = Modifier
+            .height(24.dp),
+          style = TextStyle(
+            fontSize = 12.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight(500),
+            color = Color(0xFF000000),
+            letterSpacing = 0.5.sp,
+          )
+        )
+        Text(
+          text = "To : %s".format(
+            trip.endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+          ),
+          modifier = Modifier
+            .height(24.dp),
+          style = TextStyle(
+            fontSize = 12.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight(500),
+            color = Color(0xFF000000),
+            letterSpacing = 0.5.sp,
+          )
+        )
+
+
+      }
+
+    }
+
+  }
+}

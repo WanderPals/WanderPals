@@ -13,9 +13,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.Greeting
+import com.github.se.wanderpals.ui.screens.Overview
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
@@ -57,11 +58,11 @@ class MainActivity : ComponentActivity() {
           navController = rememberNavController()
           navigationActions = NavigationActions(navController)
 
-          NavHost(navController = navController, startDestination = Route.SIGN_IN) {
+          NavHost(navController = navController, startDestination = Route.OVERVIEW) {
             composable(Route.SIGN_IN) {
               SignIn(onClick = { launcher.launch(signInClient.signInIntent) })
             }
-            composable(Route.OVERVIEW) { Greeting("Android") }
+            composable(Route.OVERVIEW) { Overview(overviewViewModel = OverviewViewModel(), navigationActions = navigationActions) }
             composable(Route.TRIP) { Trip(navigationActions) }
           }
         }
