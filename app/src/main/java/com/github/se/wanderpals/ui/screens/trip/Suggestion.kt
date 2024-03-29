@@ -8,5 +8,5 @@ import androidx.compose.ui.platform.testTag
 /** The Finance screen. */
 @Composable
 fun Suggestion() {
-    Text(modifier = Modifier.testTag("suggestionScreen"), text = "Suggestion")
+  Text(modifier = Modifier.testTag("suggestionScreen"), text = "Suggestion")
 }

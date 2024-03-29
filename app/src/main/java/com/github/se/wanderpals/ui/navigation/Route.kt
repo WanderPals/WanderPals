@@ -1,7 +1,5 @@
 package com.github.se.wanderpals.ui.navigation
 
-import com.github.se.wanderpals.model.data.Suggestion
-
 /** Object defining the routes in the app. */
 object Route {
   const val NOTIFICATION = "notif"
