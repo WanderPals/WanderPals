@@ -1,18 +1,24 @@
 package com.github.se.wanderpals.ui.screens
 
+// import Color
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.DeviceFontFamilyName
@@ -31,7 +37,18 @@ import com.github.se.wanderpals.R
  */
 @Composable
 fun SignIn(onClick: () -> Unit) {
-    GoogleButton(onClick = onClick)
+  Column(
+      verticalArrangement = Arrangement.spacedBy(300.dp, Alignment.CenterVertically),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      modifier =
+          Modifier.fillMaxSize()
+              .background(Brush.linearGradient(listOf(Color.White, Color(0xff96d9d2))))) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_projet),
+            contentDescription = "Logo_project",
+            modifier = Modifier.size(150.dp).clip(RoundedCornerShape(16.dp)))
+        GoogleButton(onClick = onClick)
+      }
 }
 
 /**
@@ -41,33 +58,23 @@ fun SignIn(onClick: () -> Unit) {
  */
 @Composable
 fun GoogleButton(onClick: () -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(top = 200.dp)
-    ) {
-        OutlinedButton(onClick = onClick, modifier = Modifier.padding(10.dp)) {
-            Image(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(id = R.drawable.logo_google),
-                contentDescription = "image description"
-            )
-            Text(
-                modifier = Modifier
-                    .width(125.dp)
-                    .height(17.dp),
-                text = "Sign in with Google",
-                style =
-                TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 17.sp,
-                    fontFamily = FontFamily(Font(DeviceFontFamilyName("sans-serif-condensed"))),
-                    fontWeight = FontWeight(500),
-                    color = Color(0xFF3C4043),
-                    textAlign = TextAlign.Center,
-                    letterSpacing = 0.25.sp,
-                )
-            )
-        }
-    }
+  OutlinedButton(onClick = onClick, modifier = Modifier.testTag("LoginButton")) {
+    Image(
+        modifier = Modifier.size(20.dp).testTag("GoogleIcon"),
+        painter = painterResource(id = R.drawable.logo_google),
+        contentDescription = "image_description")
+    Text(
+        modifier = Modifier.width(125.dp).height(17.dp),
+        text = "Sign in with Google",
+        style =
+            TextStyle(
+                fontSize = 14.sp,
+                lineHeight = 17.sp,
+                fontFamily = FontFamily(Font(DeviceFontFamilyName("sans-serif-condensed"))),
+                fontWeight = FontWeight(500),
+                color = Color(0xFF3C4043),
+                textAlign = TextAlign.Center,
+                letterSpacing = 0.25.sp,
+            ))
+  }
 }
