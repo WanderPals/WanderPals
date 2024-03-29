@@ -18,7 +18,7 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.Overview
+import com.github.se.wanderpals.ui.screens.overview.Overview
 
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.trip.Trip
