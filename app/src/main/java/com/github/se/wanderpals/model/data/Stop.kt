@@ -2,6 +2,7 @@ package com.github.se.wanderpals.model.data
 
 import java.time.LocalDate
 import java.time.LocalTime
+
 /**
  * Represents a specific stop or destination within a trip itinerary. Each stop is defined by a
  * unique location, including geographical coordinates, and contains details about the visit,
