@@ -1,7 +1,5 @@
 package com.github.se.wanderpals.ui.screens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 
@@ -9,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,16 +22,15 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,45 +56,9 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun Overview(overviewViewModel: OverviewViewModel, navigationActions: NavigationActions) {
 
-  val trip1 = Trip(
-    tripId = "1",
-    title = "Summer Adventure",
-    startDate = LocalDate.of(2024, 7, 1),
-    endDate = LocalDate.of(2024, 7, 15),
-    totalBudget = 2000.0,
-    description = "An adventurous trip exploring nature and wildlife.",
-    imageUrl = "https://example.com/summer_adventure.jpg",
-    stops = listOf("stop1", "stop2", "stop3"),
-    users = listOf("user1", "user2", "user3"),
-    suggestions = listOf("suggestion1", "suggestion2")
-  )
 
-  val trip2 = Trip(
-    tripId = "2",
-    title = "Winter Ski Trip",
-    startDate = LocalDate.of(2024, 12, 20),
-    endDate = LocalDate.of(2024, 12, 30),
-    totalBudget = 3000.0,
-    description = "A ski trip to the snowy mountains.",
-    imageUrl = "https://example.com/winter_ski_trip.jpg",
-    stops = listOf("ski_resort1", "ski_resort2"),
-    users = listOf("user4", "user5"),
-    suggestions = listOf("suggestion3", "suggestion4", "suggestion5")
-  )
+  val tripsList by overviewViewModel.state.collectAsState()
 
-  val trip3 = Trip(
-    tripId = "3",
-    title = "City Exploration",
-    startDate = LocalDate.of(2024, 9, 10),
-    endDate = LocalDate.of(2024, 9, 15),
-    totalBudget = 1500.0,
-    description = "Exploring famous landmarks and enjoying city life.",
-    imageUrl = "https://example.com/city_exploration.jpg",
-    stops = listOf("city_stop1", "city_stop2"),
-    users = listOf("user6", "user7", "user8"),
-    suggestions = emptyList()
-  )
-  var tripList = listOf(trip1, trip2, trip3)
   var searchText by remember { mutableStateOf("") }
   var active by remember { mutableStateOf(false) }
 
@@ -186,7 +146,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
     }
   ) { innerPadding ->
 
-    if (false /*todoList.filterToDosByTitle(searchText).isEmpty()*/) {
+    if (tripsList.isEmpty()) {
       Text(
         text = "Looks like you have no travel plan yet.",
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
@@ -207,9 +167,14 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
         )
 
         LazyColumn() {
-          items(tripList /*.filterToDosByTitle(searchText)*/) { trip ->
+          items(
+            if(searchText.isEmpty()){
+              tripsList
+            }else{
+              tripsList.filter { trip -> trip.title.lowercase().contains(searchText.lowercase()) }
+            }
+          ) { trip ->
             DisplayTrip(trip = trip, navigationActions)
-
 
           }
         }
