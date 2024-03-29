@@ -2,6 +2,8 @@ package com.github.se.wanderpals.repository
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.google.firebase.FirebaseApp
@@ -18,6 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.time.LocalTime
 
 @RunWith(RobolectricTestRunner::class)
 class TripsRepositoryTest {
@@ -146,6 +149,61 @@ class TripsRepositoryTest {
     }
     println("testAddAndGetAndRemoveAndModifyAndGetAllTrip execution time: $elapsedTime ms")
   }
+
+    @Test
+    fun testAddModifyDeleteGetGetAllStopsInTrips() = runBlocking {
+        val trip =
+            Trip(
+                tripId = "trip123",
+                title = "Summer Vacation",
+                startDate = LocalDate.of(2024, 5, 20), // Assuming format is YYYY, MM, DD
+                endDate = LocalDate.of(2024, 6, 10),
+                totalBudget = 2000.0,
+                description = "Our summer vacation trip to Italy.",
+                imageUrl = "https://example.com/image.png",
+                stops = emptyList(),
+                users = emptyList(),
+                suggestions = emptyList())
+
+        val stop = Stop(
+            stopId = "", // Will be set by addStopToTrip method
+            title = "Colosseum",
+            address = "Piazza del Colosseo, 1, 00184 Roma RM, Italy",
+            date = LocalDate.of(2024, 5, 21),
+            startTime = LocalTime.of(10, 0),
+            duration = 120, // Example: 2 hours in minutes
+            budget = 0.0, // Assume free entry for simplicity
+            description = "Visit the ancient Roman gladiatorial arena.",
+            geoCords = GeoCords(41.8902, 12.4922), // Placeholder coordinates
+            website = "https://example.com/colosseum",
+            imageUrl = "https://example.com/colosseum.png")
+
+        val elapsedTime = measureTimeMillis {
+            try {
+                withTimeout(10000) {
+                    // Add the trip (assuming addTrip method exists and works correctly)
+                    //assertTrue(repository.addTrip(trip))
+
+                    // Add a stop to the trip
+
+                    assertTrue(repository.addStopToTrip("6446f69b-5610-4338-9643-e873d87dadaa", stop))
+                }
+
+                withTimeout(10000) {
+
+                }
+
+                withTimeout(10000) {
+
+                }
+            } catch (e: TimeoutCancellationException) {
+                // If a timeout occurs, fail the test
+                fail("The operation timed out after 10 seconds")
+            }
+        }
+        println("testAddAndGetAndRemoveAndModifyAndGetAllTrip execution time: $elapsedTime ms")
+    }
+
 
   @After
   fun tearDown() = runBlocking {

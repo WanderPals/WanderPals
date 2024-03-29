@@ -2,7 +2,9 @@ package com.github.se.wanderpals.model.repository
 
 import FirestoreTrip
 import android.util.Log
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -57,6 +59,37 @@ class TripsRepository(
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
+
+    suspend fun addStopToTrip(tripId: String,stop: Stop): Boolean = withContext(dispatcher){
+        try {
+            val uniqueID = UUID.randomUUID().toString()
+            val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
+            val stopDocument = tripsCollection.document(tripId).collection(FirebaseCollections.STOPS_SUBCOLLECTION.path).document(uniqueID)
+            stopDocument.set(firebaseStop).await()
+            Log.d("TripsRepository", "addStopToTrip: Stop added successfully to trip $tripId.")
+
+            val trip = getTrip(tripId)
+            if(trip!=null){
+                // Add the new stopId to the trip's stops list and update the trip
+                val updatedStopsList = trip.stops + uniqueID
+                val updatedTrip = trip.copy(stops = updatedStopsList)
+                updateTrip(updatedTrip)
+                Log.d("TripsRepository", "addStopToTrip: Stop ID added to trip successfully.")
+                true
+            }else{
+
+                Log.e("TripsRepository", "addStopToTrip: Trip not found with ID $tripId.")
+                false
+            }
+        }catch (e: Exception){
+            println(e)
+            Log.e("TripsRepository", "addStopToTrip: Error adding stop to trip $tripId.", e)
+            false
+        }
+    }
+
+
+
 
   /**
    * Asynchronously retrieves a trip by its ID from Firestore and converts it to the data model.
@@ -164,6 +197,10 @@ class TripsRepository(
   suspend fun deleteTrip(tripId: String): Boolean =
       withContext(dispatcher) {
         try {
+
+
+
+            //need to also delete all subcollections
           Log.d("TripsRepository", "deleteTrip: Deleting trip")
           removeTripId(tripId) // remove the trip from the user
           tripsCollection.document(tripId).delete().await() // delete a given trip by its tripId
