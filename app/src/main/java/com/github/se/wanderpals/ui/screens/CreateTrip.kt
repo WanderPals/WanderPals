@@ -50,8 +50,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 /**
  * Custom interaction source for date picker.
  *
- * Needed because the OutlinedTextField does not have a click functionality that works
- * while being enabled (so testable)
+ * Needed because the OutlinedTextField does not have a click functionality that works while being
+ * enabled (so testable)
  *
  * @param onClick action to be executed when the date picker is clicked
  */
@@ -79,8 +79,8 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 /**
  * Screen for creating a new trip.
  *
- * The user can input the title, budget, description, start date, and end date of the trip.
- * The dates are selected using a date picker dialog present in another function
+ * The user can input the title, budget, description, start date, and end date of the trip. The
+ * dates are selected using a date picker dialog present in another function
  *
  * @param tripViewModel view model for creating a trip
  * @param nav navigation actions
