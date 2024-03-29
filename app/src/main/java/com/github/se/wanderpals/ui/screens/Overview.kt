@@ -60,7 +60,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun Overview(overviewViewModel: OverviewViewModel, navigationActions: NavigationActions) {
 
-
     val tripsList by overviewViewModel.state.collectAsState()
     val isLoading by overviewViewModel.isLoading.collectAsState()
 
@@ -210,13 +209,25 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
             }
         ) { innerPadding ->
             if (tripsList.isEmpty()) {
-                Text(
-                    text = "Looks like you have no trip yet.",
-                    modifier = Modifier.padding(innerPadding),
-                    style = TextStyle(color = Color.Red)
-                )
+                Box(modifier = Modifier.fillMaxSize()){
+
+                    Text(
+                        modifier = Modifier.align(Alignment.Center).width(260.dp).height(55.dp),
+                        text = "Looks like you have no travel plan yet. ",
+                        style = TextStyle(
+                            fontSize = 18.sp,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight(500),
+                            color = Color(0xFF000000),
+                            textAlign = TextAlign.Center,
+                            letterSpacing = 0.5.sp,
+                        ),
+                    )
+                }
             } else {
-                Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding)) {
                     val filteredTripsByTitle =
                         if (searchText.isEmpty()) {
                             tripsList
@@ -249,8 +260,10 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
                                 lineHeight = 24.sp,
                                 fontWeight = FontWeight(500),
                                 color = Color(0xFF5A7BF0),
+                                textAlign = TextAlign.Center,
                                 letterSpacing = 0.5.sp,
-                            )
+                            ),
+                            textAlign = TextAlign.Center
                         )
                         LazyColumn() {
                             items(

@@ -14,6 +14,7 @@ class OverviewViewModel(val tripsRepository : TripsRepository) : ViewModel() {
 
     private val _state = MutableStateFlow(emptyList<Trip>())
     val state : StateFlow<List<Trip>> = _state
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     init{
