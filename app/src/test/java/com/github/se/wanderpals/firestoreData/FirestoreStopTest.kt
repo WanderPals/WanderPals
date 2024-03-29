@@ -15,7 +15,7 @@ class FirestoreStopTest {
     val stop =
         Stop(
             stopId = "stop1",
-            location = "Los Angeles",
+            title = "Los Angeles",
             address = "123 LA Street",
             time = LocalDate.of(2024, 5, 1),
             budget = 500.0,
@@ -40,7 +40,7 @@ class FirestoreStopTest {
     val firestoreStop =
         FirestoreStop(
             stopId = "stop1",
-            location = "Los Angeles",
+            title = "Los Angeles",
             address = "123 LA Street",
             time = "2024-05-01",
             budget = 500.0,

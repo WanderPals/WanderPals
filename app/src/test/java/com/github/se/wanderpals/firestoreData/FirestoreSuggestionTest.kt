@@ -15,7 +15,7 @@ class FirestoreSuggestionTest {
     val stop =
         Stop(
             stopId = "stop1",
-            location = "Location Name",
+            title = "Location Name",
             address = "123 Main St",
             time = LocalDate.now(), // Using current date for simplicity
             budget = 100.0,
@@ -54,7 +54,7 @@ class FirestoreSuggestionTest {
     val firestoreStop =
         FirestoreStop(
             stopId = "stop1",
-            location = "Location Name",
+            title = "Location Name",
             address = "123 Main St",
             time = LocalDate.now().toString(),
             budget = 100.0,
