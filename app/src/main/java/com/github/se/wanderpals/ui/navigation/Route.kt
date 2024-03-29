@@ -2,6 +2,7 @@ package com.github.se.wanderpals.ui.navigation
 
 /** Object defining the routes in the app. */
 object Route {
+  const val CREATE_TRIP = "create_trip"
   const val NOTIFICATION = "notif"
   const val DASHBOARD = "dashboard"
   const val AGENDA = "agenda"
