@@ -25,9 +25,21 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
+/**
+ * Composable function that represents an overview of a trip.
+ * Displays basic trip information such as title, start date, and end date.
+ *
+ * @param trip The trip object containing trip details.
+ * @param navigationActions The navigation actions used for navigating to detailed trip view.
+ */
 @Composable
 fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
+
+    // Date pattern for formatting start and end dates
+    val DATE_PATTERN = "dd/MM/yyyy"
+
     Box(modifier = Modifier.fillMaxWidth()) {
+        // Button representing the trip overview
         Button(
             onClick = { navigationActions.navigateTo(Route.TRIP + "/${trip.tripId}") },
             modifier = Modifier
@@ -40,9 +52,11 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                 containerColor = Color(0xFFEAEEFD)
             )
         ) {
+            // Column containing trip information
             Column(
                 modifier = Modifier.fillMaxSize(),
             ) {
+                // Trip title
                 Text(
                     text = trip.title,
                     modifier = Modifier
@@ -57,9 +71,10 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                     )
                 )
                 Spacer(modifier = Modifier.height(3.dp))
+                // Start date
                 Text(
                     text = "From : %s".format(
-                        trip.startDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN))
                     ),
                     modifier = Modifier
                         .height(24.dp),
@@ -71,9 +86,10 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                         letterSpacing = 0.5.sp,
                     )
                 )
+                // End date
                 Text(
                     text = "To : %s".format(
-                        trip.endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN))
                     ),
                     modifier = Modifier
                         .height(24.dp),
@@ -85,8 +101,6 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                         letterSpacing = 0.5.sp,
                     )
                 )
-
-
             }
 
         }

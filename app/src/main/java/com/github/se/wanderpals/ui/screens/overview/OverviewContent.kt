@@ -23,6 +23,15 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
+/**
+ * Composable function that represents the content of the overview screen.
+ * Displays a list of trips with optional filtering based on search text.
+ *
+ * @param innerPadding The padding values for the content.
+ * @param navigationActions The navigation actions used for navigating to detailed trip view.
+ * @param tripsList The list of trips to be displayed.
+ * @param searchText The text used for filtering trips by title.
+ */
 @Composable
 fun OverviewContent(
     innerPadding: PaddingValues,
@@ -30,7 +39,7 @@ fun OverviewContent(
     tripsList: List<Trip>,
     searchText: String
 ) {
-
+    // Filter trips by title based on search text
     val filteredTripsByTitle =
         if (searchText.isEmpty()) {
             tripsList
@@ -38,6 +47,7 @@ fun OverviewContent(
             tripsList.filter { trip -> trip.title.lowercase().contains(searchText.lowercase()) }
         }
 
+    // If trips list is empty, display a message
     if (tripsList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
             Text(
@@ -62,8 +72,7 @@ fun OverviewContent(
                 .fillMaxWidth()
                 .padding(innerPadding)
         ) {
-
-
+            // If no matching trips found, display a message
             if (filteredTripsByTitle.isEmpty()) {
                 Text(
                     text = "No trip found.",
@@ -79,6 +88,7 @@ fun OverviewContent(
                     )
                 )
             } else {
+                // Title for the list of trips
                 Text(
                     text = "My trip projects",
                     modifier = Modifier.padding(start = 27.dp, top = 15.dp),
@@ -92,6 +102,7 @@ fun OverviewContent(
                     ),
                     textAlign = TextAlign.Center
                 )
+                // LazyColumn to display the list of trips
                 LazyColumn() {
                     items(
                         filteredTripsByTitle

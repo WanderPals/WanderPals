@@ -53,17 +53,25 @@ import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
 
-
+/**
+ * Composable function that represents the Overview screen, displaying the list of trips of a user.
+ * Provides functionalities such as searching trips by their title, creating a new trip,
+ * and joining a trip.
+ *
+ * @param overviewViewModel The view model containing the data and logic for the overview screen.
+ * @param navigationActions The navigation actions used for navigating to different screens.
+ */
 @Composable
 fun Overview(overviewViewModel: OverviewViewModel, navigationActions: NavigationActions) {
 
+    // Collecting trips list and loading state from view model
     val tripsList by overviewViewModel.state.collectAsState()
     val isLoading by overviewViewModel.isLoading.collectAsState()
 
-    val EMPTY_SEARCH = ""
-    var searchText by remember { mutableStateOf(EMPTY_SEARCH) }
+    // State for managing search text
+    var searchText by remember { mutableStateOf("") }
 
-
+    // Display loading indicator waiting for database to fetch the trips of the user
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
@@ -73,19 +81,23 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
             )
         }
     } else {
+        // Display scaffold with top bar, bottom bar, and content when data is loaded
         Scaffold(
             topBar = {
+                // Top bar with search functionality based on the title of the trips
                 OverviewTopBar(
                     searchText = searchText,
                     onSearchTextChanged = { newSearchText -> searchText = newSearchText }
                 )
             },
             bottomBar = {
+                // Bottom bar containing buttons to create a new trip and join a trip
                 OverviewBottomBar(
                     onCreateTripClick = { navigationActions.navigateTo(Route.CREATE_TRIP) },
                     onLinkClick = {/*TODO do this when starting the link invitation*/ })
             }
         ) {
+            // Content of the overview screen
             innerPadding ->
             OverviewContent(
                 innerPadding = innerPadding,

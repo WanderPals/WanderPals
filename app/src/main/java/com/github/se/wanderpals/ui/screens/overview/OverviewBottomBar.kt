@@ -26,13 +26,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-
+/**
+ * Composable function that represents the bottom bar for the overview screen.
+ * Provides options for joining a trip and creating a new trip.
+ *
+ * @param onCreateTripClick Callback function triggered when the "Create a new trip" button is clicked.
+ * @param onLinkClick Callback function triggered when the "Join a trip" button is clicked.
+ */
 @Composable
 fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
     Column(
         modifier = Modifier.padding(bottom = 30.dp)
     ) {
 
+        // Button to join a trip
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -75,6 +82,8 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                 }
             }
         }
+
+        // Button to create a new trip
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
