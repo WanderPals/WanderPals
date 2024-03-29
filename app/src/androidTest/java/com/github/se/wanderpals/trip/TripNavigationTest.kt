@@ -33,7 +33,7 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun checkViews() = run {
     onComposeScreen<TripScreen>(composeTestRule) {
       bottomNav { assertIsDisplayed() }
-      financeItem { assertIsDisplayed() }
+      suggestionItem { assertIsDisplayed() }
       agendaItem { assertIsDisplayed() }
       dashboardItem { assertIsDisplayed() }
       mapItem { assertIsDisplayed() }
@@ -45,13 +45,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun startingOnDashboard() = run {
     onComposeScreen<TripScreen>(composeTestRule) {
       dashboardItem { assertIsSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -61,16 +61,16 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun goingToFinance() = run {
     onComposeScreen<TripScreen>(composeTestRule) {
-      financeItem { performClick() }
+      suggestionItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsSelected() }
+      suggestionItem { assertIsSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsDisplayed() }
+      suggestionScreen { assertIsDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -83,13 +83,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       agendaItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -102,13 +102,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       mapItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -121,13 +121,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       notificationItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsDisplayed() }
@@ -140,13 +140,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       dashboardItem { performClick() }
 
       dashboardItem { assertIsSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -156,16 +156,16 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun goingToFinanceAndBack() = run {
     onComposeScreen<TripScreen>(composeTestRule) {
-      financeItem { performClick() }
+      suggestionItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsSelected() }
+      suggestionItem { assertIsSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsDisplayed() }
+      suggestionScreen { assertIsDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -175,13 +175,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       dashboardItem { performClick() }
 
       dashboardItem { assertIsSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -194,13 +194,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       agendaItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -210,13 +210,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       dashboardItem { performClick() }
 
       dashboardItem { assertIsSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -229,13 +229,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       mapItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -245,13 +245,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       dashboardItem { performClick() }
 
       dashboardItem { assertIsSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }
@@ -264,13 +264,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       notificationItem { performClick() }
 
       dashboardItem { assertIsNotSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsSelected() }
 
       dashboardScreen { assertIsNotDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsDisplayed() }
@@ -280,13 +280,13 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       dashboardItem { performClick() }
 
       dashboardItem { assertIsSelected() }
-      financeItem { assertIsNotSelected() }
+      suggestionItem { assertIsNotSelected() }
       agendaItem { assertIsNotSelected() }
       mapItem { assertIsNotSelected() }
       notificationItem { assertIsNotSelected() }
 
       dashboardScreen { assertIsDisplayed() }
-      financeScreen { assertIsNotDisplayed() }
+      suggestionScreen { assertIsNotDisplayed() }
       agendaScreen { assertIsNotDisplayed() }
       mapScreen { assertIsNotDisplayed() }
       notificationScreen { assertIsNotDisplayed() }

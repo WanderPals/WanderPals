@@ -1,11 +1,13 @@
 package com.github.se.wanderpals.ui.navigation
 
+import com.github.se.wanderpals.model.data.Suggestion
+
 /** Object defining the routes in the app. */
 object Route {
   const val NOTIFICATION = "notif"
   const val DASHBOARD = "dashboard"
   const val AGENDA = "agenda"
-  const val FINANCE = "finance"
+  const val SUGGESTION = "suggestion"
   const val SIGN_IN = "sign_in"
   const val OVERVIEW = "overview"
   const val TRIP = "trip"
