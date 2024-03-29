@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -116,47 +117,95 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
                 }
             },
             bottomBar = {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
+                Column(
+                    modifier = Modifier.padding(bottom = 30.dp)
                 ) {
-                    Button(
-                        onClick = { navigationActions.navigateTo(Route.CREATE_TRIP) },
-                        modifier = Modifier
-                            .width(360.dp)
-                            .height(80.dp)
-                            .padding(bottom = 20.dp)
-                            .align(Alignment.TopCenter),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFDEE1F9)
-                        )
 
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(
-                                8.dp,
-                                Alignment.CenterHorizontally
-                            ),
-                            verticalAlignment = Alignment.CenterVertically,
+                        Button(
+                            onClick = { /* Actions à exécuter lors du clic */ },
+                            modifier = Modifier
+                                .width(300.dp)
+                                .height(60.dp)
+                                .padding(bottom = 20.dp)
+                                .align(Alignment.TopCenter),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFDEE1F9)
+                            )
+
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = Icons.Default.Add.name,
-                                tint = Color(0xFF000000),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = "Create a New Trip",
-                                style = TextStyle(
-                                    fontSize = 20.sp,
-                                    lineHeight = 20.sp,
-                                    fontWeight = FontWeight(500),
-                                    color = Color(0xFF000000),
-                                    textAlign = TextAlign.Center,
-                                    letterSpacing = 0.5.sp,
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    8.dp,
+                                    Alignment.CenterHorizontally
+                                ),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = Icons.Default.Share.name,
+                                    tint = Color(0xFF000000),
+                                    modifier = Modifier.size(20.dp)
                                 )
-                            )
+                                Text(
+                                    text = "Join a trip",
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        lineHeight = 18.sp,
+                                        fontWeight = FontWeight(500),
+                                        color = Color(0xFF000000),
+                                        textAlign = TextAlign.Center,
+                                        letterSpacing = 0.5.sp,
+                                    )
+                                )
+                            }
                         }
                     }
+                    Box(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = { /* Actions à exécuter lors du clic */ },
+                            modifier = Modifier
+                                .width(300.dp)
+                                .height(60.dp)
+                                .padding(bottom = 20.dp)
+                                .align(Alignment.TopCenter),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFDEE1F9)
+                            )
+
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    8.dp,
+                                    Alignment.CenterHorizontally
+                                ),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = Icons.Default.Add.name,
+                                    tint = Color(0xFF000000),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = "Create a new trip",
+                                    style = TextStyle(
+                                        fontSize = 18.sp,
+                                        lineHeight = 20.sp,
+                                        fontWeight = FontWeight(500),
+                                        color = Color(0xFF000000),
+                                        textAlign = TextAlign.Center,
+                                        letterSpacing = 0.5.sp,
+                                    )
+                                )
+                            }
+                        }
+                    }
+
                 }
             }
         ) { innerPadding ->
