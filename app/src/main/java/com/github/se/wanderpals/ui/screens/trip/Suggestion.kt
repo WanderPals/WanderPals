@@ -5,8 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 
-/** The Dashboard screen. */
+/** The Finance screen. */
 @Composable
-fun Dashboard(tripId: String) {
-  Text(modifier = Modifier.testTag("dashboardScreen"), text = "Dashboard for trip $tripId")
+fun Suggestion(tripId: String) {
+  Text(modifier = Modifier.testTag("suggestionScreen"), text = "Suggestion for trip $tripId")
 }
