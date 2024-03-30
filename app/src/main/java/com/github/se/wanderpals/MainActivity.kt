@@ -75,7 +75,11 @@ class MainActivity : ComponentActivity() {
               SignIn(onClick = { launcher.launch(signInClient.signInIntent) })
             }
             composable(Route.OVERVIEW) { Overview(overviewViewModel = OverviewViewModel(tripsRepository), navigationActions = navigationActions ) }
-            composable(Route.TRIP) { Trip(navigationActions) }
+            composable(Route.TRIP + "/{tripId}") {
+                navBackStackEntry ->
+              val tripId = navBackStackEntry.arguments?.getString("todoUID")
+              // TripId will probbably need to be passed in argument of Trip composable
+              Trip(navigationActions) }
             composable(Route.CREATE_TRIP) {
               //CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
             }
