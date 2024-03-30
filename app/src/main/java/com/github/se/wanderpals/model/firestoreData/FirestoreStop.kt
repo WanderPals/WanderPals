@@ -32,7 +32,7 @@ data class FirestoreStop(
     val duration: Int = 0, // Duration in minutes
     val budget: Double = 0.0,
     val description: String = "",
-    val geoCords: GeoCords, // Assuming GeoCords is Firestore compatible
+    val geoCords: GeoCords = GeoCords(0.0, 0.0), // Assuming GeoCords is Firestore compatible
     val website: String = "",
     val imageUrl: String = ""
 ) {
