@@ -89,7 +89,7 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 @Composable
 fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
   var name by remember { mutableStateOf("") }
-  var budget by remember { mutableStateOf("") }
+  var budget by remember { mutableStateOf("0") }
   var startDate by remember { mutableStateOf("") }
   var endDate by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
@@ -194,32 +194,28 @@ fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
               Button(
                   modifier = Modifier.testTag("tripSave").fillMaxWidth().padding(16.dp),
                   onClick = {
-                    val boolVar =
-                        name.isBlank() ||
-                            description.isBlank() ||
-                            startDate.isBlank() ||
-                            endDate.isBlank()
-                    errorText =
-                        if (boolVar) {
-                          "Input field cannot be empty!"
-                        } else {
-                          ""
-                        }
-                    if (!boolVar) {
+                    val error = validateInputs(name, budget, description, startDate, endDate)
+                    if (error.isNotEmpty()) {
+                      errorText = error
+                    } else {
+
+                      val startDateTrip =
+                          LocalDate.of(
+                              startDate.split("/")[2].toInt(),
+                              startDate.split("/")[1].toInt(),
+                              startDate.split("/")[0].toInt())
+                      val endDateTrip =
+                          LocalDate.of(
+                              endDate.split("/")[2].toInt(),
+                              endDate.split("/")[1].toInt(),
+                              endDate.split("/")[0].toInt())
+
                       val trip =
                           Trip(
                               tripId = "",
                               title = name,
-                              startDate =
-                                  LocalDate.of(
-                                      startDate.split("/")[2].toInt(),
-                                      startDate.split("/")[1].toInt(),
-                                      startDate.split("/")[0].toInt()),
-                              endDate =
-                                  LocalDate.of(
-                                      endDate.split("/")[2].toInt(),
-                                      endDate.split("/")[1].toInt(),
-                                      endDate.split("/")[0].toInt()),
+                              startDate = startDateTrip,
+                              endDate = endDateTrip,
                               totalBudget = budget.toDouble(),
                               description = description,
                               imageUrl = "",
@@ -275,4 +271,80 @@ fun MyDatePickerDialog(onDateSelected: (String) -> Unit, onDismiss: () -> Unit) 
 private fun convertMillisToDate(millis: Long): String {
   val formatter = SimpleDateFormat("dd/MM/yyyy")
   return formatter.format(Date(millis))
+}
+
+/**
+ * Validates the input fields of the trip creation screen and returns an error message if any of
+ * them are empty or the start date is after the end date.
+ *
+ * @param name title of the trip
+ * @param description description of the trip
+ */
+private fun validateInputs(
+    name: String,
+    budget: String,
+    description: String,
+    startDate: String,
+    endDate: String
+): String {
+  val errors = mutableListOf<String>()
+
+  if (name.isBlank()) errors.add("Title")
+  if (description.isBlank()) errors.add("Description")
+  if (startDate.isBlank()) errors.add("Start date")
+  if (endDate.isBlank()) errors.add("End date")
+
+  val startDateParsed =
+      if (startDate.isNotBlank())
+          LocalDate.of(
+              startDate.split("/")[2].toInt(),
+              startDate.split("/")[1].toInt(),
+              startDate.split("/")[0].toInt())
+      else null
+
+  val endDateParsed =
+      if (endDate.isNotBlank())
+          LocalDate.of(
+              endDate.split("/")[2].toInt(),
+              endDate.split("/")[1].toInt(),
+              endDate.split("/")[0].toInt())
+      else null
+
+  var errorText =
+      when {
+        errors.isEmpty() -> ""
+        errors.size == 1 -> "${errors.first()} cannot be empty!"
+        else -> errors.joinToString(separator = ", ", postfix = " cannot be empty!")
+      }
+
+  if (startDateParsed != null && endDateParsed != null && startDateParsed.isAfter(endDateParsed)) {
+    errorText =
+        if (errorText.isNotEmpty()) {
+          "$errorText, start date must be before end date!"
+        } else {
+          "Start date must be before end date!"
+        }
+  }
+
+  // Check that budget can be converted to a double
+  try {
+    budget.toDouble()
+    if (budget.toDouble() < 0) {
+      errorText =
+          if (errorText.isNotEmpty()) {
+            "$errorText and budget must be a positive number!"
+          } else {
+            "Budget must be a positive number!"
+          }
+    }
+  } catch (e: NumberFormatException) {
+    errorText =
+        if (errorText.isNotEmpty()) {
+          "$errorText, budget must be a number!"
+        } else {
+          "Budget must be a number!"
+        }
+  }
+
+  return errorText
 }

@@ -88,6 +88,300 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
         }
 
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("500")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Describe")
+          assertTextContains("Describe the trip")
+
+          performTextClearance()
+          performTextInput("My description")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("05/03/2024")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("10/03/2024")
+        }
+
+        saveButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun saveTripDoesNotWorkWithEmptyDescription() = run {
+    ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
+      step("Open trip screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Title")
+          assertTextContains("Name the trip")
+
+          performTextClearance()
+          performTextInput("My trip")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("500")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Describe")
+          assertTextContains("Describe the trip")
+
+          performTextClearance()
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("05/03/2024")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("10/03/2024")
+        }
+
+        saveButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  fun saveTripDoesNotWorkWithEmptyDates() = run {
+    ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
+      step("Open trip screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Title")
+          assertTextContains("Name the trip")
+
+          performTextClearance()
+          performTextInput("My trip")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("500")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Describe")
+          assertTextContains("Describe the trip")
+
+          performTextClearance()
+          performTextInput("My description")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+        }
+
+        saveButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  fun saveTripDoesNotWorkWithNotLogicalDates() = run {
+    ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
+      step("Open trip screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Title")
+          assertTextContains("Name the trip")
+
+          performTextClearance()
+          performTextInput("My trip")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("500")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Describe")
+          assertTextContains("Describe the trip")
+
+          performTextClearance()
+          performTextInput("My description")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("10/03/2024")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("05/03/2024")
+        }
+
+        saveButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun saveDoesNotWorkWithNegativeBudget() = run {
+    ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
+      step("Open trip screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Title")
+          assertTextContains("Name the trip")
+
+          performTextClearance()
+          performTextInput("My trip")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("-500")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Describe")
+          assertTextContains("Describe the trip")
+
+          performTextClearance()
+          performTextInput("My description")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("05/03/2024")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("dd/mm/yyyy")
+
+          performTextClearance()
+          performTextInput("10/03/2024")
+        }
+
         saveButton {
           assertIsDisplayed()
           performClick()
@@ -119,7 +413,6 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performClick()
 
           assertTextContains("Budget")
-          assertTextContains("Enter the total budget")
 
           performTextClearance()
           performTextInput("500")
