@@ -47,6 +47,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.LocalTime
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -302,7 +303,9 @@ fun CreateSuggestionScreen(
                                     "", // get from title
                                     suggestionText,
                                     address,
-                                    LocalDate.of(0,0,0),
+                                    LocalDate.of(0,0,0), // need to parse
+                                    LocalTime.of(0,0), // need to parse
+                                    0, // need to calculate
                                     budget.toDouble(),
                                     description,
                                     GeoCords(0.0, 0.0), // from address i guess, chatGPT tell me to use Google Maps
