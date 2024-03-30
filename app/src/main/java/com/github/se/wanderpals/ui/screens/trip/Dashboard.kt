@@ -7,6 +7,6 @@ import androidx.compose.ui.platform.testTag
 
 /** The Dashboard screen. */
 @Composable
-fun Dashboard() {
-  Text(modifier = Modifier.testTag("dashboardScreen"), text = "Dashboard")
+fun Dashboard(tripId: String) {
+  Text(modifier = Modifier.testTag("dashboardScreen"), text = "Dashboard for trip $tripId")
 }

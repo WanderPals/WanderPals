@@ -7,6 +7,6 @@ import androidx.compose.ui.platform.testTag
 
 /** The Finance screen. */
 @Composable
-fun Suggestion() {
-  Text(modifier = Modifier.testTag("suggestionScreen"), text = "Suggestion")
+fun Suggestion(tripId: String) {
+  Text(modifier = Modifier.testTag("suggestionScreen"), text = "Suggestion for trip $tripId")
 }

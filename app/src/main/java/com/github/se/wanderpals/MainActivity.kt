@@ -80,11 +80,9 @@ class MainActivity : ComponentActivity() {
                   navigationActions = navigationActions)
             }
             composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
-              val tripId = navBackStackEntry.arguments?.getString("tripId")
-              // TripId will probably need to be passed in argument of Trip composable
-              Trip(navigationActions)
+              val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
+              Trip(navigationActions, tripId)
             }
-            composable(Route.TRIP) { Trip(navigationActions) }
             composable(Route.CREATE_TRIP) {
               CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
             }
