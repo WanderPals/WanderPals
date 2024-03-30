@@ -27,4 +27,3 @@ fun Map() {
         checked = uiSettings.zoomControlsEnabled,
         onCheckedChange = { uiSettings = uiSettings.copy(zoomControlsEnabled = it) })
   }
-}

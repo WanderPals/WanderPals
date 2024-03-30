@@ -6,8 +6,9 @@ object Route {
   const val DASHBOARD = "dashboard"
   const val AGENDA = "agenda"
   const val SUGGESTION = "suggestion"
-  const val SIGN_IN = "sign_in"
+  const val SIGN_IN = "signIn"
   const val OVERVIEW = "overview"
   const val TRIP = "trip"
   const val MAP = "map"
+  const val CREATE_TRIP = "createTrip"
 }
