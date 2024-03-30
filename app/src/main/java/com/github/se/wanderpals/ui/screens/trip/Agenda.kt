@@ -7,6 +7,6 @@ import androidx.compose.ui.platform.testTag
 
 /** The Agenda screen. */
 @Composable
-fun Agenda() {
-  Text(modifier = Modifier.testTag("agendaScreen"), text = "Agenda")
+fun Agenda(tripId: String) {
+  Text(modifier = Modifier.testTag("agendaScreen"), text = "Agenda for trip $tripId")
 }

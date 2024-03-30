@@ -26,7 +26,7 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
 
   @Before
   fun testSetup() {
-    composeTestRule.setContent { Trip(mockNavActions) }
+    composeTestRule.setContent { Trip(mockNavActions, "id") }
   }
 
   @Test

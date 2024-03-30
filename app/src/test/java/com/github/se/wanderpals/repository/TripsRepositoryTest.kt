@@ -2,10 +2,13 @@ package com.github.se.wanderpals.repository
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.google.firebase.FirebaseApp
 import java.time.LocalDate
+import java.time.LocalTime
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
 import kotlin.system.measureTimeMillis
@@ -147,6 +150,90 @@ class TripsRepositoryTest {
     println("testAddAndGetAndRemoveAndModifyAndGetAllTrip execution time: $elapsedTime ms")
   }
 
+  @Test
+  fun testTripLifecycleWithStops() = runBlocking {
+    // Initialize a trip with details for a summer vacation in Italy.
+    val trip =
+        Trip(
+            tripId = "trip123",
+            title = "Summer Vacation",
+            startDate = LocalDate.of(2024, 5, 20),
+            endDate = LocalDate.of(2024, 6, 10),
+            totalBudget = 2000.0,
+            description = "Our summer vacation trip to Italy.",
+            imageUrl = "https://example.com/image.png",
+            stops = emptyList(),
+            users = emptyList(),
+            suggestions = emptyList())
+
+    // Initialize a stop at the Colosseum with detailed information.
+    val colosseumStop =
+        Stop(
+            stopId = "", // ID to be assigned by addStopToTrip method
+            title = "Colosseum",
+            address = "Piazza del Colosseo, 1, 00184 Roma RM, Italy",
+            date = LocalDate.of(2024, 5, 21),
+            startTime = LocalTime.of(10, 0),
+            duration = 120,
+            budget = 0.0,
+            description = "Visit the ancient Roman gladiatorial arena.",
+            geoCords = GeoCords(41.8902, 12.4922),
+            website = "https://example.com/colosseum",
+            imageUrl = "https://example.com/colosseum.png")
+
+    val elapsedTime = measureTimeMillis {
+      try {
+        withTimeout(10000) {
+          // Add the trip and validate the addition.
+          assertTrue(repository.addTrip(trip))
+
+          // Retrieve the trip ID, assuming this is the first and only trip.
+          val tripId = repository.getTripsIds()[0]
+
+          // Add the Colosseum stop to the trip and validate.
+          assertTrue(repository.addStopToTrip(tripId, colosseumStop))
+
+          val fetchedTrip = repository.getTrip(tripId)
+          assertTrue(fetchedTrip != null)
+          if (fetchedTrip != null) {
+            val stopId = fetchedTrip.stops[0]
+
+            // Fetch and validate the stop's details.
+            val fetchedStop = repository.getStopFromTrip(fetchedTrip.tripId, stopId)
+            assertTrue(fetchedStop != null)
+            if (fetchedStop != null) {
+
+              assertTrue(fetchedStop.description == colosseumStop.description)
+
+              // Update the stop's description, validate the update.
+              repository.updateStopInTrip(
+                  fetchedTrip.tripId, fetchedStop.copy(description = "NEW DESCRIPTION"))
+              val updatedStop = repository.getStopFromTrip(fetchedTrip.tripId, stopId)
+              assertTrue(updatedStop != null)
+              if (updatedStop != null) {
+                assertTrue(updatedStop.description == "NEW DESCRIPTION")
+              }
+            }
+
+            // Remove the stop from the trip and validate its removal.
+            assertTrue(
+                "Failed to delete stop from trip.", repository.removeStopFromTrip(tripId, stopId))
+
+            // Ensure the stop list is empty after deletion.
+            val finalStopList = repository.getAllStopsFromTrip(tripId)
+            assertTrue("Stop list should be empty after deletion.", finalStopList.isEmpty())
+
+            assertTrue(repository.deleteTrip(tripId))
+          }
+        }
+      } catch (e: TimeoutCancellationException) {
+        // Handle operation timeout.
+        fail("The operation timed out after 10 seconds")
+      }
+    }
+    println("Execution time for testTripLifecycleWithStops: $elapsedTime ms")
+  }
+
   @After
   fun tearDown() = runBlocking {
     // Attempt to retrieve all trip IDs that might have been added during tests
@@ -160,8 +247,16 @@ class TripsRepositoryTest {
     // Loop through each trip ID and attempt to remove it for cleanup
     tripIds.forEach { tripId ->
       try {
-        repository.deleteTrip(tripId)
-        repository.removeTripId(tripId)
+        val trip = repository.getTrip(tripId)
+        if (trip != null) {
+          val stopIds = trip.stops
+
+          stopIds.forEach { stopId ->
+            repository.removeStopFromTrip(tripId, stopId)
+          } // delete all stops
+          repository.deleteTrip(tripId)
+          repository.removeTripId(tripId)
+        }
       } catch (e: Exception) {
         println("Error cleaning up trip ID: $tripId")
       }
