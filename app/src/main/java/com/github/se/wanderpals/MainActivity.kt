@@ -77,8 +77,8 @@ class MainActivity : ComponentActivity() {
             composable(Route.OVERVIEW) { Overview(overviewViewModel = OverviewViewModel(tripsRepository), navigationActions = navigationActions ) }
             composable(Route.TRIP + "/{tripId}") {
                 navBackStackEntry ->
-              val tripId = navBackStackEntry.arguments?.getString("todoUID")
-              // TripId will probbably need to be passed in argument of Trip composable
+              val tripId = navBackStackEntry.arguments?.getString("tripId")
+              // TripId will probably need to be passed in argument of Trip composable
               Trip(navigationActions) }
             composable(Route.CREATE_TRIP) {
               //CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
