@@ -25,7 +25,7 @@ import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
 
 /** The Trip screen. */
 @Composable
-fun Trip(oldNavActions: NavigationActions) {
+fun Trip(oldNavActions: NavigationActions, tripId: String) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
 
@@ -34,11 +34,11 @@ fun Trip(oldNavActions: NavigationActions) {
       topBar = {},
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
-          composable(Route.DASHBOARD) { Dashboard() }
-          composable(Route.AGENDA) { Agenda() }
-          composable(Route.SUGGESTION) { Suggestion() }
-          composable(Route.MAP) { Map() }
-          composable(Route.NOTIFICATION) { Notification() }
+          composable(Route.DASHBOARD) { Dashboard(tripId) }
+          composable(Route.AGENDA) { Agenda(tripId) }
+          composable(Route.SUGGESTION) { Suggestion(tripId) }
+          composable(Route.MAP) { Map(tripId) }
+          composable(Route.NOTIFICATION) { Notification(tripId) }
         }
       }
 }

@@ -7,6 +7,6 @@ import androidx.compose.ui.platform.testTag
 
 /** The Notification screen. */
 @Composable
-fun Notification() {
-  Text(modifier = Modifier.testTag("notificationScreen"), text = "Notification")
+fun Notification(tripId: String) {
+  Text(modifier = Modifier.testTag("notificationScreen"), text = "Notification with tripId $tripId")
 }

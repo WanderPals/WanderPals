@@ -7,6 +7,6 @@ import androidx.compose.ui.platform.testTag
 
 /** The Map screen. */
 @Composable
-fun Map() {
-  Text(modifier = Modifier.testTag("mapScreen"), text = "Map")
+fun Map(tripId: String) {
+  Text(modifier = Modifier.testTag("mapScreen"), text = "Map screen for tripId $tripId")
 }
