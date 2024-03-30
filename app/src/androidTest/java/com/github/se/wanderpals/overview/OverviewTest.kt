@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.trip
+package com.github.se.wanderpals.overview
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
