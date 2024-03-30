@@ -16,7 +16,7 @@ import com.google.maps.android.compose.MapUiSettings
 
 /** The Map screen. */
 @Composable
-fun Map() {
+fun Map(tripId: String) {
   var uiSettings by remember { mutableStateOf(MapUiSettings()) }
   val properties by remember { mutableStateOf(MapProperties(mapType = MapType.SATELLITE)) }
 
