@@ -28,106 +28,85 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * Composable function that represents the bottom bar for the overview screen.
- * Provides options for joining a trip and creating a new trip.
+ * Composable function that represents the bottom bar for the overview screen. Provides options for
+ * joining a trip and creating a new trip.
  *
- * @param onCreateTripClick Callback function triggered when the "Create a new trip" button is clicked.
+ * @param onCreateTripClick Callback function triggered when the "Create a new trip" button is
+ *   clicked.
  * @param onLinkClick Callback function triggered when the "Join a trip" button is clicked.
  */
 @Composable
 fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
-    Column(
-        modifier = Modifier.padding(bottom = 30.dp)
-    ) {
+  Column(modifier = Modifier.padding(bottom = 30.dp)) {
 
-        // Button to join a trip
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = { onLinkClick() },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(70.dp)
-                    .padding(bottom = 20.dp)
-                    .align(Alignment.TopCenter)
-                    .testTag("joinTripButton"),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFDEE1F9)
-                )
-
+    // Button to join a trip
+    Box(modifier = Modifier.fillMaxWidth()) {
+      Button(
+          onClick = { onLinkClick() },
+          modifier =
+              Modifier.width(300.dp)
+                  .height(70.dp)
+                  .padding(bottom = 20.dp)
+                  .align(Alignment.TopCenter)
+                  .testTag("joinTripButton"),
+          colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(
-                        8.dp,
-                        Alignment.CenterHorizontally
-                    ),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = Icons.Default.Share.name,
-                        tint = Color(0xFF000000),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "Join a trip",
-                        style = TextStyle(
-                            fontSize = 18.sp,
-                            lineHeight = 18.sp,
-                            fontWeight = FontWeight(500),
-                            color = Color(0xFF000000),
-                            textAlign = TextAlign.Center,
-                            letterSpacing = 0.5.sp,
-                        )
-                    )
-                }
+              Icon(
+                  imageVector = Icons.Default.Share,
+                  contentDescription = Icons.Default.Share.name,
+                  tint = Color(0xFF000000),
+                  modifier = Modifier.size(20.dp))
+              Text(
+                  text = "Join a trip",
+                  style =
+                      TextStyle(
+                          fontSize = 18.sp,
+                          lineHeight = 18.sp,
+                          fontWeight = FontWeight(500),
+                          color = Color(0xFF000000),
+                          textAlign = TextAlign.Center,
+                          letterSpacing = 0.5.sp,
+                      ))
             }
-        }
-
-        // Button to create a new trip
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Button(
-                onClick = { onCreateTripClick() },
-                modifier = Modifier
-                    .width(300.dp)
-                    .height(70.dp)
-                    .padding(bottom = 20.dp)
-                    .align(Alignment.TopCenter)
-                    .testTag("createTripButton"),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFDEE1F9)
-                )
-
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(
-                        8.dp,
-                        Alignment.CenterHorizontally
-                    ),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = Icons.Default.Add.name,
-                        tint = Color(0xFF000000),
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Text(
-                        text = "Create a new trip",
-                        style = TextStyle(
-                            fontSize = 18.sp,
-                            lineHeight = 20.sp,
-                            fontWeight = FontWeight(500),
-                            color = Color(0xFF000000),
-                            textAlign = TextAlign.Center,
-                            letterSpacing = 0.5.sp,
-                        )
-                    )
-                }
-            }
-        }
+          }
     }
+
+    // Button to create a new trip
+    Box(modifier = Modifier.fillMaxWidth()) {
+      Button(
+          onClick = { onCreateTripClick() },
+          modifier =
+              Modifier.width(300.dp)
+                  .height(70.dp)
+                  .padding(bottom = 20.dp)
+                  .align(Alignment.TopCenter)
+                  .testTag("createTripButton"),
+          colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Icon(
+                  imageVector = Icons.Default.Add,
+                  contentDescription = Icons.Default.Add.name,
+                  tint = Color(0xFF000000),
+                  modifier = Modifier.size(20.dp))
+              Text(
+                  text = "Create a new trip",
+                  style =
+                      TextStyle(
+                          fontSize = 18.sp,
+                          lineHeight = 20.sp,
+                          fontWeight = FontWeight(500),
+                          color = Color(0xFF000000),
+                          textAlign = TextAlign.Center,
+                          letterSpacing = 0.5.sp,
+                      ))
+            }
+          }
+    }
+  }
 }

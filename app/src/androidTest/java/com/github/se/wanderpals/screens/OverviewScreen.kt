@@ -9,19 +9,18 @@ class OverviewScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         semanticsProvider = semanticsProvider,
         viewBuilderAction = { hasTestTag("overviewScreen") }) {
 
-    val overviewScreen: KNode = onNode { hasTestTag("overviewScreen") }
+  val overviewScreen: KNode = onNode { hasTestTag("overviewScreen") }
 
-    val dockedSearchBar: KNode = onNode { hasTestTag("dockedSearchBar") }
-    val clearSearchButton: KNode = onNode { hasTestTag("clearSearchButton") }
+  val dockedSearchBar: KNode = onNode { hasTestTag("dockedSearchBar") }
+  val clearSearchButton: KNode = onNode { hasTestTag("clearSearchButton") }
 
-    val noTripForUserText: KNode = onNode { hasTestTag("noTripForUserText")}
-    val noTripFoundOnSearchText: KNode = onNode { hasTestTag("noTripFoundOnSearchText")}
+  val noTripForUserText: KNode = onNode { hasTestTag("noTripForUserText") }
+  val noTripFoundOnSearchText: KNode = onNode { hasTestTag("noTripFoundOnSearchText") }
 
-    val buttonTrip1: KNode = onNode { hasTestTag("buttonTrip1")}
-    val buttonTrip2: KNode = onNode { hasTestTag("buttonTrip2")}
-    val buttonTrip3: KNode = onNode { hasTestTag("buttonTrip3")}
+  val buttonTrip1: KNode = onNode { hasTestTag("buttonTrip1") }
+  val buttonTrip2: KNode = onNode { hasTestTag("buttonTrip2") }
+  val buttonTrip3: KNode = onNode { hasTestTag("buttonTrip3") }
 
-
-    val joinTripButton: KNode = onNode { hasTestTag("joinTripButton") }
-    val createTripButton: KNode = onNode { hasTestTag("createTripButton")}
+  val joinTripButton: KNode = onNode { hasTestTag("joinTripButton") }
+  val createTripButton: KNode = onNode { hasTestTag("createTripButton") }
 }

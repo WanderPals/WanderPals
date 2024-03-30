@@ -25,8 +25,8 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
 /**
- * Composable function that represents the content of the overview screen.
- * Displays a list of trips with optional filtering based on search text.
+ * Composable function that represents the content of the overview screen. Displays a list of trips
+ * with optional filtering based on search text.
  *
  * @param innerPadding The padding values for the content.
  * @param navigationActions The navigation actions used for navigating to detailed trip view.
@@ -40,81 +40,75 @@ fun OverviewContent(
     tripsList: List<Trip>,
     searchText: String
 ) {
-    // Filter trips by title based on search text
-    val filteredTripsByTitle =
-        if (searchText.isEmpty()) {
-            tripsList
-        } else {
-            tripsList.filter { trip -> trip.title.lowercase().contains(searchText.lowercase()) }
-        }
+  // Filter trips by title based on search text
+  val filteredTripsByTitle =
+      if (searchText.isEmpty()) {
+        tripsList
+      } else {
+        tripsList.filter { trip -> trip.title.lowercase().contains(searchText.lowercase()) }
+      }
 
-    // If trips list is empty, display a message
-    if (tripsList.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .width(260.dp)
-                    .height(55.dp)
-                    .testTag("noTripForUserText"),
-                text = "Looks like you have no travel plan yet. ",
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    lineHeight = 20.sp,
+  // If trips list is empty, display a message
+  if (tripsList.isEmpty()) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      Text(
+          modifier =
+              Modifier.align(Alignment.Center)
+                  .width(260.dp)
+                  .height(55.dp)
+                  .testTag("noTripForUserText"),
+          text = "Looks like you have no travel plan yet. ",
+          style =
+              TextStyle(
+                  fontSize = 18.sp,
+                  lineHeight = 20.sp,
+                  fontWeight = FontWeight(500),
+                  color = Color(0xFF000000),
+                  textAlign = TextAlign.Center,
+                  letterSpacing = 0.5.sp,
+              ),
+      )
+    }
+  } else {
+    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
+      // If no matching trips found, display a message
+      if (filteredTripsByTitle.isEmpty()) {
+        Text(
+            text = "No trip found.",
+            modifier =
+                Modifier.align(Alignment.CenterHorizontally)
+                    .padding(top = 20.dp)
+                    .testTag("noTripFoundOnSearchText"),
+            style =
+                TextStyle(
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
                     fontWeight = FontWeight(500),
-                    color = Color(0xFF000000),
+                    color = Color.Gray,
+                    letterSpacing = 0.5.sp,
+                ))
+      } else {
+        // Title for the list of trips
+        Text(
+            text = "My trip projects",
+            modifier = Modifier.padding(start = 27.dp, top = 15.dp),
+            style =
+                TextStyle(
+                    fontSize = 20.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight(500),
+                    color = Color(0xFF5A7BF0),
                     textAlign = TextAlign.Center,
                     letterSpacing = 0.5.sp,
                 ),
-            )
+            textAlign = TextAlign.Center)
+        // LazyColumn to display the list of trips
+        LazyColumn() {
+          items(filteredTripsByTitle) { trip ->
+            OverviewTrip(trip = trip, navigationActions = navigationActions)
+          }
         }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(innerPadding)
-        ) {
-            // If no matching trips found, display a message
-            if (filteredTripsByTitle.isEmpty()) {
-                Text(
-                    text = "No trip found.",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(top = 20.dp)
-                        .testTag("noTripFoundOnSearchText"),
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight(500),
-                        color = Color.Gray,
-                        letterSpacing = 0.5.sp,
-                    )
-                )
-            } else {
-                // Title for the list of trips
-                Text(
-                    text = "My trip projects",
-                    modifier = Modifier.padding(start = 27.dp, top = 15.dp),
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight(500),
-                        color = Color(0xFF5A7BF0),
-                        textAlign = TextAlign.Center,
-                        letterSpacing = 0.5.sp,
-                    ),
-                    textAlign = TextAlign.Center
-                )
-                // LazyColumn to display the list of trips
-                LazyColumn() {
-                    items(
-                        filteredTripsByTitle
-                    ) { trip ->
-                        OverviewTrip(trip = trip, navigationActions = navigationActions)
-                    }
-                }
-            }
-
-        }
+      }
     }
+  }
 }
