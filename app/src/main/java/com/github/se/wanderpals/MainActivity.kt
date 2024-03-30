@@ -17,6 +17,8 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
+import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
 import com.github.se.wanderpals.ui.screens.trip.Trip
@@ -82,8 +84,9 @@ class MainActivity : ComponentActivity() {
               // TripId will probably need to be passed in argument of Trip composable
               Trip(navigationActions)
             }
+            composable(Route.TRIP) { Trip(navigationActions) }
             composable(Route.CREATE_TRIP) {
-              // CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
+              CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
             }
           }
         }
