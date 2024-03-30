@@ -60,36 +60,132 @@ class TripsRepository(
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
-    suspend fun addStopToTrip(tripId: String,stop: Stop): Boolean = withContext(dispatcher){
+  suspend fun getStopFromTrip(tripId: String, stopId: String): Stop? =
+      withContext(dispatcher) {
         try {
-            val uniqueID = UUID.randomUUID().toString()
-            val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
-            val stopDocument = tripsCollection.document(tripId).collection(FirebaseCollections.STOPS_SUBCOLLECTION.path).document(uniqueID)
-            stopDocument.set(firebaseStop).await()
-            Log.d("TripsRepository", "addStopToTrip: Stop added successfully to trip $tripId.")
-
-            val trip = getTrip(tripId)
-            if(trip!=null){
-                // Add the new stopId to the trip's stops list and update the trip
-                val updatedStopsList = trip.stops + uniqueID
-                val updatedTrip = trip.copy(stops = updatedStopsList)
-                updateTrip(updatedTrip)
-                Log.d("TripsRepository", "addStopToTrip: Stop ID added to trip successfully.")
-                true
-            }else{
-
-                Log.e("TripsRepository", "addStopToTrip: Trip not found with ID $tripId.")
-                false
-            }
-        }catch (e: Exception){
-            println(e)
-            Log.e("TripsRepository", "addStopToTrip: Error adding stop to trip $tripId.", e)
-            false
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
+                  .document(stopId)
+                  .get()
+                  .await()
+          documentSnapshot.toObject<FirestoreStop>()?.toStop()
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "getStopFromTrip: Error getting a stop $stopId from trip $tripId.",
+              e)
+          null // error
         }
-    }
+      }
 
+  suspend fun getAllStopsFromTrip(tripId: String): List<Stop> =
+      withContext(dispatcher) {
+        try {
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val stopIds = trip.stops
+            stopIds.mapNotNull { stopId -> getStopFromTrip(tripId, stopId) }
+          } else {
+            Log.e("TripsRepository", "getAllStopsFromTrip: Trip not found with ID $tripId.")
+            emptyList()
+          }
+        } catch (e: Exception) {
 
+          Log.e("TripsRepository", "getAllStopsFromTrip: Error fetching stop to trip $tripId.", e)
+          emptyList()
+        }
+      }
 
+  suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
+      withContext(dispatcher) {
+        try {
+          val uniqueID = UUID.randomUUID().toString()
+          val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
+          val stopDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
+                  .document(uniqueID)
+          stopDocument.set(firebaseStop).await()
+          Log.d("TripsRepository", "addStopToTrip: Stop added successfully to trip $tripId.")
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            // Add the new stopId to the trip's stops list and update the trip
+            val updatedStopsList = trip.stops + uniqueID
+            val updatedTrip = trip.copy(stops = updatedStopsList)
+            updateTrip(updatedTrip)
+            Log.d("TripsRepository", "addStopToTrip: Stop ID added to trip successfully.")
+            true
+          } else {
+
+            Log.e("TripsRepository", "addStopToTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "addStopToTrip: Error adding stop to trip $tripId.", e)
+          false
+        }
+      }
+
+  suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d("TripsRepository", "deleteStopFromTrip: Deleting stop $stopId from trip $tripId")
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
+              .document(stopId)
+              .delete()
+              .await()
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val updatedStopsList = trip.stops.filterNot { it == stopId }
+            val updatedTrip = trip.copy(stops = updatedStopsList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "deleteStopFromTrip: Stop $stopId deleted and trip updated successfully.")
+            true
+          } else {
+            Log.e("TripsRepository", "deleteStopFromTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "deleteStopFromTrip: Error deleting stop $stopId from trip $tripId.",
+              e)
+          false
+        }
+      }
+
+  suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d("TripsRepository", "updateStopInTrip: Updating a stop in trip $tripId")
+          val firestoreStop = FirestoreStop.fromStop(stop)
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
+              .document(firestoreStop.stopId)
+              .set(firestoreStop)
+              .await()
+          Log.d(
+              "TripsRepository",
+              "updateStopInTrip: Trip's Stop updated successfully for ID $tripId.")
+          true
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "updateStopInTrip: Error updating stop with ID ${stop.stopId} in trip with ID $tripId",
+              e)
+          false
+        }
+      }
 
   /**
    * Asynchronously retrieves a trip by its ID from Firestore and converts it to the data model.
@@ -119,15 +215,15 @@ class TripsRepository(
    */
   suspend fun getAllTrips(): List<Trip> =
       withContext(dispatcher) {
-        Log.d("TripsRepository", "getAllTrips: Fetching all trips for user $uid.")
-        val tripIds: List<String> = getTripsIds()
-        tripIds.mapNotNull { tripId ->
-          try {
+        try {
+          Log.d("TripsRepository", "getAllTrips: Fetching all trips for user $uid.")
+          val tripIds: List<String> = getTripsIds()
+          tripIds.mapNotNull { tripId ->
             getTrip(tripId) // Utilizes the getTrip method to fetch each trip individually
-          } catch (e: Exception) {
-            Log.e("TripsRepository", "getAllTrips: Failed to fetch all trips", e)
-            null // error
           }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "getAllTrips: Failed to fetch all trips", e)
+          emptyList() // error
         }
       }
 
@@ -143,7 +239,7 @@ class TripsRepository(
           Log.d("TripsRepository", "addTrip: Adding a trip")
 
           // Generate a unique ID for the trip
-          var uniqueID = UUID.randomUUID().toString()
+          val uniqueID = UUID.randomUUID().toString()
 
           val firestoreTrip =
               FirestoreTrip.fromTrip(
@@ -197,10 +293,6 @@ class TripsRepository(
   suspend fun deleteTrip(tripId: String): Boolean =
       withContext(dispatcher) {
         try {
-
-
-
-            //need to also delete all subcollections
           Log.d("TripsRepository", "deleteTrip: Deleting trip")
           removeTripId(tripId) // remove the trip from the user
           tripsCollection.document(tripId).delete().await() // delete a given trip by its tripId
