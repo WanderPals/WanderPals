@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 /**
@@ -40,6 +41,7 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
     Box(modifier = Modifier.padding(start = 13.dp, top = 16.dp)) {
         // DockedSearchBar component
         DockedSearchBar(
+            modifier = Modifier.testTag("dockedSearchBar"),
             query = searchText,
             onQueryChange = { newText -> onSearchTextChanged(newText) },
             onSearch = {},
@@ -55,7 +57,9 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
                         modifier = Modifier.size(24.dp)
                     )
                 } else {
-                    IconButton(onClick = { onSearchTextChanged(EMPTY_SEARCH) }) {
+                    IconButton(
+                        modifier = Modifier.testTag("clearSearchButton"),
+                        onClick = { onSearchTextChanged(EMPTY_SEARCH) }) {
                         Icon(
                             imageVector = Icons.Default.Clear,
                             contentDescription = Icons.Default.Clear.name,

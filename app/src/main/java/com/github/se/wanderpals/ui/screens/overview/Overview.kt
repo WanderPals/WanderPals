@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -54,6 +55,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
     } else {
         // Display scaffold with top bar, bottom bar, and content when data is loaded
         Scaffold(
+            modifier = Modifier.testTag("overviewScreen"),
             topBar = {
                 // Top bar with search functionality based on the title of the trips
                 OverviewTopBar(

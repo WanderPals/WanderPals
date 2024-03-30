@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -54,7 +55,8 @@ fun OverviewContent(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .width(260.dp)
-                    .height(55.dp),
+                    .height(55.dp)
+                    .testTag("noTripForUserText"),
                 text = "Looks like you have no travel plan yet. ",
                 style = TextStyle(
                     fontSize = 18.sp,
@@ -78,7 +80,8 @@ fun OverviewContent(
                     text = "No trip found.",
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(top = 20.dp),
+                        .padding(top = 20.dp)
+                        .testTag("noTripFoundOnSearchText"),
                     style = TextStyle(
                         fontSize = 16.sp,
                         lineHeight = 24.sp,

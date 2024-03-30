@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,7 +47,8 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                 .align(Alignment.TopCenter)
                 .width(360.dp)
                 .height(100.dp)
-                .padding(top = 16.dp),
+                .padding(top = 16.dp)
+                .testTag("buttonTrip"+trip.tripId),
             shape = RoundedCornerShape(size = 15.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFEAEEFD)

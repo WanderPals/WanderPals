@@ -15,15 +15,15 @@ import kotlinx.coroutines.launch
  *
  * @param tripsRepository The repository for accessing trip data.
  */
-class OverviewViewModel(val tripsRepository : TripsRepository) : ViewModel() {
+open class OverviewViewModel(val tripsRepository : TripsRepository) : ViewModel() {
 
     // State flow to hold the list of trips
     private val _state = MutableStateFlow(emptyList<Trip>())
-    val state : StateFlow<List<Trip>> = _state
+    open val state : StateFlow<List<Trip>> = _state
 
     // State flow to track loading state
     private val _isLoading = MutableStateFlow(true)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     init {
         // Fetch all trips when the ViewModel is initialized
@@ -33,7 +33,7 @@ class OverviewViewModel(val tripsRepository : TripsRepository) : ViewModel() {
     /**
      * Fetches all trips from the repository and updates the state flow accordingly.
      */
-    fun getAllTrips() {
+    open fun getAllTrips() {
         viewModelScope.launch {
             // Set loading state to true before fetching data
             _isLoading.value = true
@@ -43,5 +43,4 @@ class OverviewViewModel(val tripsRepository : TripsRepository) : ViewModel() {
             _isLoading.value = false
         }
     }
-
 }
