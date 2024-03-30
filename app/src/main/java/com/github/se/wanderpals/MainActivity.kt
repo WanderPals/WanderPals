@@ -15,11 +15,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.CreateTrip
-import com.github.se.wanderpals.ui.screens.Greeting
 import com.github.se.wanderpals.ui.screens.SignIn
+import com.github.se.wanderpals.ui.screens.overview.Overview
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -73,7 +74,16 @@ class MainActivity : ComponentActivity() {
             composable(Route.SIGN_IN) {
               SignIn(onClick = { launcher.launch(signInClient.signInIntent) })
             }
-            composable(Route.OVERVIEW) { Greeting("Android") }
+            composable(Route.OVERVIEW) {
+              Overview(
+                  overviewViewModel = OverviewViewModel(tripsRepository),
+                  navigationActions = navigationActions)
+            }
+            composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
+              val tripId = navBackStackEntry.arguments?.getString("tripId")
+              // TripId will probably need to be passed in argument of Trip composable
+              Trip(navigationActions)
+            }
             composable(Route.TRIP) { Trip(navigationActions) }
             composable(Route.CREATE_TRIP) {
               CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
