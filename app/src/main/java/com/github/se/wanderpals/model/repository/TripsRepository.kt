@@ -70,7 +70,13 @@ class TripsRepository(
                   .document(stopId)
                   .get()
                   .await()
-          documentSnapshot.toObject<FirestoreStop>()?.toStop()
+          val firestoreStop = documentSnapshot.toObject<FirestoreStop>()
+          if (firestoreStop != null) {
+            firestoreStop.toStop()
+          } else {
+            Log.e("TripsRepository", "getStopFromTrip: Not found stop $stopId from trip $tripId.")
+            null
+          }
         } catch (e: Exception) {
           Log.e(
               "TripsRepository",

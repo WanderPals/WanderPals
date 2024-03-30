@@ -194,18 +194,22 @@ class TripsRepositoryTest {
           assertTrue(repository.addStopToTrip(tripId, colosseumStop))
 
           val fetchedTrip = repository.getTrip(tripId)
+          assertTrue(fetchedTrip != null)
           if (fetchedTrip != null) {
             val stopId = fetchedTrip.stops[0]
 
             // Fetch and validate the stop's details.
             val fetchedStop = repository.getStopFromTrip(fetchedTrip.tripId, stopId)
+            assertTrue(fetchedStop != null)
             if (fetchedStop != null) {
+
               assertTrue(fetchedStop.description == colosseumStop.description)
 
               // Update the stop's description, validate the update.
               repository.updateStopInTrip(
                   fetchedTrip.tripId, fetchedStop.copy(description = "NEW DESCRIPTION"))
               val updatedStop = repository.getStopFromTrip(fetchedTrip.tripId, stopId)
+              assertTrue(updatedStop != null)
               if (updatedStop != null) {
                 assertTrue(updatedStop.description == "NEW DESCRIPTION")
               }
@@ -218,6 +222,8 @@ class TripsRepositoryTest {
             // Ensure the stop list is empty after deletion.
             val finalStopList = repository.getAllStopsFromTrip(tripId)
             assertTrue("Stop list should be empty after deletion.", finalStopList.isEmpty())
+
+            assertTrue(repository.deleteTrip(tripId))
           }
         }
       } catch (e: TimeoutCancellationException) {
