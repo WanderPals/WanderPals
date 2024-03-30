@@ -22,15 +22,9 @@ fun Map() {
 
   Box(Modifier.fillMaxSize()) {
     GoogleMap(
-      modifier = Modifier.matchParentSize(),
-      properties = properties,
-      uiSettings = uiSettings
-    )
+        modifier = Modifier.matchParentSize(), properties = properties, uiSettings = uiSettings)
     Switch(
-      checked = uiSettings.zoomControlsEnabled,
-      onCheckedChange = {
-        uiSettings = uiSettings.copy(zoomControlsEnabled = it)
-      }
-    )
+        checked = uiSettings.zoomControlsEnabled,
+        onCheckedChange = { uiSettings = uiSettings.copy(zoomControlsEnabled = it) })
   }
 }
