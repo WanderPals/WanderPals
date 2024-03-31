@@ -7,6 +7,17 @@ plugins {
     alias(libs.plugins.sonar)
     alias(libs.plugins.googleServices)
     id("jacoco")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+
+}
+secrets {
+    // The plugin defaults to "local.properties"
+    propertiesFileName = "secrets.properties"
+
+    defaultPropertiesFileName = "local.properties"
+
+    ignoreList.add("keyToIgnore") // Ignore the key "keyToIgnore"
+    ignoreList.add("sdk.*")       // Ignore all keys matching the regexp "sdk.*"
 }
 
 android {
@@ -47,6 +58,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
@@ -148,6 +160,8 @@ dependencies {
     implementation(libs.compose.viewmodel)
     // Android Studio Preview support
     implementation(libs.compose.preview)
+    // Integration of the Maps Compose
+    implementation(libs.maps.compose)
     // ---------------     Firebase     -------------
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.firestore)
