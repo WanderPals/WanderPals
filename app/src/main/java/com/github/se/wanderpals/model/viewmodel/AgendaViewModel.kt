@@ -12,12 +12,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AgendaViewModel : ViewModel() {
+open class AgendaViewModel : ViewModel() {
 
   private val dataSource by lazy { CalendarDataSource() }
 
   private val _uiState = MutableStateFlow(CalendarUiState.Init)
-  var uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
+  open var uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
   init {
     viewModelScope.launch {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,17 +47,16 @@ import java.util.Locale
 @Preview(showSystemUi = true)
 @Composable
 fun AgendaPreview() {
-  WanderPalsTheme { Agenda() }
+  WanderPalsTheme { Agenda("") }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Agenda(
-    viewModel: AgendaViewModel = viewModel(),
-) {
+fun Agenda(tripId: String, viewModel: AgendaViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
   Surface(
-      modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+      modifier = Modifier
+          .fillMaxSize()
+          .verticalScroll(rememberScrollState()),
   ) {
     Column(modifier = Modifier.fillMaxSize()) {
       CalendarWidget(
@@ -65,8 +66,9 @@ fun Agenda(
           onPreviousMonthButtonClicked = { prevMonth -> viewModel.toPreviousMonth(prevMonth) },
           onNextMonthButtonClicked = { nextMonth -> viewModel.toNextMonth(nextMonth) },
           onDateClickListener = { date -> viewModel.onDateSelected(date) })
+      Spacer(modifier = Modifier.padding(1.dp))
       HorizontalDivider(
-          modifier = Modifier.padding(horizontal = 16.dp),
+          modifier = Modifier.padding(horizontal = 12.dp),
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
     }
@@ -82,7 +84,9 @@ fun CalendarWidget(
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
-  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+  Column(modifier = Modifier
+      .fillMaxSize()
+      .padding(16.dp)) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -113,7 +117,9 @@ fun Header(
         text = yearMonth.getDisplayName(),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier.weight(1f).align(Alignment.CenterVertically))
+        modifier = Modifier
+            .weight(1f)
+            .align(Alignment.CenterVertically))
     IconButton(onClick = { onNextMonthButtonClicked.invoke(yearMonth.plusMonths(1)) }) {
       Icon(
           imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -129,7 +135,9 @@ fun DayItem(day: String, modifier: Modifier = Modifier) {
         text = day,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.align(Alignment.Center).padding(10.dp))
+        modifier = Modifier
+            .align(Alignment.Center)
+            .padding(10.dp))
   }
 }
 
@@ -160,24 +168,31 @@ fun ContentItem(
     onClickListener: (CalendarUiState.Date) -> Unit,
     modifier: Modifier = Modifier
 ) {
-  Box(
-      modifier =
-          modifier
-              .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
-              .clip(CircleShape) // Clips the Box into a Circle
-              .background(
-                  color =
-                      if (date.isSelected) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                      } else {
-                        Color.Transparent
-                      })
-              .clickable { onClickListener(date) }) {
+    // Define the content description
+    val description = "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
+
+    Box(
+        modifier = modifier
+            .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
+            .clip(CircleShape) // Clips the Box into a Circle
+            .background(
+                color = if (date.isSelected) {
+                    MaterialTheme.colorScheme.secondaryContainer
+                } else {
+                    Color.Transparent
+                }
+            )
+            .clickable { onClickListener(date) }
+            .semantics { contentDescription = description } // Add semantics with contentDescription
+    ) {
         Text(
             text = date.dayOfMonth,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.Center).padding(10.dp))
-      }
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(10.dp)
+        )
+    }
 }
 
 data class CalendarUiState(
@@ -216,7 +231,6 @@ class CalendarDataSource {
 
 object DateUtil {
 
-  @OptIn(ExperimentalStdlibApi::class)
   val daysOfWeek: Array<String>
     get() {
       val daysOfWeek = Array(7) { "" }
