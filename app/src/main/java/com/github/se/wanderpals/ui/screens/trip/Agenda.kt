@@ -258,3 +258,4 @@ fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
 fun YearMonth.getDisplayName(): String {
   return "${month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())} $year"
 }
+
