@@ -51,6 +51,16 @@ fun AgendaPreview() {
   WanderPalsTheme { Agenda("") }
 }
 
+/**
+ * The main entry point Composable for the Agenda screen. It displays a calendar view that allows
+ * users to navigate through months and select dates. This screen is part of the WanderPals
+ * application, focusing on trip planning and scheduling.
+ *
+ * @param tripId The ID of the trip for which the agenda is being displayed. Used to fetch relevant
+ *   data for the trip.
+ * @param viewModel The ViewModel that holds and manages UI-related data for the Agenda screen. It
+ *   defaults to a ViewModel instance provided by the `viewModel()` function.
+ */
 @Composable
 fun Agenda(tripId: String, viewModel: AgendaViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
@@ -71,10 +81,25 @@ fun Agenda(tripId: String, viewModel: AgendaViewModel = viewModel()) {
           modifier = Modifier.padding(horizontal = 12.dp),
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
+      // Implement the daily agenda here
     }
   }
 }
 
+/**
+ * A Composable that lays out the calendar widget, including the header with the current month and
+ * navigation buttons, the day of the week labels, and the grid of dates that users can select.
+ *
+ * @param days An array of strings representing the days of the week.
+ * @param yearMonth The current year and month being displayed.
+ * @param dates A list of `CalendarUiState.Date` objects representing the dates to be displayed in
+ *   the current month.
+ * @param onPreviousMonthButtonClicked A lambda function to be called when the user requests to
+ *   navigate to the previous month.
+ * @param onNextMonthButtonClicked A lambda function to be called when the user requests to navigate
+ *   to the next month.
+ * @param onDateClickListener A lambda function to be called when the user selects a date.
+ */
 @Composable
 fun CalendarWidget(
     days: Array<String>,
@@ -99,6 +124,16 @@ fun CalendarWidget(
   }
 }
 
+/**
+ * Composable function that represents the header of the calendar. It displays the current month and
+ * year and provides buttons to navigate to the previous or next month.
+ *
+ * @param yearMonth The current year and month being displayed.
+ * @param onPreviousMonthButtonClicked A lambda function to be invoked when the previous month
+ *   navigation button is clicked.
+ * @param onNextMonthButtonClicked A lambda function to be invoked when the next month navigation
+ *   button is clicked.
+ */
 @Composable
 fun Header(
     yearMonth: YearMonth,
@@ -124,6 +159,13 @@ fun Header(
   }
 }
 
+/**
+ * Composable function that represents a single day item in the calendar. It displays a label for
+ * the day of the week.
+ *
+ * @param day A string representing the day of the week.
+ * @param modifier A `Modifier` to be applied to this Composable for styling and layout purposes.
+ */
 @Composable
 fun DayItem(day: String, modifier: Modifier = Modifier) {
   Box(modifier = modifier) {
@@ -135,6 +177,13 @@ fun DayItem(day: String, modifier: Modifier = Modifier) {
   }
 }
 
+/**
+ * Composable function that represents the content area of the calendar, arranging the date items in
+ * a grid-like manner.
+ *
+ * @param dates A list of `CalendarUiState.Date` objects to be displayed as date items.
+ * @param onDateClickListener A lambda function to be called when a date item is clicked.
+ */
 @Composable
 fun Content(
     dates: List<CalendarUiState.Date>,
@@ -156,6 +205,14 @@ fun Content(
   }
 }
 
+/**
+ * Composable function that represents a single date item in the calendar. It displays the date and
+ * indicates whether it is selected.
+ *
+ * @param date The `CalendarUiState.Date` object representing the date to be displayed.
+ * @param onClickListener A lambda function to be called when this date item is clicked.
+ * @param modifier A `Modifier` to be applied to this Composable for styling and layout purposes.
+ */
 @Composable
 fun ContentItem(
     date: CalendarUiState.Date,
@@ -190,6 +247,14 @@ fun ContentItem(
       }
 }
 
+/**
+ * Data class representing the UI state of the calendar. It includes the current year and month
+ * being displayed, a list of dates for the month, and an optional selected date.
+ *
+ * @property yearMonth The current year and month being displayed in the calendar.
+ * @property dates A list of `Date` objects representing the dates in the current month.
+ * @property selectedDate An optional `LocalDate` representing the currently selected date, if any.
+ */
 data class CalendarUiState(
     val yearMonth: YearMonth,
     val dates: List<Date>,
@@ -199,6 +264,15 @@ data class CalendarUiState(
     val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
   }
 
+  /**
+   * Data class representing a single date in the calendar. Includes information about the day of
+   * the month, the corresponding year and month, and whether the date is selected.
+   *
+   * @property dayOfMonth The day of the month as a string.
+   * @property yearMonth The year and month to which this date belongs.
+   * @property year The year as a `Year` object.
+   * @property isSelected Boolean indicating whether this date is currently selected.
+   */
   data class Date(
       val dayOfMonth: String,
       val yearMonth: YearMonth,
@@ -206,12 +280,26 @@ data class CalendarUiState(
       val isSelected: Boolean
   ) {
     companion object {
+      // Represents an empty date, used as a placeholder in the calendar grid
       val Empty = Date("", YearMonth.now(), Year.now(), false)
     }
   }
 }
 
+/**
+ * Class responsible for generating the list of dates for a given month. This includes determining
+ * which dates are to be displayed based on the selected date and the current month.
+ */
 class CalendarDataSource {
+
+  /**
+   * Generates a list of `CalendarUiState.Date` objects for a given year and month. This list
+   * includes dates from the specified month, marking the selected date if provided.
+   *
+   * @param yearMonth The year and month for which to generate the date list.
+   * @param selectedDate An optional `LocalDate` representing the currently selected date.
+   * @return A list of `CalendarUiState.Date` objects representing the dates of the specified month.
+   */
   fun getDates(yearMonth: YearMonth, selectedDate: LocalDate?): List<CalendarUiState.Date> {
     return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
       val isSelected = date == selectedDate && date.monthValue == yearMonth.monthValue
@@ -224,8 +312,18 @@ class CalendarDataSource {
   }
 }
 
+/**
+ * A utility object that provides methods related to date operations, such as generating an array of
+ * day labels according to the current locale.
+ */
 object DateUtil {
 
+  /**
+   * Generates an array of day labels (e.g., Sun, Mon, Tue) according to the default locale. These
+   * labels are used to display the days of the week in the calendar header.
+   *
+   * @return An array of strings representing the abbreviated day names in the current locale.
+   */
   val daysOfWeek: Array<String>
     get() {
       val daysOfWeek = Array(7) { "" }
@@ -240,6 +338,14 @@ object DateUtil {
     }
 }
 
+/**
+ * Extension function for `YearMonth` class to get a list of `LocalDate` representing all days in
+ * the current month starting from the first Monday of the month. This function is useful for
+ * arranging the calendar view where weeks start on Monday.
+ *
+ * @return A list of `LocalDate` objects representing each day of the month starting from the first
+ *   Monday, to be used in the calendar grid.
+ */
 fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
   val firstDayOfMonth = LocalDate.of(year, month, 1)
   val firstMondayOfMonth = firstDayOfMonth.with(DayOfWeek.MONDAY)
@@ -250,6 +356,14 @@ fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
       .toList()
 }
 
+/**
+ * Extension function for `YearMonth` to generate a display name string in the format of "Month
+ * Year" (e.g., "March 2024"). This function utilizes the full display name of the month and the
+ * year value of the `YearMonth` instance.
+ *
+ * @return A string representing the full display name of the month and the year (e.g., "March
+ *   2024").
+ */
 fun YearMonth.getDisplayName(): String {
   return "${month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())} $year"
 }
