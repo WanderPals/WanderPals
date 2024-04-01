@@ -55,7 +55,8 @@ fun AgendaPreview() {
 fun Agenda(tripId: String, viewModel: AgendaViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
   Surface(
-      modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("agendaScreen"),
+      modifier =
+          Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("agendaScreen"),
   ) {
     Column(modifier = Modifier.fillMaxSize()) {
       CalendarWidget(
