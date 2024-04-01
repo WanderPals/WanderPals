@@ -54,9 +54,7 @@ fun AgendaPreview() {
 fun Agenda(tripId: String, viewModel: AgendaViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
   Surface(
-      modifier = Modifier
-          .fillMaxSize()
-          .verticalScroll(rememberScrollState()),
+      modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
   ) {
     Column(modifier = Modifier.fillMaxSize()) {
       CalendarWidget(
@@ -84,9 +82,7 @@ fun CalendarWidget(
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
-  Column(modifier = Modifier
-      .fillMaxSize()
-      .padding(16.dp)) {
+  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -117,9 +113,7 @@ fun Header(
         text = yearMonth.getDisplayName(),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier
-            .weight(1f)
-            .align(Alignment.CenterVertically))
+        modifier = Modifier.weight(1f).align(Alignment.CenterVertically))
     IconButton(onClick = { onNextMonthButtonClicked.invoke(yearMonth.plusMonths(1)) }) {
       Icon(
           imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -135,9 +129,7 @@ fun DayItem(day: String, modifier: Modifier = Modifier) {
         text = day,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .align(Alignment.Center)
-            .padding(10.dp))
+        modifier = Modifier.align(Alignment.Center).padding(10.dp))
   }
 }
 
@@ -168,31 +160,32 @@ fun ContentItem(
     onClickListener: (CalendarUiState.Date) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Define the content description
-    val description = "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
+  // Define the content description
+  val description =
+      "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
 
-    Box(
-        modifier = modifier
-            .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
-            .clip(CircleShape) // Clips the Box into a Circle
-            .background(
-                color = if (date.isSelected) {
-                    MaterialTheme.colorScheme.secondaryContainer
-                } else {
-                    Color.Transparent
-                }
-            )
-            .clickable { onClickListener(date) }
-            .semantics { contentDescription = description } // Add semantics with contentDescription
-    ) {
+  Box(
+      modifier =
+          modifier
+              .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
+              .clip(CircleShape) // Clips the Box into a Circle
+              .background(
+                  color =
+                      if (date.isSelected) {
+                        MaterialTheme.colorScheme.secondaryContainer
+                      } else {
+                        Color.Transparent
+                      })
+              .clickable { onClickListener(date) }
+              .semantics {
+                contentDescription = description
+              } // Add semantics with contentDescription
+      ) {
         Text(
             text = date.dayOfMonth,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(10.dp)
-        )
-    }
+            modifier = Modifier.align(Alignment.Center).padding(10.dp))
+      }
 }
 
 data class CalendarUiState(
@@ -258,4 +251,3 @@ fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
 fun YearMonth.getDisplayName(): String {
   return "${month.getDisplayName(java.time.format.TextStyle.FULL, Locale.getDefault())} $year"
 }
-
