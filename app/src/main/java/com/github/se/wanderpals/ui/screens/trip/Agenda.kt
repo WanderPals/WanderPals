@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,7 +55,7 @@ fun AgendaPreview() {
 fun Agenda(tripId: String, viewModel: AgendaViewModel = viewModel()) {
   val uiState by viewModel.uiState.collectAsState()
   Surface(
-      modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()),
+      modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("agendaScreen"),
   ) {
     Column(modifier = Modifier.fillMaxSize()) {
       CalendarWidget(
