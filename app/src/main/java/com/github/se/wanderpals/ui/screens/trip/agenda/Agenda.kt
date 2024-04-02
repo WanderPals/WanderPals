@@ -54,8 +54,8 @@ fun AgendaPreview() {
  * users to navigate through months and select dates. This screen is part of the WanderPals
  * application, focusing on trip planning and scheduling.
  *
- * @param agendaViewModel The ViewModel that holds and manages UI-related data for the Agenda screen. It
- *   defaults to a ViewModel instance provided by the `viewModel()` function.
+ * @param agendaViewModel The ViewModel that holds and manages UI-related data for the Agenda
+ *   screen. It defaults to a ViewModel instance provided by the `viewModel()` function.
  */
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel) {
@@ -69,7 +69,9 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
           days = getDaysOfWeekLabels(),
           yearMonth = uiState.yearMonth,
           dates = uiState.dates,
-          onPreviousMonthButtonClicked = { prevMonth -> agendaViewModel.toPreviousMonth(prevMonth) },
+          onPreviousMonthButtonClicked = { prevMonth ->
+            agendaViewModel.toPreviousMonth(prevMonth)
+          },
           onNextMonthButtonClicked = { nextMonth -> agendaViewModel.toNextMonth(nextMonth) },
           onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
       Spacer(modifier = Modifier.padding(1.dp))

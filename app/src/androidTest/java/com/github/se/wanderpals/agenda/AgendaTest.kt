@@ -32,8 +32,7 @@ class FakeAgendaViewModel(initialYearMonth: YearMonth) : AgendaViewModel("") {
                         year = Year.now(),
                         isSelected = false)
                   },
-              selectedDate = null)
-      )
+              selectedDate = null))
 
   override var uiState: StateFlow<CalendarUiState> = _uiState
 
@@ -68,7 +67,7 @@ class AgendaTest {
     val testYearMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(testYearMonth)
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda( agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
 
     val expectedDisplay = testYearMonth.getDisplayName()
     composeTestRule.onNodeWithText(expectedDisplay).assertExists()
@@ -111,9 +110,7 @@ class AgendaTest {
           // Initial state setup to ensure "15" is present and not selected.
         }
 
-    composeTestRule.setContent {
-      WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) }
-    }
+    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
 
     // Assuming "Date 15, Not Selected" is initially present.
     composeTestRule.onNodeWithContentDescription("Date 15, Not Selected").performClick()
