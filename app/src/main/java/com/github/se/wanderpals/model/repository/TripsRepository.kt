@@ -4,6 +4,7 @@ import FirestoreTrip
 import android.util.Log
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
@@ -60,6 +61,69 @@ class TripsRepository(
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
+    suspend fun getUserFromTrip(tripId: String,userId:String):User? = withContext(dispatcher){
+        try {
+            val documentSnapshot =
+                tripsCollection
+                    .document(tripId)
+                    .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
+                    .document(userId)
+                    .get()
+                    .await()
+            val stop = documentSnapshot.toObject<User>()
+            if(stop != null){
+                stop
+            }else{
+                Log.e("TripsRepository", "getUserFromTrip: Not found user $userId from trip $tripId.")
+                null
+            }
+        }catch (e:Exception){
+            Log.e(
+                "TripsRepository",
+                "getUserFromTrip: Error getting an user $userId from trip $tripId.",
+                e)
+            null // error
+        }
+    }
+    suspend fun getAllUsersFromTrip(tripId: String,userId: String): List<User> = withContext(dispatcher){
+        try {
+            val trip = getTrip(tripId)
+            if (trip != null) {
+                val stopIds = trip.users
+                stopIds.mapNotNull { userId -> getUserFromTrip(tripId, userId) }
+            } else {
+                Log.e("TripsRepository", "getAllUsersFromTrip: Trip not found with ID $tripId.")
+                emptyList()
+            }
+        } catch (e: Exception) {
+            Log.e("TripsRepository", "getAllUsersFromTrip: Error fetching trip to trip $tripId.", e)
+            emptyList()
+        }
+    }
+
+    suspend fun addUserToTrip(tripId: String, user: User):Boolean = withContext(dispatcher){
+        try {
+
+        }catch (e:Exception){
+
+        }
+    }
+
+    suspend fun updateUserInTrip(tripId: String, user: User):Boolean = withContext(dispatcher){
+        try {
+
+        }catch (e:Exception){
+
+        }
+    }
+
+    suspend fun removeUserFromTrip(tripId: String,userId: String):Boolean = withContext(dispatcher){
+        try {
+
+        }catch (e:Exception){
+
+        }
+    }
   suspend fun getStopFromTrip(tripId: String, stopId: String): Stop? =
       withContext(dispatcher) {
         try {
