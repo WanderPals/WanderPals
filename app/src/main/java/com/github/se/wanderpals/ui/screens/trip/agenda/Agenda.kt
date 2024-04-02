@@ -40,8 +40,8 @@ import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.YearMonth
 
-private const val daysInAWeek = 7
-private const val maxRowsCalendar = 6
+private const val DAYS_IN_A_WEEK = 7
+private const val MAX_ROWS_CALENDAR = 6
 
 @Preview(showSystemUi = true)
 @Composable
@@ -189,10 +189,10 @@ fun Content(
 ) {
   Column {
     var index = 0
-    repeat(maxRowsCalendar) {
+    repeat(MAX_ROWS_CALENDAR) {
       if (index >= dates.size) return@repeat
       Row {
-        repeat(daysInAWeek) {
+        repeat(DAYS_IN_A_WEEK) {
           val item = if (index < dates.size) dates[index] else CalendarUiState.Date.Empty
           ContentItem(
               date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f))
