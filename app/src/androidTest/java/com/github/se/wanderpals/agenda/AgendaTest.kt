@@ -6,9 +6,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
-import com.github.se.wanderpals.ui.screens.trip.Agenda
-import com.github.se.wanderpals.ui.screens.trip.CalendarUiState
-import com.github.se.wanderpals.ui.screens.trip.getDisplayName
+import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
+import com.github.se.wanderpals.ui.screens.trip.agenda.getDisplayName
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
 import java.time.Year
@@ -19,7 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-class FakeAgendaViewModel(initialYearMonth: YearMonth) : AgendaViewModel() {
+class FakeAgendaViewModel(initialYearMonth: YearMonth) : AgendaViewModel("") {
   private val _uiState =
       MutableStateFlow(
           CalendarUiState(
@@ -32,7 +32,8 @@ class FakeAgendaViewModel(initialYearMonth: YearMonth) : AgendaViewModel() {
                         year = Year.now(),
                         isSelected = false)
                   },
-              selectedDate = null))
+              selectedDate = null)
+      )
 
   override var uiState: StateFlow<CalendarUiState> = _uiState
 
@@ -67,7 +68,7 @@ class AgendaTest {
     val testYearMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(testYearMonth)
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda("", viewModel = fakeViewModel) } }
+    composeTestRule.setContent { WanderPalsTheme { Agenda( agendaViewModel = fakeViewModel) } }
 
     val expectedDisplay = testYearMonth.getDisplayName()
     composeTestRule.onNodeWithText(expectedDisplay).assertExists()
@@ -78,7 +79,7 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth)
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda("", viewModel = fakeViewModel) } }
+    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
 
     composeTestRule.onNodeWithContentDescription("Next").performClick()
 
@@ -92,7 +93,7 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth)
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda("", viewModel = fakeViewModel) } }
+    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
 
     composeTestRule.onNodeWithContentDescription("Back").performClick()
 
@@ -111,7 +112,7 @@ class AgendaTest {
         }
 
     composeTestRule.setContent {
-      WanderPalsTheme { Agenda(tripId = "", viewModel = fakeViewModel) }
+      WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) }
     }
 
     // Assuming "Date 15, Not Selected" is initially present.

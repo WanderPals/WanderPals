@@ -19,9 +19,11 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
+import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 
 /** The Trip screen. */
 @Composable
@@ -35,7 +37,7 @@ fun Trip(oldNavActions: NavigationActions, tripId: String) {
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
           composable(Route.DASHBOARD) { Dashboard(tripId) }
-          composable(Route.AGENDA) { Agenda(tripId) }
+          composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
           composable(Route.SUGGESTION) { Suggestion(tripId) }
           composable(Route.MAP) { Map(tripId) }
           composable(Route.NOTIFICATION) { Notification(tripId) }

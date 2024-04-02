@@ -2,8 +2,8 @@ package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.se.wanderpals.ui.screens.trip.CalendarDataSource
-import com.github.se.wanderpals.ui.screens.trip.CalendarUiState
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarDataSource
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +12,26 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-open class AgendaViewModel : ViewModel() {
+/**
+ * ViewModel for managing the agenda of a trip, handling UI state and data interactions for a calendar view.
+ *
+ * @property tripId The identifier of the trip for which the agenda is being managed.
+ */
+open class AgendaViewModel(tripId: String) : ViewModel() {
 
+    /**
+     * Lazily initialized data source for calendar data.
+     */
   private val dataSource by lazy { CalendarDataSource() }
 
+    /**
+     * Private mutable state flow for the UI state of the agenda.
+     */
   private val _uiState = MutableStateFlow(CalendarUiState.Init)
+
+    /**
+     * Exposed read-only state flow of the UI state.
+     */
   open var uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
   init {
@@ -27,6 +42,11 @@ open class AgendaViewModel : ViewModel() {
     }
   }
 
+    /**
+     * Handles date selection, toggling its selection status and updating the UI state accordingly.
+     *
+     * @param selectedDate The date selected by the user.
+     */
   fun onDateSelected(selectedDate: CalendarUiState.Date) {
     viewModelScope.launch {
       _uiState.update { currentState ->
@@ -57,6 +77,11 @@ open class AgendaViewModel : ViewModel() {
     }
   }
 
+    /**
+     * Updates the UI state to show the next month's dates.
+     *
+     * @param nextMonth The next month to display.
+     */
   fun toNextMonth(nextMonth: YearMonth) {
     viewModelScope.launch {
       _uiState.update { currentState ->
@@ -67,6 +92,11 @@ open class AgendaViewModel : ViewModel() {
     }
   }
 
+    /**
+     * Updates the UI state to show the previous month's dates.
+     *
+     * @param prevMonth The previous month to display.
+     */
   fun toPreviousMonth(prevMonth: YearMonth) {
     viewModelScope.launch {
       _uiState.update { currentState ->
