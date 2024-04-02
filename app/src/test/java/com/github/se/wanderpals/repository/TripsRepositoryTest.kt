@@ -5,10 +5,12 @@ import androidx.test.core.app.ApplicationProvider
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.google.firebase.FirebaseApp
 import java.time.LocalDate
 import java.time.LocalTime
+import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
 import junit.framework.TestCase.fail
 import kotlin.system.measureTimeMillis
@@ -234,6 +236,82 @@ class TripsRepositoryTest {
     println("Execution time for testTripLifecycleWithStops: $elapsedTime ms")
   }
 
+  @Test
+  fun testTripLifecycleWithUsers() = runBlocking {
+    // Initialize a trip with details for a summer vacation in Italy.
+    val trip =
+        Trip(
+            tripId = "trip123",
+            title = "Summer Vacation",
+            startDate = LocalDate.of(2024, 5, 20),
+            endDate = LocalDate.of(2024, 6, 10),
+            totalBudget = 2000.0,
+            description = "Our summer vacation trip to Italy.",
+            imageUrl = "https://example.com/image.png",
+            stops = emptyList(),
+            users = emptyList(),
+            suggestions = emptyList())
+
+    // Initialize a stop at the Colosseum with detailed information.
+    val user1 =
+        User(
+            userId = "user1234",
+            name = "John Doe",
+            email = "john.doe@example.com",
+            role = "Traveler",
+            permissions = listOf("view", "edit"))
+
+    val elapsedTime = measureTimeMillis {
+      try {
+        withTimeout(10000) {
+          // Add the trip and validate the addition.
+          assertTrue(repository.addTrip(trip))
+
+          // Retrieve the trip ID, assuming this is the first and only trip.
+          val tripId = repository.getTripsIds().first()
+
+          // Add the user1 User to the trip and validate.
+          assertTrue(repository.addUserToTrip(tripId, user1))
+
+          val fetchedTrip = repository.getTrip(tripId)
+          assertTrue(fetchedTrip != null)
+          if (fetchedTrip != null) {
+            val userId = fetchedTrip.users[fetchedTrip.users.indexOf(user1.userId)]
+
+            // Fetch and validate the stop's details.
+            val fetchedUser = repository.getUserFromTrip(fetchedTrip.tripId, userId)
+            assertTrue(fetchedUser != null)
+            if (fetchedUser != null) {
+
+              assertTrue(fetchedUser.email == user1.email)
+
+              // Update the stop's description, validate the update.
+              repository.updateUserInTrip(fetchedTrip.tripId, fetchedUser.copy(name = "Johan"))
+              val updatedUser = repository.getUserFromTrip(fetchedTrip.tripId, userId)
+              assertTrue(updatedUser != null)
+              if (updatedUser != null) {
+                assertTrue(updatedUser.name == "Johan")
+              }
+            }
+
+            // Remove the stop from the trip and validate its removal.
+            // Remove the user from the trip and validate its removal.
+            assertTrue(repository.removeUserFromTrip(tripId, user1.userId))
+
+            // Fetch and ensure the user list does not contain the removed user.
+            val finalUserList = repository.getTrip(tripId)?.users ?: emptyList()
+            assertFalse(finalUserList.contains(user1.userId))
+            assertTrue(repository.deleteTrip(tripId))
+          }
+        }
+      } catch (e: TimeoutCancellationException) {
+        // Handle operation timeout.
+        fail("The operation timed out after 10 seconds")
+      }
+    }
+    println("Execution time for testTripLifecycleWithUsers: $elapsedTime ms")
+  }
+
   @After
   fun tearDown() = runBlocking {
     // Attempt to retrieve all trip IDs that might have been added during tests
@@ -254,6 +332,9 @@ class TripsRepositoryTest {
           stopIds.forEach { stopId ->
             repository.removeStopFromTrip(tripId, stopId)
           } // delete all stops
+
+          val userIds = trip.users
+          userIds.forEach { userId -> repository.removeUserFromTrip(tripId, userId) }
           repository.deleteTrip(tripId)
           repository.removeTripId(tripId)
         }

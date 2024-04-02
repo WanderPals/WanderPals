@@ -2,6 +2,7 @@ package com.github.se.wanderpals.model.data
 
 /**
  * Defines user details within the application, including their roles and permissions.
+ * (Currently all field have a default value for serialization for firebase/ in refactor will most likely add a DTO for this object)
  *
  * @param userId Unique identifier for the user.
  * @param name User's full name for display and identification.
@@ -11,9 +12,9 @@ package com.github.se.wanderpals.model.data
  *   detailed access control.
  */
 data class User(
-    val userId: String,
-    val name: String,
-    val email: String,
-    val role: String,
+    val userId: String = "",
+    val name: String = "",
+    val email: String = "",
+    val role: String = "",
     val permissions: List<String> = emptyList()
 )
