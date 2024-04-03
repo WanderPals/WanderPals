@@ -76,6 +76,8 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
     } else {
 
         if (dialogIsOpen) {
+
+            // Display the Dialog for joining a trip using its code if if the dialog is
             DialogHandler(
                 closeDialogueAction = { dialogIsOpen = false },
                 addTripCodeAction = { tripId -> overviewViewModel.addTrip(tripId) })
@@ -109,16 +111,26 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
     }
 }
 
+/**
+ * Composable function to handle a dialog for inserting a trip code.
+ *
+ * @param closeDialogueAction A lambda function to be called when the dialog is dismissed.
+ * @param addTripCodeAction A lambda function that takes a trip code String as input and returns a
+ * Boolean indicating whether the trip code was successfully added.
+ */
 @Composable
 fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -> Boolean) {
 
-    var tripCode by remember { mutableStateOf("") }
+    val EMPTY_CODE = ""
+    // Mutable state to hold the trip code input and error state
+    var tripCode by remember { mutableStateOf(EMPTY_CODE) }
     var isError by remember { mutableStateOf(false) }
 
+    // Dialog composable
     Dialog(onDismissRequest = {
         closeDialogueAction()
         isError = false
-        tripCode = ""
+        tripCode = EMPTY_CODE
     }) {
         Surface(
             modifier = Modifier.height(200.dp),
@@ -130,6 +142,7 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
+                // Input field for trip code
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = tripCode,
@@ -146,7 +159,7 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
                         )
                     },
                     isError = isError,
-
+                    // Text to display if an error occurs while inputing the trip code
                     supportingText = {
                         if (isError) {
                             Text(
@@ -159,12 +172,14 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.height(10.dp))
+
+                // Button to join with trip code
                 Button(
                     onClick = {
                         val success = addTripCodeAction(tripCode)
                         if (success) {
                             isError = false
-                            tripCode = ""
+                            tripCode = EMPTY_CODE
                             closeDialogueAction()
                         } else {
                             isError = true
