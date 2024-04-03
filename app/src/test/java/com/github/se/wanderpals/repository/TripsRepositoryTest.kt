@@ -45,16 +45,12 @@ class TripsRepositoryTest {
   fun testAddAndGetAndRemoveTripIdFalseIds() = runBlocking {
     val elapsedTime = measureTimeMillis {
       try {
-          val nonExistentTripId = "ImInvalidTripId"
+        val nonExistentTripId = "ImInvalidTripId"
 
         withTimeout(10000) {
-
-
-
-            assertFalse(repository.addTripId(nonExistentTripId))
-            assertFalse(repository.removeTripId(nonExistentTripId))
-            assertTrue(repository.getTripsIds().isEmpty())
-
+          assertFalse(repository.addTripId(nonExistentTripId))
+          assertFalse(repository.removeTripId(nonExistentTripId))
+          assertTrue(repository.getTripsIds().isEmpty())
         }
       } catch (e: TimeoutCancellationException) {
         // If a timeout occurs, fail the test

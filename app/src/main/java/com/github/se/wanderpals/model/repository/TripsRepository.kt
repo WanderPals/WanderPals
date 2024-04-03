@@ -522,114 +522,108 @@ class TripsRepository(
         }
       }
 
-    /**
-     * Checks if the specified trip ID exists in the 'Trips' collection.
-     * This method queries the Firestore database to verify the existence of a document
-     * corresponding to the given trip ID. It ensures that operations related to trip IDs
-     * are conducted with valid identifiers.
-     *
-     * @param tripId The unique identifier of the trip to be validated.
-     * @return Boolean indicating whether the trip ID is valid (true) or not (false).
-     * If the trip ID exists in the database, returns true; otherwise, returns false.
-     * In the event of an exception during the database query, the method also returns false,
-     */
-    private suspend fun isTripIdValid(tripId: String): Boolean = withContext(dispatcher){
+  /**
+   * Checks if the specified trip ID exists in the 'Trips' collection. This method queries the
+   * Firestore database to verify the existence of a document corresponding to the given trip ID. It
+   * ensures that operations related to trip IDs are conducted with valid identifiers.
+   *
+   * @param tripId The unique identifier of the trip to be validated.
+   * @return Boolean indicating whether the trip ID is valid (true) or not (false). If the trip ID
+   *   exists in the database, returns true; otherwise, returns false. In the event of an exception
+   *   during the database query, the method also returns false,
+   */
+  private suspend fun isTripIdValid(tripId: String): Boolean =
+      withContext(dispatcher) {
         try {
-            val document = tripsCollection.document(tripId).get().await()
-            if(document.exists()){
-                Log.d("TripsRepository", "isTripIdValid: tripId $tripId exists.")
-                true
-            }else{
-                Log.d("TripsRepository", "isTripIdValid: tripId $tripId doesn't exist.")
-                false
-            }
-        }catch (e: Exception){
-            Log.e("TripsRepository", "isTripIdValid: Error retrieving trip ID $tripId", e)
+          val document = tripsCollection.document(tripId).get().await()
+          if (document.exists()) {
+            Log.d("TripsRepository", "isTripIdValid: tripId $tripId exists.")
+            true
+          } else {
+            Log.d("TripsRepository", "isTripIdValid: tripId $tripId doesn't exist.")
             false
+          }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "isTripIdValid: Error retrieving trip ID $tripId", e)
+          false
         }
-    }
+      }
 
-    /**
-     * Adds a trip ID to the current user's list of trip IDs in their document within the 'Users'
-     * collection. If the user's document does not already contain a list of trip IDs, or if the
-     * specified trip ID is not already in the list, it adds the trip ID to the list.
-     *
-     * This operation is performed within a Firestore transaction to ensure atomicity and consistency.
-     *
-     * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
-     * @return Boolean indicating the success (true) or failure (false) of the operation.
-     */
-    suspend fun addTripId(tripId: String): Boolean =
-        withContext(dispatcher) {
-            Log.d("TripsRepository", "addTripId: Adding tripId to user")
+  /**
+   * Adds a trip ID to the current user's list of trip IDs in their document within the 'Users'
+   * collection. If the user's document does not already contain a list of trip IDs, or if the
+   * specified trip ID is not already in the list, it adds the trip ID to the list.
+   *
+   * This operation is performed within a Firestore transaction to ensure atomicity and consistency.
+   *
+   * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
+   * @return Boolean indicating the success (true) or failure (false) of the operation.
+   */
+  suspend fun addTripId(tripId: String): Boolean =
+      withContext(dispatcher) {
+        Log.d("TripsRepository", "addTripId: Adding tripId to user")
 
-            if(!isTripIdValid(tripId)){
-                false;
-            }else {
+        if (!isTripIdValid(tripId)) {
+          false
+        } else {
 
-                val userDocumentRef = usersCollection.document(uid)
+          val userDocumentRef = usersCollection.document(uid)
 
-                // Ensure the user's document exists before attempting to modify it.
-                // If the document does not exist, create it with an initial empty list of tripIds.
-                val userDoc = userDocumentRef.get().await()
-                if (!userDoc.exists()) {
-                    // Initialize the document with an empty tripIds list.
-                    userDocumentRef.set(mapOf("tripIds" to listOf<String>())).await()
-                }
+          // Ensure the user's document exists before attempting to modify it.
+          // If the document does not exist, create it with an initial empty list of tripIds.
+          val userDoc = userDocumentRef.get().await()
+          if (!userDoc.exists()) {
+            // Initialize the document with an empty tripIds list.
+            userDocumentRef.set(mapOf("tripIds" to listOf<String>())).await()
+          }
 
+          try {
+            val transactionResult =
+                firestore
+                    .runTransaction { transaction ->
+                      val snapshot = transaction.get(userDocumentRef)
 
-                try {
-                    val transactionResult =
-                        firestore
-                            .runTransaction { transaction ->
-                                val snapshot = transaction.get(userDocumentRef)
+                      // Safely attempt to retrieve and cast the tripIds list from the snapshot.
+                      val existingTripIds: MutableList<String> = mutableListOf()
 
-                                // Safely attempt to retrieve and cast the tripIds list from the snapshot.
-                                val existingTripIds: MutableList<String> = mutableListOf()
+                      val rawTripIds = snapshot["tripIds"]
+                      if (rawTripIds is List<*>) {
+                        // Filter non-null and String values only, safely adding them to
+                        // existingTripIds.
+                        existingTripIds.addAll(rawTripIds.filterIsInstance<String>())
+                      }
 
-                                val rawTripIds = snapshot["tripIds"]
-                                if (rawTripIds is List<*>) {
-                                    // Filter non-null and String values only, safely adding them to
-                                    // existingTripIds.
-                                    existingTripIds.addAll(rawTripIds.filterIsInstance<String>())
-                                }
+                      if (!existingTripIds.contains(tripId)) {
+                        existingTripIds.add(tripId)
+                        transaction.update(userDocumentRef, "tripIds", existingTripIds)
+                        Log.d(
+                            "TripsRepository",
+                            "addTripId: Successfully added trip ID $tripId to user $uid's document.")
+                        true // Indicate success
+                      } else {
+                        Log.d(
+                            "TripsRepository",
+                            "addTripId: Failed trip ID $tripId with user $uid's already exist.")
+                        false
+                      } // No change needed
+                    }
+                    .await()
+            Log.d(
+                "TripsRepository",
+                "addTripId: Successfully added trip ID $tripId to user $uid's document.")
 
-                                if (!existingTripIds.contains(tripId)) {
-                                    existingTripIds.add(tripId)
-                                    transaction.update(userDocumentRef, "tripIds", existingTripIds)
-                                    Log.d(
-                                        "TripsRepository",
-                                        "addTripId: Successfully added trip ID $tripId to user $uid's document."
-                                    )
-                                    true // Indicate success
-                                } else {
-                                    Log.d(
-                                        "TripsRepository",
-                                        "addTripId: Failed trip ID $tripId with user $uid's already exist."
-                                    )
-                                    false
-                                } // No change needed
-                            }
-                            .await()
-                    Log.d(
-                        "TripsRepository",
-                        "addTripId: Successfully added trip ID $tripId to user $uid's document."
-                    )
-
-                    transactionResult
-                } catch (e: Exception) {
-                    Log.e(
-                        "TripsRepository",
-                        "addTripId: Error adding trip ID $tripId to user $uid's document",
-                        e
-                    )
-                    false // On error
-                }
-            }
+            transactionResult
+          } catch (e: Exception) {
+            Log.e(
+                "TripsRepository",
+                "addTripId: Error adding trip ID $tripId to user $uid's document",
+                e)
+            false // On error
+          }
         }
+      }
 
-
-    /**
+  /**
    * remove a trip ID from the current user's list of trip IDs in their document within the 'Users'
    * collection. This operation is performed within a Firestore transaction to ensure atomicity and
    * consistency.
