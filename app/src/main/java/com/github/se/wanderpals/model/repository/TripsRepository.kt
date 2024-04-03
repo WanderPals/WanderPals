@@ -522,6 +522,17 @@ class TripsRepository(
         }
       }
 
+    /**
+     * Checks if the specified trip ID exists in the 'Trips' collection.
+     * This method queries the Firestore database to verify the existence of a document
+     * corresponding to the given trip ID. It ensures that operations related to trip IDs
+     * are conducted with valid identifiers.
+     *
+     * @param tripId The unique identifier of the trip to be validated.
+     * @return Boolean indicating whether the trip ID is valid (true) or not (false).
+     * If the trip ID exists in the database, returns true; otherwise, returns false.
+     * In the event of an exception during the database query, the method also returns false,
+     */
     private suspend fun isTripIdValid(tripId: String): Boolean = withContext(dispatcher){
         try {
             val document = tripsCollection.document(tripId).get().await()
