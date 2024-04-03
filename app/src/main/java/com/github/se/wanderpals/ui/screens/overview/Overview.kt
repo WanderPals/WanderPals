@@ -76,7 +76,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
     } else {
 
         if (dialogIsOpen) {
-            DialogueHandler(
+            DialogHandler(
                 closeDialogueAction = { dialogIsOpen = false },
                 addTripCodeAction = { tripId -> overviewViewModel.addTrip(tripId) })
         }
@@ -110,7 +110,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
 }
 
 @Composable
-fun DialogueHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -> Boolean) {
+fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -> Boolean) {
 
     var tripCode by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
