@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * ViewModel class responsible for managing data and business logic related to the Overview screen.
@@ -24,7 +25,6 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
   // State flow to track loading state
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
   init {
     // Fetch all trips when the ViewModel is initialized
     getAllTrips()
@@ -41,4 +41,20 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
       _isLoading.value = false
     }
   }
+
+  open fun addTrip(tripId : String) : Boolean{
+    var success = false
+    runBlocking {
+      success = tripsRepository.addTripId(tripId)
+      if(success){
+        val newState = _state.value.toMutableList()
+        val newTrip = tripsRepository.getTrip(tripId)!!
+        newState.add(newTrip)
+        _state.value = newState.toList()
+
+      }
+    }
+    return success
+  }
+
 }
