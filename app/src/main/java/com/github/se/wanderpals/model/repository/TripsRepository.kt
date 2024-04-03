@@ -564,62 +564,62 @@ class TripsRepository(
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
 
         if (!isTripIdValid(tripId)) {
-          false
-        } else {
+          Log.d("TripsRepository", "addTripId: isTripIdValid returned false")
+          return@withContext false
+        }
 
-          val userDocumentRef = usersCollection.document(uid)
+        val userDocumentRef = usersCollection.document(uid)
 
-          // Ensure the user's document exists before attempting to modify it.
-          // If the document does not exist, create it with an initial empty list of tripIds.
-          val userDoc = userDocumentRef.get().await()
-          if (!userDoc.exists()) {
-            // Initialize the document with an empty tripIds list.
-            userDocumentRef.set(mapOf("tripIds" to listOf<String>())).await()
-          }
+        // Ensure the user's document exists before attempting to modify it.
+        // If the document does not exist, create it with an initial empty list of tripIds.
+        val userDoc = userDocumentRef.get().await()
+        if (!userDoc.exists()) {
+          // Initialize the document with an empty tripIds list.
+          userDocumentRef.set(mapOf("tripIds" to listOf<String>())).await()
+        }
 
-          try {
-            val transactionResult =
-                firestore
-                    .runTransaction { transaction ->
-                      val snapshot = transaction.get(userDocumentRef)
+        try {
+          val transactionResult =
+              firestore
+                  .runTransaction { transaction ->
+                    val snapshot = transaction.get(userDocumentRef)
 
-                      // Safely attempt to retrieve and cast the tripIds list from the snapshot.
-                      val existingTripIds: MutableList<String> = mutableListOf()
+                    // Safely attempt to retrieve and cast the tripIds list from the snapshot.
+                    val existingTripIds: MutableList<String> = mutableListOf()
 
-                      val rawTripIds = snapshot["tripIds"]
-                      if (rawTripIds is List<*>) {
-                        // Filter non-null and String values only, safely adding them to
-                        // existingTripIds.
-                        existingTripIds.addAll(rawTripIds.filterIsInstance<String>())
-                      }
-
-                      if (!existingTripIds.contains(tripId)) {
-                        existingTripIds.add(tripId)
-                        transaction.update(userDocumentRef, "tripIds", existingTripIds)
-                        Log.d(
-                            "TripsRepository",
-                            "addTripId: Successfully added trip ID $tripId to user $uid's document.")
-                        true // Indicate success
-                      } else {
-                        Log.d(
-                            "TripsRepository",
-                            "addTripId: Failed trip ID $tripId with user $uid's already exist.")
-                        false
-                      } // No change needed
+                    val rawTripIds = snapshot["tripIds"]
+                    if (rawTripIds is List<*>) {
+                      // Filter non-null and String values only, safely adding them to
+                      // existingTripIds.
+                      existingTripIds.addAll(rawTripIds.filterIsInstance<String>())
                     }
-                    .await()
-            Log.d(
-                "TripsRepository",
-                "addTripId: Successfully added trip ID $tripId to user $uid's document.")
 
-            transactionResult
-          } catch (e: Exception) {
-            Log.e(
-                "TripsRepository",
-                "addTripId: Error adding trip ID $tripId to user $uid's document",
-                e)
-            false // On error
-          }
+                    if (!existingTripIds.contains(tripId)) {
+                      existingTripIds.add(tripId)
+                      transaction.update(userDocumentRef, "tripIds", existingTripIds)
+                      Log.d(
+                          "TripsRepository",
+                          "addTripId: Successfully added trip ID $tripId to user $uid's document.")
+                      true // Indicate success
+                    } else {
+                      Log.d(
+                          "TripsRepository",
+                          "addTripId: Failed trip ID $tripId with user $uid's already exist.")
+                      false
+                    } // No change needed
+                  }
+                  .await()
+          Log.d(
+              "TripsRepository",
+              "addTripId: Successfully added trip ID $tripId to user $uid's document.")
+
+          transactionResult
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "addTripId: Error adding trip ID $tripId to user $uid's document",
+              e)
+          false // On error
         }
       }
 
