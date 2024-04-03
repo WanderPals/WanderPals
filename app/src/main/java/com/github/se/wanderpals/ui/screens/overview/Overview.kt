@@ -62,9 +62,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
     var searchText by remember { mutableStateOf("") }
 
     var dialogIsOpen by remember { mutableStateOf(false) }
-    var tripCode by remember { mutableStateOf("") }
 
-    var isError by remember { mutableStateOf(false) }
 
     // Display loading indicator waiting for database to fetch the trips of the user
     if (isLoading) {
@@ -76,6 +74,13 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
             )
         }
     } else {
+
+        if (dialogIsOpen) {
+            DialogueHandler(
+                closeDialogueAction = { dialogIsOpen = false },
+                addTripCodeAction = { tripId -> overviewViewModel.addTrip(tripId) })
+        }
+
         // Display scaffold with top bar, bottom bar, and content when data is loaded
         Scaffold(
             modifier = Modifier.testTag("overviewScreen"),
@@ -101,74 +106,82 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
             )
         }
 
-        if (dialogIsOpen) {
-            Dialog(onDismissRequest = {
-                dialogIsOpen = false
-                isError = false
-                tripCode = ""
-            }) {
-                Surface(
-                    modifier = Modifier.height(200.dp),
-                    color = MaterialTheme.colorScheme.background,
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = tripCode,
-                            onValueChange = { tripCode = it },
-                            label = {
-                                Text(
-                                    text = "Insert trip code here",
-                                    style =
-                                    TextStyle(
-                                        fontSize = 18.sp,
-                                        textAlign = TextAlign.Center,
-                                        letterSpacing = 0.5.sp,
-                                    ),
-                                )
-                            },
-                            isError = isError,
-                            supportingText = {
-                                if (isError) {
-                                    Text(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        text = "Invalid trip code",
-                                        color = MaterialTheme.colorScheme.error
-                                    )
-                                }
-                            },
-                            singleLine = true
+    }
+}
+
+@Composable
+fun DialogueHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -> Boolean) {
+
+    var tripCode by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
+
+    Dialog(onDismissRequest = {
+        closeDialogueAction()
+        isError = false
+        tripCode = ""
+    }) {
+        Surface(
+            modifier = Modifier.height(200.dp),
+            color = MaterialTheme.colorScheme.background,
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = tripCode,
+                    onValueChange = { tripCode = it },
+                    label = {
+                        Text(
+                            text = "Insert trip code here",
+                            style =
+                            TextStyle(
+                                fontSize = 18.sp,
+                                textAlign = TextAlign.Center,
+                                letterSpacing = 0.5.sp,
+                            ),
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Button(
-                            onClick = {
-                                if (overviewViewModel.addTrip(tripCode)) {
-                                    dialogIsOpen = false
-                                    isError = false
-                                    tripCode = ""
-                                } else {
-                                    isError = true
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
+                    },
+                    isError = isError,
+
+                    supportingText = {
+                        if (isError) {
                             Text(
-                                text = "Join",
-                                style =
-                                TextStyle(
-                                    fontSize = 16.sp,
-                                    textAlign = TextAlign.Center,
-                                    letterSpacing = 0.5.sp,
-                                ),
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Invalid trip code",
+                                color = MaterialTheme.colorScheme.error
                             )
                         }
-                    }
+                    },
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Button(
+                    onClick = {
+                        val success = addTripCodeAction(tripCode)
+                        if (success) {
+                            isError = false
+                            tripCode = ""
+                            closeDialogueAction()
+                        } else {
+                            isError = true
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Join",
+                        style =
+                        TextStyle(
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center,
+                            letterSpacing = 0.5.sp,
+                        ),
+                    )
                 }
             }
         }
