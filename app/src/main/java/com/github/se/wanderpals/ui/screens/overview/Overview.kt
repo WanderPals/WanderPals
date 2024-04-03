@@ -133,7 +133,7 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
         tripCode = EMPTY_CODE
     }) {
         Surface(
-            modifier = Modifier.height(200.dp),
+            modifier = Modifier.height(200.dp).testTag("dialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)
         ) {

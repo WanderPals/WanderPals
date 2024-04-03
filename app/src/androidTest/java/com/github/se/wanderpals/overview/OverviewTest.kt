@@ -123,6 +123,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
             joinTripButton { assertIsDisplayed() }
             createTripButton { assertIsDisplayed() }
+
+            dialog{assertIsNotDisplayed()}
         }
     }
 
@@ -146,6 +148,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
             joinTripButton { assertIsDisplayed() }
             createTripButton { assertIsDisplayed() }
+
+            dialog{assertIsNotDisplayed()}
         }
     }
     @Test
@@ -167,6 +171,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
             joinTripButton { assertIsDisplayed() }
             createTripButton { assertIsDisplayed() }
+
+            dialog{assertIsNotDisplayed()}
         }
     }
 
@@ -190,6 +196,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
             joinTripButton { assertIsDisplayed() }
             createTripButton { assertIsDisplayed() }
+
+            dialog{assertIsNotDisplayed()}
         }
     }
 
@@ -212,6 +220,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
             joinTripButton { assertIsDisplayed() }
             createTripButton { assertIsDisplayed() }
+
+            dialog{assertIsNotDisplayed()}
         }
     }
 
@@ -234,6 +244,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
             joinTripButton { assertIsDisplayed() }
             createTripButton { assertIsDisplayed() }
+
+            dialog{assertIsNotDisplayed()}
         }
     }
 
@@ -258,6 +270,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
             joinTripButton { assertIsDisplayed() }
             createTripButton { assertIsDisplayed() }
+
+            dialog{assertIsNotDisplayed()}
         }
     }
 
@@ -270,6 +284,16 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
             }
             verify { mockNavActions.navigateTo(Route.CREATE_TRIP) }
             confirmVerified(mockNavActions)
+        }
+    }
+    @Test
+    fun joinTripButtonDisplayTheDialog() = run {
+        ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+            joinTripButton {
+                assertIsDisplayed()
+                performClick()
+            }
+            dialog{assertIsDisplayed()}
         }
     }
 
