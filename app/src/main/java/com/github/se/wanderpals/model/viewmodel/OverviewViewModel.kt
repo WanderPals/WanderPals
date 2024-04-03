@@ -25,6 +25,7 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
   // State flow to track loading state
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
   init {
     // Fetch all trips when the ViewModel is initialized
     getAllTrips()
@@ -48,20 +49,18 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
    * @param tripId The ID of the trip to join.
    * @return True if the user successfully joins the trip, false otherwise.
    */
-  open fun joinTrip(tripId : String) : Boolean{
+  open fun joinTrip(tripId: String): Boolean {
     var success = false
     runBlocking {
       success = tripsRepository.addTripId(tripId)
-      if(success){
+      if (success) {
         // update the state of the user by adding the new trip in its list of trips
         val newState = _state.value.toMutableList()
         val newTrip = tripsRepository.getTrip(tripId)!!
         newState.add(newTrip)
         _state.value = newState.toList()
-
       }
     }
     return success
   }
-
 }
