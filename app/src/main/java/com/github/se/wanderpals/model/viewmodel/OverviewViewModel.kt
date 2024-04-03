@@ -41,12 +41,19 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
       _isLoading.value = false
     }
   }
-
-  open fun addTrip(tripId : String) : Boolean{
+  /**
+   * Adds the user to a trip with the specified trip ID. The trip must already exist in the database
+   * to make this function success.
+   *
+   * @param tripId The ID of the trip to join.
+   * @return True if the user successfully joins the trip, false otherwise.
+   */
+  open fun joinTrip(tripId : String) : Boolean{
     var success = false
     runBlocking {
       success = tripsRepository.addTripId(tripId)
       if(success){
+        // update the state of the user by adding the new trip in its list of trips
         val newState = _state.value.toMutableList()
         val newTrip = tripsRepository.getTrip(tripId)!!
         newState.add(newTrip)

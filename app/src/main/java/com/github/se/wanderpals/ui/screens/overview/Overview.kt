@@ -80,7 +80,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
             // Display the Dialog for joining a trip using its code if if the dialog is
             DialogHandler(
                 closeDialogueAction = { dialogIsOpen = false },
-                addTripCodeAction = { tripId -> overviewViewModel.addTrip(tripId) })
+                addTripCodeAction = { tripId -> overviewViewModel.joinTrip(tripId) })
         }
 
         // Display scaffold with top bar, bottom bar, and content when data is loaded
