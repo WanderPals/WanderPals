@@ -99,13 +99,12 @@ class TripsRepository(
    * Retrieves all users associated with a specific trip. It iterates over all user IDs stored
    * within a trip document and fetches their corresponding user objects.
    *
-   * @param tripId The unique identifier of the trip.
-   * @param userId The unique identifier of the user making the request. (Note: This parameter
-   *   appears unused and may be a mistake in the method signature.)
+   * @param tripId The unique identifier of the trip. appears unused and may be a mistake in the
+   *   method signature.)
    * @return A list of `User` objects. Returns an empty list if the trip is not found or in case of
    *   an error.
    */
-  suspend fun getAllUsersFromTrip(tripId: String, userId: String): List<User> =
+  suspend fun getAllUsersFromTrip(tripId: String): List<User> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)

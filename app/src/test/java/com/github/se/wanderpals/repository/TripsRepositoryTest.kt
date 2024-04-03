@@ -280,6 +280,9 @@ class TripsRepositoryTest {
 
             // Fetch and validate the stop's details.
             val fetchedUser = repository.getUserFromTrip(fetchedTrip.tripId, userId)
+
+            val fetchedUsers = repository.getAllUsersFromTrip(fetchedTrip.tripId)
+            assertTrue(fetchedUsers.isNotEmpty())
             assertTrue(fetchedUser != null)
             if (fetchedUser != null) {
 
