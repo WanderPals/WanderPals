@@ -523,6 +523,33 @@ class TripsRepository(
       }
 
   /**
+   * Checks if the specified trip ID exists in the 'Trips' collection. This method queries the
+   * Firestore database to verify the existence of a document corresponding to the given trip ID. It
+   * ensures that operations related to trip IDs are conducted with valid identifiers.
+   *
+   * @param tripId The unique identifier of the trip to be validated.
+   * @return Boolean indicating whether the trip ID is valid (true) or not (false). If the trip ID
+   *   exists in the database, returns true; otherwise, returns false. In the event of an exception
+   *   during the database query, the method also returns false,
+   */
+  private suspend fun isTripIdValid(tripId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          val document = tripsCollection.document(tripId).get().await()
+          if (document.exists()) {
+            Log.d("TripsRepository", "isTripIdValid: tripId $tripId exists.")
+            true
+          } else {
+            Log.d("TripsRepository", "isTripIdValid: tripId $tripId doesn't exist.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "isTripIdValid: Error retrieving trip ID $tripId", e)
+          false
+        }
+      }
+
+  /**
    * Adds a trip ID to the current user's list of trip IDs in their document within the 'Users'
    * collection. If the user's document does not already contain a list of trip IDs, or if the
    * specified trip ID is not already in the list, it adds the trip ID to the list.
@@ -535,6 +562,11 @@ class TripsRepository(
   suspend fun addTripId(tripId: String): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
+
+        if (!isTripIdValid(tripId)) {
+          Log.d("TripsRepository", "addTripId: isTripIdValid returned false")
+          return@withContext false
+        }
 
         val userDocumentRef = usersCollection.document(uid)
 
