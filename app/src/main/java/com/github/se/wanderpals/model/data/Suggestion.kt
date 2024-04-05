@@ -28,5 +28,6 @@ data class Suggestion(
     val text: String,
     val createdAt: LocalDate,
     val stop: Stop, // Embed the Stop object directly
-    val comments: List<Comment> = emptyList()
+    val comments: List<Comment> = emptyList(),
+    val userLikes: List<String> = emptyList()
 )

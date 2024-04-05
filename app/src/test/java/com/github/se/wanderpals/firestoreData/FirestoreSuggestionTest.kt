@@ -46,7 +46,8 @@ class FirestoreSuggestionTest {
             text = "Suggestion text",
             createdAt = LocalDate.now(), // Using current date for simplicity
             stop = stop,
-            comments = comments)
+            comments = comments,
+            userLikes = emptyList())
 
     val firestoreSuggestion = FirestoreSuggestion.fromSuggestion(suggestion)
     assertEquals("suggestion1", firestoreSuggestion.suggestionId)
@@ -90,7 +91,8 @@ class FirestoreSuggestionTest {
             text = "Suggestion text",
             createdAt = LocalDate.now().toString(),
             stop = firestoreStop,
-            comments = firestoreComments)
+            comments = firestoreComments,
+            userLikes = emptyList())
 
     val suggestion = firestoreSuggestion.toSuggestion()
     assertEquals("suggestion1", suggestion.suggestionId)

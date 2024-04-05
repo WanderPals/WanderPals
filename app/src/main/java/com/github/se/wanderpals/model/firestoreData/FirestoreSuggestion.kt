@@ -24,7 +24,9 @@ data class FirestoreSuggestion(
     val text: String = "",
     val createdAt: String = "", // Converted to String for Firestore compatibility
     val stop: FirestoreStop = FirestoreStop(), // Using Firestore-compatible Stop object
-    val comments: List<FirestoreComment> = emptyList() // Using Firestore-compatible Comment objects
+    val comments: List<FirestoreComment> =
+        emptyList(), // Using Firestore-compatible Comment objects
+    val userLikes: List<String> = emptyList()
 ) {
   companion object {
     /**
@@ -46,8 +48,8 @@ data class FirestoreSuggestion(
           comments =
               suggestion.comments.map {
                 FirestoreComment.fromComment(it)
-              } // Convert each Comment to FirestoreComment
-          )
+              }, // Convert each Comment to FirestoreComment
+          userLikes = suggestion.userLikes)
     }
   }
 
@@ -66,7 +68,7 @@ data class FirestoreSuggestion(
         text = text,
         createdAt = LocalDate.parse(createdAt, formatter), // Parse date string back into LocalDate
         stop = stop.toStop(), // Convert FirestoreStop back to Stop
-        comments = comments.map { it.toComment() } // Convert each FirestoreComment back to Comment
-        )
+        comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
+        userLikes = userLikes)
   }
 }
