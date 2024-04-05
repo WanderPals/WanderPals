@@ -23,7 +23,7 @@ data class FirestoreSuggestion(
     val userName: String = "",
     val text: String = "",
     val createdAt: String = "", // Converted to String for Firestore compatibility
-    val stop: FirestoreStop, // Using Firestore-compatible Stop object
+    val stop: FirestoreStop = FirestoreStop(), // Using Firestore-compatible Stop object
     val comments: List<FirestoreComment> = emptyList() // Using Firestore-compatible Comment objects
 ) {
   companion object {
