@@ -63,6 +63,18 @@ class TripsRepository(
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
+    /**
+     * Retrieves a specific suggestion from a trip based on the suggestion's unique identifier.
+     * This method queries a subcollection within a trip document to retrieve a suggestion object
+     * based on the provided `suggestionId`.
+     *
+     * @param tripId The unique identifier of the trip.
+     * @param suggestionId The unique identifier of the suggestion.
+     * @return A `Suggestion` object if found, `null` otherwise. The method logs an error and returns
+     *         `null` if the suggestion is not found or if an error occurs during the Firestore query.
+     */
+
+
     suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Suggestion? =
         withContext(dispatcher) {
             try {
@@ -89,6 +101,13 @@ class TripsRepository(
             }
         }
 
+    /**
+     * Retrieves all suggestions associated with a specific trip. It iterates over all suggestion IDs
+     * stored within a trip document and fetches their corresponding suggestion objects.
+     * @param tripId The unique identifier of the trip.
+     * @return A list of `Suggestion` objects. Returns an empty list if the trip is not found, if there
+     *         are no suggestions associated with the trip, or in case of an error during data retrieval.
+     */
     suspend fun getAllSuggestionsFromTrip(tripId: String): List<Suggestion> =
         withContext(dispatcher) {
             try {
@@ -106,6 +125,18 @@ class TripsRepository(
                 emptyList()
             }
         }
+
+    /**
+     * Adds a new suggestion to a specified trip. This involves creating a unique identifier for the
+     * suggestion, converting the suggestion to a Firestore-compatible format, and updating the
+     * trip's document to include the new suggestion.
+     * If successful, the method also updates the trip document to include the newly added suggestion's
+     * ID in the list of suggestions.
+     * @param tripId The unique identifier of the trip to which the suggestion is being added.
+     * @param suggestion The `Suggestion` object to be added to the trip.
+     * @return `true` if the suggestion was added successfully, `false` otherwise. Errors during the
+     *         process are logged.
+     */
 
     suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
         withContext(dispatcher) {
@@ -139,6 +170,16 @@ class TripsRepository(
             }
         }
 
+    /**
+     * Removes a specific suggestion from a trip. This method deletes the suggestion document from
+     * the Firestore subcollection and updates the trip document to remove the suggestion's ID from
+     * the list of associated suggestions.
+     *
+     * @param tripId The unique identifier of the trip from which the suggestion is being removed.
+     * @param suggestionId The unique identifier of the suggestion to remove.
+     * @return `true` if the suggestion was successfully deleted and the trip updated, `false`
+     *         otherwise. Errors during the process are logged.
+     */
     suspend fun deleteSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
         withContext(dispatcher) {
             try {
@@ -172,25 +213,37 @@ class TripsRepository(
             }
         }
 
-    suspend fun updateSuggestionInTrip(tripId: String, stop: Stop): Boolean =
+    /**
+     * Updates an existing suggestion within a trip. This method replaces the suggestion document in
+     * the Firestore subcollection with the updated suggestion details.
+     *
+     * It is important that the `suggestionId` within the `Suggestion` object matches the ID of the
+     * suggestion being updated to ensure the correct document is replaced.
+     *
+     * @param tripId The unique identifier of the trip containing the suggestion.
+     * @param suggestion The updated `Suggestion` object.
+     * @return `true` if the suggestion was successfully updated, `false` otherwise. Errors during
+     *         the update process are logged.
+     */
+    suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
         withContext(dispatcher) {
             try {
-                Log.d("TripsRepository", "updateStopInTrip: Updating a stop in trip $tripId")
-                val firestoreStop = FirestoreStop.fromStop(stop)
+                Log.d("TripsRepository", "updateSuggestionInTrip: Updating a Suggestion in trip $tripId")
+                val firestoreSuggestion = FirestoreSuggestion.fromSuggestion(suggestion)
                 tripsCollection
                     .document(tripId)
-                    .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
-                    .document(firestoreStop.stopId)
-                    .set(firestoreStop)
+                    .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+                    .document(firestoreSuggestion.suggestionId)
+                    .set(firestoreSuggestion)
                     .await()
                 Log.d(
                     "TripsRepository",
-                    "updateStopInTrip: Trip's Stop updated successfully for ID $tripId.")
+                    "updateSuggestionInTrip: Trip's Suggestion updated successfully for ID $tripId.")
                 true
             } catch (e: Exception) {
                 Log.e(
                     "TripsRepository",
-                    "updateStopInTrip: Error updating stop with ID ${stop.stopId} in trip with ID $tripId",
+                    "updateSuggestionInTrip: Error updating stop with ID ${suggestion.suggestionId} in trip with ID $tripId",
                     e)
                 false
             }
