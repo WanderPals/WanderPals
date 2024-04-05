@@ -364,7 +364,8 @@ class TripsRepositoryTest {
                         userId = "user456",
                         userName = "Bob",
                         text = "Great idea! It's a must-see.",
-                        createdAt = LocalDate.now())))
+                        createdAt = LocalDate.now())),
+            userLikes = emptyList())
 
     val elapsedTime = measureTimeMillis {
       try {
