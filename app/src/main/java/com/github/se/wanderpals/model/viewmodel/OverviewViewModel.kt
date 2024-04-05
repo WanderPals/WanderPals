@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /**
  * ViewModel class responsible for managing data and business logic related to the Overview screen.
@@ -40,5 +41,26 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
       // Set loading state to false after data is fetched
       _isLoading.value = false
     }
+  }
+  /**
+   * Adds the user to a trip with the specified trip ID. The trip must already exist in the database
+   * to make this function success.
+   *
+   * @param tripId The ID of the trip to join.
+   * @return True if the user successfully joins the trip, false otherwise.
+   */
+  open fun joinTrip(tripId: String): Boolean {
+    var success = false
+    runBlocking {
+      success = tripsRepository.addTripId(tripId)
+      if (success) {
+        // update the state of the user by adding the new trip in its list of trips
+        val newState = _state.value.toMutableList()
+        val newTrip = tripsRepository.getTrip(tripId)!!
+        newState.add(newTrip)
+        _state.value = newState.toList()
+      }
+    }
+    return success
   }
 }
