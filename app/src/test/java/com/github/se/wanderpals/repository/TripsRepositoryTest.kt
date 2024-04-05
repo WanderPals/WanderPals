@@ -10,9 +10,10 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.google.firebase.FirebaseApp
-import junit.framework.TestCase.assertEquals
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.UUID
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNotNull
 import junit.framework.TestCase.assertTrue
@@ -27,7 +28,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 class TripsRepositoryTest {
@@ -316,10 +316,11 @@ class TripsRepositoryTest {
     println("Execution time for testTripLifecycleWithUsers: $elapsedTime ms")
   }
 
-    @Test
-    fun testTripLifecycleWithSuggestions() = runBlocking {
-        // Initialize a trip with details for a summer vacation in Italy.
-        val trip = Trip(
+  @Test
+  fun testTripLifecycleWithSuggestions() = runBlocking {
+    // Initialize a trip with details for a summer vacation in Italy.
+    val trip =
+        Trip(
             tripId = "trip123",
             title = "Summer Vacation",
             startDate = LocalDate.of(2024, 5, 20),
@@ -329,11 +330,11 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList()
-        )
+            suggestions = emptyList())
 
-        // Initialize a stop within the suggestion for the trip.
-        val stop = Stop(
+    // Initialize a stop within the suggestion for the trip.
+    val stop =
+        Stop(
             stopId = UUID.randomUUID().toString(),
             title = "The Colosseum",
             address = "Piazza del Colosseo, 1, 00184 Roma RM, Italy",
@@ -344,80 +345,86 @@ class TripsRepositoryTest {
             description = "Visit the iconic Roman Colosseum and learn about its history.",
             geoCords = GeoCords(latitude = 41.8902, longitude = 12.4922),
             website = "http://www.the-colosseum.net/",
-            imageUrl = "https://example.com/colosseum.png"
-        )
+            imageUrl = "https://example.com/colosseum.png")
 
-        // Initialize a suggestion for the trip including the stop.
-        val suggestion1 = Suggestion(
+    // Initialize a suggestion for the trip including the stop.
+    val suggestion1 =
+        Suggestion(
             suggestionId = "",
             userId = "user123",
             userName = "Alice",
-            text = "Suggesting a visit to the Colosseum, one of the greatest architectural achievements in Rome.",
+            text =
+                "Suggesting a visit to the Colosseum, one of the greatest architectural achievements in Rome.",
             createdAt = LocalDate.now(),
             stop = stop, // Embed the Stop object directly within the suggestion.
-            comments = listOf(
-                Comment(
-                    commentId = "comment123",
-                    userId = "user456",
-                    userName = "Bob",
-                    text = "Great idea! It's a must-see.",
-                    createdAt = LocalDate.now()
-                )
-            )
-        )
+            comments =
+                listOf(
+                    Comment(
+                        commentId = "comment123",
+                        userId = "user456",
+                        userName = "Bob",
+                        text = "Great idea! It's a must-see.",
+                        createdAt = LocalDate.now())))
 
-        val elapsedTime = measureTimeMillis {
-            try {
-                withTimeout(10000) {
-                    // Add the trip and validate the addition.
-                    assertTrue(repository.addTrip(trip))
+    val elapsedTime = measureTimeMillis {
+      try {
+        withTimeout(10000) {
+          // Add the trip and validate the addition.
+          assertTrue(repository.addTrip(trip))
 
-                    var fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
-                    // Add the suggestion to the trip and validate.
-                    assertTrue(repository.addSuggestionToTrip(tripId = fetchedTrip.tripId, suggestion1))
+          var fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
+          // Add the suggestion to the trip and validate.
+          assertTrue(repository.addSuggestionToTrip(tripId = fetchedTrip.tripId, suggestion1))
 
-                    // Validate that the suggestion was added successfully.
-                    val suggestions = repository.getAllSuggestionsFromTrip(fetchedTrip.tripId)
+          // Validate that the suggestion was added successfully.
+          val suggestions = repository.getAllSuggestionsFromTrip(fetchedTrip.tripId)
 
-                    assertTrue(suggestions.isNotEmpty())
+          assertTrue(suggestions.isNotEmpty())
 
-                    // Fetch and validate the added suggestion.
-                    fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
+          // Fetch and validate the added suggestion.
+          fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
 
-                    val fetchedSuggestion = repository.getSuggestionFromTrip(fetchedTrip.tripId, fetchedTrip.suggestions.first())
-                    assertNotNull(fetchedSuggestion)
-                    assertEquals("Suggesting a visit to the Colosseum, one of the greatest architectural achievements in Rome.", fetchedSuggestion?.text)
+          val fetchedSuggestion =
+              repository.getSuggestionFromTrip(fetchedTrip.tripId, fetchedTrip.suggestions.first())
+          assertNotNull(fetchedSuggestion)
+          assertEquals(
+              "Suggesting a visit to the Colosseum, one of the greatest architectural achievements in Rome.",
+              fetchedSuggestion?.text)
 
-                    // Update the suggestion and validate the update.
-                    val updatedSuggestionText = "Updated: Visit both the Colosseum and nearby Roman Forum."
-                    assertTrue(repository.updateSuggestionInTrip(fetchedTrip.tripId, fetchedSuggestion!!.copy(text = updatedSuggestionText)))
+          // Update the suggestion and validate the update.
+          val updatedSuggestionText = "Updated: Visit both the Colosseum and nearby Roman Forum."
+          assertTrue(
+              repository.updateSuggestionInTrip(
+                  fetchedTrip.tripId, fetchedSuggestion!!.copy(text = updatedSuggestionText)))
 
-                    // Validate the update was successful.
-                    val updatedSuggestion = repository.getSuggestionFromTrip(fetchedTrip.tripId, fetchedTrip.suggestions.first())
-                    assertEquals(updatedSuggestionText, updatedSuggestion?.text)
+          // Validate the update was successful.
+          val updatedSuggestion =
+              repository.getSuggestionFromTrip(fetchedTrip.tripId, fetchedTrip.suggestions.first())
+          assertEquals(updatedSuggestionText, updatedSuggestion?.text)
 
-                    // Remove the suggestion from the trip and validate its removal.
-                    assertTrue(repository.removeSuggestionFromTrip(fetchedTrip.tripId, fetchedTrip.suggestions.first()))
+          // Remove the suggestion from the trip and validate its removal.
+          assertTrue(
+              repository.removeSuggestionFromTrip(
+                  fetchedTrip.tripId, fetchedTrip.suggestions.first()))
 
-                    // Validate the suggestion list is empty after deletion.
-                    assertTrue(repository.getAllSuggestionsFromTrip(fetchedTrip.tripId).isEmpty())
+          // Validate the suggestion list is empty after deletion.
+          assertTrue(repository.getAllSuggestionsFromTrip(fetchedTrip.tripId).isEmpty())
 
-                    // Cleanup: Delete the trip.
-                    assertTrue(repository.deleteTrip(fetchedTrip.tripId))
-                }
-            } catch (e: TimeoutCancellationException) {
-                fail("The operation timed out after 10 seconds")
-            }
+          // Cleanup: Delete the trip.
+          assertTrue(repository.deleteTrip(fetchedTrip.tripId))
         }
-        println("Execution time for testTripLifecycleWithSuggestions: $elapsedTime ms")
+      } catch (e: TimeoutCancellationException) {
+        fail("The operation timed out after 10 seconds")
+      }
     }
+    println("Execution time for testTripLifecycleWithSuggestions: $elapsedTime ms")
+  }
 
-
-    @After
+  @After
   fun tearDown() = runBlocking {
-        //for debugging
-        // true false
-        val debug = false
+    // for debugging
+    // true false
+    val debug = false
 
     // Attempt to retrieve all trip IDs that might have been added during tests
     val tripIds =
@@ -441,8 +448,10 @@ class TripsRepositoryTest {
           val userIds = trip.users
           userIds.forEach { userId -> repository.removeUserFromTrip(tripId, userId) }
 
-            val suggestionIds = trip.suggestions
-            suggestionIds.forEach { suggestionId -> repository.removeSuggestionFromTrip(tripId, suggestionId) }
+          val suggestionIds = trip.suggestions
+          suggestionIds.forEach { suggestionId ->
+            repository.removeSuggestionFromTrip(tripId, suggestionId)
+          }
           repository.deleteTrip(tripId)
           repository.removeTripId(tripId)
         }
