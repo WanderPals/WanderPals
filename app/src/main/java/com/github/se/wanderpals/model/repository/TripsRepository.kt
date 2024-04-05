@@ -148,7 +148,8 @@ class TripsRepository(
         try {
           val uniqueID = UUID.randomUUID().toString()
           val firebaseSuggestion =
-              FirestoreSuggestion.fromSuggestion(suggestion.copy(suggestionId = uniqueID))
+              FirestoreSuggestion.fromSuggestion(
+                  suggestion.copy(suggestionId = uniqueID, userId = uid)) //we already know who creates the suggestion
           val suggestionDocument =
               tripsCollection
                   .document(tripId)

@@ -351,7 +351,7 @@ class TripsRepositoryTest {
     val suggestion1 =
         Suggestion(
             suggestionId = "",
-            userId = "user123",
+            userId = "",
             userName = "Alice",
             text =
                 "Suggesting a visit to the Colosseum, one of the greatest architectural achievements in Rome.",
