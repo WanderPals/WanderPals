@@ -3,9 +3,11 @@ package com.github.se.wanderpals.model.repository
 import FirestoreTrip
 import android.util.Log
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
+import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -61,7 +63,7 @@ class TripsRepository(
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
-    suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Stop? =
+    suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Suggestion? =
         withContext(dispatcher) {
             try {
                 val documentSnapshot =
@@ -71,100 +73,100 @@ class TripsRepository(
                         .document(suggestionId)
                         .get()
                         .await()
-                val firestoreStop = documentSnapshot.toObject<FirestoreStop>()
-                if (firestoreStop != null) {
-                    firestoreStop.toStop()
+                val firestoreSuggestion = documentSnapshot.toObject<FirestoreSuggestion>()
+                if (firestoreSuggestion != null) {
+                    firestoreSuggestion.toSuggestion()
                 } else {
-                    Log.e("TripsRepository", "getStopFromTrip: Not found stop $stopId from trip $tripId.")
+                    Log.e("TripsRepository", "getSuggestionFromTrip: Not found Suggestion $suggestionId from trip $tripId.")
                     null
                 }
             } catch (e: Exception) {
                 Log.e(
                     "TripsRepository",
-                    "getStopFromTrip: Error getting a stop $stopId from trip $tripId.",
+                    "getSuggestionFromTrip: Error getting a Suggestion $suggestionId from trip $tripId.",
                     e)
                 null // error
             }
         }
 
-    suspend fun getAllSuggestionFromTrip(tripId: String): List<Stop> =
+    suspend fun getAllSuggestionsFromTrip(tripId: String): List<Suggestion> =
         withContext(dispatcher) {
             try {
                 val trip = getTrip(tripId)
                 if (trip != null) {
-                    val stopIds = trip.stops
-                    stopIds.mapNotNull { stopId -> getStopFromTrip(tripId, stopId) }
+                    val suggestionIds = trip.suggestions
+                    suggestionIds.mapNotNull { suggestionId -> getSuggestionFromTrip(tripId, suggestionId) }
                 } else {
-                    Log.e("TripsRepository", "getAllStopsFromTrip: Trip not found with ID $tripId.")
+                    Log.e("TripsRepository", "getAllSuggestionsFromTrip: Trip not found with ID $tripId.")
                     emptyList()
                 }
             } catch (e: Exception) {
 
-                Log.e("TripsRepository", "getAllStopsFromTrip: Error fetching stop to trip $tripId.", e)
+                Log.e("TripsRepository", "getAllSuggestionsFromTrip: Error fetching Suggestion to trip $tripId.", e)
                 emptyList()
             }
         }
 
-    suspend fun addSuggestionToTrip(tripId: String, stop: Stop): Boolean =
+    suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
         withContext(dispatcher) {
             try {
                 val uniqueID = UUID.randomUUID().toString()
-                val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
-                val stopDocument =
+                val firebaseSuggestion = FirestoreSuggestion.fromSuggestion(suggestion.copy(suggestionId = uniqueID))
+                val suggestionDocument =
                     tripsCollection
                         .document(tripId)
-                        .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
+                        .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
                         .document(uniqueID)
-                stopDocument.set(firebaseStop).await()
-                Log.d("TripsRepository", "addStopToTrip: Stop added successfully to trip $tripId.")
+                suggestionDocument.set(firebaseSuggestion).await()
+                Log.d("TripsRepository", "addSuggestionToTrip: Suggestion added successfully to trip $tripId.")
 
                 val trip = getTrip(tripId)
                 if (trip != null) {
                     // Add the new stopId to the trip's stops list and update the trip
-                    val updatedStopsList = trip.stops + uniqueID
-                    val updatedTrip = trip.copy(stops = updatedStopsList)
+                    val updatedSuggestionsList = trip.suggestions + uniqueID
+                    val updatedTrip = trip.copy(suggestions = updatedSuggestionsList)
                     updateTrip(updatedTrip)
-                    Log.d("TripsRepository", "addStopToTrip: Stop ID added to trip successfully.")
+                    Log.d("TripsRepository", "addSuggestionToTrip: Suggestion ID added to trip successfully.")
                     true
                 } else {
 
-                    Log.e("TripsRepository", "addStopToTrip: Trip not found with ID $tripId.")
+                    Log.e("TripsRepository", "addSuggestionToTrip: Trip not found with ID $tripId.")
                     false
                 }
             } catch (e: Exception) {
-                Log.e("TripsRepository", "addStopToTrip: Error adding stop to trip $tripId.", e)
+                Log.e("TripsRepository", "addSuggestionToTrip: Error adding Suggestion to trip $tripId.", e)
                 false
             }
         }
 
-    suspend fun removeSuggestionFromTrip(tripId: String, stopId: String): Boolean =
+    suspend fun deleteSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
         withContext(dispatcher) {
             try {
-                Log.d("TripsRepository", "deleteStopFromTrip: Deleting stop $stopId from trip $tripId")
+                Log.d("TripsRepository", "deleteStopFromTrip: Deleting Suggestion $suggestionId from trip $tripId")
                 tripsCollection
                     .document(tripId)
-                    .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
-                    .document(stopId)
+                    .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+                    .document(suggestionId)
                     .delete()
                     .await()
 
                 val trip = getTrip(tripId)
                 if (trip != null) {
-                    val updatedStopsList = trip.stops.filterNot { it == stopId }
-                    val updatedTrip = trip.copy(stops = updatedStopsList)
+                    val updatedSuggestionsList = trip.suggestions.filterNot { it == suggestionId }
+                    val updatedTrip = trip.copy(suggestions = updatedSuggestionsList)
                     updateTrip(updatedTrip)
                     Log.d(
                         "TripsRepository",
-                        "deleteStopFromTrip: Stop $stopId deleted and trip updated successfully.")
+                        "deleteSuggestionFromTrip: Suggestion $suggestionId deleted and trip updated successfully.")
                     true
                 } else {
-                    Log.e("TripsRepository", "deleteStopFromTrip: Trip not found with ID $tripId.")
+                    Log.e("TripsRepository", "deleteSuggestionFromTrip: Trip not found with ID $tripId.")
                     false
                 }
             } catch (e: Exception) {
                 Log.e(
                     "TripsRepository",
-                    "deleteStopFromTrip: Error deleting stop $stopId from trip $tripId.",
+                    "deleteSuggestionFromTrip: Error deleting Suggestion $suggestionId from trip $tripId.",
                     e)
                 false
             }
