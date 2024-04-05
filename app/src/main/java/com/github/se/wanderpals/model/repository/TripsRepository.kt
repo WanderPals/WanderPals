@@ -112,6 +112,7 @@ class TripsRepository(
         withContext(dispatcher) {
             try {
                 val trip = getTrip(tripId)
+
                 if (trip != null) {
                     val suggestionIds = trip.suggestions
                     suggestionIds.mapNotNull { suggestionId -> getSuggestionFromTrip(tripId, suggestionId) }
@@ -180,10 +181,10 @@ class TripsRepository(
      * @return `true` if the suggestion was successfully deleted and the trip updated, `false`
      *         otherwise. Errors during the process are logged.
      */
-    suspend fun deleteSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
+    suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
         withContext(dispatcher) {
             try {
-                Log.d("TripsRepository", "deleteStopFromTrip: Deleting Suggestion $suggestionId from trip $tripId")
+                Log.d("TripsRepository", "removeSuggestionFromTrip: removing Suggestion $suggestionId from trip $tripId")
                 tripsCollection
                     .document(tripId)
                     .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
@@ -198,16 +199,16 @@ class TripsRepository(
                     updateTrip(updatedTrip)
                     Log.d(
                         "TripsRepository",
-                        "deleteSuggestionFromTrip: Suggestion $suggestionId deleted and trip updated successfully.")
+                        "removeSuggestionFromTrip: Suggestion $suggestionId remove and trip updated successfully.")
                     true
                 } else {
-                    Log.e("TripsRepository", "deleteSuggestionFromTrip: Trip not found with ID $tripId.")
+                    Log.e("TripsRepository", "removeSuggestionFromTrip: Trip not found with ID $tripId.")
                     false
                 }
             } catch (e: Exception) {
                 Log.e(
                     "TripsRepository",
-                    "deleteSuggestionFromTrip: Error deleting Suggestion $suggestionId from trip $tripId.",
+                    "removeSuggestionFromTrip: Error removing Suggestion $suggestionId from trip $tripId.",
                     e)
                 false
             }
