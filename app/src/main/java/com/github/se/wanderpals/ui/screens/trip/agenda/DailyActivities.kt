@@ -43,7 +43,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
       Text(
           text = "No activities for this date",
           style = MaterialTheme.typography.bodyLarge,
-          color = MaterialTheme.colorScheme.primary,
+          color = MaterialTheme.colorScheme.secondary,
           textAlign = TextAlign.Center,
           modifier = Modifier.padding(16.dp))
     } else {

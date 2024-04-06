@@ -117,9 +117,7 @@ open class AgendaViewModel(tripId: String, private val tripsRepository: TripsRep
     val allStops = tripsRepository?.getAllStopsFromTrip("tripId")
 
     // Filter stops to include only those that occur on the selected date
-    val dailyActivities = allStops?.filter { stop -> stop.date.isEqual(selectedDate) }
-
-    return dailyActivities
+    return allStops?.filter { stop -> stop.date.isEqual(selectedDate) }
   }
 
   fun fetchDailyActivities(selectedDate: LocalDate) {
