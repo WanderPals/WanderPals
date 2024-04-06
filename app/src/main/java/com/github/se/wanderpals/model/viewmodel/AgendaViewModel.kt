@@ -2,6 +2,8 @@ package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarDataSource
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalDate
@@ -18,7 +20,8 @@ import kotlinx.coroutines.launch
  *
  * @property tripId The identifier of the trip for which the agenda is being managed.
  */
-open class AgendaViewModel(tripId: String) : ViewModel() {
+open class AgendaViewModel(tripId: String, private val tripsRepository: TripsRepository?) :
+    ViewModel() {
 
   /** Lazily initialized data source for calendar data. */
   private val dataSource by lazy { CalendarDataSource() }
@@ -28,6 +31,12 @@ open class AgendaViewModel(tripId: String) : ViewModel() {
 
   /** Exposed read-only state flow of the UI state. */
   open var uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
+
+  /** Private mutable state flow for the daily activities of the selected date. */
+  private val _dailyActivities = MutableStateFlow<List<Stop>>(emptyList())
+
+  /** Exposed read-only state flow of the daily activities. */
+  val dailyActivities: StateFlow<List<Stop>> = _dailyActivities.asStateFlow()
 
   init {
     viewModelScope.launch {
@@ -99,6 +108,23 @@ open class AgendaViewModel(tripId: String) : ViewModel() {
             yearMonth = prevMonth,
             dates = dataSource.getDates(prevMonth, currentState.selectedDate))
       }
+    }
+  }
+
+  /** Fetches the daily activities for the selected date. */
+  private suspend fun getDailyActivities(selectedDate: LocalDate): List<Stop>? {
+    // Assuming tripsRepository.getAllStopsFromTrip returns a List<Stop>
+    val allStops = tripsRepository?.getAllStopsFromTrip("tripId")
+
+    // Filter stops to include only those that occur on the selected date
+    val dailyActivities = allStops?.filter { stop -> stop.date.isEqual(selectedDate) }
+
+    return dailyActivities
+  }
+
+  fun fetchDailyActivities(selectedDate: LocalDate) {
+    viewModelScope.launch {
+      _dailyActivities.value = getDailyActivities(selectedDate)?.toList() ?: emptyList()
     }
   }
 }

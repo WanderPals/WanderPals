@@ -46,7 +46,7 @@ private const val MAX_ROWS_CALENDAR = 6
 @Preview(showSystemUi = true)
 @Composable
 fun AgendaPreview() {
-  WanderPalsTheme { Agenda(AgendaViewModel("")) }
+  WanderPalsTheme { Agenda(AgendaViewModel("", null)) }
 }
 
 /**
