@@ -38,7 +38,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Trip
-import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.text.SimpleDateFormat
@@ -87,7 +87,7 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
+fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
   var name by remember { mutableStateOf("") }
   var budget by remember { mutableStateOf("0") }
   var startDate by remember { mutableStateOf("") }
@@ -222,7 +222,7 @@ fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
                               stops = emptyList(),
                               users = emptyList(),
                               suggestions = emptyList())
-                      tripViewModel.createTrip(trip)
+                      overviewViewModel.createTrip(trip)
                       nav.navigateTo(Route.OVERVIEW)
                     }
                   },

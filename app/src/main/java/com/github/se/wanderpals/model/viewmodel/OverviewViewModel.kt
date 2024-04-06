@@ -42,6 +42,15 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
       _isLoading.value = false
     }
   }
+  /** Adds the trip for the user by adding it in it trips Repository
+   *
+   * @param trip The trip to add in the repository.
+   *
+   */
+  open fun createTrip(trip: Trip) {
+    viewModelScope.launch { tripsRepository.addTrip(trip) }
+  }
+
   /**
    * Adds the user to a trip with the specified trip ID. The trip must already exist in the database
    * to make this function success.
@@ -63,4 +72,5 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
     }
     return success
   }
+
 }
