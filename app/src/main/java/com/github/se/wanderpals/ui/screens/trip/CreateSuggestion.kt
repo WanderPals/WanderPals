@@ -60,17 +60,30 @@ fun CreateSuggestion() {
   var website by remember { mutableStateOf("") }
   var suggestionText by remember { mutableStateOf("") }
   var budget by remember { mutableStateOf("") }
-  var errorText by remember { mutableStateOf("") }
   var startDate by remember { mutableStateOf("") }
   var startTime by remember { mutableStateOf("") }
   var endTime by remember { mutableStateOf("") }
   var endDate by remember { mutableStateOf("") }
+
+    var start_d_err = false
+    var end_d_err = false
+    var start_t_err = false
+    var end_t_err = false
+    var title_err = false
+    var budget_err = false
+    var desc_err = false
+    var addr_err = false
+
 
   var showDatePickerStart by remember { mutableStateOf(false) }
   var showDatePickerEnd by remember { mutableStateOf(false) }
 
   var showTimePickerStart by remember { mutableStateOf(false) }
   var showTimePickerEnd by remember { mutableStateOf(false) }
+
+    val dateRegexPattern = """^\d{2}/\d{2}/\d{4}$"""
+    val timeRegexPattern = """^\d{2}:\d{2}$"""
+    val websiteRegexPattern = """^(http|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[a-zA-Z0-9.-]*)*$"""
 
   Surface(modifier = Modifier.padding(16.dp)) {
     Column(
@@ -85,6 +98,7 @@ fun CreateSuggestion() {
                 modifier = Modifier
                     .weight(3f)
                     .testTag("inputSuggestionTitle"),
+                isError = title_err,
                 singleLine = true)
             Spacer(modifier = Modifier.width(16.dp))
             OutlinedTextField(
@@ -95,7 +109,7 @@ fun CreateSuggestion() {
                 modifier = Modifier
                     .weight(1f)
                     .testTag("inputSuggestionBudget"),
-                isError = errorText.isNotEmpty(),
+                isError = budget_err,
                 singleLine = true,
                 placeholder = { Text("Budget") })
           }
@@ -114,20 +128,20 @@ fun CreateSuggestion() {
                     .clickable {
                         showDatePickerStart = true
                     },
-                isError = errorText.isNotEmpty(),
+                isError = start_d_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showDatePickerStart = true })
 
             Spacer(modifier = Modifier.width(16.dp))
 
             OutlinedTextField(
-                value = endTime,
-                onValueChange = { endTime = it },
+                value = startTime,
+                onValueChange = { startTime = it },
                 placeholder = { Text("00:00") },
                 modifier = Modifier
                     .weight(1f)
-                    .testTag("inputSuggestionEndDate"),
-                isError = errorText.isNotEmpty(),
+                    .testTag("inputSuggestionEndTime"),
+                isError = start_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerEnd = true })
           }
@@ -142,20 +156,20 @@ fun CreateSuggestion() {
                 modifier = Modifier
                     .weight(1f)
                     .testTag("inputSuggestionEndDate"),
-                isError = errorText.isNotEmpty(),
+                isError = end_d_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showDatePickerEnd = true })
 
             Spacer(modifier = Modifier.width(16.dp))
 
             OutlinedTextField(
-                value = startTime,
-                onValueChange = { startTime = it },
+                value = endTime,
+                onValueChange = { endTime = it },
                 placeholder = { Text("00:00") },
                 modifier = Modifier
                     .weight(1f)
                     .testTag("inputSuggestionEndDate"),
-                isError = errorText.isNotEmpty(),
+                isError = end_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerStart = true })
           }
@@ -191,7 +205,7 @@ fun CreateSuggestion() {
                   .fillMaxWidth()
                   .height(200.dp)
                   .padding(bottom = 16.dp),
-              isError = errorText.isNotEmpty(),
+              isError = desc_err,
               singleLine = false,
               maxLines = 5,
               placeholder = { Text("Describe the trip") })
@@ -206,7 +220,7 @@ fun CreateSuggestion() {
                     .testTag("inputSuggestionDescription")
                     .horizontalScroll(state = rememberScrollState(0), enabled = true)
                     .weight(6f),
-                isError = errorText.isNotEmpty(),
+                isError = addr_err,
                 singleLine = true,
                 placeholder = { Text("Address of the suggestion") })
 
@@ -236,19 +250,27 @@ fun CreateSuggestion() {
                   .testTag("inputSuggestionWebsite")
                   .fillMaxWidth()
                   .horizontalScroll(state = rememberScrollState(0), enabled = true),
-              isError = errorText.isNotEmpty(),
               singleLine = true,
               placeholder = { Text("Website") })
 
           Spacer(modifier = Modifier.height(16.dp))
 
-          Button(onClick = { /* GET AN IMAGE FROM GALLERY */}) { Text("Select an Image") }
+          //Button(onClick = { /* GET AN IMAGE FROM GALLERY */}) { Text("Select an Image") }
 
           Spacer(modifier = Modifier.height(16.dp))
 
           Button(
               onClick = {
-                if (verifyArgument()) {
+                  title_err = suggestionText.isEmpty()
+                  budget_err = budget.isEmpty() && isConvertibleToDouble(budget)
+                  desc_err = description.isEmpty()
+                  addr_err = address.isEmpty()
+                  start_d_err = isStringInFormat(startDate, dateRegexPattern)
+                  start_t_err = isStringInFormat(startTime, dateRegexPattern)
+                  end_d_err = isStringInFormat(endDate, dateRegexPattern)
+                  end_t_err = isStringInFormat(endTime, dateRegexPattern)
+
+                if (!(title_err || budget_err || desc_err || addr_err ||start_d_err || start_t_err || end_t_err || end_d_err)) {
                   val dateFormatter = DateTimeFormatter.ofPattern("dd/mm/yyyy")
                   val timeFormatter = DateTimeFormatter.ofPattern("hh:mm")
 
@@ -303,8 +325,9 @@ fun CreateSuggestion() {
   }
 }
 
+
 @Composable
-fun CreateSuggestionDialog(showDialog:Boolean, onDismiss: () -> Unit) {
+fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
     if(showDialog) {
         Dialog(
             properties = DialogProperties(usePlatformDefaultWidth = false),
@@ -320,8 +343,18 @@ fun CreateSuggestionDialog(showDialog:Boolean, onDismiss: () -> Unit) {
     }
 }
 
-fun verifyArgument(): Boolean {
-  return false
+fun isConvertibleToDouble(input: String): Boolean {
+    return try {
+        input.toDouble()
+        true // Conversion successful
+    } catch (e: NumberFormatException) {
+        false // Conversion failed
+    }
+}
+
+fun isStringInFormat(input: String, regexPattern: String): Boolean {
+    val regex = Regex(regexPattern)
+    return regex.matches(input)
 }
 
 @Preview(showBackground = true)
