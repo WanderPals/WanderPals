@@ -3,8 +3,11 @@ package com.github.se.wanderpals.model.repository
 import FirestoreTrip
 import android.util.Log
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
+import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -59,6 +62,379 @@ class TripsRepository(
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
+
+  /**
+   * Retrieves a specific suggestion from a trip based on the suggestion's unique identifier. This
+   * method queries a subcollection within a trip document to retrieve a suggestion object based on
+   * the provided `suggestionId`.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param suggestionId The unique identifier of the suggestion.
+   * @return A `Suggestion` object if found, `null` otherwise. The method logs an error and returns
+   *   `null` if the suggestion is not found or if an error occurs during the Firestore query.
+   */
+  suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Suggestion? =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+                  .document(suggestionId)
+                  .get()
+                  .await()
+          val firestoreSuggestion = documentSnapshot.toObject<FirestoreSuggestion>()
+          if (firestoreSuggestion != null) {
+            firestoreSuggestion.toSuggestion()
+          } else {
+            Log.e(
+                "TripsRepository",
+                "getSuggestionFromTrip: Not found Suggestion $suggestionId from trip $tripId.")
+            null
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "getSuggestionFromTrip: Error getting a Suggestion $suggestionId from trip $tripId.",
+              e)
+          null // error
+        }
+      }
+
+  /**
+   * Retrieves all suggestions associated with a specific trip. It iterates over all suggestion IDs
+   * stored within a trip document and fetches their corresponding suggestion objects.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @return A list of `Suggestion` objects. Returns an empty list if the trip is not found, if
+   *   there are no suggestions associated with the trip, or in case of an error during data
+   *   retrieval.
+   */
+  suspend fun getAllSuggestionsFromTrip(tripId: String): List<Suggestion> =
+      withContext(dispatcher) {
+        try {
+          val trip = getTrip(tripId)
+
+          if (trip != null) {
+            val suggestionIds = trip.suggestions
+            suggestionIds.mapNotNull { suggestionId -> getSuggestionFromTrip(tripId, suggestionId) }
+          } else {
+            Log.e("TripsRepository", "getAllSuggestionsFromTrip: Trip not found with ID $tripId.")
+            emptyList()
+          }
+        } catch (e: Exception) {
+
+          Log.e(
+              "TripsRepository",
+              "getAllSuggestionsFromTrip: Error fetching Suggestion to trip $tripId.",
+              e)
+          emptyList()
+        }
+      }
+
+  /**
+   * Adds a new suggestion to a specified trip. This involves creating a unique identifier for the
+   * suggestion, converting the suggestion to a Firestore-compatible format, and updating the trip's
+   * document to include the new suggestion. If successful, the method also updates the trip
+   * document to include the newly added suggestion's ID in the list of suggestions.
+   *
+   * @param tripId The unique identifier of the trip to which the suggestion is being added.
+   * @param suggestion The `Suggestion` object to be added to the trip.
+   * @return `true` if the suggestion was added successfully, `false` otherwise. Errors during the
+   *   process are logged.
+   */
+  suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
+      withContext(dispatcher) {
+        try {
+          val uniqueID = UUID.randomUUID().toString()
+          val firebaseSuggestion =
+              FirestoreSuggestion.fromSuggestion(
+                  suggestion.copy(
+                      suggestionId = uniqueID,
+                      userId = uid)) // we already know who creates the suggestion
+          val suggestionDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+                  .document(uniqueID)
+          suggestionDocument.set(firebaseSuggestion).await()
+          Log.d(
+              "TripsRepository",
+              "addSuggestionToTrip: Suggestion added successfully to trip $tripId.")
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            // Add the new stopId to the trip's stops list and update the trip
+            val updatedSuggestionsList = trip.suggestions + uniqueID
+            val updatedTrip = trip.copy(suggestions = updatedSuggestionsList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository", "addSuggestionToTrip: Suggestion ID added to trip successfully.")
+            true
+          } else {
+
+            Log.e("TripsRepository", "addSuggestionToTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository", "addSuggestionToTrip: Error adding Suggestion to trip $tripId.", e)
+          false
+        }
+      }
+
+  /**
+   * Removes a specific suggestion from a trip. This method deletes the suggestion document from the
+   * Firestore subcollection and updates the trip document to remove the suggestion's ID from the
+   * list of associated suggestions.
+   *
+   * @param tripId The unique identifier of the trip from which the suggestion is being removed.
+   * @param suggestionId The unique identifier of the suggestion to remove.
+   * @return `true` if the suggestion was successfully deleted and the trip updated, `false`
+   *   otherwise. Errors during the process are logged.
+   */
+  suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d(
+              "TripsRepository",
+              "removeSuggestionFromTrip: removing Suggestion $suggestionId from trip $tripId")
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+              .document(suggestionId)
+              .delete()
+              .await()
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val updatedSuggestionsList = trip.suggestions.filterNot { it == suggestionId }
+            val updatedTrip = trip.copy(suggestions = updatedSuggestionsList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "removeSuggestionFromTrip: Suggestion $suggestionId remove and trip updated successfully.")
+            true
+          } else {
+            Log.e("TripsRepository", "removeSuggestionFromTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "removeSuggestionFromTrip: Error removing Suggestion $suggestionId from trip $tripId.",
+              e)
+          false
+        }
+      }
+
+  /**
+   * Updates an existing suggestion within a trip. This method replaces the suggestion document in
+   * the Firestore subcollection with the updated suggestion details.
+   *
+   * It is important that the `suggestionId` within the `Suggestion` object matches the ID of the
+   * suggestion being updated to ensure the correct document is replaced.
+   *
+   * @param tripId The unique identifier of the trip containing the suggestion.
+   * @param suggestion The updated `Suggestion` object.
+   * @return `true` if the suggestion was successfully updated, `false` otherwise. Errors during the
+   *   update process are logged.
+   */
+  suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d("TripsRepository", "updateSuggestionInTrip: Updating a Suggestion in trip $tripId")
+          val firestoreSuggestion = FirestoreSuggestion.fromSuggestion(suggestion)
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+              .document(firestoreSuggestion.suggestionId)
+              .set(firestoreSuggestion)
+              .await()
+          Log.d(
+              "TripsRepository",
+              "updateSuggestionInTrip: Trip's Suggestion updated successfully for ID $tripId.")
+          true
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "updateSuggestionInTrip: Error updating stop with ID ${suggestion.suggestionId} in trip with ID $tripId",
+              e)
+          false
+        }
+      }
+
+  /**
+   * Fetches a user's details for a specific trip. This method queries a subcollection within a trip
+   * document to retrieve a user object based on the provided `userId`.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param userId The unique identifier of the user.
+   * @return A `User` object if found, `null` otherwise.
+   */
+  suspend fun getUserFromTrip(tripId: String, userId: String): User? =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
+                  .document(userId)
+                  .get()
+                  .await()
+          val user = documentSnapshot.toObject<User>()
+          if (user != null) {
+            user
+          } else {
+            Log.e("TripsRepository", "getUserFromTrip: Not found user $userId from trip $tripId.")
+            null
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "getUserFromTrip: Error getting an user $userId from trip $tripId.",
+              e)
+          null // error
+        }
+      }
+
+  /**
+   * Retrieves all users associated with a specific trip. It iterates over all user IDs stored
+   * within a trip document and fetches their corresponding user objects.
+   *
+   * @param tripId The unique identifier of the trip. appears unused and may be a mistake in the
+   *   method signature.)
+   * @return A list of `User` objects. Returns an empty list if the trip is not found or in case of
+   *   an error.
+   */
+  suspend fun getAllUsersFromTrip(tripId: String): List<User> =
+      withContext(dispatcher) {
+        try {
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val stopIds = trip.users
+            stopIds.mapNotNull { userId -> getUserFromTrip(tripId, userId) }
+          } else {
+            Log.e("TripsRepository", "getAllUsersFromTrip: Trip not found with ID $tripId.")
+            emptyList()
+          }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "getAllUsersFromTrip: Error fetching trip to trip $tripId.", e)
+          emptyList()
+        }
+      }
+
+  /**
+   * Adds a user to a specified trip. This method creates or updates a document in the Users
+   * subcollection within a trip, storing the user's details.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param user The `User` object containing the user's details.
+   * @return `true` if the operation is successful, `false` otherwise.
+   */
+  suspend fun addUserToTrip(tripId: String, user: User): Boolean =
+      withContext(dispatcher) {
+        try {
+          // for users, there IDs are google ids currently no need to gen a new one
+
+          val userDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
+                  .document(user.userId)
+          userDocument.set(user).await()
+          Log.d("TripsRepository", "addUserToTrip: User added successfully to trip $tripId.")
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            // Add the new userID to the trip's user list and update the trip
+            val updatedStopsList = trip.users + user.userId
+            val updatedTrip = trip.copy(users = updatedStopsList)
+            updateTrip(updatedTrip)
+            Log.d("TripsRepository", "addUserToTrip: Stop ID added to trip successfully.")
+            true
+          } else {
+
+            Log.e("TripsRepository", "addUserToTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "addUserToTrip: Error adding user to trip $tripId.", e)
+          false
+        }
+      }
+
+  /**
+   * Updates details of a user in a specified trip. Similar to `addUserToTrip`, but specifically
+   * intended for updating existing user documents.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param user The `User` object to be updated.
+   * @return `true` if the operation is successful, `false` otherwise.
+   */
+  suspend fun updateUserInTrip(tripId: String, user: User): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d("TripsRepository", "updateUserInTrip: Updating a user in trip $tripId")
+
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
+              .document(user.userId)
+              .set(user)
+              .await()
+          Log.d(
+              "TripsRepository",
+              "updateUserInTrip: Trip's user updated successfully for ID $tripId.")
+          true
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "updateUserInTrip: Error updating user with ID ${user.userId} in trip with ID $tripId",
+              e)
+          false
+        }
+      }
+
+  /**
+   * Removes a user from a trip. This method deletes a user's document from the Users subcollection
+   * within a trip.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param userId The unique identifier of the user to be removed.
+   * @return `true` if the operation is successful, `false` otherwise.
+   */
+  suspend fun removeUserFromTrip(tripId: String, userId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d("TripsRepository", "removeUserFromTrip: Deleting user $userId from trip $tripId")
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
+              .document(userId)
+              .delete()
+              .await()
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val updatedUsersList = trip.users.filterNot { it == userId }
+            val updatedTrip = trip.copy(users = updatedUsersList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "removeUserFromTrip: User $userId deleted and trip updated successfully.")
+            true
+          } else {
+            Log.e("TripsRepository", "removeUserFromTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "removeUserFromTrip: Error deleting user $userId from trip $tripId.",
+              e)
+          false
+        }
+      }
 
   suspend fun getStopFromTrip(tripId: String, stopId: String): Stop? =
       withContext(dispatcher) {
@@ -350,6 +726,33 @@ class TripsRepository(
       }
 
   /**
+   * Checks if the specified trip ID exists in the 'Trips' collection. This method queries the
+   * Firestore database to verify the existence of a document corresponding to the given trip ID. It
+   * ensures that operations related to trip IDs are conducted with valid identifiers.
+   *
+   * @param tripId The unique identifier of the trip to be validated.
+   * @return Boolean indicating whether the trip ID is valid (true) or not (false). If the trip ID
+   *   exists in the database, returns true; otherwise, returns false. In the event of an exception
+   *   during the database query, the method also returns false,
+   */
+  private suspend fun isTripIdValid(tripId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          val document = tripsCollection.document(tripId).get().await()
+          if (document.exists()) {
+            Log.d("TripsRepository", "isTripIdValid: tripId $tripId exists.")
+            true
+          } else {
+            Log.d("TripsRepository", "isTripIdValid: tripId $tripId doesn't exist.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "isTripIdValid: Error retrieving trip ID $tripId", e)
+          false
+        }
+      }
+
+  /**
    * Adds a trip ID to the current user's list of trip IDs in their document within the 'Users'
    * collection. If the user's document does not already contain a list of trip IDs, or if the
    * specified trip ID is not already in the list, it adds the trip ID to the list.
@@ -362,6 +765,11 @@ class TripsRepository(
   suspend fun addTripId(tripId: String): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
+
+        if (!isTripIdValid(tripId)) {
+          Log.d("TripsRepository", "addTripId: isTripIdValid returned false")
+          return@withContext false
+        }
 
         val userDocumentRef = usersCollection.document(uid)
 

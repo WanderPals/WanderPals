@@ -1,6 +1,8 @@
 package com.github.se.wanderpals.overview
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -115,10 +117,11 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
+
+      dialog { assertIsNotDisplayed() }
     }
   }
 
-  /*
   @Test
   fun searchTripByTitleFindNoTrip() = run {
     ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
@@ -126,8 +129,7 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       dockedSearchBar { assertIsDisplayed() }
 
-      dockedSearchBar { performTextInput("abcdefg") }
-
+      composeTestRule.onNodeWithText("Search a trip").performTextInput("abcdefg")
       clearSearchButton { assertIsDisplayed() }
 
       noTripForUserText { assertIsNotDisplayed() }
@@ -139,6 +141,32 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
+
+      dialog { assertIsNotDisplayed() }
+    }
+  }
+
+  @Test
+  fun searchTripByTitleCaseInsensitive() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      overviewScreen { assertIsDisplayed() }
+
+      dockedSearchBar { assertIsDisplayed() }
+
+      composeTestRule.onNodeWithText("Search a trip").performTextInput("cItY eXPLoRatiOn")
+      clearSearchButton { assertIsDisplayed() }
+
+      noTripForUserText { assertIsNotDisplayed() }
+      noTripFoundOnSearchText { assertIsNotDisplayed() }
+
+      buttonTrip1 { assertIsNotDisplayed() }
+      buttonTrip2 { assertIsNotDisplayed() }
+      buttonTrip3 { assertIsDisplayed() }
+
+      joinTripButton { assertIsDisplayed() }
+      createTripButton { assertIsDisplayed() }
+
+      dialog { assertIsNotDisplayed() }
     }
   }
 
@@ -148,12 +176,12 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       overviewScreen { assertIsDisplayed() }
 
       dockedSearchBar { assertIsDisplayed() }
-      dockedSearchBar { performTextInput("winter") }
+      composeTestRule.onNodeWithText("Search a trip").performTextInput("winter")
 
       clearSearchButton { assertIsDisplayed() }
 
       noTripForUserText { assertIsNotDisplayed() }
-      noTripFoundOnSearchText { assertIsDisplayed() }
+      noTripFoundOnSearchText { assertIsNotDisplayed() }
 
       buttonTrip1 { assertIsNotDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
@@ -161,6 +189,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
+
+      dialog { assertIsNotDisplayed() }
     }
   }
 
@@ -170,12 +200,12 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       overviewScreen { assertIsDisplayed() }
 
       dockedSearchBar { assertIsDisplayed() }
-      dockedSearchBar.performTextInput("Trip")
+      composeTestRule.onNodeWithText("Search a trip").performTextInput("Trip")
 
       clearSearchButton { assertIsDisplayed() }
 
       noTripForUserText { assertIsNotDisplayed() }
-      noTripFoundOnSearchText { assertIsDisplayed() }
+      noTripFoundOnSearchText { assertIsNotDisplayed() }
 
       buttonTrip1 { assertIsDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
@@ -183,8 +213,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
+
+      dialog { assertIsNotDisplayed() }
     }
-  }*/
+  }
 
   @Test
   fun noTripForUserMessageIsDisplayed() = run {
@@ -205,6 +237,34 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
+
+      dialog { assertIsNotDisplayed() }
+    }
+  }
+
+  @Test
+  fun clearSearchButtonResetsInitialView() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      overviewScreen { assertIsDisplayed() }
+
+      dockedSearchBar { assertIsDisplayed() }
+
+      clearSearchButton { assertIsNotDisplayed() }
+      composeTestRule.onNodeWithText("Search a trip").performTextInput("City Exploration")
+      clearSearchButton { performClick() }
+      clearSearchButton { assertIsNotDisplayed() }
+
+      noTripForUserText { assertIsNotDisplayed() }
+      noTripFoundOnSearchText { assertIsNotDisplayed() }
+
+      buttonTrip1 { assertIsDisplayed() }
+      buttonTrip2 { assertIsDisplayed() }
+      buttonTrip3 { assertIsDisplayed() }
+
+      joinTripButton { assertIsDisplayed() }
+      createTripButton { assertIsDisplayed() }
+
+      dialog { assertIsNotDisplayed() }
     }
   }
 
@@ -217,6 +277,17 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       }
       verify { mockNavActions.navigateTo(Route.CREATE_TRIP) }
       confirmVerified(mockNavActions)
+    }
+  }
+
+  @Test
+  fun joinTripButtonDisplayTheDialog() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      joinTripButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      dialog { assertIsDisplayed() }
     }
   }
 
