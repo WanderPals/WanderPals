@@ -18,7 +18,7 @@ import java.util.Locale
 data class CalendarUiState(
     val yearMonth: YearMonth,
     val dates: List<Date>,
-    val selectedDate: LocalDate? = null
+    val selectedDate: LocalDate? = LocalDate.now() // By default selected day is today
 ) {
   companion object {
     val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())

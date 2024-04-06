@@ -80,6 +80,7 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
       // Implement the daily agenda here
+      DailyActivities(agendaViewModel = agendaViewModel)
     }
   }
 }
