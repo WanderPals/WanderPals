@@ -21,6 +21,8 @@ class SuggestionFeedScreen(semanticsProvider: SemanticsNodeInteractionsProvider)
     val suggestion2: KNode = onNode { hasTestTag("suggestion2") }
     val suggestion3: KNode = onNode { hasTestTag("suggestion3") }
 
-    val createSuggestionButton: KNode = onNode { hasTestTag("createSuggestionButton") } //used
-    }
+    // for When clicking the create suggestion button, the navigation action is triggered
+    val createSuggestionButton: KNode = onNode { hasTestTag("createSuggestionButton") } //todo: this is after William
 
+    val suggestionButtonExists: KNode = onNode { hasTestTag("suggestionButtonExists") } //used
+}

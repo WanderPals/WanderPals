@@ -37,21 +37,26 @@ import java.time.format.DateTimeFormatter
  *
  * @param suggestion The suggestion object to be displayed.
  * @param navigationActions The navigation actions used for navigating to detailed suggestion view. todo: will be displayed later (overlay)
+ * @param modifier The modifier to be applied to the suggestion item.
  */
 @Composable
-fun SuggestionItem(suggestion: Suggestion, navigationActions: NavigationActions) {
+fun SuggestionItem(
+    suggestion: Suggestion,
+    navigationActions: NavigationActions,
+    modifier: Modifier = Modifier // Add this line to accept a Modifier
+) {
     // Define card colors with a white background
     val cardColors = CardDefaults.cardColors(
         containerColor = Color.White // This sets the background color of the Card
     )
     // Use Card for elevation and surface coloring, if needed
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
             .width(380.dp)  // the width of the Card
             .height(166.dp) // the height of the Card
             .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp)),
-            colors = cardColors // Use the cardColors with the white background
+        colors = cardColors // Use the cardColors with the white background
 
     ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {

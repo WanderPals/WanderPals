@@ -40,7 +40,7 @@ fun SuggestionBottomBar(onSuggestionClick: () -> Unit) {
                     .height(70.dp)
                     .padding(bottom = 20.dp)
                     .align(Alignment.TopCenter)
-                    .testTag("createSuggestionButton"),
+                    .testTag("suggestionButtonExists"),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),

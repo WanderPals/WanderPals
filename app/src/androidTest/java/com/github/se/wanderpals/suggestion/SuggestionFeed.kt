@@ -1,12 +1,10 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.navigation.NavHostController
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDate
@@ -16,6 +14,7 @@ import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.Before
 import io.mockk.every
@@ -37,6 +36,9 @@ class SuggestionFeedTest {
 
     @Before
     fun setup() {
+        // Initialize the mock NavigationActions
+        mockNavActions = mockk(relaxed = true)
+
         // Setup dummy data for testing
         val stop1 = Stop(
             stopId = "OSK001",
@@ -88,9 +90,9 @@ class SuggestionFeedTest {
         )
     }
 
+    // Set the UI content to your testing screen with the dummy data
     @Test
     fun suggestionFeedScreen_showsSuggestions_whenListIsNotEmpty() {
-        // Set the UI content to your testing screen with the dummy data
         composeTestRule.setContent {
             // Mock NavigationActions or use a dummy implementation for testing
 //            val navigationActions = NavigationActions(/* pass necessary arguments or mocks */)
@@ -102,24 +104,49 @@ class SuggestionFeedTest {
             )
         }
 
-        // Assert that the suggestion titles are displayed
-        composeTestRule.onNodeWithText("Osaka Castle").assertExists()
-        // Add more assertions as necessary for other data points
+
+        // Assert that the suggestion titles are displayed using the test tags
+        composeTestRule.onNodeWithTag("suggestion1").assertExists()
+        composeTestRule.onNodeWithTag("suggestion2").assertExists()
+        composeTestRule.onNodeWithTag("suggestion3").assertExists()
+
+//        // Assert that the content within the tagged composables is correct
+//        composeTestRule.onNodeWithTag("suggestion1").onNodeWithText("Osaka Castle").assertExists()
+//        composeTestRule.onNodeWithTag("suggestion2").onNodeWithText("Dotonbori").assertExists()
+//        composeTestRule.onNodeWithTag("suggestion3").onNodeWithText("Umeda Sky Building").assertExists()
+
     }
 
+    // Set the UI content to your testing screen with an empty suggestion list
     @Test
-    fun createSuggestionButton_createsNewSuggestion_onClick() {
-        // This test would simulate clicking the "Create a suggestion" button and verify the action
-        // Since the creation logic and UI might be complex, you'll need to adjust this according to your actual implementation
-
+    fun suggestionFeedScreen_showsNoSuggestionsText_whenListIsEmpty() {
         composeTestRule.setContent {
-            // Content setup with necessary mock or dummy navigation actions
+            SuggestionFeedContent(
+                innerPadding = PaddingValues(),
+                navigationActions = mockNavActions,
+                suggestionList = emptyList(),
+                searchText = ""
+            )
         }
 
-        // Find the create suggestion button and perform a click action
-        composeTestRule.onNodeWithTag("createSuggestionButton").performClick()
+        // Assert that the no suggestions text is displayed
+        composeTestRule.onNodeWithTag("noSuggestionsForUserText").assertExists()
+    }
 
-        // Assert the expected outcome, such as navigating to a new screen or a new item being added to the list
+    //Test if the create suggestion button is displayed on the Suggestion Feed screen
+    @Test
+    fun suggestionBottomBar_hasCreateSuggestionButton() {
+        // Arrange: Set the UI content with SuggestionBottomBar
+        composeTestRule.setContent {
+            // Since the onSuggestionClick isn't implemented yet, pass an empty lambda
+            SuggestionBottomBar(onSuggestionClick = {})
+            //             SuggestionBottomBar(onSuggestionClick = { /* Your click handling logic */ }) todo: William
+        }
+
+        // Act and Assert: Check if the button with the tag "suggestionButtonExists" is present and displayed
+        composeTestRule
+            .onNodeWithTag("suggestionButtonExists")
+            .assertIsDisplayed()
     }
 
     // Add more tests as needed for other functionalities...

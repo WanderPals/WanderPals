@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -193,8 +194,12 @@ com.github.se.wanderpals.model.data.Suggestion(
                     textAlign = TextAlign.Center)
                 // LazyColumn to display the list of suggestions of a trip
                 LazyColumn() {
-                    items(suggestionList/*filteredSuggestionsByTitle todo: for sprint3*/) { suggestion ->
-                        SuggestionItem(suggestion = suggestion, navigationActions = navigationActions)
+                    itemsIndexed(suggestionList/*filteredSuggestionsByTitle todo: for sprint3*/) { index, suggestion ->
+                        SuggestionItem(
+                            suggestion = suggestion,
+                            navigationActions = navigationActions,
+                            modifier = Modifier.testTag("suggestion${index + 1}") // Apply the testTag here
+                        )
                     }
                 }
 
