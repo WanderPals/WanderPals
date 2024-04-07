@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
