@@ -25,6 +25,11 @@ fun DailyActivitiesPreview() {
   WanderPalsTheme { DailyActivities(AgendaViewModel("", TripsRepository("", Dispatchers.IO))) }
 }
 
+/**
+ * Composable function that displays the daily activities for a selected date.
+ *
+ * @param agendaViewModel The view model for managing the agenda of a trip.
+ */
 @Composable
 fun DailyActivities(agendaViewModel: AgendaViewModel) {
   val uiState by agendaViewModel.uiState.collectAsState()
@@ -59,6 +64,11 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
     }
 }
 
+/**
+ * Composable function that displays the selected date.
+ *
+ * @param date The selected date to display.
+ */
 @Composable
 fun DisplayDate(date: LocalDate?) {
 
