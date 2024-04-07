@@ -1,13 +1,15 @@
 package com.github.se.wanderpals.screens
 
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.github.kakaocup.compose.node.element.KNode
 
-
+//private val testSuggestion : Suggestion = Suggestion("1")
 
 class CreateSuggestionScreenTest(semanticsProvider: SemanticsNodeInteractionsProvider) :
     ComposeScreen<CreateSuggestionScreenTest>(
@@ -28,9 +30,10 @@ class CreateSuggestionScreenTest(semanticsProvider: SemanticsNodeInteractionsPro
     val inputWebsite: KNode = onNode { hasTestTag("inputSuggestionWebsite") }
 }
 
-open class CreateTripViewModelTest(tripsRepository: TripsRepository) :
-    CreateTripViewModel(tripsRepository) {
-    override fun createTrip(trip: Trip) {
-        assert(trip == testTrip)
+open class CreateSuggestionViewModelTest(tripsRepository: TripsRepository) :
+    CreateSuggestionViewModel(tripsRepository) {
+    override fun addSuggestion(tripId: String, suggestion: Suggestion): Boolean {
+        //assert(suggestion == testSuggestion)
+        return true
     }
 }
