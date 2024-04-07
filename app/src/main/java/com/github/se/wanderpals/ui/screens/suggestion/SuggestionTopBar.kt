@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
-
 /**
  * Composable function that represents the top bar for suggestion feed screen. Displays a search bar
  * with an option to clear the search text and a menu icon for additional actions.
@@ -33,45 +32,45 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SuggestionTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
 
-    // Constant for empty search text
-    val EMPTY_SEARCH = ""
+  // Constant for empty search text
+  val EMPTY_SEARCH = ""
 
-    // State to track search bar activation
-    var active by remember { mutableStateOf(false) }
+  // State to track search bar activation
+  var active by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.padding(start = 13.dp, top = 16.dp)) {
-        // DockedSearchBar component
-        DockedSearchBar(
-            modifier = Modifier.testTag("dockedSearchBar"),
-            query = searchText,
-            onQueryChange = { newText -> onSearchTextChanged(newText) },
-            onSearch = {},
-            active = false,
-            onActiveChange = { active = it },
-            placeholder = { Text("Search a suggestion") },
-            trailingIcon = {
-                // Show search icon if search text is empty, otherwise show clear icon
-                if (searchText.isEmpty()) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = Icons.Default.Search.name,
-                        modifier = Modifier.size(24.dp))
-                } else {
-                    IconButton(
-                        modifier = Modifier.testTag("clearSearchButton"),
-                        onClick = { onSearchTextChanged(EMPTY_SEARCH) }) {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
-                            contentDescription = Icons.Default.Clear.name,
-                            modifier = Modifier.size(24.dp))
-                    }
+  Box(modifier = Modifier.padding(start = 13.dp, top = 16.dp)) {
+    // DockedSearchBar component
+    DockedSearchBar(
+        modifier = Modifier.testTag("dockedSearchBar"),
+        query = searchText,
+        onQueryChange = { newText -> onSearchTextChanged(newText) },
+        onSearch = {},
+        active = false,
+        onActiveChange = { active = it },
+        placeholder = { Text("Search a suggestion") },
+        trailingIcon = {
+          // Show search icon if search text is empty, otherwise show clear icon
+          if (searchText.isEmpty()) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = Icons.Default.Search.name,
+                modifier = Modifier.size(24.dp))
+          } else {
+            IconButton(
+                modifier = Modifier.testTag("clearSearchButton"),
+                onClick = { onSearchTextChanged(EMPTY_SEARCH) }) {
+                  Icon(
+                      imageVector = Icons.Default.Clear,
+                      contentDescription = Icons.Default.Clear.name,
+                      modifier = Modifier.size(24.dp))
                 }
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = Icons.Default.Menu.name,
-                    modifier = Modifier.size(24.dp))
-            }) {}
-    }
+          }
+        },
+        leadingIcon = {
+          Icon(
+              imageVector = Icons.Default.Menu,
+              contentDescription = Icons.Default.Menu.name,
+              modifier = Modifier.size(24.dp))
+        }) {}
+  }
 }
