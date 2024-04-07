@@ -48,7 +48,7 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
    *
    */
   open fun createTrip(trip: Trip) {
-    viewModelScope.launch { tripsRepository.addTrip(trip) }
+    runBlocking { tripsRepository.addTrip(trip) }
   }
 
   /**
