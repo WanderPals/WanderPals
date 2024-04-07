@@ -123,7 +123,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                     )
                     //Share trip code button
                     IconButton(
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(20.dp).testTag("shareTripButton"+ trip.tripId),
                         onClick = {
                             context.shareTripCodeIntent(trip.tripId)
                         },
