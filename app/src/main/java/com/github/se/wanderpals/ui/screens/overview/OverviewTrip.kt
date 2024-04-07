@@ -35,6 +35,14 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
+/**
+ * Share the trip code using an intent.
+ *
+ * Creates an intent to share the trip code with other apps and displays a chooser dialog for the
+ * user to select an app
+ *
+ * @param tripId The trip code to be shared.
+ */
 fun Context.shareTripCodeIntent(tripId: String) {
 
     val sendIntent = Intent(Intent.ACTION_SEND).apply {
@@ -59,6 +67,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
     // Date pattern for formatting start and end dates
     val DATE_PATTERN = "dd/MM/yyyy"
 
+    // Local context
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxWidth()) {
@@ -93,11 +102,11 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                     )
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                // Start date
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // Start date
                     Text(
                         text =
                         "From : %s"
@@ -112,6 +121,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                             letterSpacing = 0.5.sp,
                         )
                     )
+                    //Share trip code button
                     IconButton(
                         modifier = Modifier.size(20.dp),
                         onClick = {

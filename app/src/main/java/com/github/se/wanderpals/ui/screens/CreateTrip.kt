@@ -100,6 +100,7 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
 
     val MAX_TITLE_LENGTH = 40
+
     var name by remember { mutableStateOf("") }
     var budget by remember { mutableStateOf("0") }
     var startDate by remember { mutableStateOf("") }
