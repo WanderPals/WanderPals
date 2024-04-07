@@ -19,6 +19,7 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.overview.OverviewTopBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -37,7 +38,7 @@ fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String) {
       modifier = Modifier.testTag("suggestionFeedScreen"),
       topBar = {
           // Top bar with search functionality based on the title of the trips
-          OverviewTopBar(
+          SuggestionTopBar(
               searchText = searchText,
               onSearchTextChanged = { newSearchText -> searchText = newSearchText })
       },

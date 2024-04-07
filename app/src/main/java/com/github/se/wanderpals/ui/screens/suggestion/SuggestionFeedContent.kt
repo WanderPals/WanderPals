@@ -96,6 +96,8 @@ fun SuggestionFeedContent(
         imageUrl = ""
     )
 
+    /*
+    //these data are used for checking the UI, will be replaced with real data with William
     val suggestionList = listOf(
         com.github.se.wanderpals.model.data.Suggestion(
             "suggestionId1",
@@ -132,9 +134,9 @@ com.github.se.wanderpals.model.data.Suggestion(
             emptyList(),
             emptyList()
         )
-    )
+    )*/
 
-    // If trips list is empty, display a message
+    // If suggestion list is empty, display a message
     if (suggestionList.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
             Text(

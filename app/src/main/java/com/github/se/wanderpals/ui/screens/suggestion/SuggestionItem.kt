@@ -111,7 +111,7 @@ fun SuggestionItem(
                 Icon(
                     imageVector = Icons.Default.MailOutline,
                     contentDescription = null, // Decorative element
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(18.dp)
 
                 )
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
@@ -125,7 +125,7 @@ fun SuggestionItem(
                 Icon(
                     imageVector = Icons.Default.FavoriteBorder,
                     contentDescription = null, // Decorative element
-                    modifier = Modifier.size(14.dp)
+                    modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
                 Text(

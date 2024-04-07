@@ -38,7 +38,7 @@ fun Trip(oldNavActions: NavigationActions, tripId: String) {
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
           composable(Route.DASHBOARD) { Dashboard(tripId) }
           composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
-          composable(Route.SUGGESTION) { Suggestion(tripId) }
+          composable(Route.SUGGESTION) { Suggestion(tripId) } //todo: might have the param oldNavActions for Suggestion()
           composable(Route.MAP) { Map(tripId) }
           composable(Route.NOTIFICATION) { Notification(tripId) }
         }
