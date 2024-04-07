@@ -1,8 +1,5 @@
 package com.github.se.wanderpals.ui.screens.overview
 
-
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -59,7 +55,6 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
 
   var dialogIsOpen by remember { mutableStateOf(false) }
 
-  val context = LocalContext.current
 
   // Display loading indicator waiting for database to fetch the trips of the user
   if (isLoading) {
