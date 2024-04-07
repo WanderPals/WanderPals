@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -53,7 +52,7 @@ fun SuggestionItem(
   Card(
       modifier =
           modifier
-              .padding(8.dp)
+              //              .padding(8.dp) // Add padding around the Card
               //              .width(380.dp) // the width of the Card
               //              .height(166.dp) // the height of the Card
               .width(360.dp) // the width of the Card
@@ -63,10 +62,11 @@ fun SuggestionItem(
       colors = cardColors // Use the cardColors with the white background
       ) {
         //        Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-        Column(modifier = Modifier.padding(12.dp).fillMaxWidth()) {
+        //        Column(modifier = Modifier.padding(12.dp).fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
           Row( // Row for title and date
               //              modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-              modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+              modifier = Modifier.fillMaxWidth(), // .padding(bottom = 4.dp),
               horizontalArrangement = Arrangement.SpaceBetween) {
                 //                Text(text = suggestion.stop.title, fontWeight = FontWeight.Bold,
                 // fontSize = 18.sp)
@@ -111,7 +111,7 @@ fun SuggestionItem(
 
           Row( // Row for comments and likes
               //              modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-              modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+              modifier = Modifier.fillMaxWidth(), // .padding(top = 4.dp),
               horizontalArrangement = Arrangement.SpaceBetween,
               verticalAlignment = Alignment.CenterVertically) {
                 //                Spacer(Modifier.width(240.dp)) // Use the space to align the mail
@@ -162,4 +162,7 @@ fun SuggestionItem(
 
 // todo: see OverviewTrip.kt
 
-// todo: imo the size of the things inside the a suggestionItem don't need to be changed
+// todo: imo the size of the things inside the a suggestionItem don't need to be changed, but
+//  the space between your input fields needs to be smaller.
+// https://edstem.org/eu/courses/1193/discussion/94973
+// todo: Also, remove all the paddings so the height of the card can be reduced

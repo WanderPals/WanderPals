@@ -100,7 +100,7 @@ fun SuggestionFeedContent(
           website = "http://www.kuchu-teien.com/",
           imageUrl = "")
 
-  /*
+  //  /*
   // these data are used for checking the UI, will be replaced with real data with William
   val _suggestionList =
       listOf(
@@ -136,8 +136,10 @@ fun SuggestionFeedContent(
               stop3,
               emptyList(),
               emptyList()))
-      */
+  //      */
+  /*
   val _suggestionList = suggestionList
+   */
 
   // If suggestion list is empty, display a message
   if (_suggestionList.isEmpty()) {
