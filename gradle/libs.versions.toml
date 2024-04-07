@@ -1,6 +1,7 @@
 [versions]
 agp = "8.3.1"
 coreKtxVersion = "1.8.1"
+firebaseAuth = "22.3.1"
 firebaseDatabaseKtx = "20.3.0"
 firebaseFirestore = "24.10.0"
 kotlin = "1.8.10"
@@ -34,6 +35,7 @@ navigationRuntimeKtx = "2.7.7"
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoCore" }
 core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
+firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

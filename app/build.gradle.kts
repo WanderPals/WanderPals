@@ -178,6 +178,11 @@ dependencies {
     // Coroutine support for Firebase (Play Services)
     implementation(libs.kotlinx.coroutines.play.services)
 
+    // Firebase Authentication
+    implementation(libs.firebase.auth)
+
+    // Google Sign-In
+    implementation(libs.play.services.auth)
 
 
     debugImplementation(libs.compose.tooling)
