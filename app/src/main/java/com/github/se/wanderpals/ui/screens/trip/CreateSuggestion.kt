@@ -1,20 +1,14 @@
 package com.github.se.wanderpals.ui.screens.trip
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +17,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,16 +37,12 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
-import java.text.SimpleDateFormat
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * CreateSuggestion composable responsible for adding a suggestion to a trip
@@ -112,7 +101,7 @@ fun CreateSuggestion(
 
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-  Surface(modifier = Modifier.padding(16.dp)) {
+  Surface(modifier = Modifier.padding(16.dp).testTag("createSuggestionScreen")) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,7 +147,7 @@ fun CreateSuggestion(
                 value = startTime,
                 onValueChange = { startTime = it },
                 placeholder = { Text("00:00") },
-                modifier = Modifier.weight(1f).testTag("inputSuggestionEndTime"),
+                modifier = Modifier.weight(1f).testTag("inputSuggestionStartTime"),
                 isError = start_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerStart = true })
@@ -182,19 +171,19 @@ fun CreateSuggestion(
                 value = endTime,
                 onValueChange = { endTime = it },
                 placeholder = { Text("01:00") },
-                modifier = Modifier.weight(1f).testTag("inputSuggestionEndDate"),
+                modifier = Modifier.weight(1f).testTag("inputSuggestionEndTime"),
                 isError = end_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerEnd = true })
           }
           if (showDatePickerStart) {
             MyDatePickerDialog(
-                onDateSelected = { startDate = convertDateFormat(it) }, onDismiss = { showDatePickerStart = false })
+                onDateSelected = { startDate = if(isStringInFormat(it, """^\d{2}/\d{2}/\d{4}$""")) convertDateFormat(it) else "To*" }, onDismiss = { showDatePickerStart = false })
           }
 
           if (showDatePickerEnd) {
             MyDatePickerDialog(
-                onDateSelected = { endDate = convertDateFormat(it) }, onDismiss = { showDatePickerEnd = false })
+                onDateSelected = { endDate = if(isStringInFormat(it, """^\d{2}/\d{2}/\d{4}$""")) convertDateFormat(it) else "To*" }, onDismiss = { showDatePickerEnd = false })
           }
 
           if (showTimePickerStart) {
@@ -229,7 +218,7 @@ fun CreateSuggestion(
                 onValueChange = { address = it },
                 label = { Text("Address") },
                 modifier =
-                    Modifier.testTag("inputSuggestionDescription")
+                    Modifier.testTag("inputSuggestionAddress")
                         .horizontalScroll(state = rememberScrollState(0), enabled = true)
                         .weight(6f),
                 isError = addr_err,
@@ -273,6 +262,7 @@ fun CreateSuggestion(
           Spacer(modifier = Modifier.height(16.dp))
 
           Button(
+              modifier = Modifier.testTag("createSuggestionButton"),
               onClick = {
                 title_err = suggestionText.isEmpty()
                 budget_err = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
@@ -332,8 +322,7 @@ fun CreateSuggestion(
                                   website,
                                   ""))
                   // Pass the created suggestion to the callback function
-                  if (viewModel.addSuggestion(tripId, suggestion)) onSuccess() else onSuccess()
-                    onSuccess()
+                  if (viewModel.addSuggestion(tripId, suggestion)) onSuccess() else onFailure()
                 }
               }) {
                 Text("Create Suggestion", fontSize = 24.sp)
@@ -343,7 +332,8 @@ fun CreateSuggestion(
 }
 
 /**
- * || DO NOT USE FOR NOW || Dialog containing a CreateSuggestion window
+ * || DO NOT USE FOR NOW || WIP ||
+ * Dialog containing a CreateSuggestion window
  *
  * @param showDialog Boolean to specify when to show the dialog (should be turned off in the
  *   onDismiss function)
