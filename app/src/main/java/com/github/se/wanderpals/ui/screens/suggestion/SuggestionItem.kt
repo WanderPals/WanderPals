@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -48,15 +49,24 @@ fun SuggestionItem(
       CardDefaults.cardColors(
           containerColor = Color.White // This sets the background color of the Card
           )
-  // Use Card for elevation and surface coloring, if needed
+
+  //    // Parent Box to allow alignment - Assuming the parent will fill its parent or have
+  // specified size
+  //    Box(
+  //        modifier = modifier
+  //                .width(360.dp) // Specify the width of the Card here
+  //            .height(150.dp), // Specify the height of the Card here
+  //         contentAlignment = Alignment.TopCenter // Aligns children at the top center
+  //
+  //    )
   Card(
       modifier =
           modifier
-              //              .padding(8.dp) // Add padding around the Card
+              .padding(8.dp) // Add padding around the Card
               //              .width(380.dp) // the width of the Card
               //              .height(166.dp) // the height of the Card
               .width(360.dp) // the width of the Card
-              .height(150.dp), // the height of the Card
+              .height(120.dp), // the height of the Card
       //              .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp)),
       shape = RoundedCornerShape(size = 15.dp),
       colors = cardColors // Use the cardColors with the white background
