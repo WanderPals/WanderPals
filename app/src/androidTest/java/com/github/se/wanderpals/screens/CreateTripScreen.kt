@@ -19,4 +19,6 @@ class CreateTripoScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val inputStartDate: KNode = onNode { hasTestTag("inputTripStartDate") }
   val inputEndDate: KNode = onNode { hasTestTag("inputTripEndDate") }
   val inputDescription: KNode = onNode { hasTestTag("inputTripDescription") }
+
+  val titleLengthText : KNode = onNode { hasTestTag("titleLengthText") }
 }
