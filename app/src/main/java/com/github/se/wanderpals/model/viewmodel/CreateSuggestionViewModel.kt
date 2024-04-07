@@ -11,7 +11,7 @@ open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewMod
   private val _tripsRepository = tripsRepository
 
   open fun addSuggestion(tripId: String, suggestion: Suggestion): Boolean {
-    var a: Boolean = false
+    var a: Boolean = true
     viewModelScope.launch {
       _tripsRepository.addSuggestionToTrip(tripId, suggestion).also { a = it }
     }

@@ -2,6 +2,8 @@ package com.github.se.wanderpals.ui.screens.trip
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -49,11 +51,11 @@ import kotlinx.coroutines.Dispatchers
  *
  * @param tripId the id of the trip
  * @param viewModel a CreateSuggestionViewModel that needs to be initialized beforehand
- * @param desc default value for the description entry
- * @param addr default value for the address entry
- * @param website default value for the website entry
- * @param title default value for the title entry
- * @param budget default value for the budget entry
+ * @param desc default value for the description entry (can be empty)
+ * @param addr default value for the address entry (can be empty)
+ * @param website default value for the website entry (can be empty)
+ * @param title default value for the title entry (can be empty)
+ * @param budget default value for the budget entry (can be empty)
  * @param onSuccess additional code to execute after the successful creation of the suggestion
  * @param onFailure code to execute if the creation of the suggestion fails
  */
@@ -79,14 +81,14 @@ fun CreateSuggestion(
   var endTime by remember { mutableStateOf("00:00") }
   var endDate by remember { mutableStateOf("") }
 
-  var start_d_err = false
-  var end_d_err = false
-  var start_t_err = false
-  var end_t_err = false
-  var title_err = false
-  var budget_err = false
-  var desc_err = false
-  var addr_err = false
+  var start_d_err by remember { mutableStateOf(false) }
+  var end_d_err by remember { mutableStateOf(false) }
+  var start_t_err by remember { mutableStateOf(false) }
+  var end_t_err by remember { mutableStateOf(false) }
+  var title_err by remember { mutableStateOf(false) }
+  var budget_err by remember { mutableStateOf(false) }
+  var desc_err by remember { mutableStateOf(false) }
+  var addr_err by remember { mutableStateOf(false) }
 
   var showDatePickerStart by remember { mutableStateOf(false) }
   var showDatePickerEnd by remember { mutableStateOf(false) }
@@ -101,7 +103,9 @@ fun CreateSuggestion(
 
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-  Surface(modifier = Modifier.padding(16.dp).testTag("createSuggestionScreen")) {
+  Surface(modifier = Modifier
+      .padding(16.dp)
+      .testTag("createSuggestionScreen")) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -111,7 +115,9 @@ fun CreateSuggestion(
                 value = suggestionText,
                 onValueChange = { suggestionText = it },
                 label = { Text("Suggestion Title*") },
-                modifier = Modifier.weight(3f).testTag("inputSuggestionTitle"),
+                modifier = Modifier
+                    .weight(3f)
+                    .testTag("inputSuggestionTitle"),
                 isError = title_err,
                 singleLine = true)
             Spacer(modifier = Modifier.width(16.dp))
@@ -120,7 +126,9 @@ fun CreateSuggestion(
                 onValueChange = { _budget = it },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Budget") },
-                modifier = Modifier.weight(1f).testTag("inputSuggestionBudget"),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("inputSuggestionBudget"),
                 isError = budget_err,
                 singleLine = true,
                 placeholder = { Text("Budget") })
@@ -134,8 +142,11 @@ fun CreateSuggestion(
                 onValueChange = { startDate = it },
                 placeholder = { Text("From*") },
                 modifier =
-                    Modifier.testTag("inputSuggestionStartDate").weight(1f).clickable {
-                      showDatePickerStart = true
+                Modifier
+                    .testTag("inputSuggestionStartDate")
+                    .weight(1f)
+                    .clickable {
+                        showDatePickerStart = true
                     },
                 isError = start_d_err,
                 singleLine = true,
@@ -147,7 +158,9 @@ fun CreateSuggestion(
                 value = startTime,
                 onValueChange = { startTime = it },
                 placeholder = { Text("00:00") },
-                modifier = Modifier.weight(1f).testTag("inputSuggestionStartTime"),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("inputSuggestionStartTime"),
                 isError = start_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerStart = true })
@@ -160,7 +173,9 @@ fun CreateSuggestion(
                 value = endDate,
                 onValueChange = { endDate = it },
                 placeholder = { Text("To*") },
-                modifier = Modifier.weight(1f).testTag("inputSuggestionEndDate"),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("inputSuggestionEndDate"),
                 isError = end_d_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showDatePickerEnd = true })
@@ -171,7 +186,9 @@ fun CreateSuggestion(
                 value = endTime,
                 onValueChange = { endTime = it },
                 placeholder = { Text("01:00") },
-                modifier = Modifier.weight(1f).testTag("inputSuggestionEndTime"),
+                modifier = Modifier
+                    .weight(1f)
+                    .testTag("inputSuggestionEndTime"),
                 isError = end_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerEnd = true })
@@ -203,13 +220,14 @@ fun CreateSuggestion(
               onValueChange = { description = it },
               label = { Text("Suggestion Description*") },
               modifier =
-                  Modifier.testTag("inputSuggestionDescription")
-                      .fillMaxWidth()
-                      .height(200.dp)
-                      .padding(bottom = 16.dp),
+              Modifier
+                  .testTag("inputSuggestionDescription")
+                  .fillMaxWidth()
+                  .height(200.dp)
+                  .padding(bottom = 16.dp)
+                  .scrollable(rememberScrollState(), Orientation.Vertical),
               isError = desc_err,
               singleLine = false,
-              maxLines = 5,
               placeholder = { Text("Describe the suggestion") })
 
           Row(modifier = Modifier.fillMaxWidth()) {
@@ -218,9 +236,10 @@ fun CreateSuggestion(
                 onValueChange = { address = it },
                 label = { Text("Address") },
                 modifier =
-                    Modifier.testTag("inputSuggestionAddress")
-                        .horizontalScroll(state = rememberScrollState(0), enabled = true)
-                        .weight(6f),
+                Modifier
+                    .testTag("inputSuggestionAddress")
+                    .horizontalScroll(state = rememberScrollState(0), enabled = true)
+                    .weight(6f),
                 isError = addr_err,
                 singleLine = true,
                 placeholder = { Text("Address of the suggestion") })
@@ -249,9 +268,10 @@ fun CreateSuggestion(
               onValueChange = { _website = it },
               label = { Text("Website") },
               modifier =
-                  Modifier.testTag("inputSuggestionWebsite")
-                      .fillMaxWidth()
-                      .horizontalScroll(state = rememberScrollState(0), enabled = true),
+              Modifier
+                  .testTag("inputSuggestionWebsite")
+                  .fillMaxWidth()
+                  .horizontalScroll(state = rememberScrollState(0), enabled = true),
               singleLine = true,
               placeholder = { Text("Website") })
 
@@ -307,20 +327,20 @@ fun CreateSuggestion(
                           createdAt = LocalDate.now(), // Should add time
                           stop =
                               Stop(
-                                  "apkazpokpo", // modified by database
-                                  suggestionText,
-                                  address,
-                                  startDateObj,
-                                  startTimeObj,
-                                  duration.toMinutes().toInt(),
-                                  if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
-                                  description,
-                                  GeoCords(
+                                  "", // modified by database
+                                  title = suggestionText,
+                                  address = address,
+                                  date = startDateObj,
+                                  startTime = startTimeObj,
+                                  duration = duration.toMinutes().toInt(),
+                                  budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
+                                  description = description,
+                                  geoCords = GeoCords(
                                       0.0,
                                       0.0), // from address i guess, chatGPT tell me to use Google
                                   // Maps
-                                  website,
-                                  ""))
+                                  website = website,
+                                  imageUrl = ""))
                   // Pass the created suggestion to the callback function
                   if (viewModel.addSuggestion(tripId, suggestion)) onSuccess() else onFailure()
                 }
@@ -346,7 +366,9 @@ fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
     Dialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismiss) {
-          Surface(modifier = Modifier.padding(top = 16.dp).fillMaxSize()) {
+          Surface(modifier = Modifier
+              .padding(top = 16.dp)
+              .fillMaxSize()) {
             CreateSuggestion(
                 "aaaa", CreateSuggestionViewModel(TripsRepository("aaaa", Dispatchers.IO)))
           }
@@ -360,6 +382,20 @@ fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
   }
 }
 
+/**
+ * CreateSuggestion composable responsible for adding a suggestion to a trip
+ *
+ * @param tripId the id of the trip
+ * @param viewModel a CreateSuggestionViewModel that needs to be initialized beforehand
+ * @param nav NavigationActions to navigate back to Suggestion the suggestion is successfully created
+ * @param desc default value for the description entry (can be empty)
+ * @param addr default value for the address entry (can be empty)
+ * @param website default value for the website entry (can be empty)
+ * @param title default value for the title entry (can be empty)
+ * @param budget default value for the budget entry (can be empty)
+ * @param onSuccess additional code to execute after the successful creation of the suggestion
+ * @param onFailure code to execute if the creation of the suggestion fails
+ */
 @Composable
 fun CreateSuggestionScreen(
     tripId: String,
@@ -382,7 +418,7 @@ fun CreateSuggestionScreen(
       title,
       budget,
       onSuccess = {
-        nav.navigateTo(Route.SUGGESTION)
+        nav.navigateTo(Route.SUGGESTION) // could be change to only execute onSuccess()
         onSuccess()
       },
       onFailure = { onFailure() })
@@ -407,7 +443,7 @@ private fun isStringInFormat(input: String, regexPattern: String): Boolean {
 /** for quick testing purposes */
 @Preview(showBackground = true)
 @Composable
-fun CreateSuggestionScreenPreview() {
+fun CreateSuggestionPreview() {
   CreateSuggestion(
       "aaaa",
       CreateSuggestionViewModel(TripsRepository("aaaa", Dispatchers.IO)),
@@ -522,21 +558,27 @@ fun TimePickerDialog(
         shape = MaterialTheme.shapes.extraLarge,
         tonalElevation = 6.dp,
         modifier =
-            Modifier.width(IntrinsicSize.Min)
-                .height(IntrinsicSize.Min)
-                .background(
-                    shape = MaterialTheme.shapes.extraLarge,
-                    color = MaterialTheme.colorScheme.surface),
+        Modifier
+            .width(IntrinsicSize.Min)
+            .height(IntrinsicSize.Min)
+            .background(
+                shape = MaterialTheme.shapes.extraLarge,
+                color = MaterialTheme.colorScheme.surface
+            ),
     ) {
       toggle()
       Column(
           modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp),
                 text = title,
                 style = MaterialTheme.typography.labelMedium)
             content()
-            Row(modifier = Modifier.height(40.dp).fillMaxWidth()) {
+            Row(modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth()) {
               Spacer(modifier = Modifier.weight(1f))
               TextButton(onClick = onCancel) { Text("Cancel") }
               TextButton(onClick = onConfirm) { Text("OK") }
