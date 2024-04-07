@@ -87,7 +87,7 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
           performTextClearance()
         }
-        titleLengthText{
+        titleLengthText {
           assertIsDisplayed()
           assertTextEquals("0/40")
         }
@@ -156,7 +156,7 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
           performTextInput("My trip")
         }
-        titleLengthText{
+        titleLengthText {
           assertIsDisplayed()
           assertTextEquals("7/40")
         }
@@ -223,7 +223,7 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
           performTextInput("My trip")
         }
-        titleLengthText{
+        titleLengthText {
           assertIsDisplayed()
           assertTextEquals("7/40")
         }
@@ -289,7 +289,7 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
           performTextInput("My trip")
         }
-        titleLengthText{
+        titleLengthText {
           assertIsDisplayed()
           assertTextEquals("7/40")
         }
@@ -358,7 +358,7 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
           performTextInput("My trip")
         }
-        titleLengthText{
+        titleLengthText {
           assertIsDisplayed()
           assertTextEquals("7/40")
         }
@@ -426,9 +426,8 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
           performTextClearance()
           performTextInput("My trip")
-
         }
-        titleLengthText{
+        titleLengthText {
           assertIsDisplayed()
           assertTextEquals("7/40")
         }

@@ -55,7 +55,6 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
 
   var dialogIsOpen by remember { mutableStateOf(false) }
 
-
   // Display loading indicator waiting for database to fetch the trips of the user
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -111,8 +110,6 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
   // Mutable state to hold the trip code input and error state
   var tripCode by remember { mutableStateOf(EMPTY_CODE) }
   var isError by remember { mutableStateOf(false) }
-
-
 
   // Dialog composable
   Dialog(

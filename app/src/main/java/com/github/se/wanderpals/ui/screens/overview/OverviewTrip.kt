@@ -45,13 +45,14 @@ import java.time.format.DateTimeFormatter
  */
 fun Context.shareTripCodeIntent(tripId: String) {
 
-    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+  val sendIntent =
+      Intent(Intent.ACTION_SEND).apply {
         putExtra(Intent.EXTRA_TEXT, tripId)
         type = "text/plain"
-    }
-    val shareIntent = Intent.createChooser(sendIntent, null)
+      }
+  val shareIntent = Intent.createChooser(sendIntent, null)
 
-    startActivity(shareIntent)
+  startActivity(shareIntent)
 }
 
 /**
@@ -64,100 +65,84 @@ fun Context.shareTripCodeIntent(tripId: String) {
 @Composable
 fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
 
-    // Date pattern for formatting start and end dates
-    val DATE_PATTERN = "dd/MM/yyyy"
+  // Date pattern for formatting start and end dates
+  val DATE_PATTERN = "dd/MM/yyyy"
 
-    // Local context
-    val context = LocalContext.current
+  // Local context
+  val context = LocalContext.current
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        // Button representing the trip overview
-        Button(
-            onClick = { navigationActions.navigateTo(Route.TRIP + "/${trip.tripId}") },
-            modifier =
-            Modifier
-                .align(Alignment.TopCenter)
+  Box(modifier = Modifier.fillMaxWidth()) {
+    // Button representing the trip overview
+    Button(
+        onClick = { navigationActions.navigateTo(Route.TRIP + "/${trip.tripId}") },
+        modifier =
+            Modifier.align(Alignment.TopCenter)
                 .width(360.dp)
                 .height(100.dp)
                 .padding(top = 16.dp)
                 .testTag("buttonTrip" + trip.tripId),
-            shape = RoundedCornerShape(size = 15.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEAEEFD))
-        ) {
-            // Column containing trip information
-            Column(
-                modifier = Modifier.width(320.dp)
-            ) {
-                // Trip title
-                Text(
-                    text = trip.title,
-                    modifier = Modifier.height(24.dp),
-                    style =
+        shape = RoundedCornerShape(size = 15.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEAEEFD))) {
+          // Column containing trip information
+          Column(modifier = Modifier.width(320.dp)) {
+            // Trip title
+            Text(
+                text = trip.title,
+                modifier = Modifier.height(24.dp),
+                style =
                     TextStyle(
                         fontSize = 16.sp,
                         lineHeight = 24.sp,
                         fontWeight = FontWeight(500),
                         color = Color(0xFF000000),
                         letterSpacing = 0.5.sp,
-                    )
-                )
-                Spacer(modifier = Modifier.height(3.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Start date
-                    Text(
-                        text =
-                        "From : %s"
-                            .format(trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN))),
-                        modifier = Modifier.height(24.dp),
-                        style =
-                        TextStyle(
-                            fontSize = 12.sp,
-                            lineHeight = 24.sp,
-                            fontWeight = FontWeight(500),
-                            color = Color(0xFF000000),
-                            letterSpacing = 0.5.sp,
-                        )
-                    )
-                    //Share trip code button
-                    IconButton(
-                        modifier = Modifier.size(20.dp).testTag("shareTripButton"+ trip.tripId),
-                        onClick = {
-                            context.shareTripCodeIntent(trip.tripId)
-                        },
-
-                        ) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = null,
-                            tint = Color(0xFF000000)
-                        )
-                    }
-
+                    ))
+            Spacer(modifier = Modifier.height(3.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween) {
+                  // Start date
+                  Text(
+                      text =
+                          "From : %s"
+                              .format(
+                                  trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN))),
+                      modifier = Modifier.height(24.dp),
+                      style =
+                          TextStyle(
+                              fontSize = 12.sp,
+                              lineHeight = 24.sp,
+                              fontWeight = FontWeight(500),
+                              color = Color(0xFF000000),
+                              letterSpacing = 0.5.sp,
+                          ))
+                  // Share trip code button
+                  IconButton(
+                      modifier = Modifier.size(20.dp).testTag("shareTripButton" + trip.tripId),
+                      onClick = { context.shareTripCodeIntent(trip.tripId) },
+                  ) {
+                    Icon(
+                        imageVector = Icons.Default.Share,
+                        contentDescription = null,
+                        tint = Color(0xFF000000))
+                  }
                 }
-                // End date
+            // End date
 
-                Text(
-                    text =
+            Text(
+                text =
                     "To : %s"
                         .format(trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN))),
-                    modifier = Modifier.height(24.dp),
-                    style =
+                modifier = Modifier.height(24.dp),
+                style =
                     TextStyle(
                         fontSize = 12.sp,
                         lineHeight = 24.sp,
                         fontWeight = FontWeight(500),
                         color = Color(0xFF000000),
                         letterSpacing = 0.5.sp,
-                    )
-                )
-
-            }
-
+                    ))
+          }
         }
-
-    }
+  }
 }
-

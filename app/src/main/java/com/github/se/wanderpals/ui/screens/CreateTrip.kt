@@ -1,8 +1,6 @@
 package com.github.se.wanderpals.ui.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -36,25 +34,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
-
-
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 /**
  * Custom interaction source for date picker.
@@ -66,25 +59,24 @@ import java.util.Date
  */
 class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource {
 
-    override val interactions =
-        MutableSharedFlow<Interaction>(
-            extraBufferCapacity = 16,
-            onBufferOverflow = BufferOverflow.DROP_OLDEST,
-        )
+  override val interactions =
+      MutableSharedFlow<Interaction>(
+          extraBufferCapacity = 16,
+          onBufferOverflow = BufferOverflow.DROP_OLDEST,
+      )
 
-    override suspend fun emit(interaction: Interaction) {
-        if (interaction is PressInteraction.Release) {
-            onClick()
-        }
-
-        interactions.emit(interaction)
+  override suspend fun emit(interaction: Interaction) {
+    if (interaction is PressInteraction.Release) {
+      onClick()
     }
 
-    override fun tryEmit(interaction: Interaction): Boolean {
-        return interactions.tryEmit(interaction)
-    }
+    interactions.emit(interaction)
+  }
+
+  override fun tryEmit(interaction: Interaction): Boolean {
+    return interactions.tryEmit(interaction)
+  }
 }
-
 
 /**
  * Screen for creating a new trip.
@@ -99,196 +91,161 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 @Composable
 fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
 
-    val MAX_TITLE_LENGTH = 40
+  val MAX_TITLE_LENGTH = 40
 
-    var name by remember { mutableStateOf("") }
-    var budget by remember { mutableStateOf("0") }
-    var startDate by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
+  var name by remember { mutableStateOf("") }
+  var budget by remember { mutableStateOf("0") }
+  var startDate by remember { mutableStateOf("") }
+  var endDate by remember { mutableStateOf("") }
+  var description by remember { mutableStateOf("") }
 
-    var errorText by remember { mutableStateOf("") }
-    var showDatePickerStart by remember { mutableStateOf(false) }
-    var showDatePickerEnd by remember { mutableStateOf(false) }
+  var errorText by remember { mutableStateOf("") }
+  var showDatePickerStart by remember { mutableStateOf(false) }
+  var showDatePickerEnd by remember { mutableStateOf(false) }
 
-
-
-    Scaffold(
-        modifier = Modifier.testTag("createTripScreen"),
-        topBar = {
-            Row {
-                OutlinedButton(
-                    modifier = Modifier
-                        .testTag("goBackButton")
-                        .padding(16.dp),
-                    onClick = { nav.navigateTo(Route.OVERVIEW)
-
-                    }) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back",
-                    )
-                }
-
-                Text(
-                    text = "Create a new Trip",
-                    modifier = Modifier
-                        .testTag("createTripTitle")
-                        .padding(28.dp)
+  Scaffold(
+      modifier = Modifier.testTag("createTripScreen"),
+      topBar = {
+        Row {
+          OutlinedButton(
+              modifier = Modifier.testTag("goBackButton").padding(16.dp),
+              onClick = { nav.navigateTo(Route.OVERVIEW) }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                    contentDescription = "Back",
                 )
-            }
-        },
-        content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = {
-                        newTitle -> if (newTitle.length <= MAX_TITLE_LENGTH){
-                            name = newTitle
-                        }
-                    },
-                    label = { Text("Title") },
-                    modifier =
-                    Modifier
-                        .testTag("inputTripTitle")
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    isError = errorText.isNotEmpty(),
-                    singleLine = true,
-                    placeholder = { Text("Name the trip") })
+              }
 
-                Text(
-                    text = "${name.length}/$MAX_TITLE_LENGTH",
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .testTag("titleLengthText"),
-                    style =
-                    TextStyle(
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    ),
-                )
-                OutlinedTextField(
-                    value = budget,
-                    onValueChange = { budget = it },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    label = { Text("Budget") },
-                    modifier =
-                    Modifier
-                        .testTag("inputTripBudget")
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                    isError = errorText.isNotEmpty(),
-                    singleLine = true,
-                    placeholder = { Text("Enter the total budget") })
+          Text(
+              text = "Create a new Trip",
+              modifier = Modifier.testTag("createTripTitle").padding(28.dp))
+        }
+      },
+      content = {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+              OutlinedTextField(
+                  value = name,
+                  onValueChange = { newTitle ->
+                    if (newTitle.length <= MAX_TITLE_LENGTH) {
+                      name = newTitle
+                    }
+                  },
+                  label = { Text("Title") },
+                  modifier =
+                      Modifier.testTag("inputTripTitle").fillMaxWidth().padding(bottom = 16.dp),
+                  isError = errorText.isNotEmpty(),
+                  singleLine = true,
+                  placeholder = { Text("Name the trip") })
 
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Describe") },
-                    modifier =
-                    Modifier
-                        .testTag("inputTripDescription")
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(bottom = 16.dp),
-                    isError = errorText.isNotEmpty(),
-                    placeholder = { Text("Describe the trip") })
+              Text(
+                  text = "${name.length}/$MAX_TITLE_LENGTH",
+                  modifier = Modifier.align(Alignment.End).testTag("titleLengthText"),
+                  style = TextStyle(fontSize = 12.sp, color = Color.Gray),
+              )
+              OutlinedTextField(
+                  value = budget,
+                  onValueChange = { budget = it },
+                  keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                  label = { Text("Budget") },
+                  modifier =
+                      Modifier.testTag("inputTripBudget").fillMaxWidth().padding(bottom = 16.dp),
+                  isError = errorText.isNotEmpty(),
+                  singleLine = true,
+                  placeholder = { Text("Enter the total budget") })
 
-                Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                    OutlinedTextField(
-                        value = startDate,
-                        onValueChange = { startDate = it },
-                        placeholder = { Text("dd/mm/yyyy") },
-                        modifier =
-                        Modifier
-                            .size(150.dp, 50.dp)
+              OutlinedTextField(
+                  value = description,
+                  onValueChange = { description = it },
+                  label = { Text("Describe") },
+                  modifier =
+                      Modifier.testTag("inputTripDescription")
+                          .fillMaxWidth()
+                          .height(200.dp)
+                          .padding(bottom = 16.dp),
+                  isError = errorText.isNotEmpty(),
+                  placeholder = { Text("Describe the trip") })
+
+              Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                OutlinedTextField(
+                    value = startDate,
+                    onValueChange = { startDate = it },
+                    placeholder = { Text("dd/mm/yyyy") },
+                    modifier =
+                        Modifier.size(150.dp, 50.dp)
                             .padding(end = 16.dp)
                             .testTag("inputTripStartDate")
                             .clickable { showDatePickerStart = true },
-                        isError = errorText.isNotEmpty(),
-                        singleLine = true,
-                        interactionSource = DateInteractionSource { showDatePickerStart = true })
-                    OutlinedTextField(
-                        value = endDate,
-                        onValueChange = { endDate = it },
-                        placeholder = { Text("dd/mm/yyyy") },
-                        modifier = Modifier
-                            .size(150.dp, 50.dp)
-                            .testTag("inputTripEndDate"),
-                        isError = errorText.isNotEmpty(),
-                        singleLine = true,
-                        interactionSource = DateInteractionSource { showDatePickerEnd = true })
-                }
-                if (showDatePickerStart) {
-                    MyDatePickerDialog(
-                        onDateSelected = { startDate = it },
-                        onDismiss = { showDatePickerStart = false })
-                }
+                    isError = errorText.isNotEmpty(),
+                    singleLine = true,
+                    interactionSource = DateInteractionSource { showDatePickerStart = true })
+                OutlinedTextField(
+                    value = endDate,
+                    onValueChange = { endDate = it },
+                    placeholder = { Text("dd/mm/yyyy") },
+                    modifier = Modifier.size(150.dp, 50.dp).testTag("inputTripEndDate"),
+                    isError = errorText.isNotEmpty(),
+                    singleLine = true,
+                    interactionSource = DateInteractionSource { showDatePickerEnd = true })
+              }
+              if (showDatePickerStart) {
+                MyDatePickerDialog(
+                    onDateSelected = { startDate = it },
+                    onDismiss = { showDatePickerStart = false })
+              }
 
-                if (showDatePickerEnd) {
-                    MyDatePickerDialog(
-                        onDateSelected = { endDate = it },
-                        onDismiss = { showDatePickerEnd = false })
-                }
+              if (showDatePickerEnd) {
+                MyDatePickerDialog(
+                    onDateSelected = { endDate = it }, onDismiss = { showDatePickerEnd = false })
+              }
 
-                Text(
-                    text = errorText,
-                    color = Color.Red,
-                )
+              Text(
+                  text = errorText,
+                  color = Color.Red,
+              )
 
-                Button(
-                    modifier = Modifier
-                        .testTag("tripSave")
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    onClick = {
-                        val error = validateInputs(name, budget, description, startDate, endDate)
-                        if (error.isNotEmpty()) {
-                            errorText = error
-                        } else {
+              Button(
+                  modifier = Modifier.testTag("tripSave").fillMaxWidth().padding(16.dp),
+                  onClick = {
+                    val error = validateInputs(name, budget, description, startDate, endDate)
+                    if (error.isNotEmpty()) {
+                      errorText = error
+                    } else {
 
-                            val startDateTrip =
-                                LocalDate.of(
-                                    startDate.split("/")[2].toInt(),
-                                    startDate.split("/")[1].toInt(),
-                                    startDate.split("/")[0].toInt()
-                                )
-                            val endDateTrip =
-                                LocalDate.of(
-                                    endDate.split("/")[2].toInt(),
-                                    endDate.split("/")[1].toInt(),
-                                    endDate.split("/")[0].toInt()
-                                )
+                      val startDateTrip =
+                          LocalDate.of(
+                              startDate.split("/")[2].toInt(),
+                              startDate.split("/")[1].toInt(),
+                              startDate.split("/")[0].toInt())
+                      val endDateTrip =
+                          LocalDate.of(
+                              endDate.split("/")[2].toInt(),
+                              endDate.split("/")[1].toInt(),
+                              endDate.split("/")[0].toInt())
 
-                            val trip =
-                                Trip(
-                                    tripId = "",
-                                    title = name,
-                                    startDate = startDateTrip,
-                                    endDate = endDateTrip,
-                                    totalBudget = budget.toDouble(),
-                                    description = description,
-                                    imageUrl = "",
-                                    stops = emptyList(),
-                                    users = emptyList(),
-                                    suggestions = emptyList()
-                                )
-                            overviewViewModel.createTrip(trip)
-                            nav.navigateTo(Route.OVERVIEW)
-                        }
-                    },
-                ) {
-                    Text("Save")
-                }
+                      val trip =
+                          Trip(
+                              tripId = "",
+                              title = name,
+                              startDate = startDateTrip,
+                              endDate = endDateTrip,
+                              totalBudget = budget.toDouble(),
+                              description = description,
+                              imageUrl = "",
+                              stops = emptyList(),
+                              users = emptyList(),
+                              suggestions = emptyList())
+                      overviewViewModel.createTrip(trip)
+                      nav.navigateTo(Route.OVERVIEW)
+                    }
+                  },
+              ) {
+                Text("Save")
+              }
             }
-        })
+      })
 }
 
 /**
@@ -299,24 +256,24 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyDatePickerDialog(onDateSelected: (String) -> Unit, onDismiss: () -> Unit) {
-    val datePickerState = rememberDatePickerState()
+  val datePickerState = rememberDatePickerState()
 
-    val selectedDate = datePickerState.selectedDateMillis?.let { convertMillisToDate(it) } ?: ""
+  val selectedDate = datePickerState.selectedDateMillis?.let { convertMillisToDate(it) } ?: ""
 
-    DatePickerDialog(
-        onDismissRequest = { onDismiss() },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onDateSelected(selectedDate)
-                    onDismiss()
-                }) {
-                Text(text = "OK")
+  DatePickerDialog(
+      onDismissRequest = { onDismiss() },
+      confirmButton = {
+        Button(
+            onClick = {
+              onDateSelected(selectedDate)
+              onDismiss()
+            }) {
+              Text(text = "OK")
             }
-        },
-        dismissButton = { Button(onClick = { onDismiss() }) { Text(text = "Cancel") } }) {
+      },
+      dismissButton = { Button(onClick = { onDismiss() }) { Text(text = "Cancel") } }) {
         DatePicker(state = datePickerState, modifier = Modifier.testTag("datePicker"))
-    }
+      }
 }
 
 /**
@@ -327,8 +284,8 @@ fun MyDatePickerDialog(onDateSelected: (String) -> Unit, onDismiss: () -> Unit) 
  */
 @SuppressLint("SimpleDateFormat")
 private fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy")
-    return formatter.format(Date(millis))
+  val formatter = SimpleDateFormat("dd/MM/yyyy")
+  return formatter.format(Date(millis))
 }
 
 /**
@@ -345,66 +302,64 @@ private fun validateInputs(
     startDate: String,
     endDate: String
 ): String {
-    val errors = mutableListOf<String>()
+  val errors = mutableListOf<String>()
 
-    if (name.isBlank()) errors.add("Title")
-    if (description.isBlank()) errors.add("Description")
-    if (startDate.isBlank()) errors.add("Start date")
-    if (endDate.isBlank()) errors.add("End date")
+  if (name.isBlank()) errors.add("Title")
+  if (description.isBlank()) errors.add("Description")
+  if (startDate.isBlank()) errors.add("Start date")
+  if (endDate.isBlank()) errors.add("End date")
 
-    val startDateParsed =
-        if (startDate.isNotBlank())
-            LocalDate.of(
-                startDate.split("/")[2].toInt(),
-                startDate.split("/")[1].toInt(),
-                startDate.split("/")[0].toInt()
-            )
-        else null
+  val startDateParsed =
+      if (startDate.isNotBlank())
+          LocalDate.of(
+              startDate.split("/")[2].toInt(),
+              startDate.split("/")[1].toInt(),
+              startDate.split("/")[0].toInt())
+      else null
 
-    val endDateParsed =
-        if (endDate.isNotBlank())
-            LocalDate.of(
-                endDate.split("/")[2].toInt(),
-                endDate.split("/")[1].toInt(),
-                endDate.split("/")[0].toInt()
-            )
-        else null
+  val endDateParsed =
+      if (endDate.isNotBlank())
+          LocalDate.of(
+              endDate.split("/")[2].toInt(),
+              endDate.split("/")[1].toInt(),
+              endDate.split("/")[0].toInt())
+      else null
 
-    var errorText =
-        when {
-            errors.isEmpty() -> ""
-            errors.size == 1 -> "${errors.first()} cannot be empty!"
-            else -> errors.joinToString(separator = ", ", postfix = " cannot be empty!")
+  var errorText =
+      when {
+        errors.isEmpty() -> ""
+        errors.size == 1 -> "${errors.first()} cannot be empty!"
+        else -> errors.joinToString(separator = ", ", postfix = " cannot be empty!")
+      }
+
+  if (startDateParsed != null && endDateParsed != null && startDateParsed.isAfter(endDateParsed)) {
+    errorText =
+        if (errorText.isNotEmpty()) {
+          "$errorText, start date must be before end date!"
+        } else {
+          "Start date must be before end date!"
         }
+  }
 
-    if (startDateParsed != null && endDateParsed != null && startDateParsed.isAfter(endDateParsed)) {
-        errorText =
-            if (errorText.isNotEmpty()) {
-                "$errorText, start date must be before end date!"
-            } else {
-                "Start date must be before end date!"
-            }
+  // Check that budget can be converted to a double
+  try {
+    budget.toDouble()
+    if (budget.toDouble() < 0) {
+      errorText =
+          if (errorText.isNotEmpty()) {
+            "$errorText and budget must be a positive number!"
+          } else {
+            "Budget must be a positive number!"
+          }
     }
-
-    // Check that budget can be converted to a double
-    try {
-        budget.toDouble()
-        if (budget.toDouble() < 0) {
-            errorText =
-                if (errorText.isNotEmpty()) {
-                    "$errorText and budget must be a positive number!"
-                } else {
-                    "Budget must be a positive number!"
-                }
+  } catch (e: NumberFormatException) {
+    errorText =
+        if (errorText.isNotEmpty()) {
+          "$errorText, budget must be a number!"
+        } else {
+          "Budget must be a number!"
         }
-    } catch (e: NumberFormatException) {
-        errorText =
-            if (errorText.isNotEmpty()) {
-                "$errorText, budget must be a number!"
-            } else {
-                "Budget must be a number!"
-            }
-    }
+  }
 
-    return errorText
+  return errorText
 }

@@ -42,10 +42,10 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
       _isLoading.value = false
     }
   }
-  /** Adds the trip for the user by adding it in it trips Repository
+  /**
+   * Adds the trip for the user by adding it in it trips Repository
    *
    * @param trip The trip to add in the repository.
-   *
    */
   open fun createTrip(trip: Trip) {
     runBlocking { tripsRepository.addTrip(trip) }
@@ -72,5 +72,4 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
     }
     return success
   }
-
 }

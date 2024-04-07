@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
-
 /**
  * Composable function that represents the content of the overview screen. Displays a list of trips
  * with optional filtering based on search text.
@@ -48,7 +47,6 @@ fun OverviewContent(
       } else {
         tripsList.filter { trip -> trip.title.lowercase().contains(searchText.lowercase()) }
       }
-
 
   // If trips list is empty, display a message
   if (tripsList.isEmpty()) {
