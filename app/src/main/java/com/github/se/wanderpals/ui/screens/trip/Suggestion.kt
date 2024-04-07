@@ -37,7 +37,11 @@ fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String) {
             onSearchTextChanged = { newSearchText -> searchText = newSearchText })
       },
       bottomBar = {
-        SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
+        SuggestionBottomBar(
+            onSuggestionClick = {
+              navActions.navigateTo(Route.CREATE_SUGGESTION)
+            }) // fixme: faut une navActions en parametre pour que ca plente pas qd je clique sur le
+        // bouton
       }) { innerPadding ->
         //    NavHost(navController, startDestination = Route.DASHBOARD,
         // Modifier.padding(innerPadding))

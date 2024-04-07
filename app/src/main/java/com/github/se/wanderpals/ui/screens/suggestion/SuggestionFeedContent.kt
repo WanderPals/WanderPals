@@ -100,9 +100,10 @@ fun SuggestionFeedContent(
           website = "http://www.kuchu-teien.com/",
           imageUrl = "")
 
-//  /*
-      //these data are used for checking the UI, will be replaced with real data with William
-      val suggestionList = listOf(
+  /*
+  // these data are used for checking the UI, will be replaced with real data with William
+  val _suggestionList =
+      listOf(
           com.github.se.wanderpals.model.data.Suggestion(
               "suggestionId1",
               "userId1",
@@ -111,8 +112,7 @@ fun SuggestionFeedContent(
               LocalDate.of(2024, 1, 1),
               stop1,
               emptyList(),
-              emptyList()
-          ),
+              emptyList()),
           com.github.se.wanderpals.model.data.Suggestion(
               "suggestionId2",
               "userId2",
@@ -121,61 +121,60 @@ fun SuggestionFeedContent(
               LocalDate.of(2024, 2, 2),
               stop2,
               emptyList(),
-              emptyList()
-          ),
-  com.github.se.wanderpals.model.data.Suggestion(
+              emptyList()),
+          com.github.se.wanderpals.model.data.Suggestion(
               "suggestionId3",
               "userId3",
               "userName3",
               "This is a great place to visit." +
-                      "Let us go here together!" +
-                      "I am sure you will love it!" +
-                      "I have been there before and it was amazing!" +
-                      "Trying to convince you to go here with me." +
-                      "coz I know you will love it!",
+                  "Let us go here together!" +
+                  "I am sure you will love it!" +
+                  "I have been there before and it was amazing!" +
+                  "Trying to convince you to go here with me." +
+                  "coz I know you will love it!",
               LocalDate.of(2024, 3, 29),
               stop3,
               emptyList(),
-              emptyList()
-          )
-      )
-//    */
+              emptyList()))
+      */
+  val _suggestionList = suggestionList
 
   // If suggestion list is empty, display a message
-  if (suggestionList.isEmpty()) {
+  if (_suggestionList.isEmpty()) {
     Box(modifier = Modifier.fillMaxSize()) {
       Text(
           modifier =
               Modifier.align(Alignment.Center)
-//                  .width(260.dp)
-//                  .height(55.dp)
-                  .width(200.dp) // Reduced width for smaller screens
-                  .height(50.dp) // Adjusted height for smaller screens
+                  .width(260.dp)
+                  .height(55.dp)
+                  //                  .width(200.dp) // Reduced width for smaller screens
+                  //                  .height(50.dp) // Adjusted height for smaller screens
                   .testTag("noSuggestionsForUserText"),
           text = "Looks like there is no suggestions yet. ",
           style =
               TextStyle(
-//                  fontSize = 18.sp,
-//                  lineHeight = 20.sp,
-//                  fontWeight = FontWeight(500),
-                  fontSize = 16.sp, // Adjusted for smaller screen
-                  lineHeight = 18.sp, // Adjusted line height
-                  fontWeight = FontWeight.Medium, // Adjusted font weight for readability
+                  fontSize = 18.sp,
+                  lineHeight = 20.sp,
+                  fontWeight = FontWeight(500),
+                  //                  fontSize = 16.sp, // Adjusted for smaller screen
+                  //                  lineHeight = 18.sp, // Adjusted line height
+                  //                  fontWeight = FontWeight.Medium, // Adjusted font weight for
+                  // readability
                   color = Color(0xFF000000),
                   textAlign = TextAlign.Center,
-//                  letterSpacing = 0.5.sp,
-                  letterSpacing = 0.1.sp, // Slightly adjusted letter spacing
+                  letterSpacing = 0.5.sp,
+                  //                  letterSpacing = 0.1.sp, // Slightly adjusted letter spacing
               ),
       )
     }
   } else {
-//    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding))
-      Column(modifier = Modifier
-          .fillMaxWidth()
-          .padding(top = innerPadding.calculateTopPadding() + 8.dp,
-              bottom = innerPadding.calculateBottomPadding() + 8.dp,
-              start = 8.dp,
-              end = 8.dp))
+    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding))
+    //      Column(modifier = Modifier
+    //          .fillMaxWidth()
+    //          .padding(top = innerPadding.calculateTopPadding() + 8.dp,
+    //              bottom = innerPadding.calculateBottomPadding() + 8.dp,
+    //              start = 8.dp,
+    //              end = 8.dp))
     {
       // todo: for sprint3, filter
       //            // If no matching trips found, display a message
@@ -198,34 +197,36 @@ fun SuggestionFeedContent(
       // Title for the list of suggestions
       Text(
           text = "Suggestions",
-//          modifier = Modifier.padding(start = 27.dp, top = 15.dp),
-          modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp), // Reduced padding
+          modifier = Modifier.padding(start = 27.dp, top = 15.dp),
+          //          modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp), //
+          // Reduced padding
           style =
               TextStyle(
-//                  fontSize = 20.sp,
-//                  lineHeight = 24.sp,
-//                  fontWeight = FontWeight(500),
-                  fontSize = 18.sp, // Adjusted font size
-                  lineHeight = 22.sp, // Adjusted line height
-                  fontWeight = FontWeight.Medium, // Adjusted font weight                  color = Color(0xFF5A7BF0),
+                  fontSize = 20.sp,
+                  lineHeight = 24.sp,
+                  fontWeight = FontWeight(500),
+                  //                  fontSize = 18.sp, // Adjusted font size
+                  //                  lineHeight = 22.sp, // Adjusted line height
+                  //                  fontWeight = FontWeight.Medium, // Adjusted font weight
+                  color = Color(0xFF5A7BF0),
                   textAlign = TextAlign.Center,
-//                  letterSpacing = 0.5.sp,
+                  //                  letterSpacing = 0.5.sp,
                   letterSpacing = 0.4.sp, // Slightly adjusted letter spacing
               ),
           textAlign = TextAlign.Center,
-          color = Color(0xFF5A7BF0)
-          )
+      )
       // LazyColumn to display the list of suggestions of a trip
       LazyColumn() {
-        itemsIndexed(suggestionList /*filteredSuggestionsByTitle todo: for sprint3*/) {
+        itemsIndexed(_suggestionList /*filteredSuggestionsByTitle todo: for sprint3*/) {
             index,
             suggestion ->
           SuggestionItem(
               suggestion = suggestion,
               navigationActions = navigationActions,
-              modifier = Modifier.testTag("suggestion${index + 1}") // Apply the testTag here
-                  .padding(bottom = 4.dp) // Reduced padding between items
-          )
+              modifier =
+                  Modifier.testTag("suggestion${index + 1}") // Apply the testTag here
+                      .padding(bottom = 4.dp) // Reduced padding between items
+              )
         }
       }
     }
