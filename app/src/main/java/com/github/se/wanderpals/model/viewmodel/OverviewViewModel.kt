@@ -16,7 +16,7 @@ import kotlinx.coroutines.runBlocking
  *
  * @param tripsRepository The repository for accessing trip data.
  */
-open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel() {
+open class OverviewViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
 
   // State flow to hold the list of trips
   private val _state = MutableStateFlow(emptyList<Trip>())
