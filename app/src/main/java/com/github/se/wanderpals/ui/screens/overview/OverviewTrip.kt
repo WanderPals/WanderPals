@@ -2,6 +2,7 @@ package com.github.se.wanderpals.ui.screens.overview
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,8 +20,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
 
 /**
@@ -70,6 +76,17 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
 
   // Local context
   val context = LocalContext.current
+
+  // Mutable state to check if the icon button for sharing the trip is selected
+  val isSelected = remember { mutableStateOf(false) }
+
+  // Use of a launch effect to reset the value of isSelected to false after 100ms
+  LaunchedEffect(isSelected.value) {
+        if (isSelected.value) {
+            delay(100)
+            isSelected.value = false
+        }
+    }
 
   Box(modifier = Modifier.fillMaxWidth()) {
     // Button representing the trip overview
@@ -119,12 +136,20 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                   // Share trip code button
                   IconButton(
                       modifier = Modifier.size(20.dp).testTag("shareTripButton" + trip.tripId),
-                      onClick = { context.shareTripCodeIntent(trip.tripId) },
+                      onClick = {
+                          isSelected.value = true
+                          context.shareTripCodeIntent(trip.tripId)
+                      }
                   ) {
                     Icon(
                         imageVector = Icons.Default.Share,
                         contentDescription = null,
-                        tint = Color(0xFF000000))
+                        tint = Icons.Default.Share.tintColor,
+                        modifier =  Modifier.background(
+                            if (isSelected.value) Color.LightGray
+                            else Color.Transparent
+                        )
+                    )
                   }
                 }
             // End date
