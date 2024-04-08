@@ -20,8 +20,10 @@ import kotlinx.coroutines.launch
  *
  * @property tripId The identifier of the trip for which the agenda is being managed.
  */
-open class AgendaViewModel(tripId: String, private val tripsRepository: TripsRepository?) :
-    ViewModel() {
+open class AgendaViewModel(
+    private val tripId: String,
+    private val tripsRepository: TripsRepository?
+) : ViewModel() {
 
   /** Lazily initialized data source for calendar data. */
   private val dataSource by lazy { CalendarDataSource() }
@@ -38,11 +40,14 @@ open class AgendaViewModel(tripId: String, private val tripsRepository: TripsRep
   /** Exposed read-only state flow of the daily activities. */
   val dailyActivities: StateFlow<List<Stop>> = _dailyActivities.asStateFlow()
 
+  open var selectedDate: LocalDate? = LocalDate.now()
+
   init {
     viewModelScope.launch {
       _uiState.update { currentState ->
         currentState.copy(dates = dataSource.getDates(currentState.yearMonth, LocalDate.now()))
       }
+      fetchDailyActivities(selectedDate ?: LocalDate.now())
     }
   }
 
@@ -53,19 +58,21 @@ open class AgendaViewModel(tripId: String, private val tripsRepository: TripsRep
    */
   fun onDateSelected(selectedDate: CalendarUiState.Date) {
     viewModelScope.launch {
+      val selectedLocalDate =
+          LocalDate.of(
+              selectedDate.year.value,
+              selectedDate.yearMonth.month,
+              selectedDate.dayOfMonth.toInt())
+
+      // Determine if the newly selected date is different from the current state's selected date.
+      val isSameAsCurrentSelected = this@AgendaViewModel.selectedDate == selectedLocalDate
+      val newSelectedDate = if (isSameAsCurrentSelected) null else selectedLocalDate
+
+      // Update the open var selectedDate
+      this@AgendaViewModel.selectedDate = newSelectedDate
+
+      // Now, update the UI state to reflect this change.
       _uiState.update { currentState ->
-        // Convert CalendarUiState.Date to LocalDate
-        val selectedLocalDate =
-            LocalDate.of(
-                selectedDate.year.value,
-                selectedDate.yearMonth.month,
-                selectedDate.dayOfMonth.toInt())
-
-        val newSelectedDate =
-            if (currentState.selectedDate == selectedLocalDate) null
-            else selectedLocalDate // Toggle selection
-
-        // Mark the selected date and update the list
         val updatedDates =
             currentState.dates.map { date ->
               if (date.dayOfMonth == selectedDate.dayOfMonth) {
@@ -114,7 +121,7 @@ open class AgendaViewModel(tripId: String, private val tripsRepository: TripsRep
   /** Fetches the daily activities for the selected date. */
   private suspend fun getDailyActivities(selectedDate: LocalDate): List<Stop>? {
     // Assuming tripsRepository.getAllStopsFromTrip returns a List<Stop>
-    val allStops = tripsRepository?.getAllStopsFromTrip("tripId")
+    val allStops = tripsRepository?.getAllStopsFromTrip(tripId)
 
     // Filter stops to include only those that occur on the selected date
     return allStops?.filter { stop -> stop.date.isEqual(selectedDate) }

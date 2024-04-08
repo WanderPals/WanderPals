@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -61,10 +59,9 @@ fun AgendaPreview() {
 fun Agenda(agendaViewModel: AgendaViewModel) {
   val uiState by agendaViewModel.uiState.collectAsState()
   Surface(
-      modifier =
-          Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("agendaScreen"),
+      modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
   ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column() {
       CalendarWidget(
           days = getDaysOfWeekLabels(),
           yearMonth = uiState.yearMonth,
@@ -108,7 +105,7 @@ fun CalendarWidget(
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
-  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+  Column(modifier = Modifier.padding(16.dp)) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -218,30 +215,35 @@ fun ContentItem(
     onClickListener: (CalendarUiState.Date) -> Unit,
     modifier: Modifier = Modifier
 ) {
-  // Define the content description
-  val description =
-      "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
+  // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
+  val isEmptyDate = date.dayOfMonth.isEmpty()
 
-  Box(
-      modifier =
-          modifier
-              .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
-              .clip(CircleShape) // Clips the Box into a Circle
-              .background(
-                  color =
-                      if (date.isSelected) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                      } else {
-                        Color.Transparent
-                      })
-              .clickable { onClickListener(date) }
-              .semantics {
-                contentDescription = description
-              } // Add semantics with contentDescription
-      ) {
-        Text(
-            text = date.dayOfMonth,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.Center).padding(10.dp))
-      }
+  val baseModifier =
+      modifier
+          .aspectRatio(1f)
+          .clip(CircleShape)
+          .background(
+              if (!isEmptyDate && date.isSelected) MaterialTheme.colorScheme.secondaryContainer
+              else Color.Transparent)
+          .semantics {
+            contentDescription =
+                if (!isEmptyDate)
+                    "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
+                else "Empty Date Cell"
+          }
+
+  // Apply clickable only if the date is not empty.
+  val finalModifier =
+      if (!isEmptyDate) {
+        baseModifier.clickable { onClickListener(date) }
+      } else baseModifier
+
+  Box(modifier = finalModifier) {
+    if (!isEmptyDate) {
+      Text(
+          text = date.dayOfMonth,
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.align(Alignment.Center).padding(10.dp))
+    }
+  }
 }
