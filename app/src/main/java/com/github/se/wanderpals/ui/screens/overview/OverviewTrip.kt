@@ -20,7 +20,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,8 +37,8 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
 
 /**
  * Share the trip code using an intent.
@@ -82,11 +81,11 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
 
   // Use of a launch effect to reset the value of isSelected to false after 100ms
   LaunchedEffect(isSelected.value) {
-        if (isSelected.value) {
-            delay(100)
-            isSelected.value = false
-        }
+    if (isSelected.value) {
+      delay(100)
+      isSelected.value = false
     }
+  }
 
   Box(modifier = Modifier.fillMaxWidth()) {
     // Button representing the trip overview
@@ -137,20 +136,17 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                   IconButton(
                       modifier = Modifier.size(20.dp).testTag("shareTripButton" + trip.tripId),
                       onClick = {
-                          isSelected.value = true
-                          context.shareTripCodeIntent(trip.tripId)
+                        isSelected.value = true
+                        context.shareTripCodeIntent(trip.tripId)
+                      }) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            tint = Icons.Default.Share.tintColor,
+                            modifier =
+                                Modifier.background(
+                                    if (isSelected.value) Color.LightGray else Color.Transparent))
                       }
-                  ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = null,
-                        tint = Icons.Default.Share.tintColor,
-                        modifier =  Modifier.background(
-                            if (isSelected.value) Color.LightGray
-                            else Color.Transparent
-                        )
-                    )
-                  }
                 }
             // End date
 
