@@ -66,5 +66,3 @@ fun SuggestionBottomBar(onSuggestionClick: () -> Unit) {
     }
   }
 }
-
-// todo: see OverviewBottomBar.kt

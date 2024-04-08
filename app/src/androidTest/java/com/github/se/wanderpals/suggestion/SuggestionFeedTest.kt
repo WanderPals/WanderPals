@@ -31,8 +31,6 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
 
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
-  //    private val TEST_TRIP_ID = "dummyTripId"
-
   @Before
   fun testSetup() {
     // Initialize the mock NavigationActions
@@ -186,26 +184,3 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
     }
   }
 }
-
-// todo: see TripNavigationTest.kt, CreateToDoTest.kt, LoginTest.kt and SignInTest.kt for more
-// assertions
-/*
-       assertTextEquals("I love this place")
-       assertTextEquals("02/02/2024")
-       performClick()
-       assertHasClickAction()
-       assertIsSelected()
-       assertIsNotSelected()
-       assertIsDisplayed()
-       assertIsNotDisplayed()
-       assertIsEnabled()
-
-       assertTextContains("Create a suggestion") // for the create suggestion button
-
-   // assert: the nav action has been called
-   verify { mockNavActions.goBack() }
-   confirmVerified(mockNavActions)
-
-
-
-*/

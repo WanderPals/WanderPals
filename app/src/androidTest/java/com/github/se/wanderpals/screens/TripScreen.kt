@@ -9,7 +9,7 @@ class TripScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         semanticsProvider = semanticsProvider, viewBuilderAction = { hasTestTag("tripScreen") }) {
 
   val tripScreen: KNode = onNode { hasTestTag("tripScreen") }
-  val suggestionScreen: KNode = onNode { hasTestTag("suggestionScreen") }
+  val suggestionScreen: KNode = onNode { hasTestTag("suggestionFeedScreen") }
   val agendaScreen: KNode = onNode { hasTestTag("agendaScreen") }
   val dashboardScreen: KNode = onNode { hasTestTag("dashboardScreen") }
   val mapScreen: KNode = onNode { hasTestTag("mapScreen") }
