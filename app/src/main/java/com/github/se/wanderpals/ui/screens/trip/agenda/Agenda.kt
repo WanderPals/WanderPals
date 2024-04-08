@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -73,7 +74,8 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
           onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
       Spacer(modifier = Modifier.padding(1.dp))
       HorizontalDivider(
-          modifier = Modifier.padding(horizontal = 12.dp),
+          modifier = Modifier
+              .fillMaxWidth(),
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
       // Implement the daily agenda here
