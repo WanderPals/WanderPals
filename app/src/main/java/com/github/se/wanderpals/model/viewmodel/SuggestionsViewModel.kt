@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 open class SuggestionsViewModel(/*private val suggestionRepository: TripsRepository*/ ) :
     ViewModel() {
-  // State flow to hold the list of trips
+  // State flow to hold the list of suggestions
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   open val state: StateFlow<List<Suggestion>> = _state
 
@@ -31,7 +31,7 @@ open class SuggestionsViewModel(/*private val suggestionRepository: TripsReposit
   // parameter
   //    }
 
-  //    // Public method to load suggestions for a trip
+  //    // Public method to load suggestions of a trip
   //    fun loadSuggestions(tripId: String) {
   //        viewModelScope.launch {
   //            try {
