@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -96,7 +95,7 @@ class MainActivity : ComponentActivity() {
               Trip(navigationActions, tripId)
             }
             composable(Route.CREATE_TRIP) {
-              CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
+              CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
             }
           }
         }
