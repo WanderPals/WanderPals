@@ -100,7 +100,7 @@ fun SuggestionDetailPopup(
                       style = MaterialTheme.typography.bodyMedium,
                       modifier = Modifier.testTag("suggestionPopupUserName"))
 
-                  Text(text = ", on ", style = MaterialTheme.typography.bodyMedium)
+                  Text(text = ", created: ", style = MaterialTheme.typography.bodyMedium)
 
                   Text(
                       text = suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
@@ -121,8 +121,31 @@ fun SuggestionDetailPopup(
                     text = suggestion.text,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier =
-                        Modifier.padding(bottom = 24.dp).testTag("suggestionPopupDescriptionText"))
+                        Modifier.padding(bottom = 8.dp).testTag("suggestionPopupDescriptionText"))
 
+                // Calculate the end time and potentially the next day
+                val endTime =
+                    suggestion.stop.startTime.plusMinutes(suggestion.stop.duration.toLong())
+                var endDate = suggestion.stop.date
+                if (endTime.isBefore(suggestion.stop.startTime)) {
+                  endDate =
+                      endDate.plusDays(
+                          1) // Add a day if the endTime is before startTime due to overflow
+                }
+
+                // Display Date and Time Information
+                Text(
+                    text =
+                        "Scheduled from ${suggestion.stop.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))} " +
+                            "${suggestion.stop.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} " +
+                            "to ${endDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))} ${endTime.format(DateTimeFormatter.ofPattern("HH:mm"))}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier =
+                        Modifier.padding(bottom = 24.dp)
+                            .testTag("suggestionPopupStartDateTimeEndDateTime"))
+
+                // Display Comments
                 Text(
                     text = "Comments",
                     style = MaterialTheme.typography.bodyMedium,
@@ -154,7 +177,59 @@ fun SuggestionDetailPopup(
                     }
                   }
                 }
+
+                // Display Address and Website if available
+                if (suggestion.stop.address.isNotEmpty()) {
+                  Text(
+                      text = "Address: ${suggestion.stop.address}",
+                      style = MaterialTheme.typography.bodyMedium,
+                      fontWeight = FontWeight.SemiBold,
+                      modifier =
+                          Modifier.padding(top = 8.dp, bottom = 4.dp)
+                              .testTag("suggestionPopupAddrTextNotEmpty"))
+                } else {
+                  Row(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
+                    Text(
+                        text = "Address: ",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.testTag("suggestionPopupAddr"))
+                    Text(
+                        text = "No address provided",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier.testTag("suggestionPopupAddrTextEmpty"))
+                  }
+                }
+
+                if (suggestion.stop.website.isNotEmpty()) {
+                  Text(
+                      text = "Website: ${suggestion.stop.website}",
+                      style = MaterialTheme.typography.bodyMedium,
+                      fontWeight = FontWeight.SemiBold,
+                      modifier =
+                          Modifier.padding(bottom = 8.dp)
+                              .testTag("suggestionPopupWebsiteTextNotEmpty"))
+                } else {
+                  Row(modifier = Modifier.padding(bottom = 8.dp)) {
+                    Text(
+                        text = "Website: ",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.testTag("suggestionPopupWebsite"))
+                    Text(
+                        text = "No website provided",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier.testTag("suggestionPopupWebsiteTextEmpty"))
+                  }
+                }
               }
         }
   }
 }
+
+/*
+After the Description: Display the date, the startTime, using the duration to compute and display the endDate and endTime.
+After the comments: display the address and the website if there are.
+ */

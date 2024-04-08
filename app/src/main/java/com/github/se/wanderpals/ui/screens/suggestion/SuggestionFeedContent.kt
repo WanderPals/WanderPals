@@ -90,13 +90,13 @@ fun SuggestionFeedContent(
           description =
               "Dotonbori is Osaka's most famous tourist destination, known for its bright neon lights, extravagant signage, and abundant dining options.",
           geoCords = GeoCords(latitude = 34.668723, longitude = 135.501295),
-          website = "https://www.dotonbori.or.jp/en/",
+          website = "",
           imageUrl = "")
   val stop3 =
       Stop(
           stopId = "OSK003",
           title = "Umeda Sky Building",
-          address = "1-1-88 Oyodonaka, Kita Ward, Osaka, 531-0076, Japan",
+          address = "",
           date = LocalDate.of(2024, 4, 11),
           startTime = LocalTime.of(10, 30), // Opens at 10:30 AM
           duration = 90, // 1.5 hours visit
@@ -105,6 +105,20 @@ fun SuggestionFeedContent(
               "The Umeda Sky Building is a spectacular high rise building in the Kita district of Osaka, featuring a futuristic observatory, the Floating Garden.",
           geoCords = GeoCords(latitude = 34.705938, longitude = 135.490357),
           website = "http://www.kuchu-teien.com/",
+          imageUrl = "")
+  val stop4 =
+      Stop(
+          stopId = "OSK004",
+          title = "Umeda Sky Building 2",
+          address = "",
+          date = LocalDate.of(2024, 4, 11),
+          startTime = LocalTime.of(10, 30), // Opens at 10:30 AM
+          duration = 90, // 1.5 hours visit
+          budget = 1500.0, // Entrance fee and other possible expenses
+          description =
+              "The Umeda Sky Building is a spectacular high rise building in the Kita district of Osaka, featuring a futuristic observatory, the Floating Garden.",
+          geoCords = GeoCords(latitude = 34.705938, longitude = 135.490357),
+          website = "",
           imageUrl = "")
 
   val comment1 = Comment("commentId1", "usercmtId1", "userNamecmt1", "Great idea!", LocalDate.now())
@@ -125,39 +139,50 @@ fun SuggestionFeedContent(
   // Example list of comments
   val dummyCommentList = listOf(comment1, comment2, comment3, comment4)
 
+  /*
   // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
-  //    val _suggestionList =
-  //        listOf(
-  //            Suggestion(
-  //                "suggestionId1",
-  //                "userId1",
-  //                "userName1",
-  //                "Let us go here!",
-  //                LocalDate.of(2024, 1, 1),
-  //                stop1,
-  //                dummyCommentList,
-  //                emptyList()),
-  //            Suggestion(
-  //                "suggestionId2",
-  //                "userId2",
-  //                "userName2",
-  //                "I love this place",
-  //                LocalDate.of(2024, 2, 2),
-  //                stop2,
-  //                emptyList(),
-  //                emptyList()),
-  //            Suggestion(
-  //                "suggestionId3",
-  //                "userId3",
-  //                "userName3",
-  //                "This is a great place to visit. Let us go here together! I am sure you will
-  // love it! I have been there before and it was amazing! " +
-  //                        "Trying to convince you to go here with me. coz I know you will love
-  // it!",
-  //                LocalDate.of(2024, 3, 29),
-  //                stop3,
-  //                dummyCommentList,
-  //                emptyList()))
+      val _suggestionList =
+          listOf(
+              Suggestion(
+                  "suggestionId1",
+                  "userId1",
+                  "userName1",
+                  "Let us go here!",
+                  LocalDate.of(2024, 1, 1),
+                  stop1,
+                  dummyCommentList,
+                  emptyList()),
+              Suggestion(
+                  "suggestionId2",
+                  "userId2",
+                  "userName2",
+                  "I love this place",
+                  LocalDate.of(2024, 2, 2),
+                  stop2,
+                  emptyList(),
+                  emptyList()),
+              Suggestion(
+                  "suggestionId3",
+                  "userId3",
+                  "userName3",
+                  "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
+                          "Trying to convince you to go here with me. coz I know you will love it!",
+                  LocalDate.of(2024, 3, 29),
+                  stop3,
+                  dummyCommentList,
+                  emptyList()),
+                      Suggestion(
+                      "suggestionId4",
+              "userId4",
+              "userName4",
+              "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
+                      "Trying to convince you to go here with me. coz I know you will love it!",
+              LocalDate.of(2024, 3, 29),
+              stop4,
+              dummyCommentList,
+              emptyList())
+          )
+    */
 
   // Example usage of dummy data for the suggestionList <-todo: change for sprint3
   val _suggestionList = suggestionList

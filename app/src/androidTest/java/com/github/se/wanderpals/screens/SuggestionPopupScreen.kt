@@ -24,6 +24,13 @@ class SuggestionPopupScreen(semanticsProvider: SemanticsNodeInteractionsProvider
     hasTestTag("suggestionPopupDescriptionText")
   }
 
+  val suggestionPopupStartDateTimeEndDateTime: KNode = onNode {
+    hasTestTag("suggestionPopupStartDateTimeEndDateTime")
+  }
+  //  val suggestionPopupStartTime: KNode = onNode { hasTestTag("suggestionPopupStartTime") }
+  //  val suggestionPopupEndDate: KNode = onNode { hasTestTag("suggestionPopupEndDate") }
+  //  val suggestionPopupEndTime: KNode = onNode { hasTestTag("suggestionPopupEndTime") }
+
   val suggestionPopupComments: KNode = onNode { hasTestTag("suggestionPopupComments") }
   val noSuggestionCommentList: KNode = onNode { hasTestTag("noSuggestionCommentList") }
   val suggestionComment1: KNode = onNode { hasTestTag("suggestionComment1") }
@@ -38,4 +45,18 @@ class SuggestionPopupScreen(semanticsProvider: SemanticsNodeInteractionsProvider
   val suggestion1: KNode = onNode {
     hasTestTag("suggestion1")
   } // to select/onClick the first suggestion
+
+  val suggestionPopupAddrTextNotEmpty: KNode = onNode {
+    hasTestTag("suggestionPopupAddrTextNotEmpty")
+  }
+  val suggestionPopupAddr: KNode = onNode { hasTestTag("suggestionPopupAddr") }
+  val suggestionPopupAddrTextEmpty: KNode = onNode { hasTestTag("suggestionPopupAddrTextEmpty") }
+
+  val suggestionPopupWebsiteTextNotEmpty: KNode = onNode {
+    hasTestTag("suggestionPopupWebsiteTextNotEmpty")
+  }
+  val suggestionPopupWebsite: KNode = onNode { hasTestTag("suggestionPopupWebsite") }
+  val suggestionPopupWebsiteTextEmpty: KNode = onNode {
+    hasTestTag("suggestionPopupWebsiteTextEmpty")
+  }
 }

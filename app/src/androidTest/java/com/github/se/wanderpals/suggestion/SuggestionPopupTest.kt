@@ -67,13 +67,13 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
             description =
                 "Dotonbori is Osaka's most famous tourist destination, known for its bright neon lights, extravagant signage, and abundant dining options.",
             geoCords = GeoCords(latitude = 34.668723, longitude = 135.501295),
-            website = "https://www.dotonbori.or.jp/en/",
+            website = "",
             imageUrl = "")
     val stop3 =
         Stop(
             stopId = "OSK003",
             title = "Umeda Sky Building",
-            address = "1-1-88 Oyodonaka, Kita Ward, Osaka, 531-0076, Japan",
+            address = "",
             date = LocalDate.of(2024, 4, 11),
             startTime = LocalTime.of(10, 30), // Opens at 10:30 AM
             duration = 90, // 1.5 hours visit
@@ -82,6 +82,20 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
                 "The Umeda Sky Building is a spectacular high rise building in the Kita district of Osaka, featuring a futuristic observatory, the Floating Garden.",
             geoCords = GeoCords(latitude = 34.705938, longitude = 135.490357),
             website = "http://www.kuchu-teien.com/",
+            imageUrl = "")
+    val stop4 =
+        Stop(
+            stopId = "OSK004",
+            title = "Umeda Sky Building 2",
+            address = "",
+            date = LocalDate.of(2024, 4, 11),
+            startTime = LocalTime.of(10, 30), // Opens at 10:30 AM
+            duration = 90, // 1.5 hours visit
+            budget = 1500.0, // Entrance fee and other possible expenses
+            description =
+                "The Umeda Sky Building is a spectacular high rise building in the Kita district of Osaka, featuring a futuristic observatory, the Floating Garden.",
+            geoCords = GeoCords(latitude = 34.705938, longitude = 135.490357),
+            website = "",
             imageUrl = "")
 
     val comment1 =
@@ -103,6 +117,7 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     // Example list of comments
     this.commentList = listOf(comment1, comment2, comment3, comment4)
 
+    //    /*
     // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
     this.suggestionList =
         listOf(
@@ -133,12 +148,22 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
                 LocalDate.of(2024, 3, 29),
                 stop3,
                 commentList,
+                emptyList()),
+            Suggestion(
+                "suggestionId4",
+                "userId4",
+                "userName4",
+                "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
+                    "Trying to convince you to go here with me. coz I know you will love it!",
+                LocalDate.of(2024, 3, 29),
+                stop4,
+                commentList,
                 emptyList()))
   }
 
   /**
    * Test that the suggestion details popup of the first suggestion displays correctly when comments
-   * are present.
+   * are present. Note that the address and website are tested in separate tests.
    */
   @Test
   fun suggestionDetailPopup_displaysCommentsCorrectly_whenCommentsArePresent() {
@@ -146,7 +171,6 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
       SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList, onDismiss = {})
     }
 
-    // Verify title, likes, and comments are displayed
     onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
       suggestionPopupTitle.assertIsDisplayed()
       suggestionPopupCommentsIcon.assertIsDisplayed()
@@ -156,6 +180,8 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
       suggestionPopupDescription.assertIsDisplayed()
       suggestionPopupDescriptionText.assertIsDisplayed()
+
+      suggestionPopupStartDateTimeEndDateTime.assertIsDisplayed()
 
       suggestionPopupComments.assertIsDisplayed()
       // Verify the comments are displayed:
@@ -171,8 +197,8 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
   }
 
   /**
-   * Test that the suggestion details popup of the first suggestion displays correctly when comments
-   * are not present.
+   * Test that the suggestion details popup of the second suggestion displays correctly when
+   * comments are not present. Note that the address and website are tested in separate tests.
    */
   @Test
   fun suggestionDetailPopup_displaysCorrectly_whenCommentsAreNotPresent() {
@@ -180,7 +206,6 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
       SuggestionDetailPopup(suggestion = suggestionList[1], comments = emptyList(), onDismiss = {})
     }
 
-    // Verify title, likes, and comments are displayed
     onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
       suggestionPopupTitle.assertIsDisplayed()
       suggestionPopupCommentsIcon.assertIsDisplayed()
@@ -191,14 +216,56 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
       suggestionPopupDescription.assertIsDisplayed()
       suggestionPopupDescriptionText.assertIsDisplayed()
 
+      suggestionPopupStartDateTimeEndDateTime.assertIsDisplayed()
+
       suggestionPopupComments.assertIsDisplayed()
       // Verify the "No comments yet" message is displayed
       noSuggestionCommentList.assertIsDisplayed()
     }
   }
 
+  /**
+   * Test that the suggestion details popup of the first suggestion displays correctly the address
+   * and website when both are present.
+   */
   @Test
-  fun suggestionItem_click_displaysPopup() { // _clickOutside_dismissesPopup() {
+  fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteArePresent() {
+    composeTestRule.setContent {
+      SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList, onDismiss = {})
+    }
+
+    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+      // Verify the address and website are present
+      suggestionPopupAddrTextNotEmpty.assertIsDisplayed()
+      suggestionPopupWebsiteTextNotEmpty.assertIsDisplayed()
+    }
+  }
+
+  /**
+   * Test that the suggestion details popup of the fourth suggestion displays correctly the address
+   * and website when both are absent.
+   */
+  @Test
+  fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteAreAbsent() {
+    composeTestRule.setContent {
+      SuggestionDetailPopup(suggestion = suggestionList[3], comments = commentList, onDismiss = {})
+    }
+
+    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+      // Verify the address and website are absent
+      suggestionPopupAddr.assertIsDisplayed()
+      suggestionPopupAddrTextEmpty.assertIsDisplayed()
+      suggestionPopupWebsite.assertIsDisplayed()
+      suggestionPopupWebsiteTextEmpty.assertIsDisplayed()
+    }
+  }
+
+  /**
+   * Test when clicking on the suggestion details popup of the first suggestion (for testing
+   * purpose), the popup is displayed.
+   */
+  @Test
+  fun suggestionItem_click_displaysPopup() {
     composeTestRule.setContent {
       SuggestionFeedContent(
           innerPadding = PaddingValues(),
@@ -208,25 +275,11 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     }
 
     // Simulate a click on the first SuggestionItem for testing purpose
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-      //            suggestionOnClick.performClick()
-      suggestion1.performClick() // perform a click on the first suggestionItem for testing purpose
-    }
+    onComposeScreen<SuggestionPopupScreen>(composeTestRule) { suggestion1.performClick() }
 
     // Verify SuggestionDetailPopup is displayed
     onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
       suggestionPopupScreen.assertIsDisplayed()
     }
-
-    // Simulate an onDismiss action. This could be clicking a dimmed background area,
-    // a close button, or invoking the onDismiss callback directly if possible.
-    //        onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-    //            suggestionOnDismiss.performClick()
-    //        }
-    //
-    //        // Verify the popup is dismissed
-    //        onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-    //            suggestionPopupScreen.assertDoesNotExist()
-    //        }
   }
 }
