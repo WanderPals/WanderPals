@@ -101,11 +101,9 @@ fun CreateSuggestion(
   //  val websiteRegexPattern =
   // """^(http|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[a-zA-Z0-9.-]*)*$"""
 
-    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+  val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-  Surface(modifier = Modifier
-      .padding(16.dp)
-      .testTag("createSuggestionScreen")) {
+  Surface(modifier = Modifier.padding(16.dp).testTag("createSuggestionScreen")) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -115,9 +113,7 @@ fun CreateSuggestion(
                 value = suggestionText,
                 onValueChange = { suggestionText = it },
                 label = { Text("Suggestion Title*") },
-                modifier = Modifier
-                    .weight(3f)
-                    .testTag("inputSuggestionTitle"),
+                modifier = Modifier.weight(3f).testTag("inputSuggestionTitle"),
                 isError = title_err,
                 singleLine = true)
             Spacer(modifier = Modifier.width(16.dp))
@@ -126,9 +122,7 @@ fun CreateSuggestion(
                 onValueChange = { _budget = it },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Budget") },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("inputSuggestionBudget"),
+                modifier = Modifier.weight(1f).testTag("inputSuggestionBudget"),
                 isError = budget_err,
                 singleLine = true,
                 placeholder = { Text("Budget") })
@@ -142,11 +136,8 @@ fun CreateSuggestion(
                 onValueChange = { startDate = it },
                 placeholder = { Text("From*") },
                 modifier =
-                Modifier
-                    .testTag("inputSuggestionStartDate")
-                    .weight(1f)
-                    .clickable {
-                        showDatePickerStart = true
+                    Modifier.testTag("inputSuggestionStartDate").weight(1f).clickable {
+                      showDatePickerStart = true
                     },
                 isError = start_d_err,
                 singleLine = true,
@@ -157,10 +148,8 @@ fun CreateSuggestion(
             OutlinedTextField(
                 value = startTime,
                 onValueChange = { startTime = it },
-                placeholder = { Text("00:00") },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("inputSuggestionStartTime"),
+                placeholder = { Text("From time*") },
+                modifier = Modifier.weight(1f).testTag("inputSuggestionStartTime"),
                 isError = start_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerStart = true })
@@ -173,9 +162,7 @@ fun CreateSuggestion(
                 value = endDate,
                 onValueChange = { endDate = it },
                 placeholder = { Text("To*") },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("inputSuggestionEndDate"),
+                modifier = Modifier.weight(1f).testTag("inputSuggestionEndDate"),
                 isError = end_d_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showDatePickerEnd = true })
@@ -185,22 +172,30 @@ fun CreateSuggestion(
             OutlinedTextField(
                 value = endTime,
                 onValueChange = { endTime = it },
-                placeholder = { Text("01:00") },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("inputSuggestionEndTime"),
+                placeholder = { Text("To time*") },
+                modifier = Modifier.weight(1f).testTag("inputSuggestionEndTime"),
                 isError = end_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerEnd = true })
           }
           if (showDatePickerStart) {
             MyDatePickerDialog(
-                onDateSelected = { startDate = if(isStringInFormat(it, """^\d{2}/\d{2}/\d{4}$""")) convertDateFormat(it) else "To*" }, onDismiss = { showDatePickerStart = false })
+                onDateSelected = {
+                  startDate =
+                      if (isStringInFormat(it, """^\d{2}/\d{2}/\d{4}$""")) convertDateFormat(it)
+                      else "To*"
+                },
+                onDismiss = { showDatePickerStart = false })
           }
 
           if (showDatePickerEnd) {
             MyDatePickerDialog(
-                onDateSelected = { endDate = if(isStringInFormat(it, """^\d{2}/\d{2}/\d{4}$""")) convertDateFormat(it) else "To*" }, onDismiss = { showDatePickerEnd = false })
+                onDateSelected = {
+                  endDate =
+                      if (isStringInFormat(it, """^\d{2}/\d{2}/\d{4}$""")) convertDateFormat(it)
+                      else "To*"
+                },
+                onDismiss = { showDatePickerEnd = false })
           }
 
           if (showTimePickerStart) {
@@ -220,12 +215,11 @@ fun CreateSuggestion(
               onValueChange = { description = it },
               label = { Text("Suggestion Description*") },
               modifier =
-              Modifier
-                  .testTag("inputSuggestionDescription")
-                  .fillMaxWidth()
-                  .height(200.dp)
-                  .padding(bottom = 16.dp)
-                  .scrollable(rememberScrollState(), Orientation.Vertical),
+                  Modifier.testTag("inputSuggestionDescription")
+                      .fillMaxWidth()
+                      .height(200.dp)
+                      .padding(bottom = 16.dp)
+                      .scrollable(rememberScrollState(), Orientation.Vertical),
               isError = desc_err,
               singleLine = false,
               placeholder = { Text("Describe the suggestion") })
@@ -236,10 +230,9 @@ fun CreateSuggestion(
                 onValueChange = { address = it },
                 label = { Text("Address") },
                 modifier =
-                Modifier
-                    .testTag("inputSuggestionAddress")
-                    .horizontalScroll(state = rememberScrollState(0), enabled = true)
-                    .weight(6f),
+                    Modifier.testTag("inputSuggestionAddress")
+                        .horizontalScroll(state = rememberScrollState(0), enabled = true)
+                        .weight(6f),
                 isError = addr_err,
                 singleLine = true,
                 placeholder = { Text("Address of the suggestion") })
@@ -268,10 +261,9 @@ fun CreateSuggestion(
               onValueChange = { _website = it },
               label = { Text("Website") },
               modifier =
-              Modifier
-                  .testTag("inputSuggestionWebsite")
-                  .fillMaxWidth()
-                  .horizontalScroll(state = rememberScrollState(0), enabled = true),
+                  Modifier.testTag("inputSuggestionWebsite")
+                      .fillMaxWidth()
+                      .horizontalScroll(state = rememberScrollState(0), enabled = true),
               singleLine = true,
               placeholder = { Text("Website") })
 
@@ -301,7 +293,6 @@ fun CreateSuggestion(
                     end_t_err ||
                     end_d_err)) {
 
-
                   // Parse start date and time
                   val startDateObj = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
                   val startTimeObj = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME)
@@ -317,8 +308,8 @@ fun CreateSuggestion(
                   val endDateTime = LocalDateTime.of(endDateObj, endTimeObj)
 
                   // Calculate duration in minutes
-                    val duration = Duration.between(startDateTime, endDateTime)
-                    val suggestion =
+                  val duration = Duration.between(startDateTime, endDateTime)
+                  val suggestion =
                       Suggestion(
                           suggestionId = "", // modified by database
                           userId = "", // modified by database
@@ -335,11 +326,13 @@ fun CreateSuggestion(
                                   duration = duration.toMinutes().toInt(),
                                   budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
                                   description = description,
-                                  geoCords = GeoCords(
-                                      0.0,
-                                      0.0), // from address i guess, chatGPT tell me to use Google
+                                  geoCords =
+                                      GeoCords(
+                                          0.0,
+                                          0.0), // from address i guess, chatGPT tell me to use
+                                                // Google
                                   // Maps
-                                  website = website,
+                                  website = _website,
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
                   if (viewModel.addSuggestion(tripId, suggestion)) onSuccess() else onFailure()
@@ -352,8 +345,7 @@ fun CreateSuggestion(
 }
 
 /**
- * || DO NOT USE FOR NOW || WIP ||
- * Dialog containing a CreateSuggestion window
+ * || DO NOT USE FOR NOW || WIP || Dialog containing a CreateSuggestion window
  *
  * @param showDialog Boolean to specify when to show the dialog (should be turned off in the
  *   onDismiss function)
@@ -366,9 +358,7 @@ fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
     Dialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismiss) {
-          Surface(modifier = Modifier
-              .padding(top = 16.dp)
-              .fillMaxSize()) {
+          Surface(modifier = Modifier.padding(top = 16.dp).fillMaxSize()) {
             CreateSuggestion(
                 "aaaa", CreateSuggestionViewModel(TripsRepository("aaaa", Dispatchers.IO)))
           }
@@ -387,14 +377,16 @@ fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
  *
  * @param tripId the id of the trip
  * @param viewModel a CreateSuggestionViewModel that needs to be initialized beforehand
- * @param nav NavigationActions to navigate back to Suggestion the suggestion is successfully created
+ * @param nav NavigationActions to navigate back to Suggestion the suggestion is successfully
+ *   created
  * @param desc default value for the description entry (can be empty)
  * @param addr default value for the address entry (can be empty)
  * @param website default value for the website entry (can be empty)
  * @param title default value for the title entry (can be empty)
  * @param budget default value for the budget entry (can be empty)
- * @param onSuccess additional code to execute after the successful creation of the suggestion
- * @param onFailure code to execute if the creation of the suggestion fails
+ * @param onSuccess additional code to execute after the successful creation of the suggestion (can
+ *   be empty)
+ * @param onFailure code to execute if the creation of the suggestion fails (can be empty)
  */
 @Composable
 fun CreateSuggestionScreen(
@@ -459,16 +451,16 @@ fun CreateSuggestionDialogPreview() {
 }
 
 fun convertDateFormat(inputDate: String): String {
-    // Split the input string by "/"
-    val parts = inputDate.split("/")
+  // Split the input string by "/"
+  val parts = inputDate.split("/")
 
-    // Rearrange the parts into "yyyy-mm-dd" format
-    val year = parts[2]
-    val month = parts[1]
-    val day = parts[0]
+  // Rearrange the parts into "yyyy-mm-dd" format
+  val year = parts[2]
+  val month = parts[1]
+  val day = parts[0]
 
-    // Construct the new date format
-    return "$year-$month-$day"
+  // Construct the new date format
+  return "$year-$month-$day"
 }
 
 /*
@@ -558,27 +550,21 @@ fun TimePickerDialog(
         shape = MaterialTheme.shapes.extraLarge,
         tonalElevation = 6.dp,
         modifier =
-        Modifier
-            .width(IntrinsicSize.Min)
-            .height(IntrinsicSize.Min)
-            .background(
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surface
-            ),
+            Modifier.width(IntrinsicSize.Min)
+                .height(IntrinsicSize.Min)
+                .background(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surface),
     ) {
       toggle()
       Column(
           modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
                 text = title,
                 style = MaterialTheme.typography.labelMedium)
             content()
-            Row(modifier = Modifier
-                .height(40.dp)
-                .fillMaxWidth()) {
+            Row(modifier = Modifier.height(40.dp).fillMaxWidth()) {
               Spacer(modifier = Modifier.weight(1f))
               TextButton(onClick = onCancel) { Text("Cancel") }
               TextButton(onClick = onConfirm) { Text("OK") }
