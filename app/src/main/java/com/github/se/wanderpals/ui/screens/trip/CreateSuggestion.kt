@@ -8,7 +8,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -104,12 +103,9 @@ fun CreateSuggestion(
 
   val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-  Surface(modifier = Modifier
-      .padding(12.dp)
-      .testTag("createSuggestionScreen")) {
+  Surface(modifier = Modifier.padding(12.dp).testTag("createSuggestionScreen")) {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
           Row {
@@ -117,9 +113,7 @@ fun CreateSuggestion(
                 value = suggestionText,
                 onValueChange = { suggestionText = it },
                 label = { Text("Suggestion Title*") },
-                modifier = Modifier
-                    .weight(3f)
-                    .testTag("inputSuggestionTitle"),
+                modifier = Modifier.weight(3f).testTag("inputSuggestionTitle"),
                 isError = title_err,
                 singleLine = true)
             Spacer(modifier = Modifier.width(12.dp))
@@ -128,9 +122,7 @@ fun CreateSuggestion(
                 onValueChange = { _budget = it },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Budget") },
-                modifier = Modifier
-                    .weight(1.5f)
-                    .testTag("inputSuggestionBudget"),
+                modifier = Modifier.weight(1.5f).testTag("inputSuggestionBudget"),
                 isError = budget_err,
                 singleLine = true,
                 placeholder = { Text("Budget") })
@@ -144,11 +136,8 @@ fun CreateSuggestion(
                 onValueChange = { startDate = it },
                 placeholder = { Text("From*") },
                 modifier =
-                Modifier
-                    .testTag("inputSuggestionStartDate")
-                    .weight(1f)
-                    .clickable {
-                        showDatePickerStart = true
+                    Modifier.testTag("inputSuggestionStartDate").weight(1f).clickable {
+                      showDatePickerStart = true
                     },
                 isError = start_d_err,
                 singleLine = true,
@@ -160,9 +149,7 @@ fun CreateSuggestion(
                 value = startTime,
                 onValueChange = { startTime = it },
                 placeholder = { Text("From time*") },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("inputSuggestionStartTime"),
+                modifier = Modifier.weight(1f).testTag("inputSuggestionStartTime"),
                 isError = start_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerStart = true })
@@ -175,9 +162,7 @@ fun CreateSuggestion(
                 value = endDate,
                 onValueChange = { endDate = it },
                 placeholder = { Text("To*") },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("inputSuggestionEndDate"),
+                modifier = Modifier.weight(1f).testTag("inputSuggestionEndDate"),
                 isError = end_d_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showDatePickerEnd = true })
@@ -188,9 +173,7 @@ fun CreateSuggestion(
                 value = endTime,
                 onValueChange = { endTime = it },
                 placeholder = { Text("To time*") },
-                modifier = Modifier
-                    .weight(1f)
-                    .testTag("inputSuggestionEndTime"),
+                modifier = Modifier.weight(1f).testTag("inputSuggestionEndTime"),
                 isError = end_t_err,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerEnd = true })
@@ -232,12 +215,11 @@ fun CreateSuggestion(
               onValueChange = { description = it },
               label = { Text("Suggestion Description*") },
               modifier =
-              Modifier
-                  .testTag("inputSuggestionDescription")
-                  .fillMaxWidth()
-                  .height(150.dp)
-                  .padding(bottom = 12.dp)
-                  .scrollable(rememberScrollState(), Orientation.Vertical),
+                  Modifier.testTag("inputSuggestionDescription")
+                      .fillMaxWidth()
+                      .height(150.dp)
+                      .padding(bottom = 12.dp)
+                      .scrollable(rememberScrollState(), Orientation.Vertical),
               isError = desc_err,
               singleLine = false,
               placeholder = { Text("Describe the suggestion") })
@@ -248,10 +230,9 @@ fun CreateSuggestion(
                 onValueChange = { address = it },
                 label = { Text("Address") },
                 modifier =
-                Modifier
-                    .testTag("inputSuggestionAddress")
-                    .horizontalScroll(state = rememberScrollState(0), enabled = true)
-                    .weight(6f),
+                    Modifier.testTag("inputSuggestionAddress")
+                        .horizontalScroll(state = rememberScrollState(0), enabled = true)
+                        .weight(6f),
                 isError = addr_err,
                 singleLine = true,
                 placeholder = { Text("Address of the suggestion") })
@@ -280,10 +261,9 @@ fun CreateSuggestion(
               onValueChange = { _website = it },
               label = { Text("Website") },
               modifier =
-              Modifier
-                  .testTag("inputSuggestionWebsite")
-                  .fillMaxWidth()
-                  .horizontalScroll(state = rememberScrollState(0), enabled = true),
+                  Modifier.testTag("inputSuggestionWebsite")
+                      .fillMaxWidth()
+                      .horizontalScroll(state = rememberScrollState(0), enabled = true),
               singleLine = true,
               placeholder = { Text("Website") })
 
@@ -369,9 +349,7 @@ fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
     Dialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onDismiss) {
-          Surface(modifier = Modifier
-              .padding(top = 12.dp)
-              .fillMaxSize()) {
+          Surface(modifier = Modifier.padding(top = 12.dp).fillMaxSize()) {
             CreateSuggestion(
                 "aaaa", CreateSuggestionViewModel(TripsRepository("aaaa", Dispatchers.IO)))
           }
@@ -563,27 +541,21 @@ fun TimePickerDialog(
         shape = MaterialTheme.shapes.extraLarge,
         tonalElevation = 6.dp,
         modifier =
-        Modifier
-            .width(IntrinsicSize.Min)
-            .height(IntrinsicSize.Min)
-            .background(
-                shape = MaterialTheme.shapes.extraLarge,
-                color = MaterialTheme.colorScheme.surface
-            ),
+            Modifier.width(IntrinsicSize.Min)
+                .height(IntrinsicSize.Min)
+                .background(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surface),
     ) {
       toggle()
       Column(
           modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
                 text = title,
                 style = MaterialTheme.typography.labelMedium)
             content()
-            Row(modifier = Modifier
-                .height(40.dp)
-                .fillMaxWidth()) {
+            Row(modifier = Modifier.height(40.dp).fillMaxWidth()) {
               Spacer(modifier = Modifier.weight(1f))
               TextButton(onClick = onCancel) { Text("Cancel") }
               TextButton(onClick = onConfirm) { Text("OK") }
