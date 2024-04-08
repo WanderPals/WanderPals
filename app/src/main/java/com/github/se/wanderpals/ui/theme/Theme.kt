@@ -34,7 +34,6 @@ private val LightColorScheme =
         */
         )
 
-@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun WanderPalsTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
