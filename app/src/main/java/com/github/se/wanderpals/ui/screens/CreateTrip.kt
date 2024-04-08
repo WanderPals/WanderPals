@@ -91,7 +91,7 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 @Composable
 fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
 
-  val MAX_TITLE_LENGTH = 40
+  val MAX_TITLE_LENGTH = 35
 
   var name by remember { mutableStateOf("") }
   var budget by remember { mutableStateOf("0") }
