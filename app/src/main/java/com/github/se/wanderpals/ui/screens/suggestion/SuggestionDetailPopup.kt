@@ -67,7 +67,7 @@ fun SuggestionDetailPopup(
                                     .wrapContentWidth(
                                         Alignment
                                             .Start) // Aligns text to the start, ensuring it doesn't
-                                                    // stretch the row width
+                                    // stretch the row width
                                     .testTag("suggestionPopupTitle"))
 
                         Spacer(modifier = Modifier.width(8.dp)) // Fixed spacing after the title
@@ -150,7 +150,7 @@ fun SuggestionDetailPopup(
                           modifier =
                               Modifier.testTag(
                                   "suggestionPopupDivider")) // separate comments with a line if
-                                                             // it's not the last comment
+                      // it's not the last comment
                     }
                   }
                 }

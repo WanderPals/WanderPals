@@ -61,9 +61,8 @@ fun SuggestionItem(
               .height(166.dp) // the height of the Card
               .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
               .clickable(
-                  onClick =
-                      onClick), // Invoke the onClick lambda when the item is clicked (see
-                                // SuggestionFeedContent.kt)
+                  onClick = onClick), // Invoke the onClick lambda when the item is clicked (see
+      // SuggestionFeedContent.kt)
       colors = cardColors // Use the cardColors with the white background
       ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
