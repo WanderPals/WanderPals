@@ -26,15 +26,17 @@ fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String) {
   val suggestionList by suggestionsViewModel.state.collectAsState() // todo: use dummy data for now
 
   // State for managing search text (the filter) <-todo: for sprint3
-  var searchText by remember { mutableStateOf("") }
+  var searchSuggestionText by remember { mutableStateOf("") }
 
   Scaffold(
       modifier = Modifier.testTag("suggestionFeedScreen"),
       topBar = {
         // Top bar with search functionality based on the title of the trips
         SuggestionTopBar(
-            searchText = searchText,
-            onSearchTextChanged = { newSearchText -> searchText = newSearchText })
+            searchSuggestionText = searchSuggestionText,
+            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+              searchSuggestionText = newSearchSuggestionText
+            })
       },
       bottomBar = {
         SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
@@ -45,6 +47,6 @@ fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String) {
             innerPadding = innerPadding,
             navigationActions = navActions,
             suggestionList = suggestionList,
-            searchText = searchText)
+            searchSuggestionText = searchSuggestionText)
       }
 }

@@ -24,12 +24,15 @@ import androidx.compose.ui.unit.dp
  * Composable function that represents the top bar for suggestion feed screen. Displays a search bar
  * with an option to clear the search text and a menu icon for additional actions.
  *
- * @param searchText The current text in the search bar.
- * @param onSearchTextChanged Callback function triggered when the search text changes.
+ * @param searchSuggestionText The current text in the search bar.
+ * @param onSearchSuggestionTextChanged Callback function triggered when the search text changes.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SuggestionTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
+fun SuggestionTopBar(
+    searchSuggestionText: String,
+    onSearchSuggestionTextChanged: (String) -> Unit
+) {
 
   // Constant for empty search text
   val EMPTY_SEARCH = ""
@@ -41,15 +44,15 @@ fun SuggestionTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) 
     // DockedSearchBar component
     DockedSearchBar(
         //        modifier = Modifier.testTag("dockedSearchBar"),
-        query = searchText,
-        onQueryChange = { newText -> onSearchTextChanged(newText) },
+        query = searchSuggestionText,
+        onQueryChange = { newText -> onSearchSuggestionTextChanged(newText) },
         onSearch = {},
         active = false,
         onActiveChange = { active = it },
         placeholder = { Text("Search a suggestion") },
         trailingIcon = {
           // Show search icon if search text is empty, otherwise show clear icon
-          if (searchText.isEmpty()) {
+          if (searchSuggestionText.isEmpty()) {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = Icons.Default.Search.name,
@@ -57,7 +60,7 @@ fun SuggestionTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) 
           } else {
             IconButton(
                 //                modifier = Modifier.testTag("clearSearchButton"),
-                onClick = { onSearchTextChanged(EMPTY_SEARCH) }) {
+                onClick = { onSearchSuggestionTextChanged(EMPTY_SEARCH) }) {
                   Icon(
                       imageVector = Icons.Default.Clear,
                       contentDescription = Icons.Default.Clear.name,

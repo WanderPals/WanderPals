@@ -7,9 +7,9 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.screens.SuggestionFeedScreen
+import com.github.se.wanderpals.screens.SuggestionPopupScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetailPopup
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
@@ -25,10 +25,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
+class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
 
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var suggestionList: List<Suggestion>
+  private lateinit var commentList: List<Comment>
 
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
@@ -100,7 +101,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
             "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now())
 
     // Example list of comments
-    val dummyCommentList = listOf(comment1, comment2, comment3, comment4)
+    this.commentList = listOf(comment1, comment2, comment3, comment4)
 
     // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
     this.suggestionList =
@@ -112,7 +113,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                 "Let us go here!",
                 LocalDate.of(2024, 1, 1),
                 stop1,
-                dummyCommentList,
+                commentList,
                 emptyList()),
             Suggestion(
                 "suggestionId2",
@@ -131,17 +132,74 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                     "Trying to convince you to go here with me. coz I know you will love it!",
                 LocalDate.of(2024, 3, 29),
                 stop3,
-                dummyCommentList,
+                commentList,
                 emptyList()))
   }
 
-  /** Test that the suggestion feed screen displays the suggestions when the list is not empty. */
+  /**
+   * Test that the suggestion details popup of the first suggestion displays correctly when comments
+   * are present.
+   */
   @Test
-  fun suggestionFeedScreen_showsSuggestions_whenListIsNotEmpty() {
+  fun suggestionDetailPopup_displaysCommentsCorrectly_whenCommentsArePresent() {
     composeTestRule.setContent {
-      // Mock NavigationActions or use a dummy implementation for testing
-      //            val navigationActions = NavigationActions(/* pass necessary arguments or mocks
-      // */)
+      SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList, onDismiss = {})
+    }
+
+    // Verify title, likes, and comments are displayed
+    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+      suggestionPopupTitle.assertIsDisplayed()
+      suggestionPopupCommentsIcon.assertIsDisplayed()
+      suggestionPopupLikesIcon.assertIsDisplayed()
+      suggestionPopupUserName.assertIsDisplayed()
+      suggestionPopupDate.assertIsDisplayed()
+
+      suggestionPopupDescription.assertIsDisplayed()
+      suggestionPopupDescriptionText.assertIsDisplayed()
+
+      suggestionPopupComments.assertIsDisplayed()
+      // Verify the comments are displayed:
+      // by checking the presence of each suggestionComment, we check the presence of the
+      // commentList
+      suggestionComment1.assertIsDisplayed()
+      suggestionComment2.assertIsDisplayed()
+      suggestionComment3.assertIsDisplayed()
+      suggestionComment4.assertIsDisplayed()
+
+      suggestionPopupDivider.assertIsDisplayed()
+    }
+  }
+
+  /**
+   * Test that the suggestion details popup of the first suggestion displays correctly when comments
+   * are not present.
+   */
+  @Test
+  fun suggestionDetailPopup_displaysCorrectly_whenCommentsAreNotPresent() {
+    composeTestRule.setContent {
+      SuggestionDetailPopup(suggestion = suggestionList[1], comments = emptyList(), onDismiss = {})
+    }
+
+    // Verify title, likes, and comments are displayed
+    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+      suggestionPopupTitle.assertIsDisplayed()
+      suggestionPopupCommentsIcon.assertIsDisplayed()
+      suggestionPopupLikesIcon.assertIsDisplayed()
+      suggestionPopupUserName.assertIsDisplayed()
+      suggestionPopupDate.assertIsDisplayed()
+
+      suggestionPopupDescription.assertIsDisplayed()
+      suggestionPopupDescriptionText.assertIsDisplayed()
+
+      suggestionPopupComments.assertIsDisplayed()
+      // Verify the "No comments yet" message is displayed
+      noSuggestionCommentList.assertIsDisplayed()
+    }
+  }
+
+  @Test
+  fun suggestionItem_click_displaysPopup() { // _clickOutside_dismissesPopup() {
+    composeTestRule.setContent {
       SuggestionFeedContent(
           innerPadding = PaddingValues(),
           navigationActions = mockNavActions,
@@ -149,58 +207,26 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           searchSuggestionText = "")
     }
 
-    // Check if the three suggestions are displayed on the Suggestions Feed screen
-    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
-      suggestion1.assertIsDisplayed()
-      suggestion2.assertIsDisplayed()
-      suggestion3.assertIsDisplayed()
-    }
-  }
-
-  /** Set the UI content to your testing screen with an empty suggestion list */
-  @Test
-  fun noSuggestionsMessageDisplayed_whenListIsEmpty() {
-    composeTestRule.setContent {
-      SuggestionFeedContent(
-          innerPadding = PaddingValues(),
-          navigationActions = mockNavActions,
-          suggestionList = emptyList(),
-          searchSuggestionText = "")
-    }
-    // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
-    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
-      noSuggestionsForUserText.assertIsDisplayed()
-    }
-  }
-
-  /** Test that the suggestion feed screen is displayed. */
-  @Test
-  fun suggestionFeedScreen_isDisplayed() {
-    composeTestRule.setContent {
-      // Simulate the Suggestion composable with the provided tripId
-      com.github.se.wanderpals.ui.screens.trip.Suggestion(tripId = "dummyTestTripId")
+    // Simulate a click on the first SuggestionItem for testing purpose
+    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+      //            suggestionOnClick.performClick()
+      suggestion1.performClick() // perform a click on the first suggestionItem for testing purpose
     }
 
-    // Now check if the suggestion feed screen is displayed
-    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
-      suggestionFeedScreen.assertIsDisplayed()
-    }
-  }
-
-  /**
-   * Test that the suggestion creation button exists and is displayed on the Suggestions Feed
-   * screen.
-   */
-  @Test
-  fun suggestionButtonExists_isDisplayed() {
-    composeTestRule.setContent {
-      // Place the SuggestionBottomBar composable within the test context
-      SuggestionBottomBar(onSuggestionClick = {}) // todo: will have onSuggestionClick after William
+    // Verify SuggestionDetailPopup is displayed
+    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+      suggestionPopupScreen.assertIsDisplayed()
     }
 
-    // Now check if the button with the testTag "suggestionButtonExists" is displayed
-    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
-      suggestionButtonExists.assertIsDisplayed()
-    }
+    // Simulate an onDismiss action. This could be clicking a dimmed background area,
+    // a close button, or invoking the onDismiss callback directly if possible.
+    //        onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+    //            suggestionOnDismiss.performClick()
+    //        }
+    //
+    //        // Verify the popup is dismissed
+    //        onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
+    //            suggestionPopupScreen.assertDoesNotExist()
+    //        }
   }
 }
