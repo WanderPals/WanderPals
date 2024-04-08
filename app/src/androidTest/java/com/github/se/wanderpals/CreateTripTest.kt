@@ -87,6 +87,7 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
           performTextClearance()
         }
+
         titleLengthText {
           assertIsDisplayed()
           assertTextEquals("0/35")
