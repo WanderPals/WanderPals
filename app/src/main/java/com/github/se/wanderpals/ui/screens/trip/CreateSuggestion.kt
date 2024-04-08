@@ -343,6 +343,7 @@ fun CreateSuggestion(
  * @param onDismiss Unit function without parameters that is executed when the dialog is requested
  *   to dismiss
  */
+/*
 @Composable
 fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
   if (showDialog) {
@@ -362,6 +363,8 @@ fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
         }
   }
 }
+
+ */
 
 /**
  * CreateSuggestion composable responsible for adding a suggestion to a trip
@@ -435,11 +438,13 @@ fun CreateSuggestionPreview() {
 }
 
 /** for quick testing purposes */
+/*
 @Preview(showBackground = true)
 @Composable
 fun CreateSuggestionDialogPreview() {
   CreateSuggestionDialog(true, {})
 }
+ */
 
 fun convertDateFormat(inputDate: String): String {
   // Split the input string by "/"
