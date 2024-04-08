@@ -326,12 +326,7 @@ fun CreateSuggestion(
                                   duration = duration.toMinutes().toInt(),
                                   budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
                                   description = description,
-                                  geoCords =
-                                      GeoCords(
-                                          0.0,
-                                          0.0), // from address i guess, chatGPT tell me to use
-                                                // Google
-                                  // Maps
+                                  geoCords = GeoCords(0.0, 0.0),
                                   website = _website,
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
