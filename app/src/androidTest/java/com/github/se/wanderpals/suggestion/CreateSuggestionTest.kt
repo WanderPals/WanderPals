@@ -127,26 +127,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("This is a Stop")
         }
 
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
-        inputWebsite {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Website")
-
-          performTextClearance()
-          performTextInput("www.example.com")
-        }
-
         inputStartDate {
           assertIsDisplayed()
 
@@ -181,6 +161,26 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("14:00")
+        }
+
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Address")
+
+          performTextClearance()
+          performTextInput("Stop address")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
         }
 
         createButton {
@@ -289,37 +289,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("20.0")
         }
 
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Suggestion Description*")
-          assertTextContains("Describe the suggestion")
-
-          performTextClearance()
-          performTextInput("This is a Stop")
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
-        inputWebsite {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Website")
-
-          performTextClearance()
-          performTextInput("www.example.com")
-        }
-
         inputStartDate {
           assertIsDisplayed()
 
@@ -354,6 +323,37 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Address")
+
+          performTextClearance()
+          performTextInput("Stop address")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
         }
 
         createButton {
@@ -391,37 +391,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("20.0")
         }
 
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Suggestion Description*")
-          assertTextContains("Describe the suggestion")
-
-          performTextClearance()
-          performTextInput("This is a Stop")
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
-        inputWebsite {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Website")
-
-          performTextClearance()
-          performTextInput("www.example.com")
-        }
-
         inputStartDate {
           assertIsDisplayed()
 
@@ -455,6 +424,37 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Address")
+
+          performTextClearance()
+          performTextInput("Stop address")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
         }
 
         createButton {
@@ -492,37 +492,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("20.0")
         }
 
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Suggestion Description*")
-          assertTextContains("Describe the suggestion")
-
-          performTextClearance()
-          performTextInput("This is a Stop")
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
-        inputWebsite {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Website")
-
-          performTextClearance()
-          performTextInput("www.example.com")
-        }
-
         inputStartDate {
           assertIsDisplayed()
 
@@ -556,6 +525,37 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Address")
+
+          performTextClearance()
+          performTextInput("Stop address")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
         }
 
         createButton {
@@ -593,37 +593,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("20.0")
         }
 
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Suggestion Description*")
-          assertTextContains("Describe the suggestion")
-
-          performTextClearance()
-          performTextInput("This is a Stop")
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
-        inputWebsite {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Website")
-
-          performTextClearance()
-          performTextInput("www.example.com")
-        }
-
         inputStartDate {
           assertIsDisplayed()
 
@@ -657,6 +626,37 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Address")
+
+          performTextClearance()
+          performTextInput("Stop address")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
         }
 
         createButton {
@@ -694,37 +694,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("20.0")
         }
 
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Suggestion Description*")
-          assertTextContains("Describe the suggestion")
-
-          performTextClearance()
-          performTextInput("This is a Stop")
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
-        inputWebsite {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Website")
-
-          performTextClearance()
-          performTextInput("www.example.com")
-        }
-
         inputStartDate {
           assertIsDisplayed()
 
@@ -758,6 +727,37 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           assertTextContains("00:00")
 
           performTextClearance()
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Address")
+
+          performTextClearance()
+          performTextInput("Stop address")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
         }
 
         createButton {
@@ -795,36 +795,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("20.0")
         }
 
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Suggestion Description*")
-          assertTextContains("Describe the suggestion")
-
-          performTextClearance()
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
-        inputWebsite {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Website")
-
-          performTextClearance()
-          performTextInput("www.example.com")
-        }
-
         inputStartDate {
           assertIsDisplayed()
 
@@ -859,6 +829,36 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+        }
+
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Address")
+
+          performTextClearance()
+          performTextInput("Stop address")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
         }
 
         createButton {
