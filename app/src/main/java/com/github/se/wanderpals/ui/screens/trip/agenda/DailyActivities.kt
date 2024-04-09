@@ -86,10 +86,6 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
  */
 @Composable
 fun ActivityItem(stop: Stop) {
-  HorizontalDivider(
-      modifier = Modifier.fillMaxWidth(),
-      thickness = 1.dp,
-      color = MaterialTheme.colorScheme.secondary)
   Box(modifier = Modifier.testTag("activityItem").fillMaxWidth()) {
     Button(
         onClick = { /* Handle button click */},
@@ -131,7 +127,7 @@ fun ActivityItem(stop: Stop) {
                         .align(
                             Alignment
                                 .CenterVertically) // Center the IconButton vertically within the
-                                                   // Row
+                // Row
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
@@ -142,4 +138,8 @@ fun ActivityItem(stop: Stop) {
           }
         }
   }
+  HorizontalDivider(
+      modifier = Modifier.fillMaxWidth(),
+      thickness = 1.dp,
+      color = MaterialTheme.colorScheme.secondary)
 }

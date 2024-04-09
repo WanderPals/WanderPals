@@ -142,5 +142,5 @@ fun DisplayDate(date: LocalDate?) {
       style = MaterialTheme.typography.bodyLarge,
       color = MaterialTheme.colorScheme.primary,
       textAlign = TextAlign.Center,
-      modifier = Modifier.padding(16.dp).testTag("displayDateText"))
+      modifier = Modifier.padding(8.dp).testTag("displayDateText"))
 }
