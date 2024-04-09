@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
  */
 @Composable
 fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
-  Column(modifier = Modifier.padding(bottom = 30.dp)) {
+  Column(modifier = Modifier.padding(bottom = 25.dp)) {
 
     // Button to join a trip
     Box(modifier = Modifier.fillMaxWidth()) {

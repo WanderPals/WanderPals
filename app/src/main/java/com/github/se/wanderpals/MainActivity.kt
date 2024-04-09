@@ -14,7 +14,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -27,6 +26,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
 
 class MainActivity : ComponentActivity() {
@@ -43,13 +44,23 @@ class MainActivity : ComponentActivity() {
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        account = task.result
-        val uid = account.id ?: ""
-        tripsRepository = TripsRepository(uid, Dispatchers.IO)
-        tripsRepository.initFirestore()
-        Log.d("SignIn", "Login result " + account.displayName)
-        navigationActions.navigateTo(Route.OVERVIEW)
-        signInClient.signOut()
+        task.addOnSuccessListener { account ->
+          val googleTokenId = account.idToken ?: ""
+          val credential = GoogleAuthProvider.getCredential(googleTokenId, null)
+          FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener {
+            if (it.isSuccessful) {
+
+              val uid = it.result?.user?.uid ?: ""
+              tripsRepository = TripsRepository(uid, Dispatchers.IO)
+              tripsRepository.initFirestore()
+              Log.d("SignIn", "Login result " + account.displayName)
+              navigationActions.navigateTo(Route.OVERVIEW)
+              // previously sign out
+            } else {
+              Log.d("MainActivity", "SignIn: Firebase Login Failed")
+            }
+          }
+        }
       }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +95,7 @@ class MainActivity : ComponentActivity() {
               Trip(navigationActions, tripId)
             }
             composable(Route.CREATE_TRIP) {
-              CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)
+              CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
             }
           }
         }
