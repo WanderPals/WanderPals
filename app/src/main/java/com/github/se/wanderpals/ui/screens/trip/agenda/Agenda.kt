@@ -75,7 +75,7 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
 
       // Banner to toggle drawer visibility
       Banner(
-          agendaViewModel.selectedDate,
+          agendaViewModel,
           isDrawerExpanded,
           onToggle = { isDrawerExpanded = !isDrawerExpanded })
       AnimatedVisibility(visible = isDrawerExpanded) {
@@ -139,25 +139,17 @@ fun CalendarWidget(
 }
 
 /**
- * A Composable function that displays a banner at the top of the screen. This banner shows the
- * currently selected date and an icon indicating whether the calendar drawer is expanded or
- * collapsed. The banner itself is interactive, allowing the user to tap it to expand or collapse
- * the calendar view.
+ * Composable function that displays the daily activities for a selected date.
  *
- * @param date The currently selected date to display in the banner. If `null`, a default message
- *   indicating that no date is selected will be shown instead. The date is displayed using the
- *   `DisplayDate` composable function, which formats the date according to a predefined pattern.
- * @param isExpanded A boolean value indicating the current state of the calendar drawer. `true` if
- *   the calendar drawer is expanded, showing more details or the full calendar view; `false` if the
- *   drawer is collapsed.
- * @param onToggle A lambda function to be called when the banner is clicked. This function should
- *   handle the logic for toggling the state of the calendar drawer (i.e., expanding or collapsing
- *   it).
+ * @param agendaViewModel The view model for managing the agenda of a trip.
  */
 @Composable
-fun Banner(date: LocalDate?, isExpanded: Boolean, onToggle: () -> Unit) {
-  Box(modifier = Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp)) {
-    DisplayDate(date = date)
+fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -> Unit) {
+    val uiState by agendaViewModel.uiState.collectAsState()
+    val selectedDate = uiState.selectedDate ?: LocalDate.now()
+
+  Box(modifier = Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp).testTag("Banner")) {
+    DisplayDate(date = selectedDate)
     // Optional: Add an icon to indicate the expand/collapse action
     Icon(
         imageVector =
