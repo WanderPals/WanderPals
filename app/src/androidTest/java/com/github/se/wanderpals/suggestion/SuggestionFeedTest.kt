@@ -6,7 +6,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.model.repository.SuggestionRepository
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.SuggestionFeedScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -161,9 +160,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun suggestionFeedScreen_isDisplayed() {
     composeTestRule.setContent {
       // Simulate the Suggestion composable with the provided tripId
-      com.github.se.wanderpals.ui.screens.trip.Suggestion(tripId = "dummyTestTripId", suggestionRepository = SuggestionRepository(
-          TripsRepository("dummyTestTripId", Dispatchers.IO), "dummyTestTripId", Dispatchers.IO)
-      )
+      com.github.se.wanderpals.ui.screens.trip.Suggestion(tripId = "dummyTestTripId", tripsRepository = TripsRepository("a", Dispatchers.IO))
     }
 
     // Now check if the suggestion feed screen is displayed

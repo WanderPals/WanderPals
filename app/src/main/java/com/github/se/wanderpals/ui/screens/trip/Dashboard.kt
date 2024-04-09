@@ -3,24 +3,24 @@ package com.github.se.wanderpals.ui.screens.trip
 import DashboardTopBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavAction
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.model.repository.SuggestionRepository
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -55,27 +55,37 @@ val suggestion = com.github.se.wanderpals.model.data.Suggestion(
 
 /** The Dashboard screen. */
 @Composable
-fun Dashboard(tripId: String, suggestionRepository: SuggestionRepository, oldNavAction: NavigationActions) {
-  Text(modifier = Modifier.testTag("dashboardScreen"), text = "Dashboard for trip $tripId")
+fun Dashboard(tripId: String, dashboardViewModel: DashboardViewModel, oldNavAction: NavigationActions) {
+  val isLoading by dashboardViewModel.isLoading.collectAsState()
 
-  // Create a DashboardViewModel and pass the tripId to it
-  val dashboardViewModel = DashboardViewModel(suggestionRepository, tripId)
-
-  Scaffold (
-    topBar = {
-      Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp), contentAlignment = Alignment.Center) {
-        DashboardTopBar()
-      }
+  if (isLoading) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
     }
-  )
-  {
-    Surface(
-      modifier = Modifier
-        .background(Color.White)
-        .padding(it)){
-      DashboardSuggestionWidget(viewModel = dashboardViewModel, onClick = { oldNavAction.navigateTo(Route.SUGGESTION) }, suggestion = suggestion)
+  } else {
+    Scaffold(
+      topBar = {
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp), contentAlignment = Alignment.Center
+        ) {
+          DashboardTopBar()
+        }
+      }
+    )
+    {
+      Surface(
+        modifier = Modifier
+          .background(Color.White)
+          .padding(it)
+      ) {
+        DashboardSuggestionWidget(
+          viewModel = dashboardViewModel,
+          onClick = { oldNavAction.navigateTo(Route.SUGGESTION) },
+          suggestion = suggestion
+        )
+      }
     }
   }
 }

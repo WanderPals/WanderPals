@@ -19,6 +19,7 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -42,9 +43,8 @@ fun DashboardSuggestion(suggestion: Suggestion) {
                 Text(text = suggestion.userName)
                 Text(
                     text = "${suggestion.stop.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))} " +
-                            "${suggestion.stop.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} -> " +
-                            "${suggestion.stop.date.plusDays(suggestion.stop.duration.toLong() / 24*60).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))} " +
-                            suggestion.stop.startTime.plusMinutes(suggestion.stop.duration.toLong() % 24*60).format(DateTimeFormatter.ofPattern("HH:mm")),
+                            "${suggestion.stop.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} -> \n" +
+                            LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime).plusMinutes(suggestion.stop.duration.toLong()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
                     style = TextStyle(
                         fontSize = 12.sp,
                         color = Color.Gray

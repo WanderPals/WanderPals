@@ -15,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,11 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.model.repository.SuggestionRepository
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.Dispatchers
 import java.time.LocalDate
@@ -34,10 +33,8 @@ import java.time.LocalTime
 
 @Composable
 fun DashboardSuggestionWidget (viewModel: DashboardViewModel, onClick : () -> Unit = {}, suggestion: Suggestion) {
-    val suggestions = List(4) {suggestion}
-                        //viewModel.suggestions.value?: emptyList()
-    val sortedSuggestion = suggestions.sortedByDescending { it.createdAt }
-
+    val suggestionList by viewModel.state.collectAsState()
+    val sortedSuggestion = suggestionList.sortedByDescending { it.createdAt }
 
             Card (
                 modifier = Modifier
@@ -89,6 +86,6 @@ fun DashboardSuggestionWidgetPreview() {
         text = "This is a suggestion for a stop.",
         userId = "1"
     )
-    val viewModel = DashboardViewModel(suggestionRepository = SuggestionRepository(TripsRepository("a", Dispatchers.IO), tripId = "a", dispatcher = Dispatchers.IO), tripId = "a")
+    val viewModel = DashboardViewModel(tripsRepository = (TripsRepository("a", Dispatchers.IO)), tripId = "a")
     DashboardSuggestionWidget(viewModel = viewModel, onClick = {}, suggestion)
 }

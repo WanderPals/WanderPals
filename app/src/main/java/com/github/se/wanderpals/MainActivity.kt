@@ -92,7 +92,7 @@ class MainActivity : ComponentActivity() {
             }
             composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
               val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
-              Trip(navigationActions, tripId)
+              Trip(navigationActions, tripId, tripsRepository)
             }
             composable(Route.CREATE_TRIP) {
               CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
