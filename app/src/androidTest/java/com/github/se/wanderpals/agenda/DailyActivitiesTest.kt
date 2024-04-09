@@ -1,21 +1,17 @@
-package com.github.se.wanderpals.ui.screens.trip.agenda
+package com.github.se.wanderpals.agenda
 
-import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onChild
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
+import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.agenda.Banner
+import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import java.time.LocalDate
-import java.time.Year
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
@@ -43,9 +39,8 @@ class DailyActivitiesTest {
     }
 
   @Test
-  fun checkSelectedDateIsDisplayed() {
+  fun checkDateIsDisplayed() {
     // Assuming you have a way to inject or use AgendaViewModel within MainActivity
-    var testDate = LocalDate.now()
     val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
     composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
