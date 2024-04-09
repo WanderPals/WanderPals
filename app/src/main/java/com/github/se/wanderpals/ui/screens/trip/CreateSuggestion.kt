@@ -100,7 +100,7 @@ fun CreateSuggestion(
 
   val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-  Surface(modifier = Modifier.padding(12.dp).testTag("createSuggestionScreen")) {
+  Surface(modifier = Modifier.padding(12.dp)) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
