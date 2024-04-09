@@ -35,33 +35,27 @@ fun Suggestion(tripId: String, suggestionsViewModel: SuggestionsViewModel) {
     val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
   // State for managing search text (the filter) <-todo: for sprint3
-  var searchText by remember { mutableStateOf("") }
+  var searchSuggestionText by remember { mutableStateOf("") }
 
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
-        }
-    } else {
-
-        Scaffold(
-            modifier = Modifier.testTag("suggestionFeedScreen"),
-            topBar = {
-                // Top bar with search functionality based on the title of the trips
-                SuggestionTopBar(
-                    searchText = searchText,
-                    onSearchTextChanged = { newSearchText -> searchText = newSearchText })
-            },
-            bottomBar = {
-                SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
-            }) { innerPadding ->
-            //    NavHost(navController, startDestination = Route.DASHBOARD,
-            // Modifier.padding(innerPadding))
-            SuggestionFeedContent(
-                innerPadding = innerPadding,
-                navigationActions = navActions,
-                suggestionList = suggestionList,
-                searchText = searchText
-            )
-        }
-    }
+  Scaffold(
+      modifier = Modifier.testTag("suggestionFeedScreen"),
+      topBar = {
+        // Top bar with search functionality based on the title of the trips
+        SuggestionTopBar(
+            searchSuggestionText = searchSuggestionText,
+            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+              searchSuggestionText = newSearchSuggestionText
+            })
+      },
+      bottomBar = {
+        SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
+      }) { innerPadding ->
+        //    NavHost(navController, startDestination = Route.DASHBOARD,
+        // Modifier.padding(innerPadding))
+        SuggestionFeedContent(
+            innerPadding = innerPadding,
+            navigationActions = navActions,
+            suggestionList = suggestionList,
+            searchSuggestionText = searchSuggestionText)
+      }
 }

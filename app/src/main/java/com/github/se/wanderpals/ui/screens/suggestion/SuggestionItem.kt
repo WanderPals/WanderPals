@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,6 +44,7 @@ import java.time.format.DateTimeFormatter
 fun SuggestionItem(
     suggestion: Suggestion,
     navigationActions: NavigationActions,
+    onClick: () -> Unit, // Callback when the item is clicked
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
   // Define card colors with a white background
@@ -57,7 +59,10 @@ fun SuggestionItem(
               .padding(8.dp)
               .width(380.dp) // the width of the Card
               .height(166.dp) // the height of the Card
-              .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp)),
+              .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
+              .clickable(
+                  onClick = onClick), // Invoke the onClick lambda when the item is clicked (see
+      // SuggestionFeedContent.kt)
       colors = cardColors // Use the cardColors with the white background
       ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {

@@ -3,6 +3,7 @@ package com.github.se.wanderpals.suggestion
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
@@ -84,6 +85,25 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
             website = "http://www.kuchu-teien.com/",
             imageUrl = "")
 
+    val comment1 =
+        Comment("commentId1", "usercmtId1", "userNamecmt1", "Great idea!", LocalDate.now())
+    val comment2 =
+        Comment(
+            "commentId2",
+            "usercmtId2",
+            "userNamecmt2",
+            "I've been here before, it's wonderful.",
+            LocalDate.now())
+    val comment3 =
+        Comment(
+            "commentId3", "usercmtId3", "userNamecmt3", "This fits our schedule.", LocalDate.now())
+    val comment4 =
+        Comment(
+            "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now())
+
+    // Example list of comments
+    val dummyCommentList = listOf(comment1, comment2, comment3, comment4)
+
     // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
     this.suggestionList =
         listOf(
@@ -94,7 +114,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                 "Let us go here!",
                 LocalDate.of(2024, 1, 1),
                 stop1,
-                emptyList(),
+                dummyCommentList,
                 emptyList()),
             Suggestion(
                 "suggestionId2",
@@ -113,7 +133,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                     "Trying to convince you to go here with me. coz I know you will love it!",
                 LocalDate.of(2024, 3, 29),
                 stop3,
-                emptyList(),
+                dummyCommentList,
                 emptyList()))
   }
 
@@ -128,7 +148,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           innerPadding = PaddingValues(),
           navigationActions = mockNavActions,
           suggestionList = suggestionList,
-          searchText = "")
+          searchSuggestionText = "")
     }
 
     // Check if the three suggestions are displayed on the Suggestions Feed screen
@@ -147,7 +167,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           innerPadding = PaddingValues(),
           navigationActions = mockNavActions,
           suggestionList = emptyList(),
-          searchText = "")
+          searchSuggestionText = "")
     }
     // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
