@@ -263,6 +263,7 @@ fun SuggestionDetailPopup(
                           }
                       }
                   }
+
               }
           }
       }

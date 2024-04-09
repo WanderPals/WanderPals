@@ -51,12 +51,6 @@ fun DashboardSuggestion(suggestion: Suggestion) {
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = suggestion.stop.description,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }

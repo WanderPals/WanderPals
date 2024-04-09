@@ -14,6 +14,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
@@ -46,6 +47,8 @@ fun DashboardSuggestionWidget (viewModel: DashboardViewModel, onClick : () -> Un
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                 ) {
+                    Text(text = "Suggestion:")
+
                     for (i in 0 until minOf(3, sortedSuggestion.size)) {
                         DashboardSuggestion(sortedSuggestion[i])
                         if (i < minOf(3, sortedSuggestion.size) - 1) {
