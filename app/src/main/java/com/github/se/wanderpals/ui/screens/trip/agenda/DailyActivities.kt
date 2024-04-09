@@ -37,9 +37,6 @@ import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 
 @Preview(showBackground = true)
@@ -64,7 +61,6 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
   // Trigger data fetch when selectedDate changes
   LaunchedEffect(selectedDate) { selectedDate?.let { agendaViewModel.fetchDailyActivities(it) } }
 
-  DisplayDate(date = selectedDate) // Display the selected date
   // Display daily activities here, using dailyActivities
   // If dailyActivities is empty, display a message
   if (dailyActivities.isEmpty()) {
@@ -76,7 +72,10 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
         modifier = Modifier.padding(16.dp))
   } else {
     // Display the activities for the selected date
-    LazyColumn(content = { items(dailyActivities.sortedBy { it.startTime }) { stop -> ActivityItem(stop) } })
+    LazyColumn(
+        content = {
+          items(dailyActivities.sortedBy { it.startTime }) { stop -> ActivityItem(stop) }
+        })
   }
 }
 
@@ -87,96 +86,60 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
  */
 @Composable
 fun ActivityItem(stop: Stop) {
-    HorizontalDivider(
-        modifier = Modifier.fillMaxWidth(),
-        thickness = 1.dp,
-        color = MaterialTheme.colorScheme.secondary)
-    Box(
-        modifier = Modifier
-            .testTag("activityItem")
-            .fillMaxWidth()
-    ) {
-        Button(
-            onClick = { /* Handle button click */ },
-            shape = RectangleShape,
-            modifier = Modifier
-                .height(100.dp)
-                .fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-        ) {
-            Row(modifier = Modifier
-                .fillMaxSize()
-            ) {
-                // Texts Column
-                Column(
-                    modifier = Modifier
-                        .weight(1f) // Takes up all available space, pushing the IconButton to the right
+  HorizontalDivider(
+      modifier = Modifier.fillMaxWidth(),
+      thickness = 1.dp,
+      color = MaterialTheme.colorScheme.secondary)
+  Box(modifier = Modifier.testTag("activityItem").fillMaxWidth()) {
+    Button(
+        onClick = { /* Handle button click */},
+        shape = RectangleShape,
+        modifier = Modifier.height(100.dp).fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+          Row(modifier = Modifier.fillMaxSize()) {
+            // Texts Column
+            Column(
+                modifier =
+                    Modifier.weight(
+                            1f) // Takes up all available space, pushing the IconButton to the right
                         .align(Alignment.CenterVertically) // Vertically center the column content
                         .fillMaxSize(), // Fill the available space
-                    verticalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Text(
-                        text = stop.title,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .wrapContentWidth(Alignment.Start)
-                    )
-                    Text(
-                        text = "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .wrapContentWidth(Alignment.Start)
-                    )
-                    Text(
-                        text = stop.address,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Black,
-                        modifier = Modifier
-                            .wrapContentWidth(Alignment.Start)
-                    )
+                verticalArrangement = Arrangement.SpaceEvenly) {
+                  Text(
+                      text = stop.title,
+                      style = MaterialTheme.typography.bodyLarge,
+                      color = Color.Black,
+                      modifier = Modifier.wrapContentWidth(Alignment.Start))
+                  Text(
+                      text =
+                          "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
+                      style = MaterialTheme.typography.bodyLarge,
+                      color = Color.Black,
+                      modifier = Modifier.wrapContentWidth(Alignment.Start))
+                  Text(
+                      text = stop.address,
+                      style = MaterialTheme.typography.bodyLarge,
+                      color = Color.Black,
+                      modifier = Modifier.wrapContentWidth(Alignment.Start))
                 }
 
-                // Icon Button at the far right, centered vertically
-                IconButton(
-                    onClick = { /* Handle button click */ },
-                    modifier = Modifier
-                        .size(24.dp) // Adjust the size of the IconButton as needed
-                        .align(Alignment.CenterVertically) // Center the IconButton vertically within the Row
+            // Icon Button at the far right, centered vertically
+            IconButton(
+                onClick = { /* Handle button click */},
+                modifier =
+                    Modifier.size(24.dp) // Adjust the size of the IconButton as needed
+                        .align(
+                            Alignment
+                                .CenterVertically) // Center the IconButton vertically within the
+                                                   // Row
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = null // Provide an appropriate content description
-                    )
+                  Icon(
+                      imageVector = Icons.Default.LocationOn,
+                      tint = MaterialTheme.colorScheme.primary,
+                      contentDescription = null // Provide an appropriate content description
+                      )
                 }
-            }
+          }
         }
-    }
-}
-
-/**
- * Composable function that displays the selected date.
- *
- * @param date The selected date to display.
- */
-@Composable
-fun DisplayDate(date: LocalDate?) {
-
-  // Define a formatter
-  val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(Locale.getDefault())
-
-  // Format the selected date using the formatter
-  val formattedDate = date?.format(formatter) ?: "No date selected"
-
-  // Display the formatted date
-  Text(
-      text = formattedDate,
-      style = MaterialTheme.typography.bodyLarge,
-      color = MaterialTheme.colorScheme.primary,
-      textAlign = TextAlign.Center,
-      modifier = Modifier
-          .padding(16.dp)
-          .testTag("displayDateText"))
+  }
 }

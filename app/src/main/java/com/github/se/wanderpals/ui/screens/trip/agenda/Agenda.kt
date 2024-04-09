@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
+import java.time.LocalDate
 import java.time.YearMonth
 
 private const val DAYS_IN_A_WEEK = 7
@@ -59,23 +66,32 @@ fun AgendaPreview() {
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel) {
   val uiState by agendaViewModel.uiState.collectAsState()
+
+  var isDrawerExpanded by remember { mutableStateOf(false) }
   Surface(
       modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
   ) {
-    Column() {
-      CalendarWidget(
-          days = getDaysOfWeekLabels(),
-          yearMonth = uiState.yearMonth,
-          dates = uiState.dates,
-          onPreviousMonthButtonClicked = { prevMonth ->
-            agendaViewModel.toPreviousMonth(prevMonth)
-          },
-          onNextMonthButtonClicked = { nextMonth -> agendaViewModel.toNextMonth(nextMonth) },
-          onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+    Column {
+
+      // Banner to toggle drawer visibility
+      Banner(
+          agendaViewModel.selectedDate,
+          isDrawerExpanded,
+          onToggle = { isDrawerExpanded = !isDrawerExpanded })
+      AnimatedVisibility(visible = isDrawerExpanded) {
+        CalendarWidget(
+            days = getDaysOfWeekLabels(),
+            yearMonth = uiState.yearMonth,
+            dates = uiState.dates,
+            onPreviousMonthButtonClicked = { prevMonth ->
+              agendaViewModel.toPreviousMonth(prevMonth)
+            },
+            onNextMonthButtonClicked = { nextMonth -> agendaViewModel.toNextMonth(nextMonth) },
+            onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+      }
       Spacer(modifier = Modifier.padding(1.dp))
       HorizontalDivider(
-          modifier = Modifier
-              .fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth(),
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
       // Implement the daily agenda here
@@ -119,6 +135,35 @@ fun CalendarWidget(
         onPreviousMonthButtonClicked = onPreviousMonthButtonClicked,
         onNextMonthButtonClicked = onNextMonthButtonClicked)
     Content(dates = dates, onDateClickListener = onDateClickListener)
+  }
+}
+
+/**
+ * A Composable function that displays a banner at the top of the screen. This banner shows the
+ * currently selected date and an icon indicating whether the calendar drawer is expanded or
+ * collapsed. The banner itself is interactive, allowing the user to tap it to expand or collapse
+ * the calendar view.
+ *
+ * @param date The currently selected date to display in the banner. If `null`, a default message
+ *   indicating that no date is selected will be shown instead. The date is displayed using the
+ *   `DisplayDate` composable function, which formats the date according to a predefined pattern.
+ * @param isExpanded A boolean value indicating the current state of the calendar drawer. `true` if
+ *   the calendar drawer is expanded, showing more details or the full calendar view; `false` if the
+ *   drawer is collapsed.
+ * @param onToggle A lambda function to be called when the banner is clicked. This function should
+ *   handle the logic for toggling the state of the calendar drawer (i.e., expanding or collapsing
+ *   it).
+ */
+@Composable
+fun Banner(date: LocalDate?, isExpanded: Boolean, onToggle: () -> Unit) {
+  Box(modifier = Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp)) {
+    DisplayDate(date = date)
+    // Optional: Add an icon to indicate the expand/collapse action
+    Icon(
+        imageVector =
+            if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+        contentDescription = "Toggle",
+        modifier = Modifier.align(Alignment.CenterEnd))
   }
 }
 

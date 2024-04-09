@@ -1,9 +1,18 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -111,4 +120,27 @@ fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
  */
 fun YearMonth.getDisplayName(): String {
   return "${month.getDisplayName(TextStyle.FULL, Locale.getDefault())} $year"
+}
+
+/**
+ * Composable function that displays the selected date.
+ *
+ * @param date The selected date to display.
+ */
+@Composable
+fun DisplayDate(date: LocalDate?) {
+
+  // Define a formatter
+  val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(Locale.getDefault())
+
+  // Format the selected date using the formatter
+  val formattedDate = date?.format(formatter) ?: "No date selected"
+
+  // Display the formatted date
+  Text(
+      text = formattedDate,
+      style = MaterialTheme.typography.bodyLarge,
+      color = MaterialTheme.colorScheme.primary,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.padding(16.dp).testTag("displayDateText"))
 }
