@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -37,25 +36,33 @@ fun Suggestion(tripId: String, suggestionsViewModel: SuggestionsViewModel) {
   // State for managing search text (the filter) <-todo: for sprint3
   var searchSuggestionText by remember { mutableStateOf("") }
 
-  Scaffold(
-      modifier = Modifier.testTag("suggestionFeedScreen"),
-      topBar = {
-        // Top bar with search functionality based on the title of the trips
-        SuggestionTopBar(
-            searchSuggestionText = searchSuggestionText,
-            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-              searchSuggestionText = newSearchSuggestionText
-            })
-      },
-      bottomBar = {
-        SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
-      }) { innerPadding ->
-        //    NavHost(navController, startDestination = Route.DASHBOARD,
-        // Modifier.padding(innerPadding))
-        SuggestionFeedContent(
-            innerPadding = innerPadding,
-            navigationActions = navActions,
-            suggestionList = suggestionList,
-            searchSuggestionText = searchSuggestionText)
-      }
+
+    if (isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
+        }
+    } else {
+        Scaffold(
+            modifier = Modifier.testTag("suggestionFeedScreen"),
+            topBar = {
+                // Top bar with search functionality based on the title of the trips
+                SuggestionTopBar(
+                    searchSuggestionText = searchSuggestionText,
+                    onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+                        searchSuggestionText = newSearchSuggestionText
+                    })
+            },
+            bottomBar = {
+                SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
+            }) { innerPadding ->
+            //    NavHost(navController, startDestination = Route.DASHBOARD,
+            // Modifier.padding(innerPadding))
+            SuggestionFeedContent(
+                innerPadding = innerPadding,
+                navigationActions = navActions,
+                suggestionList = suggestionList,
+                searchSuggestionText = searchSuggestionText
+            )
+        }
+    }
 }
