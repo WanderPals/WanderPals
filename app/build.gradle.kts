@@ -184,6 +184,8 @@ dependencies {
     // Google Sign-In
     implementation(libs.play.services.auth)
 
+    implementation(libs.okhttp)
+
 
     debugImplementation(libs.compose.tooling)
     // UI Tests
@@ -212,6 +214,7 @@ dependencies {
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
+
 
 }
 
