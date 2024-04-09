@@ -19,11 +19,14 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.se.wanderpals.model.repository.SuggestionRepository
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import kotlinx.coroutines.Dispatchers
 
 /** The Trip screen. */
 @Composable
@@ -31,15 +34,17 @@ fun Trip(oldNavActions: NavigationActions, tripId: String) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
 
+    val suggestionRepository = SuggestionRepository(tripsRepository = TripsRepository(tripId, Dispatchers.IO), tripId, Dispatchers.IO)
+
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),
       topBar = {},
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
-          composable(Route.DASHBOARD) { Dashboard(tripId) }
+          composable(Route.DASHBOARD) { Dashboard(tripId, suggestionRepository, navActions) }
           composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
           composable(Route.SUGGESTION) {
-            Suggestion(tripId)
+            Suggestion(tripId, suggestionRepository)
           } // todo: might have the param oldNavActions for Suggestion()
           composable(Route.MAP) { Map(tripId) }
           composable(Route.NOTIFICATION) { Notification(tripId) }

@@ -6,6 +6,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.repository.SuggestionRepository
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.SuggestionFeedScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
@@ -16,6 +18,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen.Companion.onComposeScreen
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Before
@@ -158,7 +161,9 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun suggestionFeedScreen_isDisplayed() {
     composeTestRule.setContent {
       // Simulate the Suggestion composable with the provided tripId
-      com.github.se.wanderpals.ui.screens.trip.Suggestion(tripId = "dummyTestTripId")
+      com.github.se.wanderpals.ui.screens.trip.Suggestion(tripId = "dummyTestTripId", suggestionRepository = SuggestionRepository(
+          TripsRepository("dummyTestTripId", Dispatchers.IO), "dummyTestTripId", Dispatchers.IO)
+      )
     }
 
     // Now check if the suggestion feed screen is displayed

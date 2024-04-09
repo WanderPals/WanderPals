@@ -10,6 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.navigation.compose.rememberNavController
+import com.github.se.wanderpals.model.repository.SuggestionRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -19,10 +20,10 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 
 /** The Suggestion screen. */
 @Composable
-fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String) {
+fun Suggestion(tripId: String, suggestionRepository: SuggestionRepository) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
-  val suggestionsViewModel = SuggestionsViewModel()
+  val suggestionsViewModel = SuggestionsViewModel(suggestionRepository, tripId)
   val suggestionList by suggestionsViewModel.state.collectAsState() // todo: use dummy data for now
 
   // State for managing search text (the filter) <-todo: for sprint3
