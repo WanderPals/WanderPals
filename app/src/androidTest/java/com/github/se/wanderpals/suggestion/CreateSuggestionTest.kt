@@ -871,4 +871,46 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
       }
     }
   }
+
+  @Test
+  fun createSuggestionWithAddress() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen("aaa", vm, mockNavActions, addr = "Example address")
+      }
+      step("Open create suggestion screen") {
+        inputAddress {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Example address")
+
+          performTextClearance()
+        }
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionWithoutAddress() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      step("Open create suggestion screen") {
+        val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+        composeTestRule.setContent {
+          CreateSuggestionScreen("aaa", vm, mockNavActions, addr = "Example address")
+        }
+        step("Open create suggestion screen") {
+          inputAddress {
+            assertIsDisplayed()
+            performClick()
+
+            assertTextContains("Example address")
+
+            performTextClearance()
+          }
+        }
+      }
+    }
+  }
 }

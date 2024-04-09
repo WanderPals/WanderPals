@@ -64,6 +64,7 @@ fun CreateSuggestion(
     addr: String = "",
     website: String = "",
     title: String = "",
+    geoCords: GeoCords = GeoCords(0.0, 0.0),
     budget: Double = Double.NaN,
     onSuccess: () -> Unit = {},
     onFailure: () -> Unit = {}
@@ -221,37 +222,24 @@ fun CreateSuggestion(
               singleLine = false,
               placeholder = { Text("Describe the suggestion") })
 
-          Row(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = address,
-                onValueChange = { address = it },
-                label = { Text("Address") },
-                modifier =
-                    Modifier.testTag("inputSuggestionAddress")
-                        .horizontalScroll(state = rememberScrollState(0), enabled = true)
-                        .weight(6f),
-                isError = addr_err,
-                singleLine = true,
-                placeholder = { Text("Address of the suggestion") })
+          if (addr.isNotEmpty()) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+              OutlinedTextField(
+                  value = address,
+                  onValueChange = { address = it },
+                  label = { Text("Address") },
+                  modifier =
+                      Modifier.testTag("inputSuggestionAddress")
+                          .horizontalScroll(state = rememberScrollState(0), enabled = true)
+                          .weight(6f),
+                  isError = addr_err,
+                  singleLine = true,
+                  placeholder = { Text("Address of the suggestion") },
+                  enabled = false)
+            }
 
-            // Spacer(modifier = Modifier.width(12.dp))
-            /*
-                       Icon(
-                           imageVector = Icons.Default.LocationOn,
-                           contentDescription = "pick on map",
-                           Modifier
-                               .weight(1f)
-                               .padding(top = 6.dp)
-                               .border(1.dp, Color.Black, shape = RoundedCornerShape(8.dp))
-                               .size(48.dp)
-                               .align(Alignment.CenterVertically)
-                               .clickable(onClick = {}) // go to map to get data
-                           )
-
-            */
+            Spacer(modifier = Modifier.height(12.dp))
           }
-
-          Spacer(modifier = Modifier.height(12.dp))
 
           OutlinedTextField(
               value = _website,
@@ -319,7 +307,7 @@ fun CreateSuggestion(
                                   duration = duration.toMinutes().toInt(),
                                   budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
                                   description = description,
-                                  geoCords = GeoCords(0.0, 0.0),
+                                  geoCords = geoCords,
                                   website = _website,
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
@@ -399,7 +387,7 @@ fun CreateSuggestionScreen(
       addr,
       website,
       title,
-      budget,
+      budget = budget,
       onSuccess = {
         nav.navigateTo(Route.SUGGESTION) // could be change to only execute onSuccess()
         onSuccess()
@@ -431,7 +419,9 @@ fun CreateSuggestionPreview() {
       "aaaa",
       CreateSuggestionViewModel(TripsRepository("aaaa", Dispatchers.IO)),
       title = "aiaia",
-      budget = 0.0)
+      budget = 0.0,
+      addr =
+          "AOIESUJZIDOJQDOIJQZDOIJQZDOIJZQDOJIZQODIJZQODIJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJ")
 }
 
 /** for quick testing purposes */
