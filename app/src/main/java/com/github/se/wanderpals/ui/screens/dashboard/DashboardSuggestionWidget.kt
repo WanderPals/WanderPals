@@ -34,24 +34,11 @@ import java.time.LocalTime
 
 @Composable
 fun DashboardSuggestionWidget (viewModel: DashboardViewModel, onClick : () -> Unit = {}, suggestion: Suggestion) {
-    val suggestions = //List(4) {suggestion}
-                        viewModel.suggestions.value?: emptyList()
+    val suggestions = List(4) {suggestion}
+                        //viewModel.suggestions.value?: emptyList()
     val sortedSuggestion = suggestions.sortedByDescending { it.createdAt }
 
-    Scaffold (
-        topBar = {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp), contentAlignment = Alignment.Center) {
-                DashboardTopBar()
-            }
-        }
-    )
-    {
-        Surface(
-            modifier = Modifier
-                .background(Color.White)
-                .padding(it)){
+
             Card (
                 modifier = Modifier
                     .background(Color.White)
@@ -75,8 +62,8 @@ fun DashboardSuggestionWidget (viewModel: DashboardViewModel, onClick : () -> Un
                 }
             }
         }
-    }
-}
+
+
 
 @Preview(showBackground = true)
 @Composable
