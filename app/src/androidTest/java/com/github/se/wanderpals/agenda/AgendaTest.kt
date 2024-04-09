@@ -1,7 +1,9 @@
 package com.github.se.wanderpals.agenda
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -70,7 +72,12 @@ class AgendaTest {
     val testYearMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(testYearMonth)
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent { Agenda(agendaViewModel = fakeViewModel) }
+
+    composeTestRule.waitForIdle()
+
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
 
     val expectedDisplay = testYearMonth.getDisplayName()
     composeTestRule.onNodeWithText(expectedDisplay).assertExists()
@@ -82,6 +89,9 @@ class AgendaTest {
     val fakeViewModel = FakeAgendaViewModel(initialMonth)
 
     composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
 
     composeTestRule.onNodeWithContentDescription("Next").performClick()
 
@@ -96,6 +106,9 @@ class AgendaTest {
     val fakeViewModel = FakeAgendaViewModel(initialMonth)
 
     composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
 
     composeTestRule.onNodeWithContentDescription("Back").performClick()
 
@@ -115,6 +128,9 @@ class AgendaTest {
 
     composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
 
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
+
     // Assuming "Date 15, Not Selected" is initially present.
     composeTestRule.onNodeWithContentDescription("Date 15, Not Selected").performClick()
 
@@ -125,5 +141,16 @@ class AgendaTest {
 
     // Now, verify the item's content description reflects it being selected.
     composeTestRule.onNodeWithContentDescription("Date 15, Selected").assertExists()
+  }
+
+  @Test
+  fun checkBannerIsDisplayed() {
+    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+
+    composeTestRule.setContent { Agenda(agendaViewModel = testViewModel) }
+
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("Banner").assertIsDisplayed()
   }
 }

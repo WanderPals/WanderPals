@@ -74,10 +74,7 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
     Column {
 
       // Banner to toggle drawer visibility
-      Banner(
-          agendaViewModel,
-          isDrawerExpanded,
-          onToggle = { isDrawerExpanded = !isDrawerExpanded })
+      Banner(agendaViewModel, isDrawerExpanded, onToggle = { isDrawerExpanded = !isDrawerExpanded })
       AnimatedVisibility(visible = isDrawerExpanded) {
         CalendarWidget(
             days = getDaysOfWeekLabels(),
@@ -145,18 +142,20 @@ fun CalendarWidget(
  */
 @Composable
 fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -> Unit) {
-    val uiState by agendaViewModel.uiState.collectAsState()
-    val selectedDate = uiState.selectedDate ?: LocalDate.now()
+  val uiState by agendaViewModel.uiState.collectAsState()
+  val selectedDate = uiState.selectedDate ?: LocalDate.now()
 
-  Box(modifier = Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp).testTag("Banner")) {
-    DisplayDate(date = selectedDate)
-    // Optional: Add an icon to indicate the expand/collapse action
-    Icon(
-        imageVector =
-            if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-        contentDescription = "Toggle",
-        modifier = Modifier.align(Alignment.CenterEnd))
-  }
+  Box(
+      modifier =
+          Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp).testTag("Banner")) {
+        DisplayDate(date = selectedDate)
+        // Optional: Add an icon to indicate the expand/collapse action
+        Icon(
+            imageVector =
+                if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+            contentDescription = "Toggle",
+            modifier = Modifier.align(Alignment.CenterEnd))
+      }
 }
 
 /**
