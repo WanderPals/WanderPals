@@ -35,7 +35,7 @@ open class AgendaViewModel(
   open var uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
   /** Private mutable state flow for the daily activities of the selected date. */
-  private val _dailyActivities = MutableStateFlow<List<Stop>>(emptyList())
+  val _dailyActivities = MutableStateFlow<List<Stop>>(emptyList())
 
   /** Exposed read-only state flow of the daily activities. */
   val dailyActivities: StateFlow<List<Stop>> = _dailyActivities.asStateFlow()

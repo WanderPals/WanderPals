@@ -69,7 +69,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.secondary,
         textAlign = TextAlign.Center,
-        modifier = Modifier.padding(16.dp))
+        modifier = Modifier.padding(16.dp).testTag("NoActivitiesMessage"))
   } else {
     // Display the activities for the selected date
     LazyColumn(
@@ -86,7 +86,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
  */
 @Composable
 fun ActivityItem(stop: Stop) {
-  Box(modifier = Modifier.testTag("activityItem").fillMaxWidth()) {
+  Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
     Button(
         onClick = { /* Handle button click */},
         shape = RectangleShape,
