@@ -89,7 +89,28 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Before
   fun testSetup() {
     val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-    composeTestRule.setContent { CreateSuggestionScreen("aaa", vm, mockNavActions) }
+    composeTestRule.setContent {
+      CreateSuggestionScreen(
+          "aaa",
+          vm,
+          mockNavActions,
+          onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+          onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+    }
+  }
+
+  @Test
+  fun createSuggestionReturnToSuggestionOnCancel() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      goBackButton {
+        assertIsDisplayed()
+        assertIsEnabled()
+        performClick()
+      }
+
+      verify { mockNavActions.navigateTo(Route.DASHBOARD) }
+      confirmVerified(mockNavActions)
+    }
   }
 
   @Test

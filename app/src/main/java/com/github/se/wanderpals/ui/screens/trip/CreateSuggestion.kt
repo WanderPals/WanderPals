@@ -8,9 +8,13 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,7 +37,6 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
 import java.time.Duration
@@ -67,7 +70,8 @@ fun CreateSuggestion(
     geoCords: GeoCords = GeoCords(0.0, 0.0),
     budget: Double = Double.NaN,
     onSuccess: () -> Unit = {},
-    onFailure: () -> Unit = {}
+    onFailure: () -> Unit = {},
+    onCancel: () -> Unit = {}
 ) {
   var description by remember { mutableStateOf(desc) }
   var address by remember { mutableStateOf(addr) }
@@ -106,6 +110,14 @@ fun CreateSuggestion(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
+          Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
+            OutlinedButton(modifier = Modifier.testTag("goBackButton"), onClick = { onCancel() }) {
+              Icon(
+                  imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                  contentDescription = "Back",
+              )
+            }
+          }
           Row {
             OutlinedTextField(
                 value = suggestionText,
@@ -378,7 +390,8 @@ fun CreateSuggestionScreen(
     title: String = "",
     budget: Double = Double.NaN,
     onSuccess: () -> Unit = {},
-    onFailure: () -> Unit = {}
+    onFailure: () -> Unit = {},
+    onCancel: () -> Unit = {}
 ) {
   CreateSuggestion(
       tripId = tripId,
@@ -388,11 +401,9 @@ fun CreateSuggestionScreen(
       website,
       title,
       budget = budget,
-      onSuccess = {
-        nav.navigateTo(Route.SUGGESTION) // could be change to only execute onSuccess()
-        onSuccess()
-      },
-      onFailure = { onFailure() })
+      onSuccess = { onSuccess() },
+      onFailure = { onFailure() },
+      onCancel = { onCancel() })
 }
 
 /** needs to be discussed in meeting if shared with rest of project */

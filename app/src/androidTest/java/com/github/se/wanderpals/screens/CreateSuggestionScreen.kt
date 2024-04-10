@@ -10,6 +10,7 @@ class CreateSuggestionScreenTest(semanticsProvider: SemanticsNodeInteractionsPro
         viewBuilderAction = { hasTestTag("createSuggestionScreen") }) {
 
   val createButton: KNode = onNode { hasTestTag("createSuggestionButton") }
+  val goBackButton: KNode = onNode { hasTestTag("goBackButton") }
 
   val inputTitle: KNode = onNode { hasTestTag("inputSuggestionTitle") }
   val inputBudget: KNode = onNode { hasTestTag("inputSuggestionBudget") }
