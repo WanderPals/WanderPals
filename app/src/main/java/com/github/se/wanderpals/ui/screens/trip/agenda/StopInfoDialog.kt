@@ -43,7 +43,8 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 30.dp, bottom = 30.dp),
+                .padding(top = 30.dp, bottom = 30.dp)
+                .testTag("activityDialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)
         ) {
@@ -59,7 +60,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     text = stop.title,
                     style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    modifier = Modifier.align(Alignment.CenterHorizontally).testTag("titleText")
                 )
                 Spacer(modifier = Modifier.height(15.dp))
 
@@ -69,7 +70,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     onValueChange = {},
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(225.dp),
+                        .height(225.dp).testTag("activityDescription"),
                     readOnly = true
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -79,6 +80,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     text = "Date",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Start,
+                    modifier = Modifier.testTag("titleDate")
                 )
 
                 Text(
@@ -88,13 +90,15 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(bottom = 20.dp)
+                        .testTag("activityDate")
                 )
 
                 // Schedule
                 Text(
                     text = "Schedule",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.testTag("titleSchedule")
                 )
 
                 Text(
@@ -104,13 +108,15 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(bottom = 20.dp)
+                        .testTag("activitySchedule")
                 )
 
                 // Address
                 Text(
                     text = "Address",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.testTag("titleAddress")
                 )
 
                 Text(
@@ -120,13 +126,15 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(bottom = 20.dp)
+                        .testTag("activityAddress")
                 )
 
                 // Budget
                 Text(
                     text = "Budget",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.testTag("titleBudget")
                 )
 
                 Text(
@@ -136,6 +144,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.Start)
                         .padding(bottom = 20.dp)
+                        .testTag("activityBudget")
                 )
 
             }

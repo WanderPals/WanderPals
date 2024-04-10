@@ -92,7 +92,7 @@ fun ActivityItem(stop: Stop,onActivityClick: (String) -> Unit) {
     Button(
         onClick = { onActivityClick(stop.stopId) },
         shape = RectangleShape,
-        modifier = Modifier.height(100.dp).fillMaxWidth(),
+        modifier = Modifier.height(100.dp).fillMaxWidth().testTag("activityItemButton"+stop.stopId),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
           Row(modifier = Modifier.fillMaxSize()) {
             // Texts Column
