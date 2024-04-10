@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -34,7 +33,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
@@ -44,7 +42,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.Dispatchers
 
 /**
  * CreateSuggestion composable responsible for adding a suggestion to a trip
@@ -102,8 +99,6 @@ fun CreateSuggestion(
   val timeRegexPattern = """^\d{2}:\d{2}$"""
   //  val websiteRegexPattern =
   // """^(http|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[a-zA-Z0-9.-]*)*$"""
-
-  val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
   Surface(modifier = Modifier.padding(12.dp)) {
     Column(
@@ -333,37 +328,6 @@ fun CreateSuggestion(
 }
 
 /**
- * || DO NOT USE FOR NOW || WIP || Dialog containing a CreateSuggestion window
- *
- * @param showDialog Boolean to specify when to show the dialog (should be turned off in the
- *   onDismiss function)
- * @param onDismiss Unit function without parameters that is executed when the dialog is requested
- *   to dismiss
- */
-/*
-@Composable
-fun CreateSuggestionDialog(showDialog: Boolean, onDismiss: () -> Unit) {
-  if (showDialog) {
-    Dialog(
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        onDismissRequest = onDismiss) {
-          Surface(modifier = Modifier.padding(top = 12.dp).fillMaxSize()) {
-            CreateSuggestion(
-                "aaaa", CreateSuggestionViewModel(TripsRepository("aaaa", Dispatchers.IO)))
-          }
-          Box(contentAlignment = Alignment.TopEnd, modifier = Modifier.fillMaxSize()) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "dismiss",
-                modifier = Modifier.clickable { onDismiss() })
-          }
-        }
-  }
-}
-
- */
-
-/**
  * CreateSuggestion composable responsible for adding a suggestion to a trip
  *
  * @param tripId the id of the trip
@@ -422,28 +386,6 @@ private fun isStringInFormat(input: String, regexPattern: String): Boolean {
   return regex.matches(input)
 }
 
-/** for quick testing purposes */
-@Preview(showBackground = true)
-@Composable
-fun CreateSuggestionPreview() {
-  CreateSuggestion(
-      "aaaa",
-      CreateSuggestionViewModel(TripsRepository("aaaa", Dispatchers.IO)),
-      title = "aiaia",
-      budget = 0.0,
-      addr =
-          "AOIESUJZIDOJQDOIJQZDOIJQZDOIJZQDOJIZQODIJZQODIJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJQZOIDJ")
-}
-
-/** for quick testing purposes */
-/*
-@Preview(showBackground = true)
-@Composable
-fun CreateSuggestionDialogPreview() {
-  CreateSuggestionDialog(true, {})
-}
- */
-
 fun convertDateFormat(inputDate: String): String {
   // Split the input string by "/"
   val parts = inputDate.split("/")
@@ -456,60 +398,6 @@ fun convertDateFormat(inputDate: String): String {
   // Construct the new date format
   return "$year-$month-$day"
 }
-
-/*
-@Composable
-fun AutocompleteTextField(
-    placesClient: PlacesClient,
-    onPlaceSelected: (Place) -> Unit
-) {
-    var searchText by remember { mutableStateOf("") }
-    var predictions by remember { mutableStateOf<List<AutocompletePrediction>>(emptyList()) }
-
-    TextField(
-        value = searchText,
-        onValueChange = { searchText = it },
-        label = { Text("Enter a location") },
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = {
-            // Perform Autocomplete API call
-            val request = FindAutocompletePredictionsRequest.builder()
-                .setQuery(searchText)
-                .build()
-            placesClient.findAutocompletePredictions(request)
-                .addOnSuccessListener { response ->
-                    predictions = response.autocompletePredictions
-                }
-                .addOnFailureListener { exception ->
-                    // Handle error
-                }
-        })
-    )
-
-    // Display autocomplete suggestions
-    Column {
-        predictions.forEach { prediction ->
-            Text(
-                text = prediction.getFullText(null).toString(),
-                modifier = Modifier.clickable {
-                    // Retrieve details of the selected place
-                    val placeRequest = FetchPlaceRequest.builder(prediction.placeId)
-                        .build()
-                    placesClient.fetchPlace(placeRequest)
-                        .addOnSuccessListener { response ->
-                            val place = response.place
-                            onPlaceSelected(place)
-                        }
-                        .addOnFailureListener { exception ->
-                            // Handle error
-                        }
-                }
-            )
-        }
-    }
-}
-
-*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

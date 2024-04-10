@@ -23,7 +23,6 @@ import io.mockk.verify
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -86,22 +85,19 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
-  @Before
-  fun testSetup() {
-    val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-    composeTestRule.setContent {
-      CreateSuggestionScreen(
-          "aaa",
-          vm,
-          mockNavActions,
-          onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-          onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-    }
-  }
-
   @Test
   fun createSuggestionReturnToSuggestionOnCancel() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       goBackButton {
         assertIsDisplayed()
         assertIsEnabled()
@@ -116,6 +112,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionReturnToSuggestionWhenSuccessful() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -210,6 +216,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionWorksWithOnlyMandatoryField() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -282,6 +298,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionFailsWithMissingTitle() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -373,6 +399,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionFailsWithMissingStartDate() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -464,6 +500,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionFailsWithMissingEndDate() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -555,6 +601,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionFailsWithMissingStartTime() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -646,6 +702,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionFailsWithMissingEndTime() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -737,6 +803,16 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionFailsWithMissingDescription() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -828,7 +904,33 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   @Test
   fun createSuggestionWithoutAddress() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen(
+            "aaa",
+            vm,
+            mockNavActions,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
       step("Open create suggestion screen") { inputAddress { assertIsNotDisplayed() } }
+    }
+  }
+
+  @Test
+  fun createSuggestionWithAddress() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestionScreen("aaa", vm, mockNavActions, addr = "Example address")
+      }
+
+      inputAddress {
+        assertIsDisplayed()
+
+        assertTextContains("Example address")
+      }
     }
   }
 }
