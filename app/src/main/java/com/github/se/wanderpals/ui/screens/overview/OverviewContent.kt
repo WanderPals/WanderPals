@@ -91,7 +91,7 @@ fun OverviewContent(
         // Title for the list of trips
         Text(
             text = "My trip projects",
-            modifier = Modifier.padding(start = 27.dp, top = 15.dp),
+            modifier = Modifier.padding(start = 27.dp, top = 10.dp),
             style =
                 TextStyle(
                     fontSize = 20.sp,
@@ -102,8 +102,9 @@ fun OverviewContent(
                     letterSpacing = 0.5.sp,
                 ),
             textAlign = TextAlign.Center)
+
         // LazyColumn to display the list of trips
-        LazyColumn() {
+        LazyColumn(Modifier.padding(top = 10.dp, bottom = 20.dp)) {
           items(filteredTripsByTitle) { trip ->
             OverviewTrip(trip = trip, navigationActions = navigationActions)
           }
