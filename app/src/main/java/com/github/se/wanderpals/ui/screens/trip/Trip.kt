@@ -26,10 +26,16 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.google.android.libraries.places.api.net.PlacesClient
 
 /** The Trip screen. */
 @Composable
-fun Trip(oldNavActions: NavigationActions, tripId: String, tripsRepository: TripsRepository) {
+fun Trip(
+    oldNavActions: NavigationActions,
+    tripId: String,
+    tripsRepository: TripsRepository,
+    client: PlacesClient
+) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
 
@@ -43,7 +49,7 @@ fun Trip(oldNavActions: NavigationActions, tripId: String, tripsRepository: Trip
           composable(Route.SUGGESTION) {
             Suggestion(tripId)
           } // todo: might have the param oldNavActions for Suggestion()
-          composable(Route.MAP) { Map(tripId, MapViewModel(tripsRepository)) }
+          composable(Route.MAP) { Map(tripId, MapViewModel(tripsRepository), client) }
           composable(Route.NOTIFICATION) { Notification(tripId) }
         }
       }

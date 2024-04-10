@@ -184,7 +184,8 @@ dependencies {
     // Google Sign-In
     implementation(libs.play.services.auth)
 
-    implementation(libs.okhttp)
+    // Google Places
+    implementation(libs.places)
 
 
     debugImplementation(libs.compose.tooling)
