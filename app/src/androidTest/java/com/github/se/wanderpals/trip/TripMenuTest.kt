@@ -2,6 +2,7 @@ package com.github.se.wanderpals.trip
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -14,6 +15,7 @@ import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,7 +31,9 @@ class TripMenuTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
   @Before
   fun testSetup() {
-    composeTestRule.setContent { Trip(mockNavActions, "id") }
+    composeTestRule.setContent {
+      Trip(mockNavActions, "id", TripsRepository("-1", dispatcher = Dispatchers.IO), null)
+    }
   }
 
   @Test
