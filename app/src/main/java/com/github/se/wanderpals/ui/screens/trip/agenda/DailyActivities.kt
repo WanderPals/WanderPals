@@ -49,6 +49,7 @@ fun DailyActivitiesPreview() {
  * Composable function that displays the daily activities for a selected date.
  *
  * @param agendaViewModel The view model for managing the agenda of a trip.
+ * @param onActivityItemClick Callback function triggered when an activity item is clicked,
  */
 @Composable
 fun DailyActivities(agendaViewModel: AgendaViewModel,onActivityItemClick: (String) -> Unit) {
@@ -83,6 +84,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel,onActivityItemClick: (Strin
  * Composable function that displays an activity item.
  *
  * @param stop The stop to display.
+ * @param onActivityClick Callback function triggered when the activity item is clicked,
  */
 @Composable
 fun ActivityItem(stop: Stop,onActivityClick: (String) -> Unit) {

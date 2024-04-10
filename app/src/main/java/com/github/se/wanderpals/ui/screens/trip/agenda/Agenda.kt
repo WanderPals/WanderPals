@@ -81,7 +81,6 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
   ) {
     if(isStopPressed){
         val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId}!!
-
         StopInfoDialog(stop = selectedStop, closeDialogueAction = {isStopPressed = false})
 
 
