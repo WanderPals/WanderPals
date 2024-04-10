@@ -18,7 +18,12 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   private val _tripsRepository = tripsRepository
   open var stops = MutableStateFlow(emptyList<Stop>())
 
-  // add a stop to the trip
+  /**
+   * Add a stop to the trip.
+   *
+   * @param tripId The trip ID.
+   * @param stop The stop to add.
+   */
   open fun addStop(tripId: String, stop: Stop) {
     viewModelScope.launch { _tripsRepository.addStopToTrip(tripId, stop) }
   }
@@ -27,7 +32,7 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
     getAllStops()
   }
 
-  // get all stops from the trip
+  /** Get all stops from the trip. */
   open fun getAllStops() {
     viewModelScope.launch {
       stops.value = _tripsRepository.getAllStopsFromTrip(tripId).toMutableList()

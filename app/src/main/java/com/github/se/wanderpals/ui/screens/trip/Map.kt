@@ -48,6 +48,10 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import kotlin.coroutines.suspendCoroutine
 
+const val MAX_PROPOSED_LOCATIONS = 5
+const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
+val CURRENT_LOCATION = LatLng(46.519653, 6.632273)
+
 /**
  * Composable function that represents the Map screen, displaying a map with markers for the stops
  * of a trip and the ability to search for a location.
@@ -58,7 +62,7 @@ import kotlin.coroutines.suspendCoroutine
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
-
+  // create a constant value for the number of stops max
   val stopLists by mapViewModel.stops.collectAsState()
 
   var uiSettings by remember { mutableStateOf(MapUiSettings()) }
@@ -77,8 +81,8 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
   // proposed location of the searched address List of string of size 5
   var listOfPropositions by remember {
     mutableStateOf(
-        List<AutocompletePrediction>(5) {
-          AutocompletePrediction.builder(" ChIJ4zm3ev4wjEcRShTLf2C0UWA").build()
+        List<AutocompletePrediction>(MAX_PROPOSED_LOCATIONS) {
+          AutocompletePrediction.builder(INIT_PLACE_ID).build()
         })
   }
   // when the search text is changed, request the location of the address
@@ -98,7 +102,7 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
       getAddressPredictions(
           client,
           inputString = searchText,
-          location = LatLng(46.519653, 6.632273),
+          location = CURRENT_LOCATION,
           onSuccess = { predictions ->
             Log.d("Prediction", "")
             for (prediction in predictions) {
@@ -200,7 +204,7 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
                 // Add a marker to the map
                 state = it,
                 title = String.format("%S", finalName),
-                snippet = "Population: 883,305",
+                snippet = "",
                 visible = visible,
             )
           }
@@ -237,7 +241,7 @@ suspend fun getAddressPredictions(
     client: PlacesClient,
     sessionToken: AutocompleteSessionToken = AutocompleteSessionToken.newInstance(),
     inputString: String,
-    location: LatLng? = null,
+    location: LatLng,
     onSuccess: (List<AutocompletePrediction>) -> Unit = {},
     onFailure: (Exception?) -> Unit = { throw Exception("Place not found") }
 ) =
@@ -245,7 +249,7 @@ suspend fun getAddressPredictions(
       val request =
           FindAutocompletePredictionsRequest.builder()
               .setLocationBias(
-                  location?.let { locationBias ->
+                  location.let { locationBias ->
                     RectangularBounds.newInstance(
                         LatLng(locationBias.latitude - 0.1, locationBias.longitude - 0.1),
                         LatLng(locationBias.latitude + 0.1, locationBias.longitude + 0.1))
