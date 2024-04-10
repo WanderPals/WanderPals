@@ -42,7 +42,7 @@ import kotlinx.coroutines.Dispatchers
 @Preview(showBackground = true)
 @Composable
 fun DailyActivitiesPreview() {
-  WanderPalsTheme { DailyActivities(AgendaViewModel("", TripsRepository("", Dispatchers.IO))) }
+  WanderPalsTheme { DailyActivities(AgendaViewModel("", TripsRepository("", Dispatchers.IO))) {} }
 }
 
 /**
@@ -51,7 +51,7 @@ fun DailyActivitiesPreview() {
  * @param agendaViewModel The view model for managing the agenda of a trip.
  */
 @Composable
-fun DailyActivities(agendaViewModel: AgendaViewModel) {
+fun DailyActivities(agendaViewModel: AgendaViewModel,onActivityItemClick: (String) -> Unit) {
   val uiState by agendaViewModel.uiState.collectAsState()
   val selectedDate = uiState.selectedDate
 
@@ -74,7 +74,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
     // Display the activities for the selected date
     LazyColumn(
         content = {
-          items(dailyActivities.sortedBy { it.startTime }) { stop -> ActivityItem(stop) }
+          items(dailyActivities.sortedBy { it.startTime }) { stop -> ActivityItem(stop,onActivityItemClick) }
         })
   }
 }
@@ -85,10 +85,10 @@ fun DailyActivities(agendaViewModel: AgendaViewModel) {
  * @param stop The stop to display.
  */
 @Composable
-fun ActivityItem(stop: Stop) {
+fun ActivityItem(stop: Stop,onActivityClick: (String) -> Unit) {
   Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
     Button(
-        onClick = { /* Handle button click */},
+        onClick = { onActivityClick(stop.stopId) },
         shape = RectangleShape,
         modifier = Modifier.height(100.dp).fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
@@ -133,7 +133,7 @@ fun ActivityItem(stop: Stop) {
                         .align(
                             Alignment
                                 .CenterVertically) // Center the IconButton vertically within the
-                // Row
+                                                   // Row
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
