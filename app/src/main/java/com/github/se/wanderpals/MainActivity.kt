@@ -41,25 +41,25 @@ class MainActivity : ComponentActivity() {
   private lateinit var tripsRepository: TripsRepository
 
   private val launcher =
-      registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        account = task.result
-        val uid = account.id ?: ""
-        tripsRepository = TripsRepository(uid, Dispatchers.IO)
-        tripsRepository.initFirestore()
-        Log.d("SignIn", "Login result " + account.displayName)
-        navigationActions.navigateTo(Route.OVERVIEW)
-        signInClient.signOut()
-      }
+    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+      val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+      account = task.result
+      val uid = account.id ?: ""
+      tripsRepository = TripsRepository(uid, Dispatchers.IO)
+      tripsRepository.initFirestore()
+      Log.d("SignIn", "Login result " + account.displayName)
+      navigationActions.navigateTo(Route.OVERVIEW)
+      signInClient.signOut()
+    }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     val gso: GoogleSignInOptions =
-        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.web_client_id))
-            .requestEmail()
-            .build()
+      GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(getString(R.string.web_client_id))
+        .requestEmail()
+        .build()
 
     signInClient = GoogleSignIn.getClient(this, gso)
 
@@ -76,12 +76,12 @@ class MainActivity : ComponentActivity() {
             }
             composable(Route.OVERVIEW) {
               Overview(
-                  overviewViewModel = OverviewViewModel(tripsRepository),
-                  navigationActions = navigationActions)
+                overviewViewModel = OverviewViewModel(tripsRepository),
+                navigationActions = navigationActions)
             }
             composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
               val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
-              Trip(navigationActions, tripId)
+              Trip(navigationActions, tripId, tripsRepository)
             }
             composable(Route.CREATE_TRIP) {
               CreateTrip(CreateTripViewModel(tripsRepository), navigationActions)

@@ -39,7 +39,7 @@ fun SuggestionDetailPopup(
     comments: List<Comment>, // Assuming you have a list of comments
     onDismiss: () -> Unit
 ) {
-  Dialog(onDismissRequest = onDismiss) {
+  Dialog(onDismissRequest = onDismiss) { //todo: (after M1) uncomment dialog and create onclick function to go from suggestionItem to the page SuggestionDetailPopup
     // The semi-transparent overlay will be provided by the Dialog itself
     Surface(
         modifier = Modifier.testTag("suggestionPopupScreen"),

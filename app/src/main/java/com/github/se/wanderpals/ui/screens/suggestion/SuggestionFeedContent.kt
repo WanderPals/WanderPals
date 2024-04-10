@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Comment
@@ -31,6 +33,8 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.screens.overview.OverviewTrip
+import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -49,20 +53,11 @@ import java.time.LocalTime
 fun SuggestionFeedContent(
     innerPadding: PaddingValues,
     navigationActions: NavigationActions,
-    suggestionList: List<Suggestion>, // <-todo: will be real data (wait for William)
+    suggestionList: List<Suggestion>, // <-todo: will be real data (wait for William) so will replace all _suggestionList by suggestionList
     searchSuggestionText: String
 ) {
   // State to track the currently selected suggestion item
   var selectedSuggestion by remember { mutableStateOf<Suggestion?>(null) }
-
-  //    // Filter suggestions of a trip by userName based on search text todo: for sprint3
-  //    val filteredSuggestionsByTitle =
-  //        if (searchSuggestionText.isEmpty()) {
-  //            suggestionList
-  //        } else {
-  //            suggestionList.filter { suggestion ->
-  // suggestion.userName.lowercase().contains(searchSuggestionText.lowercase()) }
-  //        }
 
   // dummy data:
   val stop1 =
@@ -137,7 +132,10 @@ fun SuggestionFeedContent(
           "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now())
 
   // Example list of comments
-  val dummyCommentList = listOf(comment1, comment2, comment3, comment4)
+    val dummyCommentList2 = listOf(comment1, comment2)
+    val dummyCommentList3 = listOf(comment1, comment2, comment3)
+    val dummyCommentList4 = listOf(comment1, comment2, comment3, comment4)
+
 
   /*
   // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
@@ -150,7 +148,7 @@ fun SuggestionFeedContent(
                   "Let us go here!",
                   LocalDate.of(2024, 1, 1),
                   stop1,
-                  dummyCommentList,
+                  emptyList(),
                   emptyList()),
               Suggestion(
                   "suggestionId2",
@@ -159,7 +157,7 @@ fun SuggestionFeedContent(
                   "I love this place",
                   LocalDate.of(2024, 2, 2),
                   stop2,
-                  emptyList(),
+                  dummyCommentList2,
                   emptyList()),
               Suggestion(
                   "suggestionId3",
@@ -169,17 +167,17 @@ fun SuggestionFeedContent(
                           "Trying to convince you to go here with me. coz I know you will love it!",
                   LocalDate.of(2024, 3, 29),
                   stop3,
-                  dummyCommentList,
+                  dummyCommentList3,
                   emptyList()),
-                      Suggestion(
+              Suggestion(
                       "suggestionId4",
               "userId4",
               "userName4",
               "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
                       "Trying to convince you to go here with me. coz I know you will love it!",
-              LocalDate.of(2024, 3, 29),
+              LocalDate.of(2024, 9, 29),
               stop4,
-              dummyCommentList,
+              dummyCommentList4,
               emptyList())
           )
     */
@@ -187,66 +185,110 @@ fun SuggestionFeedContent(
   // Example usage of dummy data for the suggestionList <-todo: change for sprint3
   val _suggestionList = suggestionList
 
-  // If suggestion list is empty, display a message
-  if (_suggestionList.isEmpty()) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      Text(
-          modifier =
-              Modifier.width(260.dp)
-                  .height(55.dp)
-                  .align(Alignment.Center)
-                  .testTag("noSuggestionsForUserText"),
-          text = "Looks like there is no suggestions yet. ",
-          style =
-              TextStyle(
-                  lineHeight = 20.sp,
-                  letterSpacing = 0.5.sp,
-                  fontSize = 18.sp,
-                  fontWeight = FontWeight(500),
-                  textAlign = TextAlign.Center,
-                  color = Color(0xFF000000)),
-      )
-    }
-  } else {
-    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
-      // Title for the list of suggestions
-      Text(
-          text = "Suggestions",
-          modifier = Modifier.padding(start = 27.dp, top = 15.dp),
-          style =
-              TextStyle(
-                  lineHeight = 24.sp,
-                  textAlign = TextAlign.Center,
-                  fontSize = 20.sp,
-                  fontWeight = FontWeight(500),
-                  color = Color(0xFF5A7BF0),
-                  letterSpacing = 0.5.sp),
-          textAlign = TextAlign.Center)
 
-      // When a suggestion is selected, display the popup
-      selectedSuggestion?.let { suggestion ->
-        SuggestionDetailPopup(suggestion = suggestion, comments = suggestion.comments) {
-          // When the popup is dismissed
-          selectedSuggestion = null
+    // State to track the selected filter criteria
+    var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
+
+    // State to track the sorted suggestion list
+    val filteredSuggestionList by remember(selectedFilterCriteria) {
+        mutableStateOf(
+            when (selectedFilterCriteria) {
+                "Like number" -> _suggestionList.sortedByDescending { it.userLikes.size } // Assuming you have likeCount in Suggestion data class
+                "Comment number" -> _suggestionList.sortedByDescending { it.comments.size } // Assuming you have commentList in Suggestion data class
+                else -> _suggestionList.sortedByDescending { it.createdAt }
+            }
+        )
+    }
+
+    // Apply the search filter if there is a search text
+    val displayList = if (searchSuggestionText.isEmpty()) {
+        filteredSuggestionList
+    } else {
+        filteredSuggestionList.filter { suggestion ->
+            suggestion.stop.title.lowercase().contains(searchSuggestionText.lowercase())
         }
-      }
-      // LazyColumn to display the list of suggestions of a trip
-      LazyColumn() {
-        itemsIndexed(_suggestionList /*filteredSuggestionsByTitle todo: for sprint3*/) {
-            index,
-            suggestion ->
-          SuggestionItem(
-              suggestion = suggestion,
-              navigationActions = navigationActions,
-              onClick = {
-                selectedSuggestion = suggestion
-              }, // This lambda is passed to the SuggestionItem composable
-              modifier =
-                  Modifier.clickable { selectedSuggestion = suggestion }
-                      .testTag("suggestion${index + 1}") // Apply the testTag here
-              )
+    }
+
+    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
+
+        // Title for the list of suggestions
+        Text(
+            text = "Suggestions",
+            modifier = Modifier.padding(start = 27.dp, top = 15.dp),
+            style =
+            TextStyle(
+                lineHeight = 24.sp,
+                textAlign = TextAlign.Center,
+                fontSize = 20.sp,
+                fontWeight = FontWeight(500),
+                color = Color(0xFF5A7BF0),
+                letterSpacing = 0.5.sp
+            ),
+            textAlign = TextAlign.Center
+        )
+
+
+        // Add the filter options UI
+        Text(
+            text = "Filter by:",
+            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+            style = TextStyle(
+                // todo: will have style later
+            )
+        )
+
+        SuggestionFilterOptions { selectedCriteria ->
+            selectedFilterCriteria = selectedCriteria
         }
-      }
+
+        // When a suggestion is selected, display the popup
+        selectedSuggestion?.let { suggestion ->
+            SuggestionDetailPopup(suggestion = suggestion, comments = suggestion.comments) {
+                // When the popup is dismissed
+                selectedSuggestion = null
+            }
+        }
+
+            // If suggestion list is empty, display a message
+            if (_suggestionList.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    Text(
+                        modifier =
+                        Modifier.width(260.dp)
+                            .height(55.dp)
+                            .align(Alignment.Center)
+                            .testTag("noSuggestionsForUserText"),
+                        text = "Looks like there is no suggestions yet. ",
+                        style =
+                        TextStyle(
+                            lineHeight = 20.sp,
+                            letterSpacing = 0.5.sp,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight(500),
+                            textAlign = TextAlign.Center,
+                            color = Color(0xFF000000)
+                        ),
+                    )
+                }
+            } else {
+                // LazyColumn to display the list of suggestions with sorting and search filtering
+                // (Note: can only have one LazyColumn in a composable function)
+                LazyColumn {
+                    itemsIndexed(displayList) { index, suggestion ->
+                        SuggestionItem(
+                            suggestion = suggestion,
+                            navigationActions = navigationActions,
+                            onClick = {
+                                selectedSuggestion = suggestion
+                            }, // This lambda is passed to the SuggestionItem composable
+                            onLikeClicked = {
+                                // Implement the like functionality here
+                            },
+                            modifier = Modifier.clickable { selectedSuggestion = suggestion }
+                                .testTag("suggestion${index + 1}") // Apply the testTag here
+                        )
+                    }
+                }
     }
   }
 }

@@ -881,4 +881,35 @@ class TripsRepository(
           false // On error
         }
       }
+
+    // Inside TripsRepository class
+
+    suspend fun likeSuggestion(tripId: String, suggestionId: String, userId: String): Boolean =
+        withContext(dispatcher) {
+            try {
+                val suggestionRef =
+                    tripsCollection
+                        .document(tripId)
+                        .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+                        .document(suggestionId)
+
+                firestore.runTransaction { transaction ->
+                    val snapshot = transaction.get(suggestionRef)
+                    val suggestion = snapshot.toObject<Suggestion>() ?: return@runTransaction false
+
+                    // Check if the user has already liked the suggestion
+                    if (userId !in suggestion.userLikes) {
+                        val newLikes = suggestion.userLikes + userId
+                        transaction.update(suggestionRef, "userLikes", newLikes)
+                        true
+                    } else {
+                        false
+                    }
+                }.await()
+            } catch (e: Exception) {
+                Log.e("TripsRepository", "likeSuggestion: Error adding like", e)
+                false
+            }
+        }
+
 }

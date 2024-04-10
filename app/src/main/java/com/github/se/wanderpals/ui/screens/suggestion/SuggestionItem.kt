@@ -44,7 +44,8 @@ import java.time.format.DateTimeFormatter
 fun SuggestionItem(
     suggestion: Suggestion,
     navigationActions: NavigationActions,
-    onClick: () -> Unit, // Callback when the item is clicked
+    onClick: () -> Unit, // this callback for the suggestion item click
+    onLikeClicked: () -> Unit, // this callback for the like button
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
   // Define card colors with a white background
@@ -123,7 +124,7 @@ fun SuggestionItem(
                 Icon(
                     imageVector = Icons.Default.FavoriteBorder,
                     contentDescription = null, // Decorative element
-                    modifier = Modifier.size(18.dp))
+                    modifier = Modifier.size(18.dp).clickable(onClick = onLikeClicked))
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
                 Text(
                     text = "${suggestion.userLikes.size}",

@@ -19,13 +19,16 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 
 /** The Suggestion screen. */
 @Composable
-fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String) {
+fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String, suggestionsViewModel: SuggestionsViewModel) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
-  val suggestionsViewModel = SuggestionsViewModel()
-  val suggestionList by suggestionsViewModel.state.collectAsState() // todo: use dummy data for now
 
-  // State for managing search text (the filter) <-todo: for sprint3
+//    val suggestionRepository: TripsRepository = TripsRepository()
+//    val suggestionsViewModel = SuggestionsViewModel(suggestionRepository, tripId)
+
+  val suggestionList by suggestionsViewModel.state.collectAsState() // todo: use dummy data for now for testing functionality of the front end of the SuggestionFeedScreen
+
+  // State for managing search suggestion text (the filter)
   var searchSuggestionText by remember { mutableStateOf("") }
 
   Scaffold(
