@@ -1,6 +1,8 @@
 package com.github.se.wanderpals.agenda
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -8,7 +10,7 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
-import com.github.se.wanderpals.ui.screens.trip.agenda.Banner
+import com.github.se.wanderpals.ui.screens.trip.agenda.ActivityItem
 import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import java.time.LocalDate
 import java.time.LocalTime
@@ -20,58 +22,9 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class DailyActivitiesTest {
 
-  @get:Rule val composeTestRule = createComposeRule()
+    private val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
-  @Test
-  fun checkDateIsDisplayed() {
-    // Assuming you have a way to inject or use AgendaViewModel within MainActivity
-    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
-
-    composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
-
-    composeTestRule.waitForIdle() // Wait for UI to update
-
-    composeTestRule.onNodeWithTag("displayDateText", useUnmergedTree = true).assertIsDisplayed()
-
-    /*
-    // Format the date as it would appear on the screen
-    val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy", Locale.getDefault())
-    val formattedDefaultDate = testDate.format(formatter)
-
-    // Now, use the testTag to find the element
-    composeTestRule
-        .onNodeWithTag("Banner")
-        .assertHasClickAction()
-        .assertIsDisplayed() // Check if the element is displayed
-        .assertTextEquals(
-            formattedDefaultDate) // Additionally, check if the text matches the expected date
-
-    // Change the date selected
-    testViewModel.onDateSelected(CalendarUiState.Date("15", YearMonth.now(), Year.now(), false))
-    testDate = YearMonth.now().atDay(15)
-    val formattedSelectedDate = testDate.format(formatter)
-
-    composeTestRule.waitForIdle() // Ensure UI has time to update after state change.
-
-    if (formattedSelectedDate != null) {
-      composeTestRule
-          .onNodeWithTag("Banner")
-          .assertIsDisplayed() // Check if the element is displayed
-          .assertTextEquals(formattedSelectedDate) // Check if the text matches the expected date
-    }
-     */
-  }
-
-  @Test
-  fun checkDailyActivitiesAreDisplayed() {
-    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
-
-    composeTestRule.setContent { DailyActivities(agendaViewModel = testViewModel) }
-
-    composeTestRule.waitForIdle()
-
-    // Assuming you have a way to inject or use AgendaViewModel within MainActivity
-    val testActivities =
+    private val testActivities =
         listOf(
             Stop(
                 "Activity 1",
@@ -104,6 +57,15 @@ class DailyActivitiesTest {
                 "",
                 GeoCords(0.0, 0.0)))
 
+  @get:Rule val composeTestRule = createComposeRule()
+
+  @Test
+  fun checkDailyActivitiesAreDisplayed() {
+
+    composeTestRule.setContent { DailyActivities(agendaViewModel = testViewModel) }
+
+    composeTestRule.waitForIdle()
+
     testViewModel._dailyActivities.value = testActivities
 
     composeTestRule.waitForIdle()
@@ -115,9 +77,46 @@ class DailyActivitiesTest {
     composeTestRule.onNodeWithTag(testActivities[2].stopId).assertIsDisplayed()
   }
 
+    // Check that the content of the activity items is displayed correctly
+    @Test
+    fun verifyActivityItemsContent() {
+        // Set the content once with a composable that includes all test items
+        composeTestRule.setContent {
+            Column {
+                testActivities.forEach { stop ->
+                    ActivityItem(stop = stop)
+                }
+            }
+        }
+
+        // Loop through each test activity and assert its details
+        testActivities.forEach { testStop ->
+
+            // Assert that the title is displayed correctly
+            composeTestRule
+                .onNodeWithTag("ActivityTitle${testStop.stopId}", useUnmergedTree = true)
+                .assertIsDisplayed()
+                .assertTextEquals(testStop.title)
+
+            // Prepare the expected time string
+            val expectedTime = "${testStop.startTime} - ${testStop.startTime.plusMinutes(testStop.duration.toLong())}"
+
+            // Assert that the time is displayed correctly
+            composeTestRule
+                .onNodeWithTag("ActivityTime${testStop.stopId}", useUnmergedTree = true)
+                .assertIsDisplayed()
+                .assertTextEquals(expectedTime)
+
+            // Assert that the address is displayed correctly
+            composeTestRule
+                .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
+                .assertIsDisplayed()
+                .assertTextEquals(testStop.address)
+        }
+    }
+
   @Test
   fun checkNoActivitiesMessageIsDisplayed() {
-    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
     composeTestRule.setContent { DailyActivities(agendaViewModel = testViewModel) }
 
@@ -125,4 +124,5 @@ class DailyActivitiesTest {
 
     composeTestRule.onNodeWithTag("NoActivitiesMessage").assertIsDisplayed()
   }
+
 }

@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.agenda
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -10,6 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.agenda.Banner
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.github.se.wanderpals.ui.screens.trip.agenda.getDisplayName
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.StateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.Locale
 
 class FakeAgendaViewModel(initialYearMonth: YearMonth) :
     AgendaViewModel("", TripsRepository("", Dispatchers.IO)) {
@@ -153,4 +156,37 @@ class AgendaTest {
 
     composeTestRule.onNodeWithTag("Banner").assertIsDisplayed()
   }
+
+    // Test to check the date displayed is correct
+    @Test
+    fun checkDateIsDisplayedCorrectly() {
+        val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+
+        composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
+
+        composeTestRule.waitForIdle()
+
+        val testDate = LocalDate.now()
+
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
+            .withLocale(Locale.getDefault())
+
+        val formattedDefaultDate = testDate.format(formatter)
+
+        composeTestRule
+            .onNodeWithTag("displayDateText", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .assertTextEquals(formattedDefaultDate)
+    }
+
+    fun checkDateIsDisplayed() {
+        // Assuming you have a way to inject or use AgendaViewModel within MainActivity
+        val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+
+        composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
+
+        composeTestRule.waitForIdle() // Wait for UI to update
+
+        composeTestRule.onNodeWithTag("displayDateText", useUnmergedTree = true).assertIsDisplayed()
+    }
 }
