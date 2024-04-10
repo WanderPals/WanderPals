@@ -41,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
-import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
@@ -75,15 +74,11 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
   var selectedStopId by remember { mutableStateOf("") }
 
   Surface(
-      modifier = Modifier
-          .fillMaxSize()
-          .testTag("agendaScreen"),
+      modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
   ) {
-    if(isStopPressed){
-        val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId}!!
-        StopInfoDialog(stop = selectedStop, closeDialogueAction = {isStopPressed = false})
-
-
+    if (isStopPressed) {
+      val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
+      StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
     }
     Column {
 
@@ -106,9 +101,12 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
       // Implement the daily agenda here
-      DailyActivities(agendaViewModel = agendaViewModel, onActivityItemClick = { stopId ->
-          isStopPressed = true
-          selectedStopId = stopId})
+      DailyActivities(
+          agendaViewModel = agendaViewModel,
+          onActivityItemClick = { stopId ->
+            isStopPressed = true
+            selectedStopId = stopId
+          })
     }
   }
 }
@@ -200,9 +198,7 @@ fun Header(
         text = yearMonth.getDisplayName(),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier
-            .weight(1f)
-            .align(Alignment.CenterVertically))
+        modifier = Modifier.weight(1f).align(Alignment.CenterVertically))
     IconButton(onClick = { onNextMonthButtonClicked.invoke(yearMonth.plusMonths(1)) }) {
       Icon(
           imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -225,9 +221,7 @@ fun DayItem(day: String, modifier: Modifier = Modifier) {
         text = day,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier
-            .align(Alignment.Center)
-            .padding(10.dp))
+        modifier = Modifier.align(Alignment.Center).padding(10.dp))
   }
 }
 

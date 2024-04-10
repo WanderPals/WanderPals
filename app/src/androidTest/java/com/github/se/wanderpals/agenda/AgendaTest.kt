@@ -18,13 +18,13 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
+import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.Locale
 
 class FakeAgendaViewModel(initialYearMonth: YearMonth) :
     AgendaViewModel("", TripsRepository("", Dispatchers.IO)) {
@@ -157,36 +157,37 @@ class AgendaTest {
     composeTestRule.onNodeWithTag("Banner").assertIsDisplayed()
   }
 
-    // Test to check the date displayed is correct
-    @Test
-    fun checkDateIsDisplayedCorrectly() {
-        val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+  // Test to check the date displayed is correct
+  @Test
+  fun checkDateIsDisplayedCorrectly() {
+    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
-        composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
+    composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
 
-        composeTestRule.waitForIdle()
+    composeTestRule.waitForIdle()
 
-        val testDate = LocalDate.now()
+    val testDate = LocalDate.now()
 
-        val formatter = java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
+    val formatter =
+        java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
             .withLocale(Locale.getDefault())
 
-        val formattedDefaultDate = testDate.format(formatter)
+    val formattedDefaultDate = testDate.format(formatter)
 
-        composeTestRule
-            .onNodeWithTag("displayDateText", useUnmergedTree = true)
-            .assertIsDisplayed()
-            .assertTextEquals(formattedDefaultDate)
-    }
+    composeTestRule
+        .onNodeWithTag("displayDateText", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextEquals(formattedDefaultDate)
+  }
 
-    fun checkDateIsDisplayed() {
-        // Assuming you have a way to inject or use AgendaViewModel within MainActivity
-        val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+  fun checkDateIsDisplayed() {
+    // Assuming you have a way to inject or use AgendaViewModel within MainActivity
+    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
-        composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
+    composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
 
-        composeTestRule.waitForIdle() // Wait for UI to update
+    composeTestRule.waitForIdle() // Wait for UI to update
 
-        composeTestRule.onNodeWithTag("displayDateText", useUnmergedTree = true).assertIsDisplayed()
-    }
+    composeTestRule.onNodeWithTag("displayDateText", useUnmergedTree = true).assertIsDisplayed()
+  }
 }

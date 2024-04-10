@@ -52,7 +52,7 @@ fun DailyActivitiesPreview() {
  * @param onActivityItemClick Callback function triggered when an activity item is clicked,
  */
 @Composable
-fun DailyActivities(agendaViewModel: AgendaViewModel,onActivityItemClick: (String) -> Unit) {
+fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (String) -> Unit) {
   val uiState by agendaViewModel.uiState.collectAsState()
   val selectedDate = uiState.selectedDate
 
@@ -75,7 +75,9 @@ fun DailyActivities(agendaViewModel: AgendaViewModel,onActivityItemClick: (Strin
     // Display the activities for the selected date
     LazyColumn(
         content = {
-          items(dailyActivities.sortedBy { it.startTime }) { stop -> ActivityItem(stop,onActivityItemClick) }
+          items(dailyActivities.sortedBy { it.startTime }) { stop ->
+            ActivityItem(stop, onActivityItemClick)
+          }
         })
   }
 }
@@ -87,12 +89,13 @@ fun DailyActivities(agendaViewModel: AgendaViewModel,onActivityItemClick: (Strin
  * @param onActivityClick Callback function triggered when the activity item is clicked,
  */
 @Composable
-fun ActivityItem(stop: Stop,onActivityClick: (String) -> Unit) {
+fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
   Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
     Button(
         onClick = { onActivityClick(stop.stopId) },
         shape = RectangleShape,
-        modifier = Modifier.height(100.dp).fillMaxWidth().testTag("activityItemButton"+stop.stopId),
+        modifier =
+            Modifier.height(100.dp).fillMaxWidth().testTag("activityItemButton" + stop.stopId),
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
           Row(modifier = Modifier.fillMaxSize()) {
             // Texts Column
@@ -107,24 +110,24 @@ fun ActivityItem(stop: Stop,onActivityClick: (String) -> Unit) {
                       text = stop.title,
                       style = MaterialTheme.typography.bodyLarge,
                       color = Color.Black,
-                      modifier = Modifier
-                          .wrapContentWidth(Alignment.Start)
-                          .testTag("ActivityTitle" + stop.stopId))
+                      modifier =
+                          Modifier.wrapContentWidth(Alignment.Start)
+                              .testTag("ActivityTitle" + stop.stopId))
                   Text(
                       text =
                           "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
                       style = MaterialTheme.typography.bodyLarge,
                       color = Color.Black,
-                      modifier = Modifier
-                          .wrapContentWidth(Alignment.Start)
-                          .testTag("ActivityTime" + stop.stopId))
+                      modifier =
+                          Modifier.wrapContentWidth(Alignment.Start)
+                              .testTag("ActivityTime" + stop.stopId))
                   Text(
                       text = stop.address,
                       style = MaterialTheme.typography.bodyLarge,
                       color = Color.Black,
-                      modifier = Modifier
-                          .wrapContentWidth(Alignment.Start)
-                          .testTag("ActivityAddress" + stop.stopId))
+                      modifier =
+                          Modifier.wrapContentWidth(Alignment.Start)
+                              .testTag("ActivityAddress" + stop.stopId))
                 }
 
             // Icon Button at the far right, centered vertically
@@ -135,7 +138,7 @@ fun ActivityItem(stop: Stop,onActivityClick: (String) -> Unit) {
                         .align(
                             Alignment
                                 .CenterVertically) // Center the IconButton vertically within the
-                                                   // Row
+                // Row
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,

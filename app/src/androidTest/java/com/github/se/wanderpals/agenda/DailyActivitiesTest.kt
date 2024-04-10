@@ -20,175 +20,164 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.format.DateTimeFormatter
 
 @RunWith(AndroidJUnit4::class)
 class DailyActivitiesTest {
 
-    private val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+  private val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
-    private val testActivities =
-        listOf(
-            Stop(
-                "1",
-                "Title 1",
-                "Location 1",
-                LocalDate.now(),
-                LocalTime.now(),
-                0,
-                0.0,
-                "Description 1",
-                GeoCords(0.0, 0.0)
-            ),
-            Stop(
-                "2",
-                "Title 2",
-                "Location 2",
-                LocalDate.now(),
-                LocalTime.now(),
-                0,
-                0.0,
-                "Description 2",
-                GeoCords(0.0, 0.0)
-            ),
-            Stop(
-                "3",
-                "Title 3",
-                "Location 3",
-                LocalDate.now(),
-                LocalTime.now(),
-                0,
-                0.0,
-                "Description 3",
-                GeoCords(0.0, 0.0)
-            )
-        )
+  private val testActivities =
+      listOf(
+          Stop(
+              "1",
+              "Title 1",
+              "Location 1",
+              LocalDate.now(),
+              LocalTime.now(),
+              0,
+              0.0,
+              "Description 1",
+              GeoCords(0.0, 0.0)),
+          Stop(
+              "2",
+              "Title 2",
+              "Location 2",
+              LocalDate.now(),
+              LocalTime.now(),
+              0,
+              0.0,
+              "Description 2",
+              GeoCords(0.0, 0.0)),
+          Stop(
+              "3",
+              "Title 3",
+              "Location 3",
+              LocalDate.now(),
+              LocalTime.now(),
+              0,
+              0.0,
+              "Description 3",
+              GeoCords(0.0, 0.0)))
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @Test
-    fun checkDailyActivitiesAreDisplayed() {
+  @Test
+  fun checkDailyActivitiesAreDisplayed() {
 
-        composeTestRule.setContent {
-            DailyActivities(
-                agendaViewModel = testViewModel,
-                onActivityItemClick = {})
-        }
-
-        composeTestRule.waitForIdle()
-
-        testViewModel._dailyActivities.value = testActivities
-
-        composeTestRule.waitForIdle()
-
-        composeTestRule.onNodeWithTag(testActivities[0].stopId).assertIsDisplayed()
-
-        composeTestRule.onNodeWithTag(testActivities[1].stopId).assertIsDisplayed()
-
-        composeTestRule.onNodeWithTag(testActivities[2].stopId).assertIsDisplayed()
+    composeTestRule.setContent {
+      DailyActivities(agendaViewModel = testViewModel, onActivityItemClick = {})
     }
 
-    // Check that the content of the activity items is displayed correctly
-    @Test
-    fun verifyActivityItemsContent() {
-        // Set the content once with a composable that includes all test items
-        composeTestRule.setContent {
-            Column {
-                testActivities.forEach { stop ->
-                    ActivityItem(stop = stop, onActivityClick = {})
-                }
-            }
-        }
+    composeTestRule.waitForIdle()
 
-        // Loop through each test activity and assert its details
-        testActivities.forEach { testStop ->
+    testViewModel._dailyActivities.value = testActivities
 
-            // Assert that the title is displayed correctly
-            composeTestRule
-                .onNodeWithTag("ActivityTitle${testStop.stopId}", useUnmergedTree = true)
-                .assertIsDisplayed()
-                .assertTextEquals(testStop.title)
+    composeTestRule.waitForIdle()
 
-            // Prepare the expected time string
-            val expectedTime =
-                "${testStop.startTime} - ${testStop.startTime.plusMinutes(testStop.duration.toLong())}"
+    composeTestRule.onNodeWithTag(testActivities[0].stopId).assertIsDisplayed()
 
-            // Assert that the time is displayed correctly
-            composeTestRule
-                .onNodeWithTag("ActivityTime${testStop.stopId}", useUnmergedTree = true)
-                .assertIsDisplayed()
-                .assertTextEquals(expectedTime)
+    composeTestRule.onNodeWithTag(testActivities[1].stopId).assertIsDisplayed()
 
-            // Assert that the address is displayed correctly
-            composeTestRule
-                .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
-                .assertIsDisplayed()
-                .assertTextEquals(testStop.address)
-        }
+    composeTestRule.onNodeWithTag(testActivities[2].stopId).assertIsDisplayed()
+  }
+
+  // Check that the content of the activity items is displayed correctly
+  @Test
+  fun verifyActivityItemsContent() {
+    // Set the content once with a composable that includes all test items
+    composeTestRule.setContent {
+      Column { testActivities.forEach { stop -> ActivityItem(stop = stop, onActivityClick = {}) } }
     }
 
-    @Test
-    fun checkNoActivitiesMessageIsDisplayed() {
+    // Loop through each test activity and assert its details
+    testActivities.forEach { testStop ->
 
-        composeTestRule.setContent {
-            DailyActivities(
-                agendaViewModel = testViewModel,
-                onActivityItemClick = {})
-        }
+      // Assert that the title is displayed correctly
+      composeTestRule
+          .onNodeWithTag("ActivityTitle${testStop.stopId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextEquals(testStop.title)
 
-        composeTestRule.waitForIdle()
+      // Prepare the expected time string
+      val expectedTime =
+          "${testStop.startTime} - ${testStop.startTime.plusMinutes(testStop.duration.toLong())}"
 
-        composeTestRule.onNodeWithTag("NoActivitiesMessage").assertIsDisplayed()
+      // Assert that the time is displayed correctly
+      composeTestRule
+          .onNodeWithTag("ActivityTime${testStop.stopId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextEquals(expectedTime)
+
+      // Assert that the address is displayed correctly
+      composeTestRule
+          .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextEquals(testStop.address)
+    }
+  }
+
+  @Test
+  fun checkNoActivitiesMessageIsDisplayed() {
+
+    composeTestRule.setContent {
+      DailyActivities(agendaViewModel = testViewModel, onActivityItemClick = {})
     }
 
-    @Test
-    fun activityDialogDisplayCorrectInfo() {
-        composeTestRule.setContent {
+    composeTestRule.waitForIdle()
 
-            Column {
-                var isStopPressed by remember { mutableStateOf(false) }
-                var selectedStopId by remember { mutableStateOf("") }
+    composeTestRule.onNodeWithTag("NoActivitiesMessage").assertIsDisplayed()
+  }
 
-                testActivities.forEach { stop ->
-                    ActivityItem(stop = stop, onActivityClick = {stopId ->
-                        isStopPressed = true
-                        selectedStopId = stopId})
+  @Test
+  fun activityDialogDisplayCorrectInfo() {
+    composeTestRule.setContent {
+      Column {
+        var isStopPressed by remember { mutableStateOf(false) }
+        var selectedStopId by remember { mutableStateOf("") }
 
-                }
-                if (isStopPressed) {
-                    val selectedStop =
-                        testActivities.find { stop -> stop.stopId == selectedStopId }!!
-                    StopInfoDialog(
-                        stop = selectedStop,
-                        closeDialogueAction = { isStopPressed = false })
-                }
-            }
+        testActivities.forEach { stop ->
+          ActivityItem(
+              stop = stop,
+              onActivityClick = { stopId ->
+                isStopPressed = true
+                selectedStopId = stopId
+              })
         }
-        testActivities.forEach { testStop ->
-            composeTestRule.onNodeWithTag("activityItemButton"+testStop.stopId).performClick()
-            composeTestRule.onNodeWithTag("activityDialog").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("titleText").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("titleText").assertTextEquals("Title " + testStop.stopId)
-            composeTestRule.onNodeWithTag("activityDescription").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activityDescription").assertTextEquals("Description " + testStop.stopId)
-            composeTestRule.onNodeWithTag("titleDate").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activityDate").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activityDate").assertTextEquals(LocalDate.now().format(
-                DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-            composeTestRule.onNodeWithTag("titleSchedule").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activitySchedule").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activityAddress").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activityAddress").assertTextEquals("Location " + testStop.stopId)
-            composeTestRule.onNodeWithTag("titleBudget").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activityBudget").assertIsDisplayed()
-            composeTestRule.onNodeWithTag("activityBudget").assertTextEquals("0.0")
+        if (isStopPressed) {
+          val selectedStop = testActivities.find { stop -> stop.stopId == selectedStopId }!!
+          StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
         }
+      }
     }
+    testActivities.forEach { testStop ->
+      composeTestRule.onNodeWithTag("activityItemButton" + testStop.stopId).performClick()
+      composeTestRule.onNodeWithTag("activityDialog").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("titleText").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("titleText").assertTextEquals("Title " + testStop.stopId)
+      composeTestRule.onNodeWithTag("activityDescription").assertIsDisplayed()
+      composeTestRule
+          .onNodeWithTag("activityDescription")
+          .assertTextEquals("Description " + testStop.stopId)
+      composeTestRule.onNodeWithTag("titleDate").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("activityDate").assertIsDisplayed()
+      composeTestRule
+          .onNodeWithTag("activityDate")
+          .assertTextEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+      composeTestRule.onNodeWithTag("titleSchedule").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("activitySchedule").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("activityAddress").assertIsDisplayed()
+      composeTestRule
+          .onNodeWithTag("activityAddress")
+          .assertTextEquals("Location " + testStop.stopId)
+      composeTestRule.onNodeWithTag("titleBudget").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("activityBudget").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("activityBudget").assertTextEquals("0.0")
+    }
+  }
 }
-
