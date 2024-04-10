@@ -28,13 +28,20 @@ import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.google.android.libraries.places.api.net.PlacesClient
 
-/** The Trip screen. */
+/**
+ * Trip screen composable that displays the trip screen with the bottom navigation bar.
+ *
+ * @param oldNavActions The navigation actions for the previous screen.
+ * @param tripId The trip ID.
+ * @param tripsRepository The repository for trips data.
+ * @param client The PlacesClient for the Google Places API.
+ */
 @Composable
 fun Trip(
     oldNavActions: NavigationActions,
     tripId: String,
     tripsRepository: TripsRepository,
-    client: PlacesClient
+    client: PlacesClient?
 ) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
@@ -49,12 +56,21 @@ fun Trip(
           composable(Route.SUGGESTION) {
             Suggestion(tripId)
           } // todo: might have the param oldNavActions for Suggestion()
-          composable(Route.MAP) { Map(tripId, MapViewModel(tripsRepository), client) }
+          composable(Route.MAP) {
+            if (client != null) {
+              Map(MapViewModel(tripsRepository, tripId), client)
+            }
+          }
           composable(Route.NOTIFICATION) { Notification(tripId) }
         }
       }
 }
 
+/**
+ * Bottom navigation bar composable that displays the bottom navigation bar.
+ *
+ * @param navActions The navigation actions for the screen.
+ */
 @Composable
 fun BottomBar(navActions: NavigationActions) {
   NavigationBar(

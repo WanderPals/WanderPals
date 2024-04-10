@@ -2,6 +2,7 @@ package com.github.se.wanderpals.trip
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.trip.Trip
@@ -11,6 +12,7 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen.Companion.onComposeScreen
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
+import kotlinx.coroutines.Dispatchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -26,7 +28,9 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
 
   @Before
   fun testSetup() {
-    composeTestRule.setContent { Trip(mockNavActions, "id") }
+    composeTestRule.setContent {
+      Trip(mockNavActions, "id", TripsRepository("-1", Dispatchers.IO), null)
+    }
   }
 
   @Test

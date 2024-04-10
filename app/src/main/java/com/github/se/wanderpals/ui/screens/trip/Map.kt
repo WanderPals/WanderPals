@@ -1,8 +1,9 @@
 package com.github.se.wanderpals.ui.screens.trip
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,7 +11,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -19,6 +19,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,12 +52,15 @@ import kotlin.coroutines.suspendCoroutine
  * Composable function that represents the Map screen, displaying a map with markers for the stops
  * of a trip and the ability to search for a location.
  *
- * @param tripId The ID of the trip to display the stops for.
  * @param mapViewModel The view model containing the data and logic for the map screen.
+ * @param client The PlacesClient used to search for locations.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
+fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
+
+  val stopLists by mapViewModel.stops.collectAsState()
+
   var uiSettings by remember { mutableStateOf(MapUiSettings()) }
   // variable to extract the search text from the search bar
   var searchText by remember { mutableStateOf("") }
@@ -87,26 +91,27 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
   var listOfMarkers by remember { mutableStateOf(listOf<MarkerState>()) }
 
   LaunchedEffect(key1 = searchText) {
-    if (searchText.isBlank()) {
+    if (searchText.isEmpty()) {
       expanded = false
       return@LaunchedEffect
+    } else {
+      getAddressPredictions(
+          client,
+          inputString = searchText,
+          location = LatLng(46.519653, 6.632273),
+          onSuccess = { predictions ->
+            Log.d("Prediction", "")
+            for (prediction in predictions) {
+              Log.d("Prediction", prediction.getFullText(null).toString())
+            }
+            listOfPropositions = predictions
+            expanded = true
+          },
+          onFailure = {
+            Log.d("Prediction", "Failed")
+            expanded = false
+          })
     }
-    getAddressPredictions(
-        client,
-        inputString = searchText,
-        location = LatLng(46.519653, 6.632273),
-        onSuccess = { predictions ->
-          Log.d("Prediction", "")
-          for (prediction in predictions) {
-            Log.d("Prediction", prediction.getFullText(null).toString())
-          }
-          listOfPropositions = predictions
-          expanded = true
-        },
-        onFailure = {
-          Log.d("Prediction", "Failed")
-          expanded = false
-        })
   }
 
   // Get the location of the searched address
@@ -115,7 +120,7 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
     if (enabled) {
       DockedSearchBar(
           // align the search bar to the top left corner with padding
-          modifier = Modifier.align(Alignment.TopCenter).padding(top = 8.dp),
+          modifier = Modifier.testTag("searchBar").align(Alignment.TopCenter).padding(top = 8.dp),
           query = searchText,
           onQueryChange = { newText -> searchText = newText },
           enabled = true,
@@ -125,9 +130,15 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
             // change the camera position to the searched location
             finalLoc = location
             finalName = searchText
+            listOfMarkers += (MarkerState(position = finalLoc))
           },
           active = active,
-          onActiveChange = { active = it },
+          onActiveChange = {
+            if (searchText.isEmpty()) {
+              expanded = false
+            }
+            active = it
+          },
           placeholder = { Text("Search a location") },
           trailingIcon = {
             // if the search text is empty, show the search icon, otherwise show the clear icon
@@ -135,14 +146,14 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
               Icon(
                   imageVector = Icons.Default.Search,
                   contentDescription = Icons.Default.Search.name,
-                  modifier = Modifier.size(24.dp))
+                  modifier = Modifier.testTag("searchButtonIcon").size(24.dp))
             } else {
               IconButton(
                   modifier = Modifier.testTag("clearSearchButton"), onClick = { searchText = "" }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = Icons.Default.Clear.name,
-                        modifier = Modifier.size(24.dp))
+                        modifier = Modifier.testTag("clearSearchButtonIcon").size(24.dp))
                   }
             }
           },
@@ -150,7 +161,7 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
             Icon(
                 imageVector = Icons.Default.Menu,
                 contentDescription = Icons.Default.Menu.name,
-                modifier = Modifier.size(24.dp))
+                modifier = Modifier.testTag("menuButtonIcon").size(24.dp))
           }) {
             // if the search bar is expanded when clicked modify the search text, show the list of
             // suggestions
@@ -159,31 +170,30 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
                 val primaryText = it.getPrimaryText(null).toString()
                 val placeId = it.placeId
                 val placeFields = listOf(Place.Field.LAT_LNG)
-                Column {
-                  Button(
-                      onClick = {
-                        searchText = primaryText
-                        val request = FetchPlaceRequest.newInstance(placeId, placeFields)
-                        client.fetchPlace(request).addOnSuccessListener { response ->
-                          val place = response.place
-                          location = place.latLng!!
-                        }
-                      }) {
-                        Text(text = primaryText)
-                      }
+                Row(modifier = Modifier.padding(8.dp)) {
+                  Text(
+                      text = primaryText,
+                      modifier =
+                          Modifier.testTag("listOfPropositions").padding(8.dp).clickable {
+                            searchText = primaryText
+                            val request = FetchPlaceRequest.newInstance(placeId, placeFields)
+                            client.fetchPlace(request).addOnSuccessListener { response ->
+                              val place = response.place
+                              location = place.latLng!!
+                            }
+                          })
                 }
               }
             }
           }
     }
     GoogleMap(
-        modifier = Modifier.matchParentSize(),
+        modifier = Modifier.matchParentSize().testTag("googleMap"),
         properties = MapProperties(mapType = MapType.NORMAL),
         uiSettings = uiSettings,
         cameraPositionState =
             CameraPositionState(position = CameraPosition(finalLoc, 10f, 0f, 0f))) {
           // add the marker to the list of markers
-          listOfMarkers += (MarkerState(position = finalLoc))
           // display the marker on the map
           listOfMarkers.forEach {
             Marker(
@@ -196,7 +206,7 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
           }
 
           // display all the stops on the map
-          mapViewModel.getAllStops(tripId).forEach {
+          stopLists.forEach {
             Marker( // Add a marker to the map
                 state = MarkerState(position = LatLng(it.geoCords.latitude, it.geoCords.longitude)),
                 title = it.title,
@@ -204,7 +214,7 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
           }
         }
     Switch(
-        modifier = Modifier.align(Alignment.BottomStart).padding(16.dp),
+        modifier = Modifier.testTag("switchButton").align(Alignment.BottomStart).padding(16.dp),
         checked = uiSettings.zoomControlsEnabled,
         onCheckedChange = {
           uiSettings = uiSettings.copy(zoomControlsEnabled = it)
@@ -213,6 +223,16 @@ fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
   }
 }
 
+/**
+ * Function to get the address predictions from the Places API.
+ *
+ * @param client The PlacesClient used to search for locations.
+ * @param sessionToken The session token used for the autocomplete request.
+ * @param inputString The input string to search for.
+ * @param location The location to bias the search results.
+ * @param onSuccess The function to call when the predictions are successfully retrieved.
+ * @param onFailure The function to call when the predictions retrieval fails.
+ */
 suspend fun getAddressPredictions(
     client: PlacesClient,
     sessionToken: AutocompleteSessionToken = AutocompleteSessionToken.newInstance(),

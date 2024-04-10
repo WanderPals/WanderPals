@@ -4,24 +4,33 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 /**
  * View model for the Map screen, containing the data and logic for the screen.
  *
  * @param tripsRepository The repository for trips data.
+ * @param tripId The trip ID.
  */
-class MapViewModel(tripsRepository: TripsRepository) : ViewModel() {
+open class MapViewModel(tripsRepository: TripsRepository, private val tripId: String) :
+    ViewModel() {
   private val _tripsRepository = tripsRepository
-  private var _stops = mutableListOf<Stop>()
+  open var stops = MutableStateFlow(emptyList<Stop>())
 
   // add a stop to the trip
-  fun addStop(tripId: String, stop: Stop) {
+  open fun addStop(tripId: String, stop: Stop) {
     viewModelScope.launch { _tripsRepository.addStopToTrip(tripId, stop) }
   }
+
+  init {
+    getAllStops()
+  }
+
   // get all stops from the trip
-  fun getAllStops(tripId: String): List<Stop> {
-    viewModelScope.launch { _stops = _tripsRepository.getAllStopsFromTrip(tripId).toMutableList() }
-    return _stops
+  open fun getAllStops() {
+    viewModelScope.launch {
+      stops.value = _tripsRepository.getAllStopsFromTrip(tripId).toMutableList()
+    }
   }
 }
