@@ -29,7 +29,7 @@ class TripMenuTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
   @Before
   fun testSetup() {
-    composeTestRule.setContent { Trip(mockNavActions, "id") }
+    composeTestRule.setContent { Trip(mockNavActions, "id", tripsRepository = null) }
   }
 
   @Test
