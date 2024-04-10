@@ -50,6 +50,8 @@ fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String, suggestions
             innerPadding = innerPadding,
             navigationActions = navActions,
             suggestionList = suggestionList,
-            searchSuggestionText = searchSuggestionText)
+            searchSuggestionText = searchSuggestionText,
+            tripId = tripId,
+            suggestionRepository = suggestionsViewModel)
       }
 }

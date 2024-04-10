@@ -20,6 +20,7 @@ import java.time.LocalDate
  * @param comments A list of comments made by other users in response to the suggestion. This
  *   facilitates discussion and feedback on the suggestion, allowing for a collaborative planning
  *   process.
+ * @param userLikes A list of user IDs who have liked this suggestion.
  */
 data class Suggestion(
     val suggestionId: String,

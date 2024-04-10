@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Card
@@ -21,6 +22,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 
@@ -37,7 +44,6 @@ import java.time.format.DateTimeFormatter
  *
  * @param suggestion The suggestion object to be displayed.
  * @param navigationActions The navigation actions used for navigating to detailed suggestion view.
- *   todo: will be displayed later (overlay)
  * @param modifier The modifier to be applied to the suggestion item.
  */
 @Composable
@@ -45,9 +51,27 @@ fun SuggestionItem(
     suggestion: Suggestion,
     navigationActions: NavigationActions,
     onClick: () -> Unit, // this callback for the suggestion item click
-    onLikeClicked: () -> Unit, // this callback for the like button
+    tripId: String, //the trip id of the suggestion
+    viewModel: SuggestionsViewModel, // Pass ViewModel to the composable
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
+
+
+    // Collect the set of liked suggestion IDs and check if the current suggestion is liked
+    val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
+    val isLiked = likedSuggestions.contains(suggestion.suggestionId)
+
+    // the state for the like count
+//    var likesCount by remember { mutableStateOf(suggestion.userLikes.size) }
+
+    // Remember the like count and update it when likedSuggestions changes
+//    val likesCount by remember(likedSuggestions) {
+//        mutableStateOf(suggestion.userLikes.size + if (isLiked)
+
+    // Remember the like count and update it when likedSuggestions changes
+    val likesCount by remember(likedSuggestions) {
+        mutableStateOf(suggestion.userLikes.size + if (isLiked) 1 else 0)
+    }
   // Define card colors with a white background
   val cardColors =
       CardDefaults.cardColors(
@@ -121,10 +145,24 @@ fun SuggestionItem(
 
                 Spacer(modifier = Modifier.weight(1f)) // Pushes the heart icon to the end
 
-                Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = null, // Decorative element
-                    modifier = Modifier.size(18.dp).clickable(onClick = onLikeClicked))
+//                Icon(
+//                    imageVector = Icons.Default.FavoriteBorder,
+//                    contentDescription = null, // Decorative element
+//                    modifier = Modifier.size(18.dp).clickable(onClick = onLikeClicked))
+              // Icon click handler
+              val onLikeClicked: () -> Unit = {
+                  viewModel.toggleLikeSuggestion(tripId, suggestion)
+              }
+              Icon(
+                  imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                  contentDescription = "Like",
+                  modifier = Modifier.size(18.dp).clickable {
+//                      isLiked = !isLiked
+//                      likesCount += if (isLiked) 1 else -1
+//                      viewModel.updateSuggestion(tripId, suggestion)
+                      viewModel.toggleLikeSuggestion(tripId, suggestion)
+                  }
+              )
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
                 Text(
                     text = "${suggestion.userLikes.size}",

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,16 +24,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.screens.overview.OverviewTrip
-import com.google.firebase.auth.FirebaseAuth
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -46,15 +43,16 @@ import java.time.LocalTime
  * @param navigationActions The navigation actions used for navigating to a detailed suggestion
  *   view.
  * @param suggestionList The list of suggestions of a trip to be displayed.
- * @param searchSuggestionText The text used for filtering suggestions of a same trip by title.
- *   <-todo: for sprint3
+ * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  */
 @Composable
 fun SuggestionFeedContent(
     innerPadding: PaddingValues,
     navigationActions: NavigationActions,
     suggestionList: List<Suggestion>, // <-todo: will be real data (wait for William) so will replace all _suggestionList by suggestionList
-    searchSuggestionText: String
+    searchSuggestionText: String,
+    tripId: String,
+    suggestionRepository: SuggestionsViewModel
 ) {
   // State to track the currently selected suggestion item
   var selectedSuggestion by remember { mutableStateOf<Suggestion?>(null) }
@@ -136,8 +134,12 @@ fun SuggestionFeedContent(
     val dummyCommentList3 = listOf(comment1, comment2, comment3)
     val dummyCommentList4 = listOf(comment1, comment2, comment3, comment4)
 
+    val userLikes1 = listOf("ulId1", "ulId2")
+    val userLikes3 = listOf("ulId1", "ulId2", "ulId3", "ulId5", "ulId6")
+    val userLikes4 = listOf("ulId1", "ulId2", "ulId3", "ulId4")
 
-  /*
+
+//  /*
   // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
       val _suggestionList =
           listOf(
@@ -149,7 +151,7 @@ fun SuggestionFeedContent(
                   LocalDate.of(2024, 1, 1),
                   stop1,
                   emptyList(),
-                  emptyList()),
+                  userLikes1),
               Suggestion(
                   "suggestionId2",
                   "userId2",
@@ -168,7 +170,7 @@ fun SuggestionFeedContent(
                   LocalDate.of(2024, 3, 29),
                   stop3,
                   dummyCommentList3,
-                  emptyList()),
+                  userLikes3),
               Suggestion(
                       "suggestionId4",
               "userId4",
@@ -178,12 +180,12 @@ fun SuggestionFeedContent(
               LocalDate.of(2024, 9, 29),
               stop4,
               dummyCommentList4,
-              emptyList())
+              userLikes4)
           )
-    */
+//    */
 
   // Example usage of dummy data for the suggestionList <-todo: change for sprint3
-  val _suggestionList = suggestionList
+//  val _suggestionList = suggestionList
 
 
     // State to track the selected filter criteria
@@ -232,9 +234,6 @@ fun SuggestionFeedContent(
         Text(
             text = "Filter by:",
             modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
-            style = TextStyle(
-                // todo: will have style later
-            )
         )
 
         SuggestionFilterOptions { selectedCriteria ->
@@ -281,11 +280,12 @@ fun SuggestionFeedContent(
                             onClick = {
                                 selectedSuggestion = suggestion
                             }, // This lambda is passed to the SuggestionItem composable
-                            onLikeClicked = {
-                                // Implement the like functionality here
-                            },
                             modifier = Modifier.clickable { selectedSuggestion = suggestion }
-                                .testTag("suggestion${index + 1}") // Apply the testTag here
+                                .testTag("suggestion${index + 1}"), // Apply the testTag here
+
+                            tripId = tripId,
+                            viewModel = suggestionRepository
+
                         )
                     }
                 }

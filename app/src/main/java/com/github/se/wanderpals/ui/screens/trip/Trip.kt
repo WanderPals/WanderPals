@@ -29,7 +29,7 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 
 /** The Trip screen. */
 @Composable
-fun Trip(oldNavActions: NavigationActions, tripId: String, tripsRepository: TripsRepository) {
+fun Trip(oldNavActions: NavigationActions, tripId: String, tripsRepository: TripsRepository?) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
 
