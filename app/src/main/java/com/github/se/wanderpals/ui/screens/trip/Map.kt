@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,14 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -36,15 +45,7 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
-import java.io.IOException
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import org.json.JSONArray
+import kotlin.coroutines.suspendCoroutine
 
 /**
  * Composable function that represents the Map screen, displaying a map with markers for the stops
@@ -55,7 +56,7 @@ import org.json.JSONArray
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Map(tripId: String, mapViewModel: MapViewModel) {
+fun Map(tripId: String, mapViewModel: MapViewModel, client: PlacesClient) {
   var uiSettings by remember { mutableStateOf(MapUiSettings()) }
   // variable to extract the search text from the search bar
   var searchText by remember { mutableStateOf("") }
@@ -70,7 +71,12 @@ fun Map(tripId: String, mapViewModel: MapViewModel) {
   // expanded state of the search bar
   var expanded by remember { mutableStateOf(false) }
   // proposed location of the searched address List of string of size 5
-  var listOfPropositions by remember { mutableStateOf(List(5) { "" }) }
+  var listOfPropositions by remember {
+    mutableStateOf(
+        List<AutocompletePrediction>(5) {
+          AutocompletePrediction.builder(" ChIJ4zm3ev4wjEcRShTLf2C0UWA").build()
+        })
+  }
   // when the search text is changed, request the location of the address
   var finalLoc by remember { mutableStateOf(LatLng(0.0, 0.0)) }
   // name of the searched location
@@ -85,15 +91,22 @@ fun Map(tripId: String, mapViewModel: MapViewModel) {
       expanded = false
       return@LaunchedEffect
     }
-    requestLocation(
-        searchText,
-        onSuccessRequest = { output, loc ->
-          // take all the suggestions
-          listOfPropositions = output
+    getAddressPredictions(
+        client,
+        inputString = searchText,
+        location = LatLng(46.519653, 6.632273),
+        onSuccess = { predictions ->
+          Log.d("Prediction", "")
+          for (prediction in predictions) {
+            Log.d("Prediction", prediction.getFullText(null).toString())
+          }
+          listOfPropositions = predictions
           expanded = true
-          location = loc
         },
-        onFailureRequest = { expanded = false })
+        onFailure = {
+          Log.d("Prediction", "Failed")
+          expanded = false
+        })
   }
 
   // Get the location of the searched address
@@ -143,8 +156,22 @@ fun Map(tripId: String, mapViewModel: MapViewModel) {
             // suggestions
             if (expanded) {
               listOfPropositions.forEach {
-                // create a button
-                Column { Button(onClick = { searchText = it }) { Text(text = it) } }
+                val primaryText = it.getPrimaryText(null).toString()
+                val placeId = it.placeId
+                val placeFields = listOf(Place.Field.LAT_LNG)
+                Column {
+                  Button(
+                      onClick = {
+                        searchText = primaryText
+                        val request = FetchPlaceRequest.newInstance(placeId, placeFields)
+                        client.fetchPlace(request).addOnSuccessListener { response ->
+                          val place = response.place
+                          location = place.latLng!!
+                        }
+                      }) {
+                        Text(text = primaryText)
+                      }
+                }
               }
             }
           }
@@ -159,7 +186,8 @@ fun Map(tripId: String, mapViewModel: MapViewModel) {
           listOfMarkers += (MarkerState(position = finalLoc))
           // display the marker on the map
           listOfMarkers.forEach {
-            Marker( // Add a marker to the map
+            Marker(
+                // Add a marker to the map
                 state = it,
                 title = String.format("%S", finalName),
                 snippet = "Population: 883,305",
@@ -184,53 +212,33 @@ fun Map(tripId: String, mapViewModel: MapViewModel) {
         })
   }
 }
-// request the location of the address from the nominatim api
-fun requestLocation(
-    address: String,
-    onSuccessRequest: (List<String>, LatLng) -> Unit,
-    onFailureRequest: () -> Unit
-) {
-  val client = OkHttpClient()
 
-  val url =
-      "https://nominatim.openstreetmap.org/search?q=${
-            address.replace(
-                " ",
-                "%20"
-            )
-        }&format=json"
-
-  val request = Request.Builder().url(url).build()
-
-  client
-      .newCall(request)
-      .enqueue(
-          object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-              MainScope().launch { onFailureRequest() }
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-              if (response.isSuccessful) {
-                try {
-                  val jsonArray = JSONArray(response.body?.string())
-                  if (jsonArray.length() > 0) {
-                    val jsonObject = jsonArray.getJSONObject(0)
-                    val lat = jsonObject.getDouble("lat")
-                    val lon = jsonObject.getDouble("lon")
-                    val displayName = jsonObject.getString("display_name").split(",")
-                    // store the latitude and longitude of the address
-                    val location = LatLng(lat, lon)
-                    MainScope().launch { onSuccessRequest(displayName, location) }
-                  } else {
-                    MainScope().launch { onFailureRequest() }
-                  }
-                } catch (e: Exception) {
-                  MainScope().launch { onFailureRequest() }
-                }
-              } else {
-                MainScope().launch { onFailureRequest() }
-              }
-            }
-          })
-}
+suspend fun getAddressPredictions(
+    client: PlacesClient,
+    sessionToken: AutocompleteSessionToken = AutocompleteSessionToken.newInstance(),
+    inputString: String,
+    location: LatLng? = null,
+    onSuccess: (List<AutocompletePrediction>) -> Unit = {},
+    onFailure: (Exception?) -> Unit = { throw Exception("Place not found") }
+) =
+    suspendCoroutine<Unit> {
+      val request =
+          FindAutocompletePredictionsRequest.builder()
+              .setLocationBias(
+                  location?.let { locationBias ->
+                    RectangularBounds.newInstance(
+                        LatLng(locationBias.latitude - 0.1, locationBias.longitude - 0.1),
+                        LatLng(locationBias.latitude + 0.1, locationBias.longitude + 0.1))
+                  })
+              .setOrigin(location)
+              .setCountries("CH")
+              .setSessionToken(sessionToken)
+              .setQuery(inputString)
+              .build()
+      client
+          .findAutocompletePredictions(request)
+          .addOnSuccessListener { response: FindAutocompletePredictionsResponse ->
+            onSuccess(response.autocompletePredictions)
+          }
+          .addOnFailureListener { exception: Exception? -> onFailure(exception) }
+    }
