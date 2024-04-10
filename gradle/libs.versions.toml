@@ -1,5 +1,5 @@
 [versions]
-agp = "8.3.1"
+agp = "8.3.2"
 coreKtxVersion = "1.8.1"
 firebaseAuth = "22.3.1"
 firebaseDatabaseKtx = "20.3.0"
@@ -29,6 +29,7 @@ googleServices = "4.4.0"
 navigationCompose = "2.7.7"
 playServicesAuth = "21.0.0"
 navigationRuntimeKtx = "2.7.7"
+places = "3.4.0"
 
 
 [libraries]
@@ -71,6 +72,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
