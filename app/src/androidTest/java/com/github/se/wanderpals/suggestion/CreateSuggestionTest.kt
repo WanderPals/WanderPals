@@ -39,7 +39,7 @@ private val testSuggestion: Suggestion =
             Stop(
                 stopId = "",
                 title = "Stop",
-                address = "Stop address",
+                address = "",
                 date = LocalDate.of(2024, 4, 16),
                 startTime = LocalTime.of(12, 0),
                 budget = 20.0,
@@ -163,15 +163,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("14:00")
         }
 
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
+        inputAddress { assertIsNotDisplayed() }
 
         inputWebsite {
           assertIsDisplayed()
@@ -336,16 +328,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("This is a Stop")
         }
 
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
         inputWebsite {
           assertIsDisplayed()
           performClick()
@@ -435,16 +417,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("This is a Stop")
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
         }
 
         inputWebsite {
@@ -538,16 +510,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("This is a Stop")
         }
 
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
         inputWebsite {
           assertIsDisplayed()
           performClick()
@@ -637,16 +599,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
           performTextClearance()
           performTextInput("This is a Stop")
-        }
-
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
         }
 
         inputWebsite {
@@ -740,16 +692,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextInput("This is a Stop")
         }
 
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
         inputWebsite {
           assertIsDisplayed()
           performClick()
@@ -841,16 +783,6 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
           performTextClearance()
         }
 
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Address")
-
-          performTextClearance()
-          performTextInput("Stop address")
-        }
-
         inputWebsite {
           assertIsDisplayed()
           performClick()
@@ -873,44 +805,9 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   }
 
   @Test
-  fun createSuggestionWithAddress() = run {
-    ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
-      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-      composeTestRule.setContent {
-        CreateSuggestionScreen("aaa", vm, mockNavActions, addr = "Example address")
-      }
-      step("Open create suggestion screen") {
-        inputAddress {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Example address")
-
-          performTextClearance()
-        }
-      }
-    }
-  }
-
-  @Test
   fun createSuggestionWithoutAddress() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreenTest>(composeTestRule) {
-      step("Open create suggestion screen") {
-        val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-        composeTestRule.setContent {
-          CreateSuggestionScreen("aaa", vm, mockNavActions, addr = "Example address")
-        }
-        step("Open create suggestion screen") {
-          inputAddress {
-            assertIsDisplayed()
-            performClick()
-
-            assertTextContains("Example address")
-
-            performTextClearance()
-          }
-        }
-      }
+      step("Open create suggestion screen") { inputAddress { assertIsNotDisplayed() } }
     }
   }
 }
