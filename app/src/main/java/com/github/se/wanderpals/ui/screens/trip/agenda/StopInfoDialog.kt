@@ -27,6 +27,13 @@ import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Stop
 import java.time.format.DateTimeFormatter
 
+/**
+ * Composable function to display a dialog containing information about a stop in a trip agenda.
+ *
+ * @param stop The [Stop] object containing information about the stop.
+ * @param closeDialogueAction Callback function to be invoked when the dialog is dismissed.
+ */
+
 @Composable
 fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
     Dialog(
@@ -46,6 +53,8 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
+
+                // Title
                 Text(
                     text = stop.title,
                     style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
@@ -53,6 +62,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Spacer(modifier = Modifier.height(15.dp))
+
                 // Description
                 OutlinedTextField(
                     value = stop.description,
@@ -63,62 +73,69 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     readOnly = true
                 )
                 Spacer(modifier = Modifier.height(15.dp))
-                // Titre pour la date
+
+                // Date
                 Text(
                     text = "Date",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Start,
                 )
-                // Date
+
                 Text(
                     text = stop.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     style = TextStyle(fontSize = 16.sp),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom  = 20.dp)
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(bottom = 20.dp)
                 )
 
-
-                // Titre pour le temps de l'activité
+                // Schedule
                 Text(
-                    text = "Scheduled",
+                    text = "Schedule",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Start
                 )
-                // Format startime - endtime
+
                 Text(
                     text = "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
                     style = TextStyle(fontSize = 16.sp),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom  = 20.dp)
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(bottom = 20.dp)
                 )
 
-
-                // Titre pour l'adresse
+                // Address
                 Text(
                     text = "Address",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Start
                 )
-                // Adresse
+
                 Text(
                     text = stop.address,
                     style = TextStyle(fontSize = 16.sp),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom  = 20.dp)
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(bottom = 20.dp)
                 )
 
-                // Titre pour le budget
+                // Budget
                 Text(
                     text = "Budget",
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Start
                 )
-                // Budget
+
                 Text(
                     text = "${stop.budget}",
                     style = TextStyle(fontSize = 16.sp),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom  = 20.dp)
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(bottom = 20.dp)
                 )
 
             }
