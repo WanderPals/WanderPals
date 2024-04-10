@@ -19,9 +19,9 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen.Companion.onComposeScreen
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.Dispatchers
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -181,7 +181,8 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun suggestionFeedScreen_isDisplayed() {
     composeTestRule.setContent {
       // Simulate the Suggestion composable with the provided tripId
-      com.github.se.wanderpals.ui.screens.trip.Suggestion(tripId = "dummyTestTripId", SuggestionsViewModel(TripsRepository("", Dispatchers.IO), ""))
+      com.github.se.wanderpals.ui.screens.trip.Suggestion(
+          tripId = "dummyTestTripId", SuggestionsViewModel(TripsRepository("", Dispatchers.IO), ""))
     }
 
     // Now check if the suggestion feed screen is displayed

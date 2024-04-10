@@ -1,11 +1,8 @@
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,29 +17,20 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun DashboardTopBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(Color.Transparent)
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
+  Box(
+      modifier =
+          Modifier.fillMaxWidth().wrapContentHeight().background(Color.Transparent).padding(16.dp),
+      contentAlignment = Alignment.Center) {
         Text(
             text = "Welcome",
             color = Color.Black,
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            ),
-            modifier = Modifier.testTag("welcomeText")
-        )
-    }
+            style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black),
+            modifier = Modifier.testTag("welcomeText"))
+      }
 }
+
 @Preview(showBackground = true)
 @Composable
-fun DashboardTopBarPreview()
-{
-    DashboardTopBar()
+fun DashboardTopBarPreview() {
+  DashboardTopBar()
 }

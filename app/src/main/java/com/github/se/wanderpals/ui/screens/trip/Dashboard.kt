@@ -28,69 +28,62 @@ import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
 import java.time.LocalDate
 import java.time.LocalTime
 
-
-val stop = Stop(
-  stopId = "1",
-  title = "Stop Title",
-  address = "123 Street",
-  date = LocalDate.now(),
-  startTime = LocalTime.now(),
-  duration = 60,
-  budget = 100.0,
-  description = "This is a description of the stop. It should be brief and informative.",
-  geoCords = GeoCords(0.0, 0.0),
-  website = "https://example.com",
-  imageUrl = ""
-)
-val suggestion = com.github.se.wanderpals.model.data.Suggestion(
-  suggestionId = "1",
-  userName = "User",
-  createdAt = LocalDate.now(),
-  stop = stop,
-  text = "This is a suggestion for a stop.",
-  userId = "1"
-)
+val stop =
+    Stop(
+        stopId = "1",
+        title = "Stop Title",
+        address = "123 Street",
+        date = LocalDate.now(),
+        startTime = LocalTime.now(),
+        duration = 60,
+        budget = 100.0,
+        description = "This is a description of the stop. It should be brief and informative.",
+        geoCords = GeoCords(0.0, 0.0),
+        website = "https://example.com",
+        imageUrl = "")
+val suggestion =
+    com.github.se.wanderpals.model.data.Suggestion(
+        suggestionId = "1",
+        userName = "User",
+        createdAt = LocalDate.now(),
+        stop = stop,
+        text = "This is a suggestion for a stop.",
+        userId = "1")
 
 /** The Dashboard screen. */
 @Composable
-fun Dashboard(tripId: String, dashboardViewModel: DashboardViewModel, oldNavAction: NavigationActions) {
+fun Dashboard(
+    tripId: String,
+    dashboardViewModel: DashboardViewModel,
+    oldNavAction: NavigationActions
+) {
   val isLoading by dashboardViewModel.isLoading.collectAsState()
 
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
-      CircularProgressIndicator(modifier = Modifier
-        .size(50.dp)
-        .align(Alignment.Center)
-        .testTag("loading"))
+      CircularProgressIndicator(
+          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
     }
   } else {
-    Scaffold{
-
+    Scaffold {
       Surface(
-        modifier = Modifier
-          .background(Color.White)
-          .padding(it)
-          .testTag("dashboardSuggestions")
-      ) {
-        Column {
-          Box(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(16.dp)
-              .background(Color.Transparent)
-              .testTag("dashboardTopBar"), contentAlignment = Alignment.Center
-          ) {
-            DashboardTopBar()
+          modifier = Modifier.background(Color.White).padding(it).testTag("dashboardSuggestions")) {
+            Column {
+              Box(
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .padding(16.dp)
+                          .background(Color.Transparent)
+                          .testTag("dashboardTopBar"),
+                  contentAlignment = Alignment.Center) {
+                    DashboardTopBar()
+                  }
+
+              DashboardSuggestionWidget(
+                  viewModel = dashboardViewModel,
+                  onClick = { oldNavAction.navigateTo(Route.SUGGESTION) })
+            }
           }
-
-          DashboardSuggestionWidget(
-            viewModel = dashboardViewModel,
-            onClick = { oldNavAction.navigateTo(Route.SUGGESTION) }
-          )
-        }
-
-
-      }
     }
   }
 }

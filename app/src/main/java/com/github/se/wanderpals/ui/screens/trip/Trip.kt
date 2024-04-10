@@ -34,8 +34,8 @@ fun Trip(oldNavActions: NavigationActions, tripId: String, tripsRepository: Trip
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
 
-    val dashboardViewModel = DashboardViewModel(tripsRepository, tripId)
-    val suggestionsViewModel = SuggestionsViewModel(tripsRepository, tripId)
+  val dashboardViewModel = DashboardViewModel(tripsRepository, tripId)
+  val suggestionsViewModel = SuggestionsViewModel(tripsRepository, tripId)
 
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),
