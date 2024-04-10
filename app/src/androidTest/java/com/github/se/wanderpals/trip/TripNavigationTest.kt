@@ -2,10 +2,13 @@ package com.github.se.wanderpals.trip
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.github.se.wanderpals.BuildConfig
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.trip.Trip
+import com.google.android.libraries.places.api.Places
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -29,7 +32,10 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Before
   fun testSetup() {
     composeTestRule.setContent {
-      Trip(mockNavActions, "id", TripsRepository("-1", Dispatchers.IO), null)
+      val context = InstrumentationRegistry.getInstrumentation().targetContext
+      Places.initialize(context, BuildConfig.MAPS_API_KEY)
+      val placesClient = Places.createClient(context)
+      Trip(mockNavActions, "id", TripsRepository("-1", Dispatchers.IO), placesClient)
     }
   }
 
