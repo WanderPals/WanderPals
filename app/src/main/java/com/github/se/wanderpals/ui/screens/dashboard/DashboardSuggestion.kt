@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,20 +28,21 @@ import java.time.format.FormatStyle
 @Composable
 fun DashboardSuggestion(suggestion: Suggestion) {
     Card(modifier = Modifier
-        .padding(8.dp)) {
-        Column(modifier = Modifier.background(Color.White).border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)).padding(16.dp)) {
+        .padding(8.dp)
+        .testTag("suggestion${(suggestion.suggestionId)}")) {
+        Column(modifier = Modifier.border(1.dp, Color.Black, shape = RoundedCornerShape(16.dp)).padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = suggestion.stop.title)
-                Text(text = "Created at : " + suggestion.createdAt.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))
+                Text(text = suggestion.stop.title, modifier = Modifier.testTag("stopTitle"))
+                Text(text = "Created at : " + suggestion.createdAt.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)), modifier = Modifier.testTag("createdAt"))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = suggestion.userName)
+                Text(text = suggestion.userName, modifier = Modifier.testTag("userName"))
                 Text(
                     text = "${suggestion.stop.date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))} " +
                             "${suggestion.stop.startTime.format(DateTimeFormatter.ofPattern("HH:mm"))} -> \n" +
@@ -48,7 +50,8 @@ fun DashboardSuggestion(suggestion: Suggestion) {
                     style = TextStyle(
                         fontSize = 12.sp,
                         color = Color.Gray
-                    )
+                    ),
+                    modifier = Modifier.testTag("time")
                 )
             }
         }

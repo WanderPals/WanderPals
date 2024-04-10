@@ -3,6 +3,7 @@ package com.github.se.wanderpals.ui.screens.trip
 import DashboardTopBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,12 +21,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
-import kotlinx.coroutines.Dispatchers
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -60,31 +58,38 @@ fun Dashboard(tripId: String, dashboardViewModel: DashboardViewModel, oldNavActi
 
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
-      CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
+      CircularProgressIndicator(modifier = Modifier
+        .size(50.dp)
+        .align(Alignment.Center)
+        .testTag("loading"))
     }
   } else {
-    Scaffold(
-      topBar = {
-        Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp), contentAlignment = Alignment.Center
-        ) {
-          DashboardTopBar()
-        }
-      }
-    )
-    {
+    Scaffold{
+
       Surface(
         modifier = Modifier
           .background(Color.White)
           .padding(it)
+          .testTag("dashboardSuggestions")
       ) {
-        DashboardSuggestionWidget(
-          viewModel = dashboardViewModel,
-          onClick = { oldNavAction.navigateTo(Route.SUGGESTION) },
-          suggestion = suggestion
-        )
+        Column {
+          Box(
+            modifier = Modifier
+              .fillMaxWidth()
+              .padding(16.dp)
+              .background(Color.Transparent)
+              .testTag("dashboardTopBar"), contentAlignment = Alignment.Center
+          ) {
+            DashboardTopBar()
+          }
+
+          DashboardSuggestionWidget(
+            viewModel = dashboardViewModel,
+            onClick = { oldNavAction.navigateTo(Route.SUGGESTION) }
+          )
+        }
+
+
       }
     }
   }
