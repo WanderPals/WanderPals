@@ -62,7 +62,7 @@ class DailyActivitiesTest {
   @Test
   fun checkDailyActivitiesAreDisplayed() {
 
-    composeTestRule.setContent { DailyActivities(agendaViewModel = testViewModel) }
+    composeTestRule.setContent { DailyActivities(agendaViewModel = testViewModel, onActivityItemClick = {}) }
 
     composeTestRule.waitForIdle()
 
@@ -84,7 +84,7 @@ class DailyActivitiesTest {
         composeTestRule.setContent {
             Column {
                 testActivities.forEach { stop ->
-                    ActivityItem(stop = stop)
+                    ActivityItem(stop = stop, onActivityClick = {})
                 }
             }
         }
@@ -118,7 +118,7 @@ class DailyActivitiesTest {
   @Test
   fun checkNoActivitiesMessageIsDisplayed() {
 
-    composeTestRule.setContent { DailyActivities(agendaViewModel = testViewModel) }
+    composeTestRule.setContent { DailyActivities(agendaViewModel = testViewModel, onActivityItemClick = {}) }
 
     composeTestRule.waitForIdle()
 
