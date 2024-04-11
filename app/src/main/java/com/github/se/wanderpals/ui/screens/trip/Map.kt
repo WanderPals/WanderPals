@@ -145,9 +145,6 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
           location = CURRENT_LOCATION,
           onSuccess = { predictions ->
             Log.d("Prediction", "")
-            for (prediction in predictions) {
-              Log.d("Prediction", prediction.getFullText(null).toString())
-            }
             listOfPropositions = predictions
             expanded = true
           },
@@ -370,9 +367,13 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
               Spacer(modifier = Modifier.height(16.dp))
               val listOfDays = placeOpeningHours.removePrefix("[").removeSuffix("]").split(", ")
               listOfDays.forEach {
-                Text(
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 8.dp),
-                    text = it)
+                  if(it != "null") {
+                      Text(
+                          modifier = Modifier.align(Alignment.CenterHorizontally)
+                              .padding(bottom = 8.dp),
+                          text = it
+                      )
+                  }
               }
             }
           }
