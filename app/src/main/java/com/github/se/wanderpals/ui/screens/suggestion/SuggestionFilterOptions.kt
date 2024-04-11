@@ -14,25 +14,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SuggestionFilterOptions(onFilterSelected: (String) -> Unit) {
-  // Possible filter options
-  val filterOptions = listOf("Creation date", "Like number", "Comment number")
+fun SuggestionFilterOptions(
+    onFilterSelected: (String) -> Unit
+) {
+    // Possible filter options
+    val filterOptions = listOf("Creation date", "Like number", "Comment number")
 
-  // This will keep track of the currently selected filter
-  var selectedFilter by remember { mutableStateOf(filterOptions.first()) }
+    // This will keep track of the currently selected filter
+    var selectedFilter by remember { mutableStateOf(filterOptions.first()) }
 
-  // Call onFilterSelected whenever the filter changes
-  LaunchedEffect(selectedFilter) { onFilterSelected(selectedFilter) }
+    // Call onFilterSelected whenever the filter changes
+    LaunchedEffect(selectedFilter) {
+        onFilterSelected(selectedFilter)
+    }
 
-  // UI for filter options
-  Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-      horizontalArrangement = Arrangement.SpaceBetween) {
+    // UI for filter options
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         filterOptions.forEach { filter ->
-          SuggestionFilterButton(
-              text = filter,
-              isSelected = selectedFilter == filter,
-              onSelect = { selectedFilter = filter })
+            SuggestionFilterButton(
+                text = filter,
+                isSelected = selectedFilter == filter,
+                onSelect = { selectedFilter = filter }
+            )
         }
-      }
+    }
 }

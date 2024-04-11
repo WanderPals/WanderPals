@@ -43,38 +43,37 @@ import java.time.format.DateTimeFormatter
  * Composable function that represents a single suggestion item in the suggestion feed.
  *
  * @param suggestion The suggestion object to be displayed.
- * @param navigationActions The navigation actions used for navigating to detailed suggestion view.
  * @param modifier The modifier to be applied to the suggestion item.
  */
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun SuggestionItem(
     suggestion: Suggestion,
-    navigationActions: NavigationActions,
     onClick: () -> Unit, // this callback is for the suggestion item click
     tripId: String, // the trip id of the suggestion
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
 
-  // Collect the set of liked suggestion IDs and check if the current suggestion is liked
-  val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
 
-  // State for the like status of the suggestion
-  val isLiked = likedSuggestions.contains(suggestion.suggestionId)
+    // Collect the set of liked suggestion IDs and check if the current suggestion is liked
+    val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
 
-  // State for the like count, which depends on the `userLikes` size
-  // Calculate the like count dynamically based on whether the suggestion is liked
-  val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed
-                                     // whenever likedSuggestions changes.
-    if (isLiked) {
-      // If the suggestion is liked, add one to the count of userLikes
-      suggestion.userLikes.size + 1
-    } else {
-      // Otherwise, take the original count
-      suggestion.userLikes.size
+    // State for the like status of the suggestion
+    val isLiked = viewModel.getIsLiked()
+
+    // State for the like count, which depends on the `userLikes` size
+    // Calculate the like count dynamically based on whether the suggestion is liked
+    val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed whenever likedSuggestions changes.
+        if (isLiked) {
+            // If the suggestion is liked, add one to the count of userLikes
+            suggestion.userLikes.size + 1
+        } else {
+            // Otherwise, take the original count
+            suggestion.userLikes.size
+        }
     }
-  }
+
 
   // Define card colors with a white background
   val cardColors =
