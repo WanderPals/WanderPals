@@ -38,7 +38,7 @@ open class AgendaViewModel(
   private val _dailyActivities = MutableStateFlow<List<Stop>>(emptyList())
 
   /** Exposed read-only state flow of the daily activities. */
-  val dailyActivities: StateFlow<List<Stop>> = _dailyActivities.asStateFlow()
+  open var dailyActivities: StateFlow<List<Stop>> = _dailyActivities.asStateFlow()
 
   open var selectedDate: LocalDate? = LocalDate.now()
 

@@ -13,23 +13,20 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.screens.trip.agenda.ActivityItem
 import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.YearMonth
 
 @RunWith(AndroidJUnit4::class)
 class DailyActivitiesTest {
 
-  private val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
   private val testActivities =
       listOf(
@@ -63,6 +60,8 @@ class DailyActivitiesTest {
               0.0,
               "Description 3",
               GeoCords(0.0, 0.0)))
+    private val testViewModel = FakeAgendaViewModel(YearMonth.now(), testActivities)
+    private val emptyTestViewModel = FakeAgendaViewModel(YearMonth.now(), emptyList())
 
   @get:Rule val composeTestRule = createComposeRule()
 
@@ -74,8 +73,6 @@ class DailyActivitiesTest {
     }
 
     composeTestRule.waitForIdle()
-
-    testViewModel._dailyActivities.value = testActivities
 
     composeTestRule.waitForIdle()
 
@@ -125,7 +122,7 @@ class DailyActivitiesTest {
   fun checkNoActivitiesMessageIsDisplayed() {
 
     composeTestRule.setContent {
-      DailyActivities(agendaViewModel = testViewModel, onActivityItemClick = {})
+      DailyActivities(agendaViewModel = emptyTestViewModel, onActivityItemClick = {})
     }
 
     composeTestRule.waitForIdle()
