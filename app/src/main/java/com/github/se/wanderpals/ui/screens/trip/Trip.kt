@@ -56,7 +56,8 @@ fun Trip(
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
           composable(Route.DASHBOARD) {
             BackHandler(true) {}
-            Dashboard(tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions, navActions)
+            Dashboard(
+                tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions, navActions)
           }
           composable(Route.AGENDA) {
             BackHandler(true) {}
