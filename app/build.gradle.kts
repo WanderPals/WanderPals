@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.Packaging
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -26,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId = "com.github.se.wanderpals"
-        minSdk = 34
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
