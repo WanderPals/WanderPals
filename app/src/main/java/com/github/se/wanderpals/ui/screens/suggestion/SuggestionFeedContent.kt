@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -211,6 +212,7 @@ fun SuggestionFeedContent(
         }
     }
 
+
     Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
 
         // Title for the list of suggestions
@@ -242,13 +244,24 @@ fun SuggestionFeedContent(
 
         // When a suggestion is selected, display the popup
         selectedSuggestion?.let { suggestion ->
-            SuggestionDetailPopup(suggestion = suggestion, comments = suggestion.comments) {
-                // When the popup is dismissed
-                selectedSuggestion = null
-            }
+            val isLiked = suggestionRepository.likedSuggestions.collectAsState().value.contains(suggestion.suggestionId)
+            val likesCount = suggestion.userLikes.size + if (isLiked) 1 else 0
+
+            SuggestionDetailPopup(
+                suggestion = suggestion,
+                comments = suggestion.comments,
+                isLiked = isLiked, // pass the current like status for the suggestion
+                likesCount = likesCount, // pass the current number of likes for the suggestion
+                onDismiss = { selectedSuggestion = null }, // When the popup is dismissed
+                onLikeClicked = {
+                    // Call toggleLikeSuggestion from the ViewModel
+                    suggestionRepository.toggleLikeSuggestion(tripId, suggestion)
+                }
+            )
         }
 
-            // If suggestion list is empty, display a message
+
+        // If suggestion list is empty, display a message
             if (_suggestionList.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Text(

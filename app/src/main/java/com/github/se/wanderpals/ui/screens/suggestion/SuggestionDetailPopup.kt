@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Divider
@@ -37,7 +39,10 @@ import java.time.format.DateTimeFormatter
 fun SuggestionDetailPopup(
     suggestion: Suggestion,
     comments: List<Comment>, // Assuming you have a list of comments
-    onDismiss: () -> Unit
+    isLiked: Boolean, // a boolean to track if the user has liked the suggestion
+    likesCount: Int, // the number of likes for the suggestion
+    onDismiss: () -> Unit, // Callback to dismiss the dialog
+    onLikeClicked: () -> Unit // Callback to handle like button click
 ) {
   Dialog(onDismissRequest = onDismiss) { //todo: (after M1) uncomment dialog and create onclick function to go from suggestionItem to the page SuggestionDetailPopup
     // The semi-transparent overlay will be provided by the Dialog itself
@@ -77,23 +82,23 @@ fun SuggestionDetailPopup(
                             contentDescription = "Comments",
                             modifier = Modifier.size(18.dp).testTag("suggestionPopupCommentsIcon"))
                         Text(text = "${suggestion.comments.size}")
+
                         Spacer(modifier = Modifier.width(4.dp))
+
                         Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
+                            imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Likes",
-                            modifier = Modifier.size(18.dp).testTag("suggestionPopupLikesIcon"))
+                            modifier = Modifier
+                                .size(18.dp)
+                                .clickable(onClick = onLikeClicked) // make the icon clickable
+                                .testTag("suggestionPopupLikesIcon"))
                         Text(
-                            text = "${suggestion.userLikes.size}",
+                            text = "$likesCount",
                             modifier = Modifier.padding(end = 8.dp))
                       }
                     }
 
                 // Username and creation date
-                /*Text(
-                    text = "${suggestion.userName}, on ${suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}",
-                    style = MaterialTheme.typography.bodyMedium
-                )*/
-
                 Row {
                   Text(
                       text = suggestion.userName,
@@ -229,7 +234,3 @@ fun SuggestionDetailPopup(
   }
 }
 
-/*
-After the Description: Display the date, the startTime, using the duration to compute and display the endDate and endTime.
-After the comments: display the address and the website if there are.
- */

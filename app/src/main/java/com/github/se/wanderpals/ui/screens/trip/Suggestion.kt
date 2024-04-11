@@ -41,7 +41,7 @@ fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String, suggestions
               searchSuggestionText = newSearchSuggestionText
             })
       },
-      bottomBar = {
+      bottomBar = { //todo: link to William's CreateSuggestion screen
         SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
       }) { innerPadding ->
         //    NavHost(navController, startDestination = Route.DASHBOARD,
