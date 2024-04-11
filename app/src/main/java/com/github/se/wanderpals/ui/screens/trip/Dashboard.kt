@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -57,24 +59,33 @@ fun Dashboard(
     dashboardViewModel: DashboardViewModel,
     oldNavAction: NavigationActions
 ) {
+    Text(modifier = Modifier.testTag("dashboardScreen"), text = " ")
+
   val isLoading by dashboardViewModel.isLoading.collectAsState()
 
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
       CircularProgressIndicator(
-          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+          modifier = Modifier
+              .size(50.dp)
+              .align(Alignment.Center)
+              .testTag("loading"))
     }
   } else {
     Scaffold {
       Surface(
-          modifier = Modifier.background(Color.White).padding(it).testTag("dashboardSuggestions")) {
+          modifier = Modifier
+              .background(Color.White)
+              .padding(it)
+              .testTag("dashboardSuggestions")) {
             Column {
               Box(
                   modifier =
-                      Modifier.fillMaxWidth()
-                          .padding(16.dp)
-                          .background(Color.Transparent)
-                          .testTag("dashboardTopBar"),
+                  Modifier
+                      .fillMaxWidth()
+                      .padding(16.dp)
+                      .background(Color.Transparent)
+                      .testTag("dashboardTopBar"),
                   contentAlignment = Alignment.Center) {
                     DashboardTopBar()
                   }
