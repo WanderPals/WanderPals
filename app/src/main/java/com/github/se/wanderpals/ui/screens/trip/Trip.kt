@@ -58,7 +58,7 @@ fun Trip(
           }
           composable(Route.AGENDA) {
             BackHandler(true) {}
-            Agenda(AgendaViewModel(tripId))
+            Agenda(AgendaViewModel(tripId, tripsRepository)
           }
           composable(Route.SUGGESTION) {
             BackHandler(true) {}
