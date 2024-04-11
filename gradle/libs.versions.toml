@@ -1,6 +1,7 @@
 [versions]
-agp = "8.3.1"
+agp = "8.3.2"
 coreKtxVersion = "1.8.1"
+firebaseAuth = "22.3.1"
 firebaseDatabaseKtx = "20.3.0"
 firebaseFirestore = "24.10.0"
 kotlin = "1.8.10"
@@ -28,12 +29,14 @@ googleServices = "4.4.0"
 navigationCompose = "2.7.7"
 playServicesAuth = "21.0.0"
 navigationRuntimeKtx = "2.7.7"
+places = "3.4.0"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoCore" }
 core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
+firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -69,6 +72,7 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
+places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
