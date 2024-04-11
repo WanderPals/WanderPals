@@ -132,7 +132,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
 
             // Icon Button at the far right, centered vertically
             IconButton(
-                onClick = { /* Handle button click */},
+                onClick = { /*TODO : implement this in the future*/},
                 modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
                         .align(
