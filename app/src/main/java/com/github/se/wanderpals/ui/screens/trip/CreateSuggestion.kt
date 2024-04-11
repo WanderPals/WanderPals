@@ -34,7 +34,6 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
-import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
 import java.time.Duration
@@ -53,8 +52,11 @@ import java.time.format.DateTimeFormatter
  * @param website default value for the website entry (can be empty)
  * @param title default value for the title entry (can be empty)
  * @param budget default value for the budget entry (can be empty)
- * @param onSuccess additional code to execute after the successful creation of the suggestion
- * @param onFailure code to execute if the creation of the suggestion fails
+ * @param geoCords default value for the geoCords entry (can be empty)
+ * @param onSuccess additional code to execute after the successful creation of the suggestion (can
+ *   be empty)
+ * @param onFailure code to execute if the creation of the suggestion fails (can be empty)
+ * @param onCancel code to execute if the user cancels the creation of the suggestion (can be empty)
  */
 @Composable
 fun CreateSuggestion(
@@ -325,49 +327,6 @@ fun CreateSuggestion(
               }
         }
   }
-}
-
-/**
- * CreateSuggestion composable responsible for adding a suggestion to a trip
- *
- * @param tripId the id of the trip
- * @param viewModel a CreateSuggestionViewModel that needs to be initialized beforehand
- * @param nav NavigationActions to navigate back to Suggestion the suggestion is successfully
- *   created
- * @param desc default value for the description entry (can be empty)
- * @param addr default value for the address entry (can be empty)
- * @param website default value for the website entry (can be empty)
- * @param title default value for the title entry (can be empty)
- * @param budget default value for the budget entry (can be empty)
- * @param onSuccess additional code to execute after the successful creation of the suggestion (can
- *   be empty)
- * @param onFailure code to execute if the creation of the suggestion fails (can be empty)
- */
-@Composable
-fun CreateSuggestionScreen(
-    tripId: String,
-    viewModel: CreateSuggestionViewModel,
-    nav: NavigationActions,
-    desc: String = "",
-    addr: String = "",
-    website: String = "",
-    title: String = "",
-    budget: Double = Double.NaN,
-    onSuccess: () -> Unit = {},
-    onFailure: () -> Unit = {},
-    onCancel: () -> Unit = {}
-) {
-  CreateSuggestion(
-      tripId = tripId,
-      viewModel = viewModel,
-      desc,
-      addr,
-      website,
-      title,
-      budget = budget,
-      onSuccess = { onSuccess() },
-      onFailure = { onFailure() },
-      onCancel = { onCancel() })
 }
 
 /** needs to be discussed in meeting if shared with rest of project */

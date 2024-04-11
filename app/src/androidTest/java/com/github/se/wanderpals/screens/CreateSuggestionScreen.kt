@@ -4,8 +4,8 @@ import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.github.kakaocup.compose.node.element.KNode
 
-class CreateSuggestionScreenTest(semanticsProvider: SemanticsNodeInteractionsProvider) :
-    ComposeScreen<CreateSuggestionScreenTest>(
+class CreateSuggestionScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
+    ComposeScreen<CreateSuggestionScreen>(
         semanticsProvider = semanticsProvider,
         viewBuilderAction = { hasTestTag("createSuggestionScreen") }) {
 
