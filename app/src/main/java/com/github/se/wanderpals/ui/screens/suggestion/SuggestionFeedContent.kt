@@ -41,15 +41,13 @@ import java.time.LocalTime
  * selected.
  *
  * @param innerPadding The padding values for the content.
- * @param navigationActions The navigation actions used for navigating to a detailed suggestion
- *   view.
  * @param suggestionList The list of suggestions of a trip to be displayed.
  * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  */
 @Composable
 fun SuggestionFeedContent(
     innerPadding: PaddingValues,
-    suggestionList: List<Suggestion>, // <-todo: will be real data (wait for William) so will replace all _suggestionList by suggestionList
+    suggestionList: List<Suggestion>,
     searchSuggestionText: String,
     tripId: String,
     suggestionRepository: SuggestionsViewModel

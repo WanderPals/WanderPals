@@ -7,6 +7,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.screens.SuggestionPopupScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetailPopup
@@ -17,6 +18,8 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen.Companion.onComposeScreen
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Before
@@ -38,51 +41,8 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
         // Initialize the mock NavigationActions
         mockNavActions = mockk(relaxed = true)
 
-        // Setup dummy data for testing:
+        // Initialize the suggestion list with dummy data
 
-        //        val tripId = "dummyTripId"
-
-        val stop1 =
-            Stop(
-                stopId = "OSK001",
-                title = "Osaka Castle",
-                address = "1-1 Osakajo, Chuo Ward, Osaka, 540-0002, Japan",
-                date = LocalDate.of(2024, 4, 10),
-                startTime = LocalTime.of(9, 0),
-                duration = 120,
-                budget = 600.0,
-                description = "Osaka Castle is one of Japan's most famous landmarks...",
-                geoCords = GeoCords(latitude = 34.687315, longitude = 135.526201),
-                website = "https://www.osakacastle.net/",
-                imageUrl = "")
-        val stop2 =
-            Stop(
-                stopId = "OSK002",
-                title = "Dotonbori",
-                address = "Dotonbori, Chuo Ward, Osaka, 542-0071, Japan",
-                date = LocalDate.of(2024, 4, 10),
-                startTime = LocalTime.of(18, 0), // Best experienced in the evening
-                duration = 180, // Approximately 3 hours
-                budget = 3000.0, // Food, shopping, and other activities
-                description =
-                "Dotonbori is Osaka's most famous tourist destination, known for its bright neon lights, extravagant signage, and abundant dining options.",
-                geoCords = GeoCords(latitude = 34.668723, longitude = 135.501295),
-                website = "",
-                imageUrl = "")
-        val stop3 =
-            Stop(
-                stopId = "OSK003",
-                title = "Umeda Sky Building",
-                address = "",
-                date = LocalDate.of(2024, 4, 11),
-                startTime = LocalTime.of(10, 30), // Opens at 10:30 AM
-                duration = 90, // 1.5 hours visit
-                budget = 1500.0, // Entrance fee and other possible expenses
-                description =
-                "The Umeda Sky Building is a spectacular high rise building in the Kita district of Osaka, featuring a futuristic observatory, the Floating Garden.",
-                geoCords = GeoCords(latitude = 34.705938, longitude = 135.490357),
-                website = "http://www.kuchu-teien.com/",
-                imageUrl = "")
         val stop4 =
             Stop(
                 stopId = "OSK004",
@@ -98,8 +58,7 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
                 website = "",
                 imageUrl = "")
 
-        val comment1 =
-            Comment("commentId1", "usercmtId1", "userNamecmt1", "Great idea!", LocalDate.now())
+        val comment1 = Comment("commentId1", "usercmtId1", "userNamecmt1", "Great idea!", LocalDate.now())
         val comment2 =
             Comment(
                 "commentId2",
@@ -115,50 +74,92 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
                 "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now())
 
         // Example list of comments
-        this.commentList = listOf(comment1, comment2, comment3, comment4)
+        val dummyCommentList2 = listOf(comment1, comment2)
+        val dummyCommentList3 = listOf(comment1, comment2, comment3)
+        val dummyCommentList4 = listOf(comment1, comment2, comment3, comment4)
 
-        //    /*
-        // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
-        this.suggestionList =
-            listOf(
-                Suggestion(
-                    "suggestionId1",
-                    "userId1",
-                    "userName1",
-                    "Let us go here!",
-                    LocalDate.of(2024, 1, 1),
-                    stop1,
-                    commentList,
-                    emptyList()),
-                Suggestion(
-                    "suggestionId2",
-                    "userId2",
-                    "userName2",
-                    "I love this place",
-                    LocalDate.of(2024, 2, 2),
-                    stop2,
-                    emptyList(),
-                    emptyList()),
-                Suggestion(
-                    "suggestionId3",
-                    "userId3",
-                    "userName3",
-                    "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
-                            "Trying to convince you to go here with me. coz I know you will love it!",
-                    LocalDate.of(2024, 3, 29),
-                    stop3,
-                    commentList,
-                    emptyList()),
-                Suggestion(
-                    "suggestionId4",
-                    "userId4",
-                    "userName4",
-                    "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
-                            "Trying to convince you to go here with me. coz I know you will love it!",
-                    LocalDate.of(2024, 3, 29),
-                    stop4,
-                    commentList,
-                    emptyList()))
+        val userLikes1 = listOf("ulId1", "ulId2")
+        val userLikes3 = listOf("ulId1", "ulId2", "ulId3", "ulId5", "ulId6")
+        val userLikes4 = listOf("ulId1", "ulId2", "ulId3", "ulId4")
+
+        commentList = listOf(comment1, comment2, comment3, comment4)
+
+        suggestionList = listOf(
+            Suggestion(
+                suggestionId = "sugg1",
+                userId = "user1",
+                userName = "userOne",
+                text = "First suggestion",
+                createdAt = LocalDate.now(),
+                stop = Stop(
+                    stopId = "stop1",
+                    title = "First Stop",
+                    address = "123 First Street",
+                    date = LocalDate.of(2024, 4, 16),
+                    startTime = LocalTime.of(12, 0),
+                    budget = 20.0,
+                    duration = 60,
+                    description = "Description for first stop",
+                    geoCords = GeoCords(37.7749, -122.4194),
+                    website = "http://firststop.example.com"
+                ),
+                emptyList(),
+                userLikes1
+
+            ),
+            Suggestion(
+                suggestionId = "sugg2",
+                userId = "user2",
+                userName = "userTwo",
+                text = "Second suggestion",
+                createdAt = LocalDate.now(),
+                stop = Stop(
+                    stopId = "stop2",
+                    title = "Second Stop",
+                    address = "456 Second Avenue",
+                    date = LocalDate.of(2024, 4, 17),
+                    startTime = LocalTime.of(14, 30),
+                    budget = 50.0,
+                    duration = 90,
+                    description = "Description for second stop",
+                    geoCords = GeoCords(40.7128, -74.0060),
+                    website = "http://secondstop.example.com"
+                ),
+                dummyCommentList2,
+                emptyList()
+            ),
+            Suggestion(
+                suggestionId = "sugg3",
+                userId = "user3",
+                userName = "userThree",
+                text = "Third suggestion",
+                createdAt = LocalDate.now(),
+                stop = Stop(
+                    stopId = "stop3",
+                    title = "Third Stop",
+                    address = "789 Third Boulevard",
+                    date = LocalDate.of(2024, 4, 18),
+                    startTime = LocalTime.of(10, 0),
+                    budget = 30.0,
+                    duration = 120,
+                    description = "Description for third stop",
+                    geoCords = GeoCords(34.0522, -118.2437),
+                    website = "http://thirdstop.example.com"
+                ),
+                dummyCommentList3,
+                userLikes3
+            ),
+            Suggestion(
+                "suggestionId4",
+                "userId4",
+                "userName4",
+                "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
+                        "Trying to convince you to go here with me. coz I know you will love it!",
+                LocalDate.of(2024, 9, 29),
+                stop4,
+                dummyCommentList4,
+                userLikes4)
+        )
     }
 
     /**
@@ -168,7 +169,11 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     @Test
     fun suggestionDetailPopup_displaysCommentsCorrectly_whenCommentsArePresent() {
         composeTestRule.setContent {
-            SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList, onDismiss = {})
+            SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList,
+                isLiked = false,
+                likesCount = 0,
+                onDismiss = {},
+                onLikeClicked = {})
         }
 
         onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
@@ -204,7 +209,11 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     @Test
     fun suggestionDetailPopup_displaysCorrectly_whenCommentsAreNotPresent() {
         composeTestRule.setContent {
-            SuggestionDetailPopup(suggestion = suggestionList[1], comments = emptyList(), onDismiss = {})
+            SuggestionDetailPopup(suggestion = suggestionList[1], comments = emptyList(),
+                isLiked = false,
+                likesCount = 0,
+                onDismiss = {},
+                onLikeClicked = {})
         }
 
         onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
@@ -232,7 +241,11 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     @Test
     fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteArePresent() {
         composeTestRule.setContent {
-            SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList, onDismiss = {})
+            SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList,
+                isLiked = false,
+                likesCount = 0,
+                onDismiss = {},
+                onLikeClicked = {})
         }
 
         onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
@@ -249,7 +262,11 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     @Test
     fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteAreAbsent() {
         composeTestRule.setContent {
-            SuggestionDetailPopup(suggestion = suggestionList[3], comments = commentList, onDismiss = {})
+            SuggestionDetailPopup(suggestion = suggestionList[3], comments = commentList,
+                isLiked = false,
+                likesCount = 0,
+                onDismiss = {},
+                onLikeClicked = {})
         }
 
         onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
@@ -271,9 +288,10 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
         composeTestRule.setContent {
             SuggestionFeedContent(
                 innerPadding = PaddingValues(),
-                navigationActions = mockNavActions,
                 suggestionList = suggestionList,
-                searchSuggestionText = "")
+                searchSuggestionText = "",
+                tripId = "dummyTestTripId",
+                suggestionRepository = FakeSuggestionsViewModel())
         }
 
         // Simulate a click on the first SuggestionItem for testing purpose
