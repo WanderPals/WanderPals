@@ -9,7 +9,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -17,42 +16,44 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 
-/** The Suggestion screen.
+/**
+ * The Suggestion screen.
  *
- * @param oldNavActions The navigation actions of the button that was clicked to navigate to the screen.
- * */
+ * @param oldNavActions The navigation actions of the button that was clicked to navigate to the
+ *   screen.
+ */
 @Composable
-fun Suggestion(oldNavActions: NavigationActions, tripId: String, suggestionsViewModel: SuggestionsViewModel) {
+fun Suggestion(
+    oldNavActions: NavigationActions,
+    tripId: String,
+    suggestionsViewModel: SuggestionsViewModel
+) {
 
     // get the suggestion list from the firebase database
-     val suggestionList by suggestionsViewModel.state.collectAsState()
+    val suggestionList by suggestionsViewModel.state.collectAsState()
 
     // State for managing search suggestion text (the filter)
-     var searchSuggestionText by remember { mutableStateOf("") }
+    var searchSuggestionText by remember { mutableStateOf("") }
 
-  Scaffold(
-      modifier = Modifier.testTag("suggestionFeedScreen"),
-      topBar = {
-        // Top bar with search functionality based on the title of the trips
-        SuggestionTopBar(
-            searchSuggestionText = searchSuggestionText,
-            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-              searchSuggestionText = newSearchSuggestionText
-            })
-      },
-      bottomBar = {
-        SuggestionBottomBar(
-        onSuggestionClick = {
-            oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
-
-
-        })
-      }) { innerPadding ->
+    Scaffold(
+        modifier = Modifier.testTag("suggestionFeedScreen"),
+        topBar = {
+            // Top bar with search functionality based on the title of the trips
+            SuggestionTopBar(
+                searchSuggestionText = searchSuggestionText,
+                onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+                    searchSuggestionText = newSearchSuggestionText
+                })
+        },
+        bottomBar = {
+            SuggestionBottomBar(
+                onSuggestionClick = { oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId") })
+        }) { innerPadding ->
         SuggestionFeedContent(
             innerPadding = innerPadding,
             suggestionList = suggestionList,
             searchSuggestionText = searchSuggestionText,
             tripId = tripId,
             suggestionRepository = suggestionsViewModel)
-      }
+    }
 }

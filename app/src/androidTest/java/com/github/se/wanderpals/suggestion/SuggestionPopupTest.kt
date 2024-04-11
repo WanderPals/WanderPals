@@ -7,7 +7,6 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.screens.SuggestionPopupScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetailPopup
@@ -18,8 +17,6 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen.Companion.onComposeScreen
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.time.LocalTime
 import org.junit.Before
@@ -170,8 +167,7 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     fun suggestionDetailPopup_displaysCommentsCorrectly_whenCommentsArePresent() {
         composeTestRule.setContent {
             SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList,
-                isLiked = false,
-                likesCount = 0,
+                viewModel = FakeSuggestionsViewModel(),
                 onDismiss = {},
                 onLikeClicked = {})
         }
@@ -210,8 +206,7 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     fun suggestionDetailPopup_displaysCorrectly_whenCommentsAreNotPresent() {
         composeTestRule.setContent {
             SuggestionDetailPopup(suggestion = suggestionList[1], comments = emptyList(),
-                isLiked = false,
-                likesCount = 0,
+                viewModel = FakeSuggestionsViewModel(),
                 onDismiss = {},
                 onLikeClicked = {})
         }
@@ -242,8 +237,7 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteArePresent() {
         composeTestRule.setContent {
             SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList,
-                isLiked = false,
-                likesCount = 0,
+                viewModel = FakeSuggestionsViewModel(),
                 onDismiss = {},
                 onLikeClicked = {})
         }
@@ -263,8 +257,7 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteAreAbsent() {
         composeTestRule.setContent {
             SuggestionDetailPopup(suggestion = suggestionList[3], comments = commentList,
-                isLiked = false,
-                likesCount = 0,
+                viewModel = FakeSuggestionsViewModel(),
                 onDismiss = {},
                 onLikeClicked = {})
         }
