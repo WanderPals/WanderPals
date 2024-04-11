@@ -26,13 +26,14 @@ fun DashboardSuggestion(suggestion: Suggestion) {
           Row(
               modifier = Modifier.fillMaxWidth(),
               horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(text = suggestion.stop.title, modifier = Modifier.testTag("stopTitle"))
+                Text(
+                    text = suggestion.stop.title,
+                    modifier = Modifier.testTag("stopTitle").weight(65f))
                 Text(
                     text =
-                        "Created at : " +
-                            suggestion.createdAt.format(
-                                DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),
-                    modifier = Modifier.testTag("createdAt"))
+                        suggestion.createdAt.format(
+                            DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)),
+                    modifier = Modifier.testTag("createdAt").weight(35f))
               }
           Row(
               modifier = Modifier.fillMaxWidth(),

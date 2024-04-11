@@ -35,38 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.github.se.wanderpals.model.data.GeoCords
-import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
-import java.time.LocalDate
-import java.time.LocalTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
-val stop =
-    Stop(
-        stopId = "1",
-        title = "Stop Title",
-        address = "123 Street",
-        date = LocalDate.now(),
-        startTime = LocalTime.now(),
-        duration = 60,
-        budget = 100.0,
-        description = "This is a description of the stop. It should be brief and informative.",
-        geoCords = GeoCords(0.0, 0.0),
-        website = "https://example.com",
-        imageUrl = "")
-val suggestion =
-    com.github.se.wanderpals.model.data.Suggestion(
-        suggestionId = "1",
-        userName = "User",
-        createdAt = LocalDate.now(),
-        stop = stop,
-        text = "This is a suggestion for a stop.",
-        userId = "1")
 
 /**
  * The Dashboard screen.
