@@ -45,14 +45,12 @@ import java.time.format.DateTimeFormatter
  * Composable function that represents a single suggestion item in the suggestion feed.
  *
  * @param suggestion The suggestion object to be displayed.
- * @param navigationActions The navigation actions used for navigating to detailed suggestion view.
  * @param modifier The modifier to be applied to the suggestion item.
  */
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun SuggestionItem(
     suggestion: Suggestion,
-    navigationActions: NavigationActions,
     onClick: () -> Unit, // this callback is for the suggestion item click
     tripId: String, //the trip id of the suggestion
     viewModel: SuggestionsViewModel,
@@ -64,7 +62,7 @@ fun SuggestionItem(
     val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
 
     // State for the like status of the suggestion
-    val isLiked = likedSuggestions.contains(suggestion.suggestionId)
+    val isLiked = viewModel.getIsLiked()
 
     // State for the like count, which depends on the `userLikes` size
     // Calculate the like count dynamically based on whether the suggestion is liked

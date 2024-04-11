@@ -17,19 +17,18 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 
-/** The Suggestion screen. */
+/** The Suggestion screen.
+ *
+ * @param oldNavActions The navigation actions of the button that was clicked to navigate to the screen.
+ * */
 @Composable
-fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String, suggestionsViewModel: SuggestionsViewModel) {
-  val navController = rememberNavController()
-  val navActions = NavigationActions(navController)
+fun Suggestion(oldNavActions: NavigationActions, tripId: String, suggestionsViewModel: SuggestionsViewModel) {
 
-//    val suggestionRepository: TripsRepository = TripsRepository()
-//    val suggestionsViewModel = SuggestionsViewModel(suggestionRepository, tripId)
+    // get the suggestion list from the firebase database
+     val suggestionList by suggestionsViewModel.state.collectAsState()
 
-  val suggestionList by suggestionsViewModel.state.collectAsState() // todo: use dummy data for now for testing functionality of the front end of the SuggestionFeedScreen
-
-  // State for managing search suggestion text (the filter)
-  var searchSuggestionText by remember { mutableStateOf("") }
+    // State for managing search suggestion text (the filter)
+     var searchSuggestionText by remember { mutableStateOf("") }
 
   Scaffold(
       modifier = Modifier.testTag("suggestionFeedScreen"),
@@ -41,14 +40,16 @@ fun Suggestion(/*oldNavActions: NavigationActions,*/ tripId: String, suggestions
               searchSuggestionText = newSearchSuggestionText
             })
       },
-      bottomBar = { //todo: link to William's CreateSuggestion screen
-        SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
+      bottomBar = {
+        SuggestionBottomBar(
+        onSuggestionClick = {
+            oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
+
+
+        })
       }) { innerPadding ->
-        //    NavHost(navController, startDestination = Route.DASHBOARD,
-        // Modifier.padding(innerPadding))
         SuggestionFeedContent(
             innerPadding = innerPadding,
-            navigationActions = navActions,
             suggestionList = suggestionList,
             searchSuggestionText = searchSuggestionText,
             tripId = tripId,

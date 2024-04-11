@@ -7,6 +7,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.screens.SuggestionFeedScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
@@ -23,6 +24,24 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
+class FakeSuggestionsViewModel : SuggestionsViewModel(null, "") {
+
+    private val _state: MutableStateFlow<List<Suggestion>> = MutableStateFlow(listOf())
+    // Override the state with dummy data for testing
+    override val state: StateFlow<List<Suggestion>> = MutableStateFlow(listOf(/* Insert your dummy suggestions here */))
+
+    // Override isLoading to control loading state in tests
+    override val isLoading: StateFlow<Boolean> = MutableStateFlow(false)
+
+    // Provide fake implementations for any actions you'll be testing
+    // For example, if you're testing like functionality:
+    override fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
+        // Update _likedSuggestions or _state here as needed for your test
+    }
+}
 
 @RunWith(AndroidJUnit4::class)
 class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
@@ -139,12 +158,8 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun suggestionFeedScreen_showsSuggestions_whenListIsNotEmpty() {
     composeTestRule.setContent {
-      // Mock NavigationActions or use a dummy implementation for testing
-      //            val navigationActions = NavigationActions(/* pass necessary arguments or mocks
-      // */)
       SuggestionFeedContent(
           innerPadding = PaddingValues(),
-          navigationActions = mockNavActions,
           suggestionList = suggestionList,
           searchSuggestionText = "")
     }
@@ -163,7 +178,6 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
     composeTestRule.setContent {
       SuggestionFeedContent(
           innerPadding = PaddingValues(),
-          navigationActions = mockNavActions,
           suggestionList = emptyList(),
           searchSuggestionText = "")
     }

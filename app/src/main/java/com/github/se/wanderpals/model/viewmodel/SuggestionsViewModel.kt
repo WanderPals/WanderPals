@@ -4,14 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
 open class SuggestionsViewModel(private val suggestionRepository: TripsRepository?, tripId: String) :
   ViewModel() {
+
+
+  val currentLoggedInUId = suggestionRepository?.uid!! // Get the current logged-in user's ID from the repository instance
+
   // State flow to hold the list of suggestions
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   open val state: StateFlow<List<Suggestion>> = _state
@@ -20,13 +26,22 @@ open class SuggestionsViewModel(private val suggestionRepository: TripsRepositor
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
   // the like status of each suggestion to be held to prevent repeated network calls for the same item:
-  private val _likedSuggestions = MutableStateFlow<Set<String>>(emptySet())
-  val likedSuggestions: StateFlow<Set<String>> = _likedSuggestions.asStateFlow()
+  private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
+  val likedSuggestions: StateFlow<List<String>> = _likedSuggestions.asStateFlow()
+
+  // Check if the suggestion is already liked by the user
+  private var isLiked : Boolean = false
+
 
   init {
     // Fetch all trips when the ViewModel is initialized
     loadSuggestion(tripId)
   }
+
+  open fun getIsLiked(): Boolean {
+    return _likedSuggestions.value.contains(currentLoggedInUId)
+  }
+
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {
@@ -34,6 +49,8 @@ open class SuggestionsViewModel(private val suggestionRepository: TripsRepositor
       _isLoading.value = true
       // Fetch all trips from the repository
       _state.value = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
+      _likedSuggestions.value = _state.value.map { it.userLikes }.flatten()
+      isLiked = _likedSuggestions.value.contains(currentLoggedInUId)
       _isLoading.value = false
     }
   }
@@ -44,11 +61,9 @@ open class SuggestionsViewModel(private val suggestionRepository: TripsRepositor
    * namely the MockSuggestionsViewModel class when testing.
    * */
   open fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
-    val currentLoggedInUId = suggestionRepository?.uid!! // Get the current logged-in user's ID from the repository instance
+    _likedSuggestions.value += suggestion.userLikes // Add the user's ID to the list of liked suggestions
     val currentlyLiked = _likedSuggestions.value
 
-    // Check if the suggestion is already liked by the user
-    val isLiked = currentlyLiked.contains(suggestion.suggestionId) // isLiked means the suggestion is already liked
 
     // Toggle the like status in the local state
     _likedSuggestions.value = if (isLiked) {
@@ -72,7 +87,7 @@ open class SuggestionsViewModel(private val suggestionRepository: TripsRepositor
     viewModelScope.launch {
       // Call the repository function to update the suggestion
       val wasUpdateSuccessful =
-        suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+        suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
       if (wasUpdateSuccessful) { // If the backend update is successful,
         // Update the local state with the modified suggestion
         _state.value = _state.value.map { if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it }
@@ -92,4 +107,6 @@ open class SuggestionsViewModel(private val suggestionRepository: TripsRepositor
       }
     }
   }
+
+
 }

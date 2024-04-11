@@ -87,7 +87,7 @@ fun SuggestionDetailPopup(
 
                         Icon(
                             imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Likes",
+                            contentDescription = "Like",
                             modifier = Modifier
                                 .size(18.dp)
                                 .clickable(onClick = onLikeClicked) // make the icon clickable

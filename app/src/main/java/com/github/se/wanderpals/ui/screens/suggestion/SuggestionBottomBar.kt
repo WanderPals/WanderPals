@@ -25,14 +25,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 
 @Composable
-fun SuggestionBottomBar(onSuggestionClick: () -> Unit) {
+fun SuggestionBottomBar(/*tripId: String, navActions: NavigationActions, */onSuggestionClick: () -> Unit = {}) {
   Column(Modifier.padding(30.dp)) {
 
     // Button to create a suggestion
     Box(Modifier.fillMaxWidth()) {
       Button(
+//          onClick = {
+//              navActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
+//          },
+
+
           onClick = { onSuggestionClick() },
           modifier =
               Modifier.padding(bottom = 20.dp)

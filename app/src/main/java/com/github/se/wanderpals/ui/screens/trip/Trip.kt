@@ -41,7 +41,7 @@ fun Trip(oldNavActions: NavigationActions, tripId: String, tripsRepository: Trip
           composable(Route.DASHBOARD) { Dashboard(tripId) }
           composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
           composable(Route.SUGGESTION) {
-            Suggestion(tripId, SuggestionsViewModel(tripsRepository, tripId))
+            Suggestion(oldNavActions, tripId, SuggestionsViewModel(tripsRepository, tripId))
           } // todo: might have the param oldNavActions for Suggestion()
           composable(Route.MAP) { Map(tripId) }
           composable(Route.NOTIFICATION) { Notification(tripId) }
