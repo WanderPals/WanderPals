@@ -53,7 +53,10 @@ fun Trip(
       topBar = {},
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
-          composable(Route.DASHBOARD) { Dashboard(tripId, DashboardViewModel(tripsRepository, tripId),oldNavActions) }
+          composable(Route.DASHBOARD) {
+            Dashboard(
+                tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions, navActions)
+          }
           composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
           composable(Route.SUGGESTION) {
             Suggestion(tripId, SuggestionsViewModel(tripsRepository, tripId))
