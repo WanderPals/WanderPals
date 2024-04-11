@@ -61,23 +61,20 @@ fun SuggestionDetailPopup(
   Dialog(
       onDismissRequest =
           onDismiss) { // todo: (after M1) uncomment dialog and create onclick function to go from
-                       // suggestionItem to the page SuggestionDetailPopup
+        // suggestionItem to the page SuggestionDetailPopup
         // The semi-transparent overlay will be provided by the Dialog itself
         BoxWithConstraints {
           val maxHeight = with(LocalDensity.current) { constraints.maxHeight.toDp() * 0.8f }
-            var newCommentText by remember { mutableStateOf("") }
+          var newCommentText by remember { mutableStateOf("") }
           Surface(
-              modifier = Modifier
-                  .heightIn(max = maxHeight)
-                  .testTag("suggestionPopupScreen"),
+              modifier = Modifier.heightIn(max = maxHeight).testTag("suggestionPopupScreen"),
               shape = RoundedCornerShape(16.dp),
               color = MaterialTheme.colorScheme.surface) {
                 Column(
                     modifier =
-                    Modifier
-                        .width(360.dp)
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState()) // Enable vertical scrolling
+                        Modifier.width(360.dp)
+                            .padding(16.dp)
+                            .verticalScroll(rememberScrollState()) // Enable vertical scrolling
                     ) {
                       // Suggestion Title and Close button
                       Row(
@@ -91,15 +88,13 @@ fun SuggestionDetailPopup(
                                   fontSize = 20.sp,
                                   //                            modifier = Modifier.weight(1f)
                                   modifier =
-                                  Modifier
-                                      .weight(1f)
-                                      .wrapContentWidth(
-                                          Alignment
-                                              .Start
-                                      ) // Aligns text to the start, ensuring it
-                                      // doesn't
-                                      // stretch the row width
-                                      .testTag("suggestionPopupTitle"))
+                                      Modifier.weight(1f)
+                                          .wrapContentWidth(
+                                              Alignment
+                                                  .Start) // Aligns text to the start, ensuring it
+                                          // doesn't
+                                          // stretch the row width
+                                          .testTag("suggestionPopupTitle"))
 
                               Spacer(
                                   modifier = Modifier.width(8.dp)) // Fixed spacing after the title
@@ -108,9 +103,7 @@ fun SuggestionDetailPopup(
                                   imageVector = Icons.Default.MailOutline,
                                   contentDescription = "Comments",
                                   modifier =
-                                  Modifier
-                                      .size(18.dp)
-                                      .testTag("suggestionPopupCommentsIcon"))
+                                      Modifier.size(18.dp).testTag("suggestionPopupCommentsIcon"))
                               Text(text = "${suggestion.comments.size}")
 
                               Spacer(modifier = Modifier.width(4.dp))
@@ -121,12 +114,10 @@ fun SuggestionDetailPopup(
                                       else Icons.Default.FavoriteBorder,
                                   contentDescription = "Likes",
                                   modifier =
-                                  Modifier
-                                      .size(18.dp)
-                                      .clickable(
-                                          onClick = onLikeClicked
-                                      ) // make the icon clickable
-                                      .testTag("suggestionPopupLikesIcon"))
+                                      Modifier.size(18.dp)
+                                          .clickable(
+                                              onClick = onLikeClicked) // make the icon clickable
+                                          .testTag("suggestionPopupLikesIcon"))
                               Text(text = "$likesCount", modifier = Modifier.padding(end = 8.dp))
                             }
                           }
@@ -155,17 +146,14 @@ fun SuggestionDetailPopup(
                           style = MaterialTheme.typography.bodyLarge,
                           fontWeight = FontWeight.Bold,
                           modifier =
-                          Modifier
-                              .padding(bottom = 8.dp)
-                              .testTag("suggestionPopupDescription"))
+                              Modifier.padding(bottom = 8.dp).testTag("suggestionPopupDescription"))
                       // Suggestion Text
                       Text(
                           text = suggestion.stop.description,
                           style = MaterialTheme.typography.bodyLarge,
                           modifier =
-                          Modifier
-                              .padding(bottom = 8.dp)
-                              .testTag("suggestionPopupDescriptionText"))
+                              Modifier.padding(bottom = 8.dp)
+                                  .testTag("suggestionPopupDescriptionText"))
 
                       // Calculate the end time and potentially the next day
                       val endTime =
@@ -190,9 +178,8 @@ fun SuggestionDetailPopup(
                           style = MaterialTheme.typography.bodyMedium,
                           fontWeight = FontWeight.SemiBold,
                           modifier =
-                          Modifier
-                              .padding(bottom = 8.dp)
-                              .testTag("suggestionPopupStartDateTimeEndDateTime"))
+                              Modifier.padding(bottom = 8.dp)
+                                  .testTag("suggestionPopupStartDateTimeEndDateTime"))
 
                       // Display Address and Website if available
                       if (suggestion.stop.address.isNotEmpty()) {
@@ -201,9 +188,8 @@ fun SuggestionDetailPopup(
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier =
-                            Modifier
-                                .padding(top = 8.dp, bottom = 4.dp)
-                                .testTag("suggestionPopupAddrTextNotEmpty"))
+                                Modifier.padding(top = 8.dp, bottom = 4.dp)
+                                    .testTag("suggestionPopupAddrTextNotEmpty"))
                       } else {
                         Row(modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)) {
                           Text(
@@ -225,9 +211,8 @@ fun SuggestionDetailPopup(
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier =
-                            Modifier
-                                .padding(bottom = 8.dp)
-                                .testTag("suggestionPopupWebsiteTextNotEmpty"))
+                                Modifier.padding(bottom = 8.dp)
+                                    .testTag("suggestionPopupWebsiteTextNotEmpty"))
                       } else {
                         Row(modifier = Modifier.padding(bottom = 24.dp)) {
                           Text(
@@ -249,46 +234,43 @@ fun SuggestionDetailPopup(
                           style = MaterialTheme.typography.bodyMedium,
                           fontWeight = FontWeight.Bold,
                           modifier =
-                          Modifier
-                              .padding(bottom = 8.dp)
-                              .testTag("suggestionPopupComments"))
+                              Modifier.padding(bottom = 8.dp).testTag("suggestionPopupComments"))
 
-                    OutlinedTextField(
-                        value = newCommentText,
-                        onValueChange = { newCommentText = it },
-                        placeholder = { Text("Add a comment") },
-                        modifier = Modifier
-                            .testTag("suggestionPopupCommentTextField"),
-                        textStyle = TextStyle(fontSize = 14.sp)
-                    )
+                      OutlinedTextField(
+                          value = newCommentText,
+                          onValueChange = { newCommentText = it },
+                          placeholder = { Text("Add a comment") },
+                          modifier = Modifier.testTag("suggestionPopupCommentTextField"),
+                          textStyle = TextStyle(fontSize = 14.sp))
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                      Spacer(modifier = Modifier.height(16.dp))
 
-                    Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
-                        Text(
-                            text = "Send comment",
-                            modifier =
-                            Modifier
-                                //            .padding(8.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable(onClick = {
-                                    if (newCommentText.isNotEmpty()) {
-                                        onComment(newCommentText)
-                                        newCommentText = ""
-                                    }
-                                })
-                                .background(Color(0xFF5A7BF0))
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodyMedium)
-                    }
+                      Box(
+                          modifier = Modifier.fillMaxWidth(),
+                          contentAlignment = Alignment.CenterEnd) {
+                            Text(
+                                text = "Send comment",
+                                modifier =
+                                    Modifier
+                                        //            .padding(8.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .clickable(
+                                            onClick = {
+                                              if (newCommentText.isNotEmpty()) {
+                                                onComment(newCommentText)
+                                                newCommentText = ""
+                                              }
+                                            })
+                                        .background(Color(0xFF5A7BF0))
+                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyMedium)
+                          }
 
-                    HorizontalDivider(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .testTag(
-                                "suggestionPopupDivider"
-                            ), color = Color(0xFF5A7BF0))
+                      HorizontalDivider(
+                          modifier =
+                              Modifier.padding(vertical = 8.dp).testTag("suggestionPopupDivider"),
+                          color = Color(0xFF5A7BF0))
 
                       if (comments.isEmpty()) {
                         Text(
@@ -296,23 +278,26 @@ fun SuggestionDetailPopup(
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Gray,
                             modifier =
-                            Modifier
-                                .padding(start = 8.dp, bottom = 8.dp)
-                                .testTag("noSuggestionCommentList"))
+                                Modifier.padding(start = 8.dp, bottom = 8.dp)
+                                    .testTag("noSuggestionCommentList"))
                       } else {
                         // List of Comments
-                        comments.sortedByDescending { it.createdAt }.forEach { comment ->
-                          SuggestionComment(comment = comment)
-                          if (comments.indexOf(comment) != comments.size - 1) {
-                              HorizontalDivider(
-                                  modifier = Modifier
-                                      .padding(vertical = 8.dp)
-                                      .testTag(
-                                          "suggestionPopupDivider${comments.indexOf(comment)}"
-                                      ), color = Color(0xFF5A7BF0)
-                              ) // Add a divider between comments except for the last one
-                          }
-                        }
+                        comments
+                            .sortedByDescending { it.createdAt }
+                            .forEach { comment ->
+                              SuggestionComment(comment = comment)
+                              if (comments.indexOf(comment) != comments.size - 1) {
+                                HorizontalDivider(
+                                    modifier =
+                                        Modifier.padding(vertical = 8.dp)
+                                            .testTag(
+                                                "suggestionPopupDivider${comments.indexOf(comment)}"),
+                                    color =
+                                        Color(
+                                            0xFF5A7BF0)) // Add a divider between comments except
+                                                         // for the last one
+                              }
+                            }
                       }
                     }
               }

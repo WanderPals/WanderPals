@@ -21,7 +21,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
-import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -56,7 +55,10 @@ fun Trip(
           composable(Route.DASHBOARD) { Dashboard(tripId, oldNavActions) }
           composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
           composable(Route.SUGGESTION) {
-            Suggestion(oldNavActions = oldNavActions, tripId, SuggestionsViewModel(tripsRepository, tripId))
+            Suggestion(
+                oldNavActions = oldNavActions,
+                tripId,
+                SuggestionsViewModel(tripsRepository, tripId))
           } // todo: might have the param oldNavActions for Suggestion()
           composable(Route.MAP) {
             if (client != null) {

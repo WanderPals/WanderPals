@@ -43,10 +43,13 @@ fun SuggestionTopBar(
   // State to track search bar activation
   var active by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        // DockedSearchBar component
-        DockedSearchBar(
-            modifier = Modifier.align(Alignment.Center).padding(top = 16.dp).testTag("dockedSearchBarSuggestion"),
+  Box(modifier = Modifier.fillMaxWidth()) {
+    // DockedSearchBar component
+    DockedSearchBar(
+        modifier =
+            Modifier.align(Alignment.Center)
+                .padding(top = 16.dp)
+                .testTag("dockedSearchBarSuggestion"),
         query = searchSuggestionText,
         onQueryChange = { newText -> onSearchSuggestionTextChanged(newText) },
         onSearch = {},

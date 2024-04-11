@@ -20,27 +20,28 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class FakeSuggestionsViewModel : SuggestionsViewModel(null, "") {
 
-    private val _state: MutableStateFlow<List<Suggestion>> = MutableStateFlow(listOf())
-    // Override the state with dummy data for testing
-    override val state: StateFlow<List<Suggestion>> = MutableStateFlow(listOf(/* Insert your dummy suggestions here */))
+  private val _state: MutableStateFlow<List<Suggestion>> = MutableStateFlow(listOf())
+  // Override the state with dummy data for testing
+  override val state: StateFlow<List<Suggestion>> =
+      MutableStateFlow(listOf(/* Insert your dummy suggestions here */ ))
 
-    // Override isLoading to control loading state in tests
-    override val isLoading: StateFlow<Boolean> = MutableStateFlow(false)
+  // Override isLoading to control loading state in tests
+  override val isLoading: StateFlow<Boolean> = MutableStateFlow(false)
 
-    // Provide fake implementations for any actions you'll be testing
-    // For example, if you're testing like functionality:
-    override fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
-        // Update _likedSuggestions or _state here as needed for your test
-    }
+  // Provide fake implementations for any actions you'll be testing
+  // For example, if you're testing like functionality:
+  override fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
+    // Update _likedSuggestions or _state here as needed for your test
+  }
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -177,9 +178,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun noSuggestionsMessageDisplayed_whenListIsEmpty() {
     composeTestRule.setContent {
       SuggestionFeedContent(
-          innerPadding = PaddingValues(),
-          suggestionList = emptyList(),
-          searchSuggestionText = "")
+          innerPadding = PaddingValues(), suggestionList = emptyList(), searchSuggestionText = "")
     }
     // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {

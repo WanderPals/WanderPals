@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
-import com.github.se.wanderpals.ui.navigation.NavigationActions
 import java.time.format.DateTimeFormatter
 
 /**
@@ -55,25 +54,24 @@ fun SuggestionItem(
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
 
+  // Collect the set of liked suggestion IDs and check if the current suggestion is liked
+  val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
 
-    // Collect the set of liked suggestion IDs and check if the current suggestion is liked
-    val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
+  // State for the like status of the suggestion
+  val isLiked = viewModel.getIsLiked()
 
-    // State for the like status of the suggestion
-    val isLiked = viewModel.getIsLiked()
-
-    // State for the like count, which depends on the `userLikes` size
-    // Calculate the like count dynamically based on whether the suggestion is liked
-    val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed whenever likedSuggestions changes.
-        if (isLiked) {
-            // If the suggestion is liked, add one to the count of userLikes
-            suggestion.userLikes.size + 1
-        } else {
-            // Otherwise, take the original count
-            suggestion.userLikes.size
-        }
+  // State for the like count, which depends on the `userLikes` size
+  // Calculate the like count dynamically based on whether the suggestion is liked
+  val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed
+                                     // whenever likedSuggestions changes.
+    if (isLiked) {
+      // If the suggestion is liked, add one to the count of userLikes
+      suggestion.userLikes.size + 1
+    } else {
+      // Otherwise, take the original count
+      suggestion.userLikes.size
     }
-
+  }
 
   // Define card colors with a white background
   val cardColors =

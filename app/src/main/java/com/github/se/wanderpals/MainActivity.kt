@@ -10,24 +10,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
-import androidx.navigation.navArgument
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
-import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
-import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
-import com.github.se.wanderpals.ui.screens.suggestion.CreateSuggestion
-import com.github.se.wanderpals.ui.screens.trip.Suggestion
+import com.github.se.wanderpals.ui.screens.trip.CreateSuggestion
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -115,8 +110,7 @@ class MainActivity : ComponentActivity() {
             composable("${Route.CREATE_SUGGESTION}/{tripId}") { navBackStackEntry ->
               val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
               CreateSuggestion(
-                tripId = tripId,
-                viewModel = CreateSuggestionViewModel(tripsRepository))
+                  tripId = tripId, viewModel = CreateSuggestionViewModel(tripsRepository))
             }
           }
         }

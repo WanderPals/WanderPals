@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip
 
-import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -22,19 +21,25 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 
-/** The Suggestion screen.
+/**
+ * The Suggestion screen.
  *
- * @param oldNavActions The navigation actions of the button that was clicked to navigate to the screen.
- * */
+ * @param oldNavActions The navigation actions of the button that was clicked to navigate to the
+ *   screen.
+ */
 @Composable
-fun Suggestion(oldNavActions: NavigationActions, tripId: String, suggestionsViewModel: SuggestionsViewModel) {
+fun Suggestion(
+    oldNavActions: NavigationActions,
+    tripId: String,
+    suggestionsViewModel: SuggestionsViewModel
+) {
 
-    // get the suggestion list from the firebase database
-    val suggestionList by suggestionsViewModel.state.collectAsState()
-    val isLoading by suggestionsViewModel.isLoading.collectAsState()
+  // get the suggestion list from the firebase database
+  val suggestionList by suggestionsViewModel.state.collectAsState()
+  val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
-    // State for managing search suggestion text (the filter)
-     var searchSuggestionText by remember { mutableStateOf("") }
+  // State for managing search suggestion text (the filter)
+  var searchSuggestionText by remember { mutableStateOf("") }
 
   Scaffold(
       modifier = Modifier.testTag("suggestionFeedScreen"),
@@ -47,21 +52,20 @@ fun Suggestion(oldNavActions: NavigationActions, tripId: String, suggestionsView
             })
       },
       bottomBar = {
-        SuggestionBottomBar(onSuggestionClick = { /*navActions.navigateTo(Route.CREATE_SUGGESTION) */})
+        SuggestionBottomBar(
+            onSuggestionClick = { /*navActions.navigateTo(Route.CREATE_SUGGESTION) */})
       }) { innerPadding ->
-      if (isLoading){
+        if (isLoading) {
           Box(modifier = Modifier.fillMaxSize()) {
-              CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
+            CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
           }
-      }
-      else {
+        } else {
           SuggestionFeedContent(
               innerPadding = innerPadding,
-              suggestionList = suggestionList?: emptyList(),
+              suggestionList = suggestionList ?: emptyList(),
               searchSuggestionText = searchSuggestionText,
               tripId = tripId,
-              suggestionRepository = suggestionsViewModel
-          )
+              suggestionRepository = suggestionsViewModel)
+        }
       }
-  }
 }
