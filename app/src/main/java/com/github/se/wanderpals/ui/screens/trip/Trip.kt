@@ -21,8 +21,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
-import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
@@ -55,7 +56,7 @@ fun Trip(
           composable(Route.DASHBOARD) { Dashboard(tripId, oldNavActions) }
           composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
           composable(Route.SUGGESTION) {
-            Suggestion(tripId, SuggestionsViewModel(tripsRepository, tripId))
+            Suggestion(tripId, SuggestionsViewModel(tripsRepository, tripId), tripsRepository, navActions)
           } // todo: might have the param oldNavActions for Suggestion()
           composable(Route.MAP) {
             if (client != null) {
@@ -63,6 +64,16 @@ fun Trip(
             }
           }
           composable(Route.NOTIFICATION) { Notification(tripId) }
+            composable(Route.CREATE_SUGGESTION)
+            {
+                CreateSuggestion(
+                    tripId = tripId,
+                    CreateSuggestionViewModel(tripsRepository),
+                    onSuccess = { navActions.navigateTo(Route.SUGGESTION) },
+                    onFailure = { navActions.goBack() },
+                    onCancel = { navActions.goBack() }
+                )
+            }
         }
       }
 }

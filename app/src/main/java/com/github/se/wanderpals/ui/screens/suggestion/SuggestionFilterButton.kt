@@ -14,18 +14,18 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SuggestionFilterButton(text: String, isSelected: Boolean, onSelect: () -> Unit) {
-    val backgroundColor = if (isSelected) Color(0xFF5A7BF0) else Color(0xFFE1E2E1)
-    val textColor = if (isSelected) Color.White else Color.Black
+  val backgroundColor = if (isSelected) Color(0xFF5A7BF0) else Color(0xFFE1E2E1)
+  val textColor = if (isSelected) Color.White else Color.Black
 
-    Text(
-        text = text,
-        modifier = Modifier
-//            .padding(8.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .clickable(onClick = onSelect)
-            .background(backgroundColor)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        color = textColor,
-        style = MaterialTheme.typography.bodyMedium
-    )
+  Text(
+      text = text,
+      modifier =
+          Modifier
+              //            .padding(8.dp)
+              .clip(RoundedCornerShape(8.dp))
+              .clickable(onClick = onSelect)
+              .background(backgroundColor)
+              .padding(horizontal = 8.dp, vertical = 4.dp),
+      color = textColor,
+      style = MaterialTheme.typography.bodyMedium)
 }

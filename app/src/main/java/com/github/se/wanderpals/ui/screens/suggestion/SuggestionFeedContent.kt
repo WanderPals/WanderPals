@@ -50,7 +50,10 @@ import java.time.LocalTime
 fun SuggestionFeedContent(
     innerPadding: PaddingValues,
     navigationActions: NavigationActions,
-    suggestionList: List<Suggestion>, // <-todo: will be real data (wait for William) so will replace all _suggestionList by suggestionList
+    suggestionList:
+        List<
+            Suggestion>, // <-todo: will be real data (wait for William) so will replace all
+                         // _suggestionList by suggestionList
     searchSuggestionText: String,
     tripId: String,
     suggestionRepository: SuggestionsViewModel
@@ -115,7 +118,7 @@ fun SuggestionFeedContent(
           website = "",
           imageUrl = "")
 
-  val comment1 = Comment("commentId1", "usercmtId1", "userNamecmt1", "Great idea!", LocalDate.now())
+  val comment1 = Comment("commentId1", "usercmtId1", "userNamecmt1", "Great idea!", LocalDate.now().minusDays(4))
   val comment2 =
       Comment(
           "commentId2",
@@ -125,183 +128,180 @@ fun SuggestionFeedContent(
           LocalDate.now())
   val comment3 =
       Comment(
-          "commentId3", "usercmtId3", "userNamecmt3", "This fits our schedule.", LocalDate.now())
+          "commentId3", "usercmtId3", "userNamecmt3", "This fits our schedule. This fits our schedule. This fits our schedule. This fits our schedule. This fits our schedule. This fits our schedule. This fits our schedule. This fits our schedule. This fits our schedule.", LocalDate.now())
   val comment4 =
       Comment(
-          "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now())
+          "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now().minusDays(1))
 
   // Example list of comments
-    val dummyCommentList2 = listOf(comment1, comment2)
-    val dummyCommentList3 = listOf(comment1, comment2, comment3)
-    val dummyCommentList4 = listOf(comment1, comment2, comment3, comment4)
+  val dummyCommentList2 = listOf(comment1, comment2)
+  val dummyCommentList3 = listOf(comment1, comment2, comment3)
+  val dummyCommentList4 = listOf(comment1, comment2, comment3, comment4)
 
-    val userLikes1 = listOf("ulId1", "ulId2")
-    val userLikes3 = listOf("ulId1", "ulId2", "ulId3", "ulId5", "ulId6")
-    val userLikes4 = listOf("ulId1", "ulId2", "ulId3", "ulId4")
+  val userLikes1 = listOf("ulId1", "ulId2")
+  val userLikes3 = listOf("ulId1", "ulId2", "ulId3", "ulId5", "ulId6")
+  val userLikes4 = listOf("ulId1", "ulId2", "ulId3", "ulId4")
 
-
-//  /*
+  //  /*
   // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
-      val _suggestionList =
-          listOf(
-              Suggestion(
-                  "suggestionId1",
-                  "userId1",
-                  "userName1",
-                  "Let us go here!",
-                  LocalDate.of(2024, 1, 1),
-                  stop1,
-                  emptyList(),
-                  userLikes1),
-              Suggestion(
-                  "suggestionId2",
-                  "userId2",
-                  "userName2",
-                  "I love this place",
-                  LocalDate.of(2024, 2, 2),
-                  stop2,
-                  dummyCommentList2,
-                  emptyList()),
-              Suggestion(
-                  "suggestionId3",
-                  "userId3",
-                  "userName3",
-                  "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
-                          "Trying to convince you to go here with me. coz I know you will love it!",
-                  LocalDate.of(2024, 3, 29),
-                  stop3,
-                  dummyCommentList3,
-                  userLikes3),
-              Suggestion(
-                      "suggestionId4",
+  val _suggestionList =
+      listOf(
+          Suggestion(
+              "suggestionId1",
+              "userId1",
+              "userName1",
+              "Let us go here!",
+              LocalDate.of(2024, 1, 1),
+              stop1,
+              emptyList(),
+              userLikes1),
+          Suggestion(
+              "suggestionId2",
+              "userId2",
+              "userName2",
+              "I love this place",
+              LocalDate.of(2024, 2, 2),
+              stop2,
+              dummyCommentList2,
+              emptyList()),
+          Suggestion(
+              "suggestionId3",
+              "userId3",
+              "userName3",
+              "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
+                  "Trying to convince you to go here with me. coz I know you will love it!",
+              LocalDate.of(2024, 3, 29),
+              stop3,
+              dummyCommentList3,
+              userLikes3),
+          Suggestion(
+              "suggestionId4",
               "userId4",
               "userName4",
               "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
-                      "Trying to convince you to go here with me. coz I know you will love it!",
+                  "Trying to convince you to go here with me. coz I know you will love it!",
               LocalDate.of(2024, 9, 29),
               stop4,
               dummyCommentList4,
-              userLikes4)
-          )
-//    */
+              userLikes4))
+  //    */
 
   // Example usage of dummy data for the suggestionList <-todo: change for sprint3
-//  val _suggestionList = suggestionList
+  //  val _suggestionList = suggestionList
 
+  // State to track the selected filter criteria
+  var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
 
-    // State to track the selected filter criteria
-    var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
-
-    // State to track the sorted suggestion list
-    val filteredSuggestionList by remember(selectedFilterCriteria) {
+  // State to track the sorted suggestion list
+  val filteredSuggestionList by
+      remember(selectedFilterCriteria) {
         mutableStateOf(
             when (selectedFilterCriteria) {
-                "Like number" -> _suggestionList.sortedByDescending { it.userLikes.size } // Assuming you have likeCount in Suggestion data class
-                "Comment number" -> _suggestionList.sortedByDescending { it.comments.size } // Assuming you have commentList in Suggestion data class
-                else -> _suggestionList.sortedByDescending { it.createdAt }
-            }
-        )
-    }
+              "Like number" ->
+                  _suggestionList.sortedByDescending {
+                    it.userLikes.size
+                  } // Assuming you have likeCount in Suggestion data class
+              "Comment number" ->
+                  _suggestionList.sortedByDescending {
+                    it.comments.size
+                  } // Assuming you have commentList in Suggestion data class
+              else -> _suggestionList.sortedByDescending { it.createdAt }
+            })
+      }
 
-    // Apply the search filter if there is a search text
-    val displayList = if (searchSuggestionText.isEmpty()) {
+  // Apply the search filter if there is a search text
+  val displayList =
+      if (searchSuggestionText.isEmpty()) {
         filteredSuggestionList
-    } else {
+      } else {
         filteredSuggestionList.filter { suggestion ->
-            suggestion.stop.title.lowercase().contains(searchSuggestionText.lowercase())
+          suggestion.stop.title.lowercase().contains(searchSuggestionText.lowercase())
         }
-    }
+      }
 
+  Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
 
-    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
-
-        // Title for the list of suggestions
-        Text(
-            text = "Suggestions",
-            modifier = Modifier.padding(start = 27.dp, top = 15.dp),
-            style =
+    // Title for the list of suggestions
+    Text(
+        text = "Suggestions",
+        modifier = Modifier.padding(start = 27.dp, top = 15.dp),
+        style =
             TextStyle(
                 lineHeight = 24.sp,
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
                 fontWeight = FontWeight(500),
                 color = Color(0xFF5A7BF0),
-                letterSpacing = 0.5.sp
-            ),
-            textAlign = TextAlign.Center
-        )
+                letterSpacing = 0.5.sp),
+        textAlign = TextAlign.Center)
 
+    // Add the filter options UI
+    Text(
+        text = "Filter by:",
+        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+    )
 
-        // Add the filter options UI
+    SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
+
+    // When a suggestion is selected, display the popup
+    selectedSuggestion?.let { suggestion ->
+      val isLiked =
+          suggestionRepository.likedSuggestions
+              .collectAsState()
+              .value
+              .contains(suggestion.suggestionId)
+      val likesCount = suggestion.userLikes.size + if (isLiked) 1 else 0
+
+      SuggestionDetailPopup(
+          suggestion = suggestion,
+          comments = suggestion.comments,
+          isLiked = isLiked, // pass the current like status for the suggestion
+          likesCount = likesCount, // pass the current number of likes for the suggestion
+          onDismiss = { selectedSuggestion = null }, // When the popup is dismissed
+          onLikeClicked = {
+            // Call toggleLikeSuggestion from the ViewModel
+            suggestionRepository.toggleLikeSuggestion(tripId, suggestion)
+          })
+    }
+
+    // If suggestion list is empty, display a message
+    if (_suggestionList.isEmpty()) {
+      Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Filter by:",
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+            modifier =
+                Modifier.width(260.dp)
+                    .height(55.dp)
+                    .align(Alignment.Center)
+                    .testTag("noSuggestionsForUserText"),
+            text = "Looks like there is no suggestions yet. ",
+            style =
+                TextStyle(
+                    lineHeight = 20.sp,
+                    letterSpacing = 0.5.sp,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(500),
+                    textAlign = TextAlign.Center,
+                    color = Color(0xFF000000)),
         )
-
-        SuggestionFilterOptions { selectedCriteria ->
-            selectedFilterCriteria = selectedCriteria
+      }
+    } else {
+      // LazyColumn to display the list of suggestions with sorting and search filtering
+      // (Note: can only have one LazyColumn in a composable function)
+      LazyColumn {
+        itemsIndexed(displayList) { index, suggestion ->
+          SuggestionItem(
+              suggestion = suggestion,
+              navigationActions = navigationActions,
+              onClick = {
+                selectedSuggestion = suggestion
+              }, // This lambda is passed to the SuggestionItem composable
+              modifier =
+                  Modifier.clickable { selectedSuggestion = suggestion }
+                      .testTag("suggestion${index + 1}"), // Apply the testTag here
+              tripId = tripId,
+              viewModel = suggestionRepository)
         }
-
-        // When a suggestion is selected, display the popup
-        selectedSuggestion?.let { suggestion ->
-            val isLiked = suggestionRepository.likedSuggestions.collectAsState().value.contains(suggestion.suggestionId)
-            val likesCount = suggestion.userLikes.size + if (isLiked) 1 else 0
-
-            SuggestionDetailPopup(
-                suggestion = suggestion,
-                comments = suggestion.comments,
-                isLiked = isLiked, // pass the current like status for the suggestion
-                likesCount = likesCount, // pass the current number of likes for the suggestion
-                onDismiss = { selectedSuggestion = null }, // When the popup is dismissed
-                onLikeClicked = {
-                    // Call toggleLikeSuggestion from the ViewModel
-                    suggestionRepository.toggleLikeSuggestion(tripId, suggestion)
-                }
-            )
-        }
-
-
-        // If suggestion list is empty, display a message
-            if (_suggestionList.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        modifier =
-                        Modifier.width(260.dp)
-                            .height(55.dp)
-                            .align(Alignment.Center)
-                            .testTag("noSuggestionsForUserText"),
-                        text = "Looks like there is no suggestions yet. ",
-                        style =
-                        TextStyle(
-                            lineHeight = 20.sp,
-                            letterSpacing = 0.5.sp,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight(500),
-                            textAlign = TextAlign.Center,
-                            color = Color(0xFF000000)
-                        ),
-                    )
-                }
-            } else {
-                // LazyColumn to display the list of suggestions with sorting and search filtering
-                // (Note: can only have one LazyColumn in a composable function)
-                LazyColumn {
-                    itemsIndexed(displayList) { index, suggestion ->
-                        SuggestionItem(
-                            suggestion = suggestion,
-                            navigationActions = navigationActions,
-                            onClick = {
-                                selectedSuggestion = suggestion
-                            }, // This lambda is passed to the SuggestionItem composable
-                            modifier = Modifier.clickable { selectedSuggestion = suggestion }
-                                .testTag("suggestion${index + 1}"), // Apply the testTag here
-
-                            tripId = tripId,
-                            viewModel = suggestionRepository
-
-                        )
-                    }
-                }
+      }
     }
   }
 }

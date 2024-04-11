@@ -26,8 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,29 +52,29 @@ fun SuggestionItem(
     suggestion: Suggestion,
     navigationActions: NavigationActions,
     onClick: () -> Unit, // this callback is for the suggestion item click
-    tripId: String, //the trip id of the suggestion
+    tripId: String, // the trip id of the suggestion
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
 
+  // Collect the set of liked suggestion IDs and check if the current suggestion is liked
+  val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
 
-    // Collect the set of liked suggestion IDs and check if the current suggestion is liked
-    val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
+  // State for the like status of the suggestion
+  val isLiked = likedSuggestions.contains(suggestion.suggestionId)
 
-    // State for the like status of the suggestion
-    val isLiked = likedSuggestions.contains(suggestion.suggestionId)
-
-    // State for the like count, which depends on the `userLikes` size
-    // Calculate the like count dynamically based on whether the suggestion is liked
-    val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed whenever likedSuggestions changes.
-        if (isLiked) {
-            // If the suggestion is liked, add one to the count of userLikes
-            suggestion.userLikes.size + 1
-        } else {
-            // Otherwise, take the original count
-            suggestion.userLikes.size
-        }
+  // State for the like count, which depends on the `userLikes` size
+  // Calculate the like count dynamically based on whether the suggestion is liked
+  val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed
+                                     // whenever likedSuggestions changes.
+    if (isLiked) {
+      // If the suggestion is liked, add one to the count of userLikes
+      suggestion.userLikes.size + 1
+    } else {
+      // Otherwise, take the original count
+      suggestion.userLikes.size
     }
+  }
 
   // Define card colors with a white background
   val cardColors =
@@ -138,37 +136,35 @@ fun SuggestionItem(
               modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
               horizontalArrangement = Arrangement.SpaceBetween,
               verticalAlignment = Alignment.CenterVertically) {
+                Spacer(Modifier.width(240.dp)) // Use the space to align the mail icon
 
-              Spacer(Modifier.width(240.dp)) // Use the space to align the mail icon
-
-              Icon(
+                Icon(
                     imageVector = Icons.Default.MailOutline,
                     contentDescription = null, // Decorative element
                     modifier = Modifier.size(18.dp))
 
-              Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
+                Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
 
-              Text(
+                Text(
                     text = "${suggestion.comments.size}",
                 )
 
-              Spacer(modifier = Modifier.weight(1f)) // Pushes the heart icon to the end
+                Spacer(modifier = Modifier.weight(1f)) // Pushes the heart icon to the end
 
-              // Icon click handler
-              Icon(
-                  imageVector = if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
-                  contentDescription = "Like",
-                  modifier = Modifier.size(18.dp).clickable {
-                      viewModel.toggleLikeSuggestion(tripId, suggestion)
-                  }
-              )
+                // Icon click handler
+                Icon(
+                    imageVector =
+                        if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Like",
+                    modifier =
+                        Modifier.size(18.dp).clickable {
+                          viewModel.toggleLikeSuggestion(tripId, suggestion)
+                        })
 
-              Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
+                Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
 
-              Text(
-                    text = "$likesCount"
-              )
-          }
+                Text(text = "$likesCount")
+              }
         }
-  }
+      }
 }

@@ -72,10 +72,10 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     val gso: GoogleSignInOptions =
-      GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(getString(R.string.web_client_id))
-        .requestEmail()
-        .build()
+        GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.web_client_id))
+            .requestEmail()
+            .build()
 
     signInClient = GoogleSignIn.getClient(this, gso)
     Places.initialize(applicationContext, MAPS_API_KEY)
@@ -94,8 +94,8 @@ class MainActivity : ComponentActivity() {
             }
             composable(Route.OVERVIEW) {
               Overview(
-                overviewViewModel = OverviewViewModel(tripsRepository),
-                navigationActions = navigationActions)
+                  overviewViewModel = OverviewViewModel(tripsRepository),
+                  navigationActions = navigationActions)
             }
             composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
               val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
