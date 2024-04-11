@@ -33,7 +33,6 @@ fun Suggestion(
     tripId: String,
     suggestionsViewModel: SuggestionsViewModel
 ) {
-
   // get the suggestion list from the firebase database
   val suggestionList by suggestionsViewModel.state.collectAsState()
   val isLoading by suggestionsViewModel.isLoading.collectAsState()
