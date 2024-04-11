@@ -39,7 +39,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-class OverviewViewModelTest() :
+class OverviewViewModelTest :
     OverviewViewModel(TripsRepository("-1", dispatcher = Dispatchers.IO)) {
   private val trip1 =
       Trip(
@@ -336,7 +336,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
         assertIsDisplayed()
         performClick()
       }
-      verify { mockNavActions.navigateTo(Route.TRIP + "/1") }
+      verify {
+        mockNavActions.currentTrip = "1"
+        mockNavActions.navigateTo(Route.TRIP)
+      }
       confirmVerified(mockNavActions)
     }
   }

@@ -90,7 +90,10 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
   Box(modifier = Modifier.fillMaxWidth()) {
     // Button representing the trip overview
     Button(
-        onClick = { navigationActions.navigateTo(Route.TRIP + "/${trip.tripId}") },
+        onClick = {
+          navigationActions.currentTrip = trip.tripId
+          navigationActions.navigateTo(Route.TRIP)
+        },
         modifier =
             Modifier.align(Alignment.TopCenter)
                 .width(360.dp)

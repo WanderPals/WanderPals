@@ -97,10 +97,9 @@ class MainActivity : ComponentActivity() {
                   overviewViewModel = OverviewViewModel(tripsRepository),
                   navigationActions = navigationActions)
             }
-            composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
+            composable(Route.TRIP) { navBackStackEntry ->
               BackHandler(true) {}
-              val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
-              Trip(navigationActions, tripId, tripsRepository, placesClient)
+              Trip(navigationActions, navigationActions.currentTrip, tripsRepository, placesClient)
             }
             composable(Route.CREATE_TRIP) {
               BackHandler(true) {}
