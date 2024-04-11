@@ -1,6 +1,7 @@
 [versions]
 agp = "8.3.1"
 coreKtxVersion = "1.8.1"
+firebaseAuth = "22.3.1"
 firebaseDatabaseKtx = "20.3.0"
 firebaseFirestore = "24.10.0"
 kotlin = "1.8.10"
@@ -28,12 +29,12 @@ googleServices = "4.4.0"
 navigationCompose = "2.7.7"
 playServicesAuth = "21.0.0"
 navigationRuntimeKtx = "2.7.7"
-
-
+firebaseAuthKtx = "22.3.1"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoCore" }
 core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
+firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -46,7 +47,6 @@ kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-cor
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
-
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -57,10 +57,8 @@ compose-activity = { group = "androidx.activity", name = "activity-compose", ver
 compose-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "composeViewModel" }
 compose-test-junit = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-
 kaspresso = { group = "com.kaspersky.android-components", name = "kaspresso", version.ref = "kaspresso" }
 kaspresso-compose = { group = "com.kaspersky.android-components", name = "kaspresso-compose-support", version.ref = "kaspresso" }
-
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockkAgent" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
@@ -69,10 +67,13 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
-
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }
 sonar = { id = "org.sonarqube", version.ref = "sonar" }
 googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices"}
+
+
+
+
