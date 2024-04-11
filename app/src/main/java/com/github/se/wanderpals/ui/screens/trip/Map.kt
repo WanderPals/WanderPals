@@ -367,13 +367,12 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
               Spacer(modifier = Modifier.height(16.dp))
               val listOfDays = placeOpeningHours.removePrefix("[").removeSuffix("]").split(", ")
               listOfDays.forEach {
-                  if(it != "null") {
-                      Text(
-                          modifier = Modifier.align(Alignment.CenterHorizontally)
-                              .padding(bottom = 8.dp),
-                          text = it
-                      )
-                  }
+                if (it != "null") {
+                  Text(
+                      modifier =
+                          Modifier.align(Alignment.CenterHorizontally).padding(bottom = 8.dp),
+                      text = it)
+                }
               }
             }
           }
