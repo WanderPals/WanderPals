@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip
 
+import android.util.Log
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,18 +28,13 @@ fun Suggestion(
     /*oldNavActions: NavigationActions,*/ tripId: String,
     suggestionsViewModel: SuggestionsViewModel,
     tripsRepository: TripsRepository,
-    navActions: NavigationActions
+    //navActions: NavigationActions
 ) {
-  //val navController = rememberNavController()
-  //val navActions = NavigationActions(navController)
+  val navController = rememberNavController()
+  val navActions = NavigationActions(navController)
 
-  //    val suggestionRepository: TripsRepository = TripsRepository()
-  //    val suggestionsViewModel = SuggestionsViewModel(suggestionRepository, tripId)
-
-  val suggestionList by
-      suggestionsViewModel.state
-          .collectAsState() // todo: use dummy data for now for testing functionality of the front
-                            // end of the SuggestionFeedScreen
+    val suggestionList by suggestionsViewModel.state.collectAsState()
+    val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
   // State for managing search suggestion text (the filter)
   var searchSuggestionText by remember { mutableStateOf("") }
@@ -54,7 +50,7 @@ fun Suggestion(
             })
       },
       bottomBar = {
-        SuggestionBottomBar(onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
+        SuggestionBottomBar(onSuggestionClick = { /*navActions.navigateTo(Route.CREATE_SUGGESTION) */})
       }) { innerPadding ->
         //    NavHost(navController, startDestination = Route.DASHBOARD,
         // Modifier.padding(innerPadding))

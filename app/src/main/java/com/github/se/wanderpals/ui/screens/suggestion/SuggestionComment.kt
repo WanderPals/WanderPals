@@ -41,7 +41,7 @@ fun SuggestionComment(comment: Comment) {
                 .fillMaxWidth(),
         ){
             Text(
-                text = "${comment.userName} :",
+                text = comment.userName,
                 style = TextStyle(fontWeight = FontWeight.Bold),
                 modifier = Modifier.testTag("commentUserName")
             )
@@ -62,8 +62,6 @@ fun SuggestionComment(comment: Comment) {
                 modifier = Modifier
                     .padding(vertical = 4.dp)
                     .fillMaxWidth()
-                    .height(60.dp)
-                    .verticalScroll(rememberScrollState(), enabled = true)
                     .testTag("commentText"),
                 fontSize = 14.sp
             )

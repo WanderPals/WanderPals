@@ -1,11 +1,14 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -32,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -51,7 +55,8 @@ fun SuggestionDetailPopup(
     isLiked: Boolean, // a boolean to track if the user has liked the suggestion
     likesCount: Int, // the number of likes for the suggestion
     onDismiss: () -> Unit, // Callback to dismiss the dialog
-    onLikeClicked: () -> Unit // Callback to handle like button click
+    onLikeClicked: () -> Unit, // Callback to handle like button click
+    onComment: (String) -> Unit, // Callback to handle comment button click
 ) {
   Dialog(
       onDismissRequest =
@@ -155,7 +160,7 @@ fun SuggestionDetailPopup(
                               .testTag("suggestionPopupDescription"))
                       // Suggestion Text
                       Text(
-                          text = suggestion.text,
+                          text = suggestion.stop.description,
                           style = MaterialTheme.typography.bodyLarge,
                           modifier =
                           Modifier
@@ -253,12 +258,30 @@ fun SuggestionDetailPopup(
                         onValueChange = { newCommentText = it },
                         placeholder = { Text("Add a comment") },
                         modifier = Modifier
-                            .padding(bottom = 16.dp)
-                            .height(60.dp)
-                            .verticalScroll(rememberScrollState(), enabled = true)
                             .testTag("suggestionPopupCommentTextField"),
                         textStyle = TextStyle(fontSize = 14.sp)
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Box (modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
+                        Text(
+                            text = "Send comment",
+                            modifier =
+                            Modifier
+                                //            .padding(8.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable(onClick = {
+                                    if (newCommentText.isNotEmpty()) {
+                                        onComment(newCommentText)
+                                        newCommentText = ""
+                                    }
+                                })
+                                .background(Color(0xFF5A7BF0))
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            color = Color.White,
+                            style = MaterialTheme.typography.bodyMedium)
+                    }
 
                     HorizontalDivider(
                         modifier = Modifier

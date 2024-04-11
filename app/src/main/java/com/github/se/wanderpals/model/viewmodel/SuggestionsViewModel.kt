@@ -1,44 +1,53 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 open class SuggestionsViewModel(
-    private val suggestionRepository: TripsRepository?,
+    private val suggestionRepository: TripsRepository,
     tripId: String
 ) : ViewModel() {
-  // State flow to hold the list of suggestions
-  private val _state = MutableStateFlow(emptyList<Suggestion>())
-  open val state: StateFlow<List<Suggestion>> = _state
 
-  private val _isLoading = MutableStateFlow(true)
-  open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    // the like status of each suggestion to be held to prevent repeated network calls for the same
+// item:
+    private val _likedSuggestions = MutableStateFlow<Set<String>>(emptySet())
+    val likedSuggestions: StateFlow<Set<String>> = _likedSuggestions.asStateFlow()
 
-  // the like status of each suggestion to be held to prevent repeated network calls for the same
-  // item:
-  private val _likedSuggestions = MutableStateFlow<Set<String>>(emptySet())
-  val likedSuggestions: StateFlow<Set<String>> = _likedSuggestions.asStateFlow()
+    // State flow to hold the list of suggestions
+    private val _state = MutableStateFlow(emptyList<Suggestion>())
+    open val state: StateFlow<List<Suggestion>> = _state.asStateFlow()
 
-  init {
-    // Fetch all trips when the ViewModel is initialized
-    loadSuggestion(tripId)
-  }
+    private val _isLoading = MutableStateFlow(true)
+    open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-  /** Fetches all trips from the repository and updates the state flow accordingly. */
-  open fun loadSuggestion(tripId: String) {
-    viewModelScope.launch {
-      _isLoading.value = true
-      // Fetch all trips from the repository
-      _state.value = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
-      _isLoading.value = false
+    init {
+        // Fetch all trips when the ViewModel is initialized
+        loadSuggestion(tripId)
+        Log.d("SuggestionsViewModel", "init_state ${_state.value}")
+        Log.d("SuggestionsViewModel", "init state: ${state.value}")
     }
-  }
+
+    /** Fetches all trips from the repository and updates the state flow accordingly. */
+    open fun loadSuggestion(tripId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            // Fetch all trips from the repository
+            _state.update { suggestionRepository.getAllSuggestionsFromTrip(tripId) }
+            Log.d("SuggestionsViewModel", "loadSuggestion: ${_state.value}")
+            _isLoading.value = false
+        }
+    }
 
   /**
    * Toggles the like status of a suggestion and updates the backend and local state accordingly.
@@ -49,7 +58,7 @@ open class SuggestionsViewModel(
   open fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
     val currentLoggedInUId =
         suggestionRepository
-            ?.uid!! // Get the current logged-in user's ID from the repository instance
+            .uid // Get the current logged-in user's ID from the repository instance
     val currentlyLiked = _likedSuggestions.value
 
     // Check if the suggestion is already liked by the user
@@ -85,6 +94,7 @@ open class SuggestionsViewModel(
           suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
       if (wasUpdateSuccessful) { // If the backend update is successful,
         // Update the local state with the modified suggestion
+
         _state.value =
             _state.value.map {
               if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
@@ -107,4 +117,24 @@ open class SuggestionsViewModel(
       }
     }
   }
+
+    open fun addComment(tripId: String, suggestion: Suggestion, comment: Comment) {
+        val uid =
+            suggestionRepository.uid
+        val updatedSuggestion = suggestion.copy(
+            comments = suggestion.comments + Comment(
+                commentId = UUID.randomUUID().toString(),
+                userId = uid,
+                userName = comment.userName,
+                text = comment.text,
+                createdAt = comment.createdAt))
+        viewModelScope.launch {
+            val wasUpdateSuccessful = suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+            if (wasUpdateSuccessful) {
+                _state.value = _state.value.map {
+                    if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
+                }
+            }
+        }
+    }
 }
