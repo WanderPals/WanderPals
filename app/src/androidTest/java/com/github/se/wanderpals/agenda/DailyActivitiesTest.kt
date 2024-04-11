@@ -18,15 +18,14 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.YearMonth
 
 @RunWith(AndroidJUnit4::class)
 class DailyActivitiesTest {
-
 
   private val testActivities =
       listOf(
@@ -60,8 +59,8 @@ class DailyActivitiesTest {
               0.0,
               "Description 3",
               GeoCords(0.0, 0.0)))
-    private val testViewModel = FakeAgendaViewModel(YearMonth.now(), testActivities)
-    private val emptyTestViewModel = FakeAgendaViewModel(YearMonth.now(), emptyList())
+  private val testViewModel = FakeAgendaViewModel(YearMonth.now(), testActivities)
+  private val emptyTestViewModel = FakeAgendaViewModel(YearMonth.now(), emptyList())
 
   @get:Rule val composeTestRule = createComposeRule()
 
