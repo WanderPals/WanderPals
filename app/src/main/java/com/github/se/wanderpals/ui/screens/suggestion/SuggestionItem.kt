@@ -63,7 +63,7 @@ fun SuggestionItem(
   // State for the like count, which depends on the `userLikes` size
   // Calculate the like count dynamically based on whether the suggestion is liked
   val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed
-                                     // whenever likedSuggestions changes.
+    // whenever likedSuggestions changes.
     if (isLiked) {
       // If the suggestion is liked, add one to the count of userLikes
       suggestion.userLikes.size + 1

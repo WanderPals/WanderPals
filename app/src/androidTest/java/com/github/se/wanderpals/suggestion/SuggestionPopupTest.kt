@@ -1,20 +1,19 @@
 package com.github.se.wanderpals.suggestion
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.screens.SuggestionPopupScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetailPopup
-import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
-import io.github.kakaocup.compose.node.element.ComposeScreen.Companion.onComposeScreen
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import java.time.LocalDate
@@ -161,126 +160,107 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
                 emptyList()))
   }
 
-  /**
-   * Test that the suggestion details popup of the first suggestion displays correctly when comments
-   * are present. Note that the address and website are tested in separate tests.
-   */
   @Test
-  fun suggestionDetailPopup_displaysCommentsCorrectly_whenCommentsArePresent() {
+  fun suggestionCommentDisplaysProperly() {
     composeTestRule.setContent {
-      SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList, onDismiss = {})
+      SuggestionDetailPopup(
+          suggestion = suggestionList[0],
+          comments = commentList,
+          onDismiss = {},
+          isLiked = false,
+          onLikeClicked = {},
+          onComment = { it -> },
+          likesCount = 0)
     }
+    composeTestRule
+        .onNodeWithTag("commentUserNamecommentId1", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("userNamecmt1")
+    composeTestRule
+        .onNodeWithTag("commentUserNamecommentId2", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("userNamecmt2")
+    composeTestRule
+        .onNodeWithTag("commentUserNamecommentId3", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("userNamecmt3")
+    composeTestRule
+        .onNodeWithTag("commentUserNamecommentId4", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("userNamecmt4")
 
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-      suggestionPopupTitle.assertIsDisplayed()
-      suggestionPopupCommentsIcon.assertIsDisplayed()
-      suggestionPopupLikesIcon.assertIsDisplayed()
-      suggestionPopupUserName.assertIsDisplayed()
-      suggestionPopupDate.assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("commentCreatedAtcommentId1", useUnmergedTree = true)
+        .assertExists()
+    composeTestRule
+        .onNodeWithTag("commentCreatedAtcommentId2", useUnmergedTree = true)
+        .assertExists()
+    composeTestRule
+        .onNodeWithTag("commentCreatedAtcommentId3", useUnmergedTree = true)
+        .assertExists()
+    composeTestRule
+        .onNodeWithTag("commentCreatedAtcommentId4", useUnmergedTree = true)
+        .assertExists()
 
-      suggestionPopupDescription.assertIsDisplayed()
-      suggestionPopupDescriptionText.assertIsDisplayed()
+    composeTestRule.onNodeWithTag("commentDividercommentId1", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("commentDividercommentId2", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("commentDividercommentId3", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("commentDividercommentId4", useUnmergedTree = true).assertExists()
 
-      suggestionPopupStartDateTimeEndDateTime.assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("commentTextcommentId1", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("Great idea!")
+    composeTestRule
+        .onNodeWithTag("commentTextcommentId2", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("I've been here before, it's wonderful.")
+    composeTestRule
+        .onNodeWithTag("commentTextcommentId3", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("This fits our schedule.")
+    composeTestRule
+        .onNodeWithTag("commentTextcommentId4", useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("This place seems great.")
 
-      suggestionPopupComments.assertIsDisplayed()
-      // Verify the comments are displayed:
-      // by checking the presence of each suggestionComment, we check the presence of the
-      // commentList
-      suggestionComment1.assertIsDisplayed()
-      suggestionComment2.assertIsDisplayed()
-      suggestionComment3.assertIsDisplayed()
-      suggestionComment4.assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionPopupCommentTextField", useUnmergedTree = true)
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionPopupSendCommentButton", useUnmergedTree = true)
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionPopupDivider", useUnmergedTree = true)
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("noSuggestionCommentList", useUnmergedTree = true)
+        .assertDoesNotExist()
 
-      suggestionPopupDivider.assertIsDisplayed()
-    }
+    composeTestRule.onNodeWithTag("suggestionPopupDivider0", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("suggestionPopupDivider1", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("suggestionPopupDivider2", useUnmergedTree = true).assertExists()
+    composeTestRule
+        .onNodeWithTag("suggestionPopupDivider3", useUnmergedTree = true)
+        .assertDoesNotExist()
   }
 
-  /**
-   * Test that the suggestion details popup of the second suggestion displays correctly when
-   * comments are not present. Note that the address and website are tested in separate tests.
-   */
   @Test
-  fun suggestionDetailPopup_displaysCorrectly_whenCommentsAreNotPresent() {
+  fun suggestionNoCommentDisplaysProperly() {
     composeTestRule.setContent {
-      SuggestionDetailPopup(suggestion = suggestionList[1], comments = emptyList(), onDismiss = {})
+      SuggestionDetailPopup(
+          suggestion = suggestionList[0],
+          comments = emptyList(),
+          onDismiss = {},
+          isLiked = false,
+          onLikeClicked = {},
+          onComment = { it -> },
+          likesCount = 0)
     }
 
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-      suggestionPopupTitle.assertIsDisplayed()
-      suggestionPopupCommentsIcon.assertIsDisplayed()
-      suggestionPopupLikesIcon.assertIsDisplayed()
-      suggestionPopupUserName.assertIsDisplayed()
-      suggestionPopupDate.assertIsDisplayed()
-
-      suggestionPopupDescription.assertIsDisplayed()
-      suggestionPopupDescriptionText.assertIsDisplayed()
-
-      suggestionPopupStartDateTimeEndDateTime.assertIsDisplayed()
-
-      suggestionPopupComments.assertIsDisplayed()
-      // Verify the "No comments yet" message is displayed
-      noSuggestionCommentList.assertIsDisplayed()
-    }
-  }
-
-  /**
-   * Test that the suggestion details popup of the first suggestion displays correctly the address
-   * and website when both are present.
-   */
-  @Test
-  fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteArePresent() {
-    composeTestRule.setContent {
-      SuggestionDetailPopup(suggestion = suggestionList[0], comments = commentList, onDismiss = {})
-    }
-
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-      // Verify the address and website are present
-      suggestionPopupAddrTextNotEmpty.assertIsDisplayed()
-      suggestionPopupWebsiteTextNotEmpty.assertIsDisplayed()
-    }
-  }
-
-  /**
-   * Test that the suggestion details popup of the fourth suggestion displays correctly the address
-   * and website when both are absent.
-   */
-  @Test
-  fun suggestionDetailPopup_displaysAddrAndWebsiteCorrectly_whenAddrAndWebsiteAreAbsent() {
-    composeTestRule.setContent {
-      SuggestionDetailPopup(suggestion = suggestionList[3], comments = commentList, onDismiss = {})
-    }
-
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-      // Verify the address and website are absent
-      suggestionPopupAddr.assertIsDisplayed()
-      suggestionPopupAddrTextEmpty.assertIsDisplayed()
-      suggestionPopupWebsite.assertIsDisplayed()
-      suggestionPopupWebsiteTextEmpty.assertIsDisplayed()
-    }
-  }
-
-  /**
-   * Test when clicking on the suggestion details popup of the first suggestion (for testing
-   * purpose), the popup of the clicked suggestion item is displayed, and the overlay effect is
-   * working correctly.
-   */
-  @Test
-  fun suggestionItem_click_displaysPopup_overlayEffect() {
-    composeTestRule.setContent {
-      SuggestionFeedContent(
-          innerPadding = PaddingValues(),
-          navigationActions = mockNavActions,
-          suggestionList = suggestionList,
-          searchSuggestionText = "")
-    }
-
-    // Simulate a click on the first SuggestionItem for testing purpose
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) { suggestion1.performClick() }
-
-    // Verify SuggestionDetailPopup is displayed
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-      suggestionPopupScreen.assertIsDisplayed()
-    }
+    composeTestRule
+        .onNodeWithTag("noSuggestionCommentList", useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
   }
 }

@@ -15,11 +15,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Comment
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -36,17 +34,18 @@ fun SuggestionComment(comment: Comment) {
           Text(
               text = comment.userName,
               style = TextStyle(fontWeight = FontWeight.Bold),
-              modifier = Modifier.testTag("commentUserName"))
+              modifier = Modifier.testTag("commentUserName" + comment.commentId))
         }
 
         Text(
             text =
                 "Created on : ${comment.createdAt.format(DateTimeFormatter.ofPattern("d MMM yyyy"))}",
             style = TextStyle(fontWeight = FontWeight.Bold),
-            modifier = Modifier.testTag("commentCreatedAt"))
+            modifier = Modifier.testTag("commentCreatedAt" + comment.commentId))
         HorizontalDivider(
             modifier =
-                Modifier.padding(vertical = 8.dp, horizontal = 16.dp).testTag("commentDivider"))
+                Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                    .testTag("commentDivider" + comment.commentId))
 
         Surface(
             modifier =
@@ -54,20 +53,10 @@ fun SuggestionComment(comment: Comment) {
               Text(
                   text = comment.text,
                   modifier =
-                      Modifier.padding(vertical = 4.dp).fillMaxWidth().testTag("commentText"),
+                      Modifier.padding(vertical = 4.dp)
+                          .fillMaxWidth()
+                          .testTag("commentText" + comment.commentId),
                   fontSize = 14.sp)
             }
       }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SuggestionCommentPreview() {
-  SuggestionComment(
-      Comment(
-          commentId = "1",
-          userId = "1",
-          userName = "Alice",
-          text = "This is a comment",
-          createdAt = LocalDate.now()))
 }

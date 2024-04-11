@@ -7,6 +7,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.screens.SuggestionFeedScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -20,6 +21,7 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import java.time.LocalDate
 import java.time.LocalTime
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.junit.Before
@@ -27,7 +29,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-class FakeSuggestionsViewModel : SuggestionsViewModel(null, "") {
+class FakeSuggestionsViewModel : SuggestionsViewModel(TripsRepository("", Dispatchers.IO), "") {
 
   private val _state: MutableStateFlow<List<Suggestion>> = MutableStateFlow(listOf())
   // Override the state with dummy data for testing
@@ -162,7 +164,9 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       SuggestionFeedContent(
           innerPadding = PaddingValues(),
           suggestionList = suggestionList,
-          searchSuggestionText = "")
+          searchSuggestionText = "",
+          tripId = "",
+          suggestionRepository = FakeSuggestionsViewModel())
     }
 
     // Check if the three suggestions are displayed on the Suggestions Feed screen
@@ -178,7 +182,11 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun noSuggestionsMessageDisplayed_whenListIsEmpty() {
     composeTestRule.setContent {
       SuggestionFeedContent(
-          innerPadding = PaddingValues(), suggestionList = emptyList(), searchSuggestionText = "")
+          innerPadding = PaddingValues(),
+          suggestionList = emptyList(),
+          searchSuggestionText = "",
+          tripId = "",
+          suggestionRepository = FakeSuggestionsViewModel())
     }
     // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
@@ -191,7 +199,10 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun suggestionFeedScreen_isDisplayed() {
     composeTestRule.setContent {
       // Simulate the Suggestion composable with the provided tripId
-      com.github.se.wanderpals.ui.screens.trip.Suggestion(tripId = "dummyTestTripId")
+      com.github.se.wanderpals.ui.screens.trip.Suggestion(
+          tripId = "dummyTestTripId",
+          oldNavActions = mockNavActions,
+          suggestionsViewModel = FakeSuggestionsViewModel())
     }
 
     // Now check if the suggestion feed screen is displayed

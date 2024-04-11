@@ -262,7 +262,8 @@ fun SuggestionDetailPopup(
                                               }
                                             })
                                         .background(Color(0xFF5A7BF0))
-                                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                                        .testTag("suggestionPopupSendCommentButton"),
                                 color = Color.White,
                                 style = MaterialTheme.typography.bodyMedium)
                           }
@@ -293,9 +294,8 @@ fun SuggestionDetailPopup(
                                             .testTag(
                                                 "suggestionPopupDivider${comments.indexOf(comment)}"),
                                     color =
-                                        Color(
-                                            0xFF5A7BF0)) // Add a divider between comments except
-                                                         // for the last one
+                                        Color(0xFF5A7BF0)) // Add a divider between comments except
+                                // for the last one
                               }
                             }
                       }
