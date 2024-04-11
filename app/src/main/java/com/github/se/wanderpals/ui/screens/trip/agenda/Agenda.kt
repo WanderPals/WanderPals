@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -8,13 +9,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +26,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
+import java.time.LocalDate
 import java.time.YearMonth
 
 private const val DAYS_IN_A_WEEK = 7
@@ -46,7 +52,7 @@ private const val MAX_ROWS_CALENDAR = 6
 @Preview(showSystemUi = true)
 @Composable
 fun AgendaPreview() {
-  WanderPalsTheme { Agenda(AgendaViewModel("")) }
+  WanderPalsTheme { Agenda(AgendaViewModel("", null)) }
 }
 
 /**
@@ -60,26 +66,47 @@ fun AgendaPreview() {
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel) {
   val uiState by agendaViewModel.uiState.collectAsState()
+  val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
+
+  var isDrawerExpanded by remember { mutableStateOf(false) }
+
+  var isStopPressed by remember { mutableStateOf(false) }
+  var selectedStopId by remember { mutableStateOf("") }
+
   Surface(
-      modifier =
-          Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("agendaScreen"),
+      modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
   ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-      CalendarWidget(
-          days = getDaysOfWeekLabels(),
-          yearMonth = uiState.yearMonth,
-          dates = uiState.dates,
-          onPreviousMonthButtonClicked = { prevMonth ->
-            agendaViewModel.toPreviousMonth(prevMonth)
-          },
-          onNextMonthButtonClicked = { nextMonth -> agendaViewModel.toNextMonth(nextMonth) },
-          onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+    if (isStopPressed) {
+      val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
+      StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
+    }
+    Column {
+
+      // Banner to toggle drawer visibility
+      Banner(agendaViewModel, isDrawerExpanded, onToggle = { isDrawerExpanded = !isDrawerExpanded })
+      AnimatedVisibility(visible = isDrawerExpanded) {
+        CalendarWidget(
+            days = getDaysOfWeekLabels(),
+            yearMonth = uiState.yearMonth,
+            dates = uiState.dates,
+            onPreviousMonthButtonClicked = { prevMonth ->
+              agendaViewModel.toPreviousMonth(prevMonth)
+            },
+            onNextMonthButtonClicked = { nextMonth -> agendaViewModel.toNextMonth(nextMonth) },
+            onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+      }
       Spacer(modifier = Modifier.padding(1.dp))
       HorizontalDivider(
-          modifier = Modifier.padding(horizontal = 12.dp),
+          modifier = Modifier.fillMaxWidth(),
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
       // Implement the daily agenda here
+      DailyActivities(
+          agendaViewModel = agendaViewModel,
+          onActivityItemClick = { stopId ->
+            isStopPressed = true
+            selectedStopId = stopId
+          })
     }
   }
 }
@@ -107,7 +134,7 @@ fun CalendarWidget(
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
-  Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+  Column(modifier = Modifier.padding(16.dp)) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -120,6 +147,29 @@ fun CalendarWidget(
         onNextMonthButtonClicked = onNextMonthButtonClicked)
     Content(dates = dates, onDateClickListener = onDateClickListener)
   }
+}
+
+/**
+ * Composable function that displays the daily activities for a selected date.
+ *
+ * @param agendaViewModel The view model for managing the agenda of a trip.
+ */
+@Composable
+fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -> Unit) {
+  val uiState by agendaViewModel.uiState.collectAsState()
+  val selectedDate = uiState.selectedDate ?: LocalDate.now()
+
+  Box(
+      modifier =
+          Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp).testTag("Banner")) {
+        DisplayDate(date = selectedDate)
+        // Optional: Add an icon to indicate the expand/collapse action
+        Icon(
+            imageVector =
+                if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+            contentDescription = "Toggle",
+            modifier = Modifier.align(Alignment.CenterEnd))
+      }
 }
 
 /**
@@ -217,30 +267,35 @@ fun ContentItem(
     onClickListener: (CalendarUiState.Date) -> Unit,
     modifier: Modifier = Modifier
 ) {
-  // Define the content description
-  val description =
-      "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
+  // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
+  val isEmptyDate = date.dayOfMonth.isEmpty()
 
-  Box(
-      modifier =
-          modifier
-              .aspectRatio(1f) // Makes the box a square to fit a circle perfectly
-              .clip(CircleShape) // Clips the Box into a Circle
-              .background(
-                  color =
-                      if (date.isSelected) {
-                        MaterialTheme.colorScheme.secondaryContainer
-                      } else {
-                        Color.Transparent
-                      })
-              .clickable { onClickListener(date) }
-              .semantics {
-                contentDescription = description
-              } // Add semantics with contentDescription
-      ) {
-        Text(
-            text = date.dayOfMonth,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.align(Alignment.Center).padding(10.dp))
-      }
+  val baseModifier =
+      modifier
+          .aspectRatio(1f)
+          .clip(CircleShape)
+          .background(
+              if (!isEmptyDate && date.isSelected) MaterialTheme.colorScheme.secondaryContainer
+              else Color.Transparent)
+          .semantics {
+            contentDescription =
+                if (!isEmptyDate)
+                    "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
+                else "Empty Date Cell"
+          }
+
+  // Apply clickable only if the date is not empty.
+  val finalModifier =
+      if (!isEmptyDate) {
+        baseModifier.clickable { onClickListener(date) }
+      } else baseModifier
+
+  Box(modifier = finalModifier) {
+    if (!isEmptyDate) {
+      Text(
+          text = date.dayOfMonth,
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.align(Alignment.Center).padding(10.dp))
+    }
+  }
 }
