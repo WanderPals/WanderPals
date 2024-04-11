@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
+import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -52,20 +54,32 @@ fun Trip(
       topBar = {},
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
-          composable(Route.DASHBOARD) { Dashboard(tripId, oldNavActions) }
-          composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
+          composable(Route.DASHBOARD) {
+            BackHandler(true) {}
+            Dashboard(
+                tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions, navActions)
+          }
+          composable(Route.AGENDA) {
+            BackHandler(true) {}
+            Agenda(AgendaViewModel(tripId, tripsRepository))
+          }
           composable(Route.SUGGESTION) {
+            BackHandler(true) {}
             Suggestion(
                 oldNavActions = oldNavActions,
                 tripId,
                 SuggestionsViewModel(tripsRepository, tripId))
           } // todo: might have the param oldNavActions for Suggestion()
           composable(Route.MAP) {
+            BackHandler(true) {}
             if (client != null) {
               Map(MapViewModel(tripsRepository, tripId), client)
             }
           }
-          composable(Route.NOTIFICATION) { Notification(tripId) }
+          composable(Route.NOTIFICATION) {
+            BackHandler(true) {}
+            Notification(tripId)
+          }
         }
       }
 }

@@ -3,6 +3,7 @@ package com.github.se.wanderpals
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +27,6 @@ import com.github.se.wanderpals.ui.screens.trip.CreateSuggestion
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.places.api.Places
@@ -37,8 +37,6 @@ import kotlinx.coroutines.Dispatchers
 
 class MainActivity : ComponentActivity() {
   private lateinit var signInClient: GoogleSignInClient
-
-  private lateinit var account: GoogleSignInAccount
 
   private lateinit var navController: NavHostController
 
@@ -92,18 +90,21 @@ class MainActivity : ComponentActivity() {
 
           NavHost(navController = navController, startDestination = Route.SIGN_IN) {
             composable(Route.SIGN_IN) {
+              BackHandler(true) {}
               SignIn(onClick = { launcher.launch(signInClient.signInIntent) })
             }
             composable(Route.OVERVIEW) {
+              BackHandler(true) {}
               Overview(
                   overviewViewModel = OverviewViewModel(tripsRepository),
                   navigationActions = navigationActions)
             }
-            composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
-              val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
-              Trip(navigationActions, tripId, tripsRepository, placesClient)
+            composable(Route.TRIP) { navBackStackEntry ->
+              BackHandler(true) {}
+              Trip(navigationActions, navigationActions.currentTrip, tripsRepository, placesClient)
             }
             composable(Route.CREATE_TRIP) {
+              BackHandler(true) {}
               CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
             }
 
