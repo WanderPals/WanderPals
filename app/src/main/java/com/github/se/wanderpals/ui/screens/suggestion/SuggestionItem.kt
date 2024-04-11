@@ -93,7 +93,7 @@ fun SuggestionItem(
 
           // the third row
           Text(
-              text = suggestion.text,
+              text = suggestion.stop.description,
               style = MaterialTheme.typography.bodySmall,
               fontSize = 14.sp,
               maxLines = 2, // Limit the text to two lines
