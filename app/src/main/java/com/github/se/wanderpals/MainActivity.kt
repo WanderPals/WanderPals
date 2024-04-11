@@ -3,6 +3,7 @@ package com.github.se.wanderpals
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
@@ -90,18 +91,22 @@ class MainActivity : ComponentActivity() {
 
           NavHost(navController = navController, startDestination = Route.SIGN_IN) {
             composable(Route.SIGN_IN) {
+              BackHandler(true) {}
               SignIn(onClick = { launcher.launch(signInClient.signInIntent) })
             }
             composable(Route.OVERVIEW) {
+              BackHandler(true) {}
               Overview(
                   overviewViewModel = OverviewViewModel(tripsRepository),
                   navigationActions = navigationActions)
             }
             composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
+              BackHandler(true) {}
               val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
               Trip(navigationActions, tripId, tripsRepository, placesClient)
             }
             composable(Route.CREATE_TRIP) {
+              BackHandler(true) {}
               CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
             }
           }
