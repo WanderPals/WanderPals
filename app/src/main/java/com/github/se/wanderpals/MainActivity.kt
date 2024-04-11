@@ -25,7 +25,6 @@ import com.github.se.wanderpals.ui.screens.overview.Overview
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.places.api.Places
@@ -36,8 +35,6 @@ import kotlinx.coroutines.Dispatchers
 
 class MainActivity : ComponentActivity() {
   private lateinit var signInClient: GoogleSignInClient
-
-  private lateinit var account: GoogleSignInAccount
 
   private lateinit var navController: NavHostController
 
