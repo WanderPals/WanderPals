@@ -21,38 +21,56 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
-import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
-import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.google.android.libraries.places.api.net.PlacesClient
 
-/** The Trip screen. */
+/**
+ * Trip screen composable that displays the trip screen with the bottom navigation bar.
+ *
+ * @param oldNavActions The navigation actions for the previous screen.
+ * @param tripId The trip ID.
+ * @param tripsRepository The repository for trips data.
+ * @param client The PlacesClient for the Google Places API.
+ */
 @Composable
-fun Trip(oldNavActions: NavigationActions, tripId: String, tripsRepository: TripsRepository) {
+fun Trip(
+    oldNavActions: NavigationActions,
+    tripId: String,
+    tripsRepository: TripsRepository,
+    client: PlacesClient?
+) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
-
-  val dashboardViewModel = DashboardViewModel(tripsRepository, tripId)
-  val suggestionsViewModel = SuggestionsViewModel(tripsRepository, tripId)
 
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),
       topBar = {},
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
-          composable(Route.DASHBOARD) { Dashboard(tripId, dashboardViewModel, navActions) }
+          composable(Route.DASHBOARD) { Dashboard(tripId, oldNavActions) }
           composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
           composable(Route.SUGGESTION) {
-            Suggestion(tripId, suggestionsViewModel)
+            Suggestion(tripId)
           } // todo: might have the param oldNavActions for Suggestion()
-          composable(Route.MAP) { Map(tripId) }
+          composable(Route.MAP) {
+            if (client != null) {
+              Map(MapViewModel(tripsRepository, tripId), client)
+            }
+          }
           composable(Route.NOTIFICATION) { Notification(tripId) }
         }
       }
 }
 
+/**
+ * Bottom navigation bar composable that displays the bottom navigation bar.
+ *
+ * @param navActions The navigation actions for the screen.
+ */
 @Composable
 fun BottomBar(navActions: NavigationActions) {
   NavigationBar(

@@ -13,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -26,6 +27,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +66,8 @@ class MainActivity : ComponentActivity() {
         }
       }
 
+  private lateinit var placesClient: PlacesClient
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
@@ -73,6 +78,8 @@ class MainActivity : ComponentActivity() {
             .build()
 
     signInClient = GoogleSignIn.getClient(this, gso)
+    Places.initialize(applicationContext, MAPS_API_KEY)
+    placesClient = Places.createClient(this)
 
     setContent {
       WanderPalsTheme {
@@ -92,7 +99,7 @@ class MainActivity : ComponentActivity() {
             }
             composable(Route.TRIP + "/{tripId}") { navBackStackEntry ->
               val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
-              Trip(navigationActions, tripId, tripsRepository)
+              Trip(navigationActions, tripId, tripsRepository, placesClient)
             }
             composable(Route.CREATE_TRIP) {
               CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
