@@ -45,46 +45,7 @@ open class SuggestionsViewModel(private val suggestionRepository: TripsRepositor
     }
   }
 
-  /** likeSuggestion function to like a suggestion in the suggestion feed. */
-  fun updateSuggestion(tripId: String, suggestion: Suggestion) {
-    viewModelScope.launch {
-      suggestionRepository?.updateSuggestionInTrip(tripId, suggestion)
-    }
-  }
-
-//  fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
-//    val currentlyLiked = _likedSuggestions.value
-//    val isLiked = currentlyLiked.contains(suggestion.suggestionId)
-//
-//    // Toggle the like status in the local state
-//    _likedSuggestions.value = if (isLiked) {
-//      currentlyLiked - suggestion.suggestionId
-//    } else {
-//      currentlyLiked + suggestion.suggestionId
-//    }
-//
-//    // Prepare the updated suggestion for backend update
-//    val updatedSuggestion = suggestion.copy(
-//      userLikes = if (isLiked) {
-//        suggestion.userLikes - userId
-//      } else {
-//        suggestion.userLikes + userId
-//      }
-//    )
-//
-//    // Update the suggestion in the backend
-//    viewModelScope.launch {
-//      val wasUpdateSuccessful = suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
-//      if (!wasUpdateSuccessful) {
-//        // If the backend update fails, revert the local state change
-//        _likedSuggestions.value = currentlyLiked
-//        // You might want to show an error message to the user
-//      }
-//    }
-//
-//  }
-
-
+  /** Toggles the like status of a suggestion and updates the backend and local state accordingly. */
   fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
     val currentLoggedInUId = suggestionRepository?.uid!! // Get the current logged-in user's ID from the repository instance
     val currentlyLiked = _likedSuggestions.value
@@ -100,37 +61,27 @@ open class SuggestionsViewModel(private val suggestionRepository: TripsRepositor
     }
 
 
-        // Prepare the updated userLikes list
-//        val updatedUserLikes = if (isLiked) {
-//          suggestion.userLikes.filter { it != currentLoggedInUId }
-//        } else {
-//          suggestion.userLikes + currentLoggedInUId
-//        }
-//
-//        // Prepare the updated suggestion
-//        val updatedSuggestion = suggestion.copy(userLikes = updatedUserLikes)
-
-      // Prepare the updated suggestion for backend update
-      val updatedSuggestion = suggestion.copy(
-        userLikes = if (isLiked) { // if the suggestion is already liked, remove the current user's ID todo: weird logic
-          suggestion.userLikes - currentLoggedInUId // Remove the current user's ID from the list
-        } else {
-          suggestion.userLikes + currentLoggedInUId
-        }
-      )
+    // Prepare the updated suggestion for backend update
+    val updatedSuggestion = suggestion.copy(
+      userLikes = if (isLiked) { // if the suggestion is already liked, remove the current user's ID todo: weird logic
+        suggestion.userLikes - currentLoggedInUId // Remove the current user's ID from the list
+      } else {
+        suggestion.userLikes + currentLoggedInUId
+      }
+    )
 
     // Update the backend by calling the TripsRepository function
     viewModelScope.launch {
-        // Call the repository function to update the suggestion
-        val wasUpdateSuccessful = suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)!!
-        if (!wasUpdateSuccessful) {
-          // If the backend update fails, revert the local state change
-          _likedSuggestions.value = currentlyLiked
-        } else{
-          // If the backend update is successful, publish the updated like count
-          _state.value = _state.value.map { if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it }
-        }
-
+      // Call the repository function to update the suggestion
+      val wasUpdateSuccessful =
+        suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+      if (!wasUpdateSuccessful) {
+        // If the backend update fails, revert the local state change
+        _likedSuggestions.value = currentlyLiked
+      } else{ // If the backend update is successful,
+        // Update the local state with the modified suggestion
+        _state.value = _state.value.map { if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it }
+      }
     }
   }
 
