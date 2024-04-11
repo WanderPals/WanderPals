@@ -13,6 +13,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
  * @param navController The navigation controller.
  */
 class NavigationActions(private val navController: NavHostController) {
+
+  var currentTrip = ""
+
   /**
    * Navigate to a specific route.
    *
