@@ -1,25 +1,34 @@
 package com.github.se.wanderpals.agenda
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.agenda.Banner
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.github.se.wanderpals.ui.screens.trip.agenda.getDisplayName
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
+import java.util.Locale
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-class FakeAgendaViewModel(initialYearMonth: YearMonth) : AgendaViewModel("") {
+class FakeAgendaViewModel(initialYearMonth: YearMonth, testActivities: List<Stop>) :
+    AgendaViewModel("", TripsRepository("", Dispatchers.IO)) {
   private val _uiState =
       MutableStateFlow(
           CalendarUiState(
@@ -35,6 +44,7 @@ class FakeAgendaViewModel(initialYearMonth: YearMonth) : AgendaViewModel("") {
               selectedDate = null))
 
   override var uiState: StateFlow<CalendarUiState> = _uiState
+  override var dailyActivities: StateFlow<List<Stop>> = MutableStateFlow(testActivities)
 
   fun toNextMonth() {
     val nextMonth = _uiState.value.yearMonth.plusMonths(1)
@@ -65,9 +75,14 @@ class AgendaTest {
   @Test
   fun agendaDisplaysCurrentMonthAndYear() {
     val testYearMonth = YearMonth.now()
-    val fakeViewModel = FakeAgendaViewModel(testYearMonth)
+    val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent { Agenda(agendaViewModel = fakeViewModel) }
+
+    composeTestRule.waitForIdle()
+
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
 
     val expectedDisplay = testYearMonth.getDisplayName()
     composeTestRule.onNodeWithText(expectedDisplay).assertExists()
@@ -76,9 +91,12 @@ class AgendaTest {
   @Test
   fun navigationToNextMonth() {
     val initialMonth = YearMonth.now()
-    val fakeViewModel = FakeAgendaViewModel(initialMonth)
+    val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
     composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
 
     composeTestRule.onNodeWithContentDescription("Next").performClick()
 
@@ -90,9 +108,12 @@ class AgendaTest {
   @Test
   fun navigationToPreviousMonth() {
     val initialMonth = YearMonth.now()
-    val fakeViewModel = FakeAgendaViewModel(initialMonth)
+    val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
     composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
 
     composeTestRule.onNodeWithContentDescription("Back").performClick()
 
@@ -106,11 +127,14 @@ class AgendaTest {
     val testYearMonth = YearMonth.now()
     // Initialize with specific dates, including "15" as unselected.
     val fakeViewModel =
-        FakeAgendaViewModel(testYearMonth).apply {
+        FakeAgendaViewModel(testYearMonth, emptyList()).apply {
           // Initial state setup to ensure "15" is present and not selected.
         }
 
     composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+
+    // Click on the banner to make the calendar appear
+    composeTestRule.onNodeWithTag("Banner").performClick()
 
     // Assuming "Date 15, Not Selected" is initially present.
     composeTestRule.onNodeWithContentDescription("Date 15, Not Selected").performClick()
@@ -122,5 +146,50 @@ class AgendaTest {
 
     // Now, verify the item's content description reflects it being selected.
     composeTestRule.onNodeWithContentDescription("Date 15, Selected").assertExists()
+  }
+
+  @Test
+  fun checkBannerIsDisplayed() {
+    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+
+    composeTestRule.setContent { Agenda(agendaViewModel = testViewModel) }
+
+    composeTestRule.waitForIdle()
+
+    composeTestRule.onNodeWithTag("Banner").assertIsDisplayed()
+  }
+
+  // Test to check the date displayed is correct
+  @Test
+  fun checkDateIsDisplayedCorrectly() {
+    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+
+    composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
+
+    composeTestRule.waitForIdle()
+
+    val testDate = LocalDate.now()
+
+    val formatter =
+        java.time.format.DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy")
+            .withLocale(Locale.getDefault())
+
+    val formattedDefaultDate = testDate.format(formatter)
+
+    composeTestRule
+        .onNodeWithTag("displayDateText", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextEquals(formattedDefaultDate)
+  }
+
+  fun checkDateIsDisplayed() {
+    // Assuming you have a way to inject or use AgendaViewModel within MainActivity
+    val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
+
+    composeTestRule.setContent { Banner(testViewModel, isExpanded = true, onToggle = {}) }
+
+    composeTestRule.waitForIdle() // Wait for UI to update
+
+    composeTestRule.onNodeWithTag("displayDateText", useUnmergedTree = true).assertIsDisplayed()
   }
 }

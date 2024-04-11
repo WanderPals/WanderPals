@@ -52,7 +52,7 @@ fun Trip(
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
         NavHost(navController, startDestination = Route.DASHBOARD, Modifier.padding(innerPadding)) {
           composable(Route.DASHBOARD) { Dashboard(tripId, oldNavActions) }
-          composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId)) }
+          composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId, tripsRepository)) }
           composable(Route.SUGGESTION) {
             Suggestion(tripId)
           } // todo: might have the param oldNavActions for Suggestion()
