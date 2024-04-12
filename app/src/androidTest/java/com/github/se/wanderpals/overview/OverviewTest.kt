@@ -89,6 +89,10 @@ class OverviewViewModelTest :
     _state.value = listOf()
   }
 
+  override fun createTrip(trip: Trip) {
+    _state.value = _state.value.toMutableList().apply { add(trip) }
+  }
+
   override fun getAllTrips() {}
 }
 
