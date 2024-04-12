@@ -16,7 +16,7 @@ import kotlinx.coroutines.runBlocking
  *
  * @param tripsRepository The repository for accessing trip data.
  */
-open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel() {
+open class OverviewViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
 
   // State flow to hold the list of trips
   private val _state = MutableStateFlow(emptyList<Trip>())
@@ -42,6 +42,15 @@ open class OverviewViewModel(val tripsRepository: TripsRepository) : ViewModel()
       _isLoading.value = false
     }
   }
+  /**
+   * Adds the trip for the user by adding it in it trips Repository
+   *
+   * @param trip The trip to add in the repository.
+   */
+  open fun createTrip(trip: Trip) {
+    runBlocking { tripsRepository.addTrip(trip) }
+  }
+
   /**
    * Adds the user to a trip with the specified trip ID. The trip must already exist in the database
    * to make this function success.

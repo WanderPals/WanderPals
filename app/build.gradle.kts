@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.Packaging
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -26,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId = "com.github.se.wanderpals"
-        minSdk = 34
+        minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -178,6 +176,14 @@ dependencies {
     // Coroutine support for Firebase (Play Services)
     implementation(libs.kotlinx.coroutines.play.services)
 
+    // Firebase Authentication
+    implementation(libs.firebase.auth)
+
+    // Google Sign-In
+    implementation(libs.play.services.auth)
+
+    // Google Places
+    implementation(libs.places)
 
 
     debugImplementation(libs.compose.tooling)
@@ -207,6 +213,7 @@ dependencies {
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
+
 
 }
 

@@ -16,6 +16,9 @@ class TripScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val notificationScreen: KNode = onNode { hasTestTag("notificationScreen") }
 
   val bottomNav: KNode = onNode { hasTestTag("bottomNav") }
+  val menuButton: KNode = onNode { hasTestTag("menuButton") }
+  val menuNav: KNode = onNode { hasTestTag("menuNav") }
+  val overviewButtonMenuItem: KNode = menuNav.child { hasTestTag("backToOverview") }
 
   val suggestionItem: KNode = bottomNav.child { hasTestTag("Suggestion") }
   val agendaItem: KNode = bottomNav.child { hasTestTag("Agenda") }

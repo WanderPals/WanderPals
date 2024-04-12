@@ -1,8 +1,15 @@
 package com.github.se.wanderpals.overview
 
+import android.content.Intent
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -24,12 +31,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.hamcrest.Matchers
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.`is`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-class OverviewViewModelTest() :
+class OverviewViewModelTest :
     OverviewViewModel(TripsRepository("-1", dispatcher = Dispatchers.IO)) {
   private val trip1 =
       Trip(
@@ -115,6 +125,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       buttonTrip2 { assertIsDisplayed() }
       buttonTrip3 { assertIsDisplayed() }
 
+      shareTripButton1 { assertIsDisplayed() }
+      shareTripButton2 { assertIsDisplayed() }
+      shareTripButton3 { assertIsDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
@@ -138,6 +152,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       buttonTrip1 { assertIsNotDisplayed() }
       buttonTrip2 { assertIsNotDisplayed() }
       buttonTrip3 { assertIsNotDisplayed() }
+
+      shareTripButton1 { assertIsNotDisplayed() }
+      shareTripButton2 { assertIsNotDisplayed() }
+      shareTripButton3 { assertIsNotDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
@@ -163,6 +181,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       buttonTrip2 { assertIsNotDisplayed() }
       buttonTrip3 { assertIsDisplayed() }
 
+      shareTripButton1 { assertIsNotDisplayed() }
+      shareTripButton2 { assertIsNotDisplayed() }
+      shareTripButton3 { assertIsDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
@@ -186,6 +208,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       buttonTrip1 { assertIsNotDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
       buttonTrip3 { assertIsNotDisplayed() }
+
+      shareTripButton1 { assertIsNotDisplayed() }
+      shareTripButton2 { assertIsDisplayed() }
+      shareTripButton3 { assertIsNotDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
@@ -211,6 +237,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       buttonTrip2 { assertIsDisplayed() }
       buttonTrip3 { assertIsNotDisplayed() }
 
+      shareTripButton1 { assertIsDisplayed() }
+      shareTripButton2 { assertIsDisplayed() }
+      shareTripButton3 { assertIsNotDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
@@ -234,6 +264,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       buttonTrip1 { assertIsNotDisplayed() }
       buttonTrip2 { assertIsNotDisplayed() }
       buttonTrip3 { assertIsNotDisplayed() }
+
+      shareTripButton1 { assertIsNotDisplayed() }
+      shareTripButton2 { assertIsNotDisplayed() }
+      shareTripButton3 { assertIsNotDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
@@ -260,6 +294,10 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       buttonTrip1 { assertIsDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
       buttonTrip3 { assertIsDisplayed() }
+
+      shareTripButton1 { assertIsDisplayed() }
+      shareTripButton2 { assertIsDisplayed() }
+      shareTripButton3 { assertIsDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
@@ -298,8 +336,28 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
         assertIsDisplayed()
         performClick()
       }
-      verify { mockNavActions.navigateTo(Route.TRIP + "/1") }
+      verify {
+        mockNavActions.currentTrip = "1"
+        mockNavActions.navigateTo(Route.TRIP)
+      }
       confirmVerified(mockNavActions)
     }
+  }
+
+  @Test
+  fun shareTripButtonCreatesAnIntent() = run {
+    Intents.init()
+    composeTestRule.onNodeWithTag("shareTripButton2").performClick()
+    val expectedIntent =
+        Matchers.allOf(
+            hasAction(Intent.ACTION_SEND),
+            hasExtra(Intent.EXTRA_TEXT, "2"),
+            IntentMatchers.hasType("text/plain"))
+
+    Intents.intended(
+        allOf(
+            hasAction(Intent.ACTION_CHOOSER), hasExtra(`is`(Intent.EXTRA_INTENT), expectedIntent)))
+
+    Intents.release()
   }
 }

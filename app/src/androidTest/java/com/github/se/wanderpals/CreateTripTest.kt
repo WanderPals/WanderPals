@@ -4,7 +4,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.screens.CreateTripoScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -39,7 +39,7 @@ private val testTrip =
         emptyList())
 
 open class CreateTripViewModelTest(tripsRepository: TripsRepository) :
-    CreateTripViewModel(tripsRepository) {
+    OverviewViewModel(tripsRepository) {
   override fun createTrip(trip: Trip) {
     assert(trip == testTrip)
   }
@@ -86,6 +86,11 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           assertTextContains("Name the trip")
 
           performTextClearance()
+        }
+
+        titleLengthText {
+          assertIsDisplayed()
+          assertTextEquals("0/35")
         }
 
         inputBudget {
@@ -152,6 +157,10 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
           performTextInput("My trip")
         }
+        titleLengthText {
+          assertIsDisplayed()
+          assertTextEquals("7/35")
+        }
 
         inputBudget {
           assertIsDisplayed()
@@ -215,6 +224,10 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
           performTextInput("My trip")
         }
+        titleLengthText {
+          assertIsDisplayed()
+          assertTextEquals("7/35")
+        }
 
         inputBudget {
           assertIsDisplayed()
@@ -276,6 +289,10 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
           performTextClearance()
           performTextInput("My trip")
+        }
+        titleLengthText {
+          assertIsDisplayed()
+          assertTextEquals("7/35")
         }
 
         inputBudget {
@@ -342,6 +359,10 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
           performTextClearance()
           performTextInput("My trip")
         }
+        titleLengthText {
+          assertIsDisplayed()
+          assertTextEquals("7/35")
+        }
 
         inputBudget {
           assertIsDisplayed()
@@ -406,6 +427,10 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
           performTextClearance()
           performTextInput("My trip")
+        }
+        titleLengthText {
+          assertIsDisplayed()
+          assertTextEquals("7/35")
         }
 
         inputBudget {

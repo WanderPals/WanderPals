@@ -21,5 +21,5 @@ class CreateSuggestionScreen(semanticsProvider: SemanticsNodeInteractionsProvide
   val inputDescription: KNode = onNode { hasTestTag("inputSuggestionDescription") }
   val inputAddress: KNode = onNode { hasTestTag("inputSuggestionAddress") }
   val inputWebsite: KNode = onNode { hasTestTag("inputSuggestionWebsite") }
-  val suggestionButtonExists: KNode = onNode { hasTestTag("suggestionButtonExists") }
+    val suggestionButtonExists: KNode = onNode { hasTestTag("suggestionButtonExists") }
 }

@@ -35,10 +35,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
-import com.github.se.wanderpals.model.viewmodel.CreateTripViewModel
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.text.SimpleDateFormat
@@ -87,7 +89,10 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
+fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
+
+  val MAX_TITLE_LENGTH = 35
+
   var name by remember { mutableStateOf("") }
   var budget by remember { mutableStateOf("0") }
   var startDate by remember { mutableStateOf("") }
@@ -123,13 +128,23 @@ fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
             horizontalAlignment = Alignment.CenterHorizontally) {
               OutlinedTextField(
                   value = name,
-                  onValueChange = { name = it },
+                  onValueChange = { newTitle ->
+                    if (newTitle.length <= MAX_TITLE_LENGTH) {
+                      name = newTitle
+                    }
+                  },
                   label = { Text("Title") },
                   modifier =
                       Modifier.testTag("inputTripTitle").fillMaxWidth().padding(bottom = 16.dp),
                   isError = errorText.isNotEmpty(),
                   singleLine = true,
                   placeholder = { Text("Name the trip") })
+
+              Text(
+                  text = "${name.length}/$MAX_TITLE_LENGTH",
+                  modifier = Modifier.align(Alignment.End).testTag("titleLengthText"),
+                  style = TextStyle(fontSize = 12.sp, color = Color.Gray),
+              )
               OutlinedTextField(
                   value = budget,
                   onValueChange = { budget = it },
@@ -140,6 +155,7 @@ fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
                   isError = errorText.isNotEmpty(),
                   singleLine = true,
                   placeholder = { Text("Enter the total budget") })
+
               OutlinedTextField(
                   value = description,
                   onValueChange = { description = it },
@@ -150,7 +166,6 @@ fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
                           .height(200.dp)
                           .padding(bottom = 16.dp),
                   isError = errorText.isNotEmpty(),
-                  singleLine = true,
                   placeholder = { Text("Describe the trip") })
 
               Row(horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -222,7 +237,7 @@ fun CreateTrip(tripViewModel: CreateTripViewModel, nav: NavigationActions) {
                               stops = emptyList(),
                               users = emptyList(),
                               suggestions = emptyList())
-                      tripViewModel.createTrip(trip)
+                      overviewViewModel.createTrip(trip)
                       nav.navigateTo(Route.OVERVIEW)
                     }
                   },
