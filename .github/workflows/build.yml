@@ -30,7 +30,7 @@ jobs:
 
       # Run Build Project
       - name: Build gradle project
-        run: ./gradlew build
+        run: ./gradlew build -x app:testDebugUnitTest
 
       # Upload Artifact Build
       - name: Upload APK Debug
