@@ -25,7 +25,6 @@ import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
-import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
@@ -67,7 +66,7 @@ fun Trip(
           composable(Route.SUGGESTION) {
             Suggestion(oldNavActions, tripId, SuggestionsViewModel(tripsRepository, tripId))
             BackHandler(true) {}
-            Suggestion(tripId, SuggestionsViewModel(tripsRepository, tripId))
+            Suggestion(oldNavActions, tripId, SuggestionsViewModel(tripsRepository, tripId))
           }
           composable(Route.MAP) {
             BackHandler(true) {}
