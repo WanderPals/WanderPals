@@ -11,24 +11,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun SuggestionFilterOptions(onFilterSelected: (String) -> Unit) {
-  // Possible filter options
-  val filterOptions = listOf("Creation date", "Like number", "Comment number")
+  // Possible sorting options
+  val sortOptions = listOf("Creation date", "Like number", "Comment number")
 
   // This will keep track of the currently selected filter
-  var selectedFilter by remember { mutableStateOf(filterOptions.first()) }
+  var selectedFilter by remember { mutableStateOf(sortOptions.first()) }
 
   // Call onFilterSelected whenever the filter changes
   LaunchedEffect(selectedFilter) { onFilterSelected(selectedFilter) }
 
   // UI for filter options
   Row(
-      modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+      modifier =
+          Modifier.fillMaxWidth()
+              .padding(horizontal = 16.dp, vertical = 8.dp)
+              .testTag("suggestionSortingOptions"),
       horizontalArrangement = Arrangement.SpaceBetween) {
-        filterOptions.forEach { filter ->
+        sortOptions.forEach { filter ->
           SuggestionFilterButton(
               text = filter,
               isSelected = selectedFilter == filter,

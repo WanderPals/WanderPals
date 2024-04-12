@@ -27,18 +27,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SuggestionBottomBar(
-    /*tripId: String, navActions: NavigationActions, */ onSuggestionClick: () -> Unit = {}
-) {
+fun SuggestionBottomBar(onSuggestionClick: () -> Unit = {}) {
   Column(Modifier.padding(30.dp)) {
 
     // Button to create a suggestion
     Box(Modifier.fillMaxWidth()) {
       Button(
-          //          onClick = {
-          //              navActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
-          //          },
-
           onClick = { onSuggestionClick() },
           modifier =
               Modifier.padding(bottom = 20.dp)

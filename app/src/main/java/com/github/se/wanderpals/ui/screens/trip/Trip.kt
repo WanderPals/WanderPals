@@ -65,11 +65,8 @@ fun Trip(
           }
           composable(Route.SUGGESTION) {
             BackHandler(true) {}
-            Suggestion(
-                oldNavActions = oldNavActions,
-                tripId,
-                SuggestionsViewModel(tripsRepository, tripId))
-          } // todo: might have the param oldNavActions for Suggestion()
+            Suggestion(oldNavActions, tripId, SuggestionsViewModel(tripsRepository, tripId))
+          }
           composable(Route.MAP) {
             BackHandler(true) {}
             if (client != null) {

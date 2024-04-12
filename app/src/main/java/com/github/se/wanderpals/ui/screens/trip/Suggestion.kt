@@ -26,6 +26,8 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
  *
  * @param oldNavActions The navigation actions of the button that was clicked to navigate to the
  *   screen.
+ * @param tripId The ID of the trip.
+ * @param suggestionsViewModel The ViewModel for managing suggestions.
  */
 @Composable
 fun Suggestion(
@@ -33,38 +35,45 @@ fun Suggestion(
     tripId: String,
     suggestionsViewModel: SuggestionsViewModel
 ) {
+
   // get the suggestion list from the firebase database
   val suggestionList by suggestionsViewModel.state.collectAsState()
-  val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
   // State for managing search suggestion text (the filter)
   var searchSuggestionText by remember { mutableStateOf("") }
 
-  Scaffold(
-      modifier = Modifier.testTag("suggestionFeedScreen"),
-      topBar = {
-        // Top bar with search functionality based on the title of the trips
-        SuggestionTopBar(
-            searchSuggestionText = searchSuggestionText,
-            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-              searchSuggestionText = newSearchSuggestionText
-            })
-      },
-      bottomBar = {
-        SuggestionBottomBar(
-            onSuggestionClick = { /*navActions.navigateTo(Route.CREATE_SUGGESTION) */})
-      }) { innerPadding ->
-        if (isLoading) {
-          Box(modifier = Modifier.fillMaxSize()) {
-            CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
-          }
-        } else {
+  // State for managing the loading state
+  val isLoading by suggestionsViewModel.isLoading.collectAsState()
+
+  if (isLoading) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      CircularProgressIndicator(
+          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+    }
+  } else {
+
+    Scaffold(
+        modifier = Modifier.testTag("suggestionFeedScreen"),
+        topBar = {
+          // Top bar with search functionality based on the title of the trips
+          SuggestionTopBar(
+              searchSuggestionText = searchSuggestionText,
+              onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+                searchSuggestionText = newSearchSuggestionText
+              })
+        },
+        bottomBar = {
+          SuggestionBottomBar(
+              onSuggestionClick = {
+                oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
+              })
+        }) { innerPadding ->
           SuggestionFeedContent(
               innerPadding = innerPadding,
-              suggestionList = suggestionList ?: emptyList(),
+              suggestionList = suggestionList,
               searchSuggestionText = searchSuggestionText,
               tripId = tripId,
               suggestionRepository = suggestionsViewModel)
         }
-      }
+  }
 }

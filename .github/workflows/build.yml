@@ -1,0 +1,49 @@
+name: Build App APK
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    types:
+      - closed
+      - synchronize
+      - reopened
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: gradle
+
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
+      # Run Build Project
+      - name: Build gradle project
+        run: ./gradlew build -x app:testDebugUnitTest -x app:testReleaseUnitTest -x app:test
+
+      # Upload Artifact Build
+      - name: Upload APK Debug
+        uses: actions/upload-artifact@v3
+        with:
+          name: APK debug generated
+          path: app/build/outputs/apk/debug/
+
+      # Upload APK to Github Release
+      - name: Upload APK to Github Artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: app
+          path: app/build/outputs/apk/debug/app-debug.apk

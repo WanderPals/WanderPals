@@ -10,7 +10,7 @@ import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.screens.CreateSuggestionScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.trip.CreateSuggestion
+import com.github.se.wanderpals.ui.screens.suggestion.CreateSuggestion
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -919,6 +919,31 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
         assertTextContains("Example address")
       }
+    }
+  }
+
+  /**
+   * Test that the navigation to the CreateSuggestion screen is triggered when the button is
+   * clicked.
+   */
+  @Test
+  fun navigateToCreateSuggestionOnButtonPress() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val suggestionVm = FakeSuggestionsViewModel()
+
+      composeTestRule.setContent {
+        com.github.se.wanderpals.ui.screens.trip.Suggestion(
+            oldNavActions = mockNavActions,
+            tripId = "testTripId",
+            suggestionsViewModel = suggestionVm)
+      }
+
+      // Simulate the button click that should lead to the CreateSuggestion screen
+      suggestionButtonExists.performClick()
+
+      // Verify that the navigation action to CreateSuggestion is called with the correct parameters
+      verify { mockNavActions.navigateTo("${Route.CREATE_SUGGESTION}/testTripId") }
+      confirmVerified(mockNavActions)
     }
   }
 }

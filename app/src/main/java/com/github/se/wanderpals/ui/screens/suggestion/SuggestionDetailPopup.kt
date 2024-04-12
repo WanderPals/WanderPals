@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -46,18 +44,26 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun SuggestionDetailPopup(
     suggestion: Suggestion,
     comments: List<Comment>, // Assuming you have a list of comments
-    isLiked: Boolean, // a boolean to track if the user has liked the suggestion
-    likesCount: Int, // the number of likes for the suggestion
+    viewModel: SuggestionsViewModel,
     onDismiss: () -> Unit, // Callback to dismiss the dialog
     onLikeClicked: () -> Unit, // Callback to handle like button click
     onComment: (String) -> Unit, // Callback to handle comment button click
 ) {
+
+  // State for the like status of the suggestion
+  val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
+
+  // State for the like count, which depends on the `userLikes` size
+  // Calculate the like count dynamically based on whether the suggestion is liked
+  val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
+  
   Dialog(
       onDismissRequest =
           onDismiss) { // todo: (after M1) uncomment dialog and create onclick function to go from

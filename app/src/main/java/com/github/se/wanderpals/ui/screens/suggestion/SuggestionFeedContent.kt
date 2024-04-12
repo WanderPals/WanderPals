@@ -35,11 +35,11 @@ import java.time.LocalDate
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
  * selected.
  *
- * @param innerPadding The padding values for the content.
- * @param navigationActions The navigation actions used for navigating to a detailed suggestion
- *   view.
+ * @param innerPadding The padding values for the content. view.
  * @param suggestionList The list of suggestions of a trip to be displayed.
  * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
+ * @param tripId The ID of the trip.
+ * @param suggestionRepository The ViewModel for managing suggestions.
  */
 @Composable
 fun SuggestionFeedContent(
@@ -60,14 +60,8 @@ fun SuggestionFeedContent(
       remember(selectedFilterCriteria) {
         mutableStateOf(
             when (selectedFilterCriteria) {
-              "Like number" ->
-                  suggestionList.sortedByDescending {
-                    it.userLikes.size
-                  } // Assuming you have likeCount in Suggestion data class
-              "Comment number" ->
-                  suggestionList.sortedByDescending {
-                    it.comments.size
-                  } // Assuming you have commentList in Suggestion data class
+              "Like number" -> suggestionList.sortedByDescending { it.userLikes.size }
+              "Comment number" -> suggestionList.sortedByDescending { it.comments.size }
               else -> suggestionList.sortedByDescending { it.createdAt }
             })
       }
@@ -108,16 +102,10 @@ fun SuggestionFeedContent(
 
     // When a suggestion is selected, display the popup
     selectedSuggestion?.let { suggestion ->
-      val isLiked =
-          suggestionRepository
-              .getIsLiked() // suggestionRepository.likedSuggestions.collectAsState().value.contains(suggestionRepository.currentLoggedInUId)
-      val likesCount = suggestion.userLikes.size + if (isLiked) 1 else 0
-
       SuggestionDetailPopup(
           suggestion = suggestion,
           comments = suggestion.comments,
-          isLiked = isLiked, // pass the current like status for the suggestion
-          likesCount = likesCount, // pass the current number of likes for the suggestion
+          viewModel = suggestionRepository,
           onDismiss = { selectedSuggestion = null }, // When the popup is dismissed
           onLikeClicked = {
             // Call toggleLikeSuggestion from the ViewModel
@@ -168,7 +156,7 @@ fun SuggestionFeedContent(
               }, // This lambda is passed to the SuggestionItem composable
               modifier =
                   Modifier.clickable { selectedSuggestion = suggestion }
-                      .testTag("suggestion${index + 1}"), // Apply the testTag here
+                      .testTag("suggestion${index + 1}"),
               tripId = tripId,
               viewModel = suggestionRepository)
         }

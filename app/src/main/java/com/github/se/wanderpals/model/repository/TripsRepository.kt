@@ -117,7 +117,6 @@ class TripsRepository(
 
           if (trip != null) {
             val suggestionIds = trip.suggestions
-            Log.d("TripsRepository", "getAllSuggestionsFromTrip: $suggestionIds")
             suggestionIds.mapNotNull { suggestionId -> getSuggestionFromTrip(tripId, suggestionId) }
           } else {
             Log.e("TripsRepository", "getAllSuggestionsFromTrip: Trip not found with ID $tripId.")

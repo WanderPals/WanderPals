@@ -23,7 +23,7 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
-import com.github.se.wanderpals.ui.screens.trip.CreateSuggestion
+import com.github.se.wanderpals.ui.screens.suggestion.CreateSuggestion
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -50,19 +50,24 @@ class MainActivity : ComponentActivity() {
         task.addOnSuccessListener { account ->
           val googleTokenId = account.idToken ?: ""
           val credential = GoogleAuthProvider.getCredential(googleTokenId, null)
-          FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener {
-            if (it.isSuccessful) {
-
-              val uid = it.result?.user?.uid ?: ""
-              tripsRepository = TripsRepository(uid, Dispatchers.IO)
-              tripsRepository.initFirestore()
-              Log.d("SignIn", "Login result " + account.displayName)
-              navigationActions.navigateTo(Route.OVERVIEW)
-              // previously sign out
-            } else {
-              Log.d("MainActivity", "SignIn: Firebase Login Failed")
-            }
-          }
+          FirebaseAuth.getInstance()
+              .signInWithCredential(credential)
+              .addOnCompleteListener {
+                if (it.isSuccessful) {
+                  Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
+                  val uid = it.result?.user?.uid ?: ""
+                  Log.d("MainActivity", "Firebase UID: $uid")
+                  tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                  tripsRepository.initFirestore()
+                  Log.d("MainActivity", "Firebase Initialized")
+                  Log.d("SignIn", "Login result " + account.displayName)
+                  navigationActions.navigateTo(Route.OVERVIEW)
+                } else {
+                  Log.d("MainActivity", "SignIn: Firebase Login Completed Unsuccessfully")
+                }
+              }
+              .addOnFailureListener { Log.d("MainActivity", "SignIn: Firebase Login Failed") }
+              .addOnCanceledListener { Log.d("MainActivity", "SignIn: Firebase Login Canceled") }
         }
       }
 

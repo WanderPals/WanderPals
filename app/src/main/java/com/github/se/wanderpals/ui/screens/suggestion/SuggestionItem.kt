@@ -23,13 +23,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -54,24 +51,12 @@ fun SuggestionItem(
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
 
-  // Collect the set of liked suggestion IDs and check if the current suggestion is liked
-  val likedSuggestions = viewModel.likedSuggestions.collectAsState().value
-
   // State for the like status of the suggestion
-  val isLiked = viewModel.getIsLiked()
+  val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
 
   // State for the like count, which depends on the `userLikes` size
   // Calculate the like count dynamically based on whether the suggestion is liked
-  val likesCount by derivedStateOf { // derivedStateOf to ensure that likesCount is recomputed
-    // whenever likedSuggestions changes.
-    if (isLiked) {
-      // If the suggestion is liked, add one to the count of userLikes
-      suggestion.userLikes.size + 1
-    } else {
-      // Otherwise, take the original count
-      suggestion.userLikes.size
-    }
-  }
+  val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
 
   // Define card colors with a white background
   val cardColors =
@@ -154,13 +139,15 @@ fun SuggestionItem(
                         if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Like",
                     modifier =
-                        Modifier.size(18.dp).clickable {
-                          viewModel.toggleLikeSuggestion(tripId, suggestion)
-                        })
+                        Modifier.size(18.dp)
+                            .clickable { viewModel.toggleLikeSuggestion(tripId, suggestion) }
+                            .testTag("likeIconSuggestionFeedScreen_sugg1"))
 
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
 
-                Text(text = "$likesCount")
+                Text(
+                    text = likesCount,
+                    modifier = Modifier.testTag("likeCountTextSuggestionFeedScreen_sugg1"))
               }
         }
       }
