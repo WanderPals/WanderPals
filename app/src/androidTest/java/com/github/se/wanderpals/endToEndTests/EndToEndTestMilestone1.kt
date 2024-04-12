@@ -71,6 +71,7 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
             mockNavController = rememberNavController()
             mockNavActions = NavigationActions(mockNavController)
             val overviewViewModelTest = OverviewViewModelTest()
+
             NavHost(navController = mockNavController, startDestination = Route.OVERVIEW) {
 
                 composable(Route.OVERVIEW) {
@@ -91,13 +92,16 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
                         TripsRepository("-1", Dispatchers.IO), placesClient
                     )
                 }
+                composable(Route.SUGGESTION){
+
+                }
             }
 
         }
     }
 
     @Test
-    fun EndToEndTestMilestone1() {
+    fun fromOverViewToCreateTripToTrip() {
         val overviewScreen = ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {}
         val createTripScreen = ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {}
         val tripScreen = ComposeScreen.onComposeScreen<TripScreen>(composeTestRule) {}
