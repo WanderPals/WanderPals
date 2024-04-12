@@ -48,19 +48,22 @@ class MainActivity : ComponentActivity() {
         task.addOnSuccessListener { account ->
           val googleTokenId = account.idToken ?: ""
           val credential = GoogleAuthProvider.getCredential(googleTokenId, null)
-          FirebaseAuth.getInstance().signInWithCredential(credential).addOnCompleteListener {
-            if (it.isSuccessful) {
-
-              val uid = it.result?.user?.uid ?: ""
-              tripsRepository = TripsRepository(uid, Dispatchers.IO)
-              tripsRepository.initFirestore()
-              Log.d("SignIn", "Login result " + account.displayName)
-              navigationActions.navigateTo(Route.OVERVIEW)
-              // previously sign out
-            } else {
-              Log.d("MainActivity", "SignIn: Firebase Login Failed")
-            }
-          }
+          FirebaseAuth.getInstance()
+              .signInWithCredential(credential)
+              .addOnCompleteListener {
+                if (it.isSuccessful) {
+                  Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
+                  val uid = it.result?.user?.uid ?: ""
+                  tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                  tripsRepository.initFirestore()
+                  Log.d("SignIn", "Login result " + account.displayName)
+                  navigationActions.navigateTo(Route.OVERVIEW)
+                } else {
+                  Log.d("MainActivity", "SignIn: Firebase Login Completed Unsuccessfully")
+                }
+              }
+              .addOnFailureListener { Log.d("MainActivity", "SignIn: Firebase Login Failed") }
+              .addOnCanceledListener { Log.d("MainActivity", "SignIn: Firebase Login Canceled") }
         }
       }
 
