@@ -3,7 +3,6 @@ package com.github.se.wanderpals.endToEndTests
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
@@ -88,12 +87,9 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
                 composable(Route.TRIP) { navBackStackEntry ->
                     BackHandler(true) {}
                     Trip(
-                        mockNavActions, mockNavActions.currentTrip,
+                        mockNavActions, mockNavActions.variables.currentTrip,
                         TripsRepository("-1", Dispatchers.IO), placesClient
                     )
-                }
-                composable(Route.SUGGESTION){
-
                 }
             }
 
@@ -101,7 +97,7 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
     }
 
     @Test
-    fun fromOverViewToCreateTripToTrip() {
+    fun EndToEndTestMilestone1() {
         val overviewScreen = ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {}
         val createTripScreen = ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {}
         val tripScreen = ComposeScreen.onComposeScreen<TripScreen>(composeTestRule) {}
