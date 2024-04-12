@@ -113,10 +113,11 @@ class MainActivity : ComponentActivity() {
               CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
             }
 
-            composable("${Route.CREATE_SUGGESTION}/{tripId}") { navBackStackEntry ->
-              val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
+            composable(Route.CREATE_SUGGESTION) { navBackStackEntry ->
+              BackHandler(true) {}
               CreateSuggestion(
-                  tripId = tripId, viewModel = CreateSuggestionViewModel(tripsRepository))
+                  tripId = navigationActions.currentTrip,
+                  viewModel = CreateSuggestionViewModel(tripsRepository))
             }
           }
         }

@@ -66,7 +66,8 @@ fun Suggestion(
         bottomBar = {
           SuggestionBottomBar(
               onSuggestionClick = {
-                oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
+                oldNavActions.currentTrip = tripId
+                oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
               })
         }) { innerPadding ->
           SuggestionFeedContent(
