@@ -74,8 +74,12 @@ class MainActivity : ComponentActivity() {
                   Log.d("MainActivity", "SignIn: Firebase Login Completed Unsuccessfully")
                 }
               }
-              .addOnFailureListener { Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show() }
-              .addOnCanceledListener { Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show() }
+              .addOnFailureListener {
+                Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
+              }
+              .addOnCanceledListener {
+                Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
+              }
         }
       }
 
