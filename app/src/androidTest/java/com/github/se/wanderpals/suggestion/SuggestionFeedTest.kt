@@ -11,6 +11,7 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.screens.SuggestionFeedScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFilterButton
@@ -245,7 +246,11 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
       com.github.se.wanderpals.ui.screens.trip.Suggestion(
           oldNavActions = mockNavActions,
           tripId = "dummyTestTripId", // a dummy trip ID
-          suggestionsViewModel = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel(),
+          onSuggestionClick = {
+            mockNavActions.variables.currentTrip = "dummyTestTripId"
+            mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
+          })
     }
 
     // Now check if the suggestion feed screen is displayed

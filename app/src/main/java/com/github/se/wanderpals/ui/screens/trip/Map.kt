@@ -45,7 +45,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
+import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -80,7 +82,12 @@ val CURRENT_LOCATION = LatLng(46.519653, 6.632273)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
+fun Map(
+    oldNavActions: NavigationActions,
+    mapViewModel: MapViewModel,
+    client: PlacesClient,
+    startingLocation: LatLng = CURRENT_LOCATION
+) {
 
   // get the list of stops from the view model
   val stopList by mapViewModel.stops.collectAsState()
@@ -94,7 +101,7 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
   var enabled by remember { mutableStateOf(true) }
 
   // location searched by the user
-  var location by remember { mutableStateOf(CURRENT_LOCATION) }
+  var location by remember { mutableStateOf(startingLocation) }
 
   // expanded state of the search bar
   var expanded by remember { mutableStateOf(false) }
@@ -106,7 +113,7 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
         })
   }
   // when the search text is changed, request the location of the address
-  var finalLoc by remember { mutableStateOf(CURRENT_LOCATION) }
+  var finalLoc by remember { mutableStateOf(startingLocation) }
   // name of the searched location
   var finalName by remember { mutableStateOf("") }
 
@@ -272,13 +279,18 @@ fun Map(mapViewModel: MapViewModel, client: PlacesClient) {
         cameraPositionState =
             CameraPositionState(position = CameraPosition(finalLoc, 10f, 0f, 0f))) {
           // display the marker on the map
-          listOfMarkers.forEach {
+          listOfMarkers.forEach { markerState ->
             Marker(
                 // Add a marker to the map
-                state = it,
-                title = String.format("%S", finalName),
-                snippet = "",
-                visible = visible)
+                state = markerState,
+                title = "Click to Create Suggestions",
+                visible = visible,
+                onInfoWindowClick = {
+                  oldNavActions.navigateToCreateSuggestion(
+                      oldNavActions.variables.currentTrip,
+                      GeoCords(markerState.position.latitude, markerState.position.longitude),
+                      placeAddress)
+                })
           }
 
           // display all the stops on the map

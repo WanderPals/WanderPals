@@ -935,7 +935,11 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
         com.github.se.wanderpals.ui.screens.trip.Suggestion(
             oldNavActions = mockNavActions,
             tripId = "testTripId",
-            suggestionsViewModel = suggestionVm)
+            suggestionsViewModel = suggestionVm,
+            onSuggestionClick = {
+              mockNavActions.variables.currentTrip = "testTripId"
+              mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
+            })
       }
 
       // Simulate the button click that should lead to the CreateSuggestion screen
@@ -943,7 +947,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
       // Verify that the navigation action to CreateSuggestion is called with the correct parameters
       verify {
-        mockNavActions.currentTrip = "testTripId"
+        mockNavActions.variables.currentTrip = "testTripId"
         mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
       }
       confirmVerified(mockNavActions)

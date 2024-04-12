@@ -35,7 +35,10 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   /** Get all stops from the trip. */
   open fun getAllStops() {
     viewModelScope.launch {
-      stops.value = _tripsRepository.getAllStopsFromTrip(tripId).toMutableList()
+      val allStops = _tripsRepository.getAllStopsFromTrip(tripId)
+      val allStopsFromSubscribedTrips =
+          _tripsRepository.getAllSuggestionsFromTrip(tripId).map { it.stop }
+      stops.value = allStops.toMutableList().apply { addAll(allStopsFromSubscribedTrips) }
     }
   }
 }

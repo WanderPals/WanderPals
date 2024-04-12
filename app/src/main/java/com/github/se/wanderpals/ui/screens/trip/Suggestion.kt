@@ -17,7 +17,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
@@ -34,7 +33,8 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 fun Suggestion(
     oldNavActions: NavigationActions,
     tripId: String,
-    suggestionsViewModel: SuggestionsViewModel
+    suggestionsViewModel: SuggestionsViewModel,
+    onSuggestionClick: () -> Unit
 ) {
 
   // get the suggestion list from the firebase database
@@ -63,13 +63,8 @@ fun Suggestion(
                 searchSuggestionText = newSearchSuggestionText
               })
         },
-        bottomBar = {
-          SuggestionBottomBar(
-              onSuggestionClick = {
-                oldNavActions.currentTrip = tripId
-                oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
-              })
-        }) { innerPadding ->
+        bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding
+          ->
           SuggestionFeedContent(
               innerPadding = innerPadding,
               suggestionList = suggestionList,
