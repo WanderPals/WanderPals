@@ -26,8 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import java.time.LocalDate
 
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
@@ -108,6 +110,10 @@ fun SuggestionFeedContent(
           onLikeClicked = {
             // Call toggleLikeSuggestion from the ViewModel
             suggestionRepository.toggleLikeSuggestion(tripId, suggestion)
+          },
+          onComment = { comment ->
+            suggestionRepository.addComment(
+                tripId, suggestion, Comment("", "", "tempUsername", comment, LocalDate.now()))
           })
     }
 

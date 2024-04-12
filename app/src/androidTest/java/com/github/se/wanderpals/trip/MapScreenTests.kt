@@ -11,12 +11,14 @@ import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.screens.MapScreen
+import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.trip.Map
 import com.google.android.libraries.places.api.Places
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import java.time.LocalDate
 import java.time.LocalTime
@@ -69,13 +71,17 @@ class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
   @get:Rule val mockkRule = MockKRule(this)
 
+  @RelaxedMockK lateinit var mockNavActions: NavigationActions
+
   // test case
   @Before
   fun testSetup() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     Places.initialize(context, BuildConfig.MAPS_API_KEY)
     val placesClient = Places.createClient(context)
-    composeTestRule.setContent { Map(mapViewModel = FakeMapViewModel(), placesClient) }
+    composeTestRule.setContent {
+      Map(mockNavActions, mapViewModel = FakeMapViewModel(), placesClient)
+    }
   }
 
   // test case 1: switch button is displayed

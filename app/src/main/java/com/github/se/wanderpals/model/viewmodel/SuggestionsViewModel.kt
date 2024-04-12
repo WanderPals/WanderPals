@@ -3,8 +3,10 @@ package com.github.se.wanderpals.model.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
+import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -103,6 +105,26 @@ open class SuggestionsViewModel(
             _state.value
                 .filter { it.userLikes.contains(currentLoggedInUId) }
                 .map { it.suggestionId }
+      }
+    }
+  }
+
+  open fun addComment(tripId: String, suggestion: Suggestion, comment: Comment) {
+    val updatedSuggestion =
+        suggestion.copy(
+            comments =
+                suggestion.comments +
+                    Comment(
+                        commentId = UUID.randomUUID().toString(),
+                        userId = currentLoggedInUId,
+                        userName = comment.userName,
+                        text = comment.text,
+                        createdAt = comment.createdAt))
+    viewModelScope.launch {
+      val wasUpdateSuccessful =
+          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+      if (wasUpdateSuccessful) {
+        loadSuggestion(tripId)
       }
     }
   }

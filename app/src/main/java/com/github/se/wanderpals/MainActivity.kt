@@ -1,7 +1,9 @@
 package com.github.se.wanderpals
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -31,11 +33,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
 
+const val EMPTY_CODE = ""
+
 class MainActivity : ComponentActivity() {
+
   private lateinit var signInClient: GoogleSignInClient
 
   private lateinit var navController: NavHostController
@@ -44,37 +50,52 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var tripsRepository: TripsRepository
 
+  private lateinit var context: Context
+
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        task.addOnSuccessListener { account ->
-          val googleTokenId = account.idToken ?: ""
-          val credential = GoogleAuthProvider.getCredential(googleTokenId, null)
-          FirebaseAuth.getInstance()
-              .signInWithCredential(credential)
-              .addOnCompleteListener {
-                if (it.isSuccessful) {
-                  Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
-                  val uid = it.result?.user?.uid ?: ""
-                  Log.d("MainActivity", "Firebase UID: $uid")
-                  tripsRepository = TripsRepository(uid, Dispatchers.IO)
-                  tripsRepository.initFirestore()
-                  Log.d("MainActivity", "Firebase Initialized")
-                  Log.d("SignIn", "Login result " + account.displayName)
-                  navigationActions.navigateTo(Route.OVERVIEW)
-                } else {
-                  Log.d("MainActivity", "SignIn: Firebase Login Completed Unsuccessfully")
-                }
-              }
-              .addOnFailureListener { Log.d("MainActivity", "SignIn: Firebase Login Failed") }
-              .addOnCanceledListener { Log.d("MainActivity", "SignIn: Firebase Login Canceled") }
-        }
+        task
+            .addOnSuccessListener { account ->
+              val googleTokenId = account.idToken ?: ""
+              val credential = GoogleAuthProvider.getCredential(googleTokenId, null)
+              FirebaseAuth.getInstance()
+                  .signInWithCredential(credential)
+                  .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                      Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
+                      val uid = it.result?.user?.uid ?: ""
+                      Log.d("MainActivity", "Firebase UID: $uid")
+                      tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                      tripsRepository.initFirestore()
+                      Log.d("MainActivity", "Firebase Initialized")
+                      Log.d("SignIn", "Login result " + account.displayName)
+                      navigationActions.navigateTo(Route.OVERVIEW)
+                    } else {
+                      Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
+                    }
+                  }
+                  .addOnFailureListener {
+                    Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
+                  }
+                  .addOnCanceledListener {
+                    Toast.makeText(context, "FireBase Canceled", Toast.LENGTH_SHORT).show()
+                  }
+            }
+            .addOnFailureListener {
+              Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
+            }
+            .addOnCanceledListener {
+              Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
+            }
       }
 
   private lateinit var placesClient: PlacesClient
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    context = this
 
     val gso: GoogleSignInOptions =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -96,7 +117,13 @@ class MainActivity : ComponentActivity() {
           NavHost(navController = navController, startDestination = Route.SIGN_IN) {
             composable(Route.SIGN_IN) {
               BackHandler(true) {}
-              SignIn(onClick = { launcher.launch(signInClient.signInIntent) })
+              SignIn(
+                  onClick1 = { launcher.launch(signInClient.signInIntent) },
+                  onClick2 = {
+                    tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
+                    tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
+                    navigationActions.navigateTo(Route.OVERVIEW)
+                  })
             }
             composable(Route.OVERVIEW) {
               BackHandler(true) {}
@@ -104,19 +131,58 @@ class MainActivity : ComponentActivity() {
                   overviewViewModel = OverviewViewModel(tripsRepository),
                   navigationActions = navigationActions)
             }
-            composable(Route.TRIP) { navBackStackEntry ->
+            composable(Route.TRIP) {
               BackHandler(true) {}
-              Trip(navigationActions, navigationActions.currentTrip, tripsRepository, placesClient)
+              if (navigationActions.variables.suggestionId != "") {
+                Trip(
+                    navigationActions,
+                    navigationActions.variables.currentTrip,
+                    tripsRepository,
+                    placesClient,
+                    Route.SUGGESTION)
+              } else if (navigationActions.variables.currentAddress != "") {
+                Trip(
+                    navigationActions,
+                    navigationActions.variables.currentTrip,
+                    tripsRepository,
+                    placesClient,
+                    Route.MAP)
+              } else {
+                Trip(
+                    navigationActions,
+                    navigationActions.variables.currentTrip,
+                    tripsRepository,
+                    placesClient)
+              }
             }
             composable(Route.CREATE_TRIP) {
               BackHandler(true) {}
               CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
             }
 
-            composable("${Route.CREATE_SUGGESTION}/{tripId}") { navBackStackEntry ->
-              val tripId = navBackStackEntry.arguments?.getString("tripId") ?: ""
+            composable(Route.CREATE_SUGGESTION) {
+              BackHandler(true) {}
+              val loc = navigationActions.variables.currentAddress
+              val cord = navigationActions.variables.currentGeoCords
+              Log.d("CREATE_SUGGESTION", "Location: $loc")
+              Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
+              val onAction: () -> Unit = {
+                if (loc != "") {
+                  navigationActions.navigateToMap(
+                      navigationActions.variables.currentTrip, cord, loc)
+                } else {
+                  navigationActions.navigateToSuggestion(
+                      navigationActions.variables.currentTrip,
+                      navigationActions.variables.suggestionId)
+                }
+              }
               CreateSuggestion(
-                  tripId = tripId, viewModel = CreateSuggestionViewModel(tripsRepository))
+                  tripId = navigationActions.variables.currentTrip,
+                  viewModel = CreateSuggestionViewModel(tripsRepository),
+                  addr = loc,
+                  geoCords = cord,
+                  onSuccess = onAction,
+                  onCancel = onAction)
             }
           }
         }
