@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.test.core.app.ApplicationProvider
 import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
@@ -38,7 +36,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
-import java.security.MessageDigest
 
 const val EMPTY_CODE = ""
 
@@ -51,6 +48,8 @@ class MainActivity : ComponentActivity() {
   private lateinit var navigationActions: NavigationActions
 
   private lateinit var tripsRepository: TripsRepository
+
+  private lateinit var context: Context
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -81,14 +80,10 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var placesClient: PlacesClient
 
-  private fun String.md5(): String {
-    val md = MessageDigest.getInstance("MD5")
-    val digest = md.digest(this.toByteArray())
-    return digest.toString()
-  }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    context = this
 
     val gso: GoogleSignInOptions =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -109,14 +104,14 @@ class MainActivity : ComponentActivity() {
 
           NavHost(navController = navController, startDestination = Route.SIGN_IN) {
             composable(Route.SIGN_IN) {
-              val context = ApplicationProvider.getApplicationContext<Context>()
               BackHandler(true) {}
-              SignIn(onClick1 = { launcher.launch(signInClient.signInIntent) }, onClick2 = {
-
-                tripsRepository = TripsRepository(it.md5(), Dispatchers.IO)
-                tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
-                navigationActions.navigateTo(Route.OVERVIEW)
-              })
+              SignIn(
+                  onClick1 = { launcher.launch(signInClient.signInIntent) },
+                  onClick2 = {
+                    tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
+                    tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
+                    navigationActions.navigateTo(Route.OVERVIEW)
+                  })
             }
             composable(Route.OVERVIEW) {
               BackHandler(true) {}

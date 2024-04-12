@@ -50,34 +50,29 @@ import com.github.se.wanderpals.R
  * @param onClick2 the action to be executed when the button is clicked.
  */
 @Composable
-fun SignIn(onClick1: () -> Unit, onClick2: (String) -> Unit){
-    var dialogIsOpen by remember { mutableStateOf(false) }
-    if (dialogIsOpen) {
-        DialogHandler(
-            closeDialogueAction = { dialogIsOpen = false },
-            processMail = onClick2
-        )
-    }
+fun SignIn(onClick1: () -> Unit, onClick2: (String) -> Unit) {
+  var dialogIsOpen by remember { mutableStateOf(false) }
+  if (dialogIsOpen) {
+    DialogHandler(closeDialogueAction = { dialogIsOpen = false }, processMail = onClick2)
+  }
   Column(
       verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.Top),
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier =
-      Modifier
-          .fillMaxSize()
-          .background(Brush.linearGradient(listOf(Color.White, Color(0xff96d9d2))))) {
-      Image(
-          painter = painterResource(id = R.drawable.logo_projet),
-          contentDescription = "Logo_project",
-          modifier = Modifier
-              .padding(top = 100.dp, bottom = 200.dp)
-              .size(150.dp)
-              .clip(RoundedCornerShape(16.dp))
-      )
-      GoogleButton(onClick = onClick1)
+          Modifier.fillMaxSize()
+              .background(Brush.linearGradient(listOf(Color.White, Color(0xff96d9d2))))) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_projet),
+            contentDescription = "Logo_project",
+            modifier =
+                Modifier.padding(top = 100.dp, bottom = 200.dp)
+                    .size(150.dp)
+                    .clip(RoundedCornerShape(16.dp)))
+        GoogleButton(onClick = onClick1)
 
-      //create a button for sign-in with email
-        EmailButton(onClick2 = {dialogIsOpen= true })
-  }
+        // create a button for sign-in with email
+        EmailButton(onClick2 = { dialogIsOpen = true })
+      }
 }
 
 /**
@@ -89,15 +84,11 @@ fun SignIn(onClick1: () -> Unit, onClick2: (String) -> Unit){
 fun GoogleButton(onClick: () -> Unit) {
   OutlinedButton(onClick = onClick, modifier = Modifier.testTag("LoginButton")) {
     Image(
-        modifier = Modifier
-            .size(20.dp)
-            .testTag("GoogleIcon"),
+        modifier = Modifier.size(20.dp).testTag("GoogleIcon"),
         painter = painterResource(id = R.drawable.logo_google),
         contentDescription = "image_description")
     Text(
-        modifier = Modifier
-            .width(125.dp)
-            .height(17.dp),
+        modifier = Modifier.width(125.dp).height(17.dp),
         text = "Sign in with Google",
         style =
             TextStyle(
@@ -113,21 +104,16 @@ fun GoogleButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun EmailButton(onClick2: () -> Unit){
-    OutlinedButton(onClick = onClick2, modifier = Modifier.testTag("LoginButton")) {
-        Image(
-            modifier = Modifier
-                .size(20.dp)
-                .testTag("GoogleIcon"),
-            painter = painterResource(id = R.drawable.logo_email),
-            contentDescription = "image_description"
-        )
-        Text(
-            modifier = Modifier
-                .width(125.dp)
-                .height(17.dp),
-            text = "Sign in with e-mail",
-            style =
+fun EmailButton(onClick2: () -> Unit) {
+  OutlinedButton(onClick = onClick2, modifier = Modifier.testTag("LoginButton")) {
+    Image(
+        modifier = Modifier.size(20.dp).testTag("GoogleIcon"),
+        painter = painterResource(id = R.drawable.logo_email),
+        contentDescription = "image_description")
+    Text(
+        modifier = Modifier.width(125.dp).height(17.dp),
+        text = "Sign in with e-mail",
+        style =
             TextStyle(
                 fontSize = 14.sp,
                 lineHeight = 17.sp,
@@ -136,72 +122,65 @@ fun EmailButton(onClick2: () -> Unit){
                 color = Color(0xFF3C4043),
                 textAlign = TextAlign.Center,
                 letterSpacing = 0.25.sp,
-            )
-        )
-    }
+            ))
+  }
 }
 
 @Composable
 fun DialogHandler(closeDialogueAction: () -> Unit, processMail: (String) -> Unit) {
 
-    // Mutable state to hold the trip code input and error state
-    var email by remember { mutableStateOf(EMPTY_CODE) }
+  // Mutable state to hold the email input
+  var email by remember { mutableStateOf(EMPTY_CODE) }
 
-    // Dialog composable
-    Dialog(
-        onDismissRequest = {
-            closeDialogueAction()
-            email = EMPTY_CODE
-        }) {
+  // Dialog composable
+  Dialog(
+      onDismissRequest = {
+        closeDialogueAction()
+        email = EMPTY_CODE
+      }) {
         Surface(
-            modifier = Modifier
-                .height(200.dp)
-                .testTag("dialog"),
+            modifier = Modifier.height(200.dp).testTag("dialog"),
             color = MaterialTheme.colorScheme.background,
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center) {
-                // Input field for trip code
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = email,
-                    onValueChange = { email = it },
-                    label = {
-                        Text(
-                            text = "Insert your e-mail here",
-                            style =
-                            TextStyle(
-                                fontSize = 18.sp,
-                                textAlign = TextAlign.Center,
-                                letterSpacing = 0.5.sp,
-                            ),
-                        )
-                    },
-                    // Text to display if an error occurs while inputing the trip code
-                    singleLine = true)
-                Spacer(modifier = Modifier.height(10.dp))
+            shape = RoundedCornerShape(16.dp)) {
+              Column(
+                  modifier = Modifier.padding(16.dp),
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.Center) {
+                    // Input field for trip code
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = email,
+                        onValueChange = { email = it },
+                        label = {
+                          Text(
+                              text = "Insert your e-mail here",
+                              style =
+                                  TextStyle(
+                                      fontSize = 18.sp,
+                                      textAlign = TextAlign.Center,
+                                      letterSpacing = 0.5.sp,
+                                  ),
+                          )
+                        },
+                        singleLine = true)
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                // Button to join with trip code
-                Button(
-                    onClick = { processMail(email)},
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(
-                        text = "Sign in",
-                        style =
-                        TextStyle(
-                            fontSize = 16.sp,
-                            textAlign = TextAlign.Center,
-                            letterSpacing = 0.5.sp,
-                        ),
-                    )
-                }
+                    // Button to sign in
+                    Button(
+                        onClick = { processMail(email) },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)) {
+                          Text(
+                              text = "Sign in",
+                              style =
+                                  TextStyle(
+                                      fontSize = 16.sp,
+                                      textAlign = TextAlign.Center,
+                                      letterSpacing = 0.5.sp,
+                                  ),
+                          )
+                        }
+                  }
             }
-        }
-    }
+      }
 }
-
