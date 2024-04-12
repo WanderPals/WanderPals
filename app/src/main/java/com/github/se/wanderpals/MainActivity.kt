@@ -54,8 +54,10 @@ class MainActivity : ComponentActivity() {
                 if (it.isSuccessful) {
                   Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
                   val uid = it.result?.user?.uid ?: ""
+                  Log.d("MainActivity", "Firebase UID: $uid")
                   tripsRepository = TripsRepository(uid, Dispatchers.IO)
                   tripsRepository.initFirestore()
+                  Log.d("MainActivity", "Firebase Initialized")
                   Log.d("SignIn", "Login result " + account.displayName)
                   navigationActions.navigateTo(Route.OVERVIEW)
                 } else {
