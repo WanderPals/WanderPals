@@ -36,6 +36,8 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
  * @param innerPadding The padding values for the content. view.
  * @param suggestionList The list of suggestions of a trip to be displayed.
  * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
+ * @param tripId The ID of the trip.
+ * @param suggestionRepository The ViewModel for managing suggestions.
  */
 @Composable
 fun SuggestionFeedContent(
@@ -45,46 +47,40 @@ fun SuggestionFeedContent(
     tripId: String,
     suggestionRepository: SuggestionsViewModel
 ) {
-    // State to track the currently selected suggestion item
-    var selectedSuggestion by remember { mutableStateOf<Suggestion?>(null) }
+  // State to track the currently selected suggestion item
+  var selectedSuggestion by remember { mutableStateOf<Suggestion?>(null) }
 
-    // State to track the selected filter criteria
-    var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
+  // State to track the selected filter criteria
+  var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
 
-    // State to track the sorted suggestion list
-    val filteredSuggestionList by
-    remember(selectedFilterCriteria) {
+  // State to track the sorted suggestion list
+  val filteredSuggestionList by
+      remember(selectedFilterCriteria) {
         mutableStateOf(
             when (selectedFilterCriteria) {
-                "Like number" ->
-                    suggestionList.sortedByDescending {
-                        it.userLikes.size
-                    }
-                "Comment number" ->
-                    suggestionList.sortedByDescending {
-                        it.comments.size
-                    }
-                else -> suggestionList.sortedByDescending { it.createdAt }
+              "Like number" -> suggestionList.sortedByDescending { it.userLikes.size }
+              "Comment number" -> suggestionList.sortedByDescending { it.comments.size }
+              else -> suggestionList.sortedByDescending { it.createdAt }
             })
-    }
+      }
 
-    // Apply the search filter if there is a search text
-    val displayList =
-        if (searchSuggestionText.isEmpty()) {
-            filteredSuggestionList
-        } else {
-            filteredSuggestionList.filter { suggestion ->
-                suggestion.stop.title.lowercase().contains(searchSuggestionText.lowercase())
-            }
+  // Apply the search filter if there is a search text
+  val displayList =
+      if (searchSuggestionText.isEmpty()) {
+        filteredSuggestionList
+      } else {
+        filteredSuggestionList.filter { suggestion ->
+          suggestion.stop.title.lowercase().contains(searchSuggestionText.lowercase())
         }
+      }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
 
-        // Title for the list of suggestions
-        Text(
-            text = "Suggestions",
-            modifier = Modifier.padding(start = 27.dp, top = 15.dp),
-            style =
+    // Title for the list of suggestions
+    Text(
+        text = "Suggestions",
+        modifier = Modifier.padding(start = 27.dp, top = 15.dp),
+        style =
             TextStyle(
                 lineHeight = 24.sp,
                 textAlign = TextAlign.Center,
@@ -92,66 +88,66 @@ fun SuggestionFeedContent(
                 fontWeight = FontWeight(500),
                 color = Color(0xFF5A7BF0),
                 letterSpacing = 0.5.sp),
-            textAlign = TextAlign.Center)
+        textAlign = TextAlign.Center)
 
-        // Add the filter options UI
-        Text(
-            text = "Filter by:",
-            modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
-        )
+    // Add the filter options UI
+    Text(
+        text = "Filter by:",
+        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
+    )
 
-        SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
+    SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
-        // When a suggestion is selected, display the popup
-        selectedSuggestion?.let { suggestion ->
-            SuggestionDetailPopup(
-                suggestion = suggestion,
-                comments = suggestion.comments,
-                viewModel = suggestionRepository,
-                onDismiss = { selectedSuggestion = null }, // When the popup is dismissed
-                onLikeClicked = {
-                    // Call toggleLikeSuggestion from the ViewModel
-                    suggestionRepository.toggleLikeSuggestion(tripId, suggestion)
-                })
-        }
-
-        // If suggestion list is empty, display a message
-        if (suggestionList.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    modifier =
-                    Modifier.width(260.dp)
-                        .height(55.dp)
-                        .align(Alignment.Center)
-                        .testTag("noSuggestionsForUserText"),
-                    text = "Looks like there is no suggestions yet. ",
-                    style =
-                    TextStyle(
-                        lineHeight = 20.sp,
-                        letterSpacing = 0.5.sp,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight(500),
-                        textAlign = TextAlign.Center,
-                        color = Color(0xFF000000)),
-                )
-            }
-        } else {
-            // LazyColumn to display the list of suggestions with sorting and search filtering
-            // (Note: can only have one LazyColumn in a composable function)
-            LazyColumn {
-                itemsIndexed(displayList) { index, suggestion ->
-                    SuggestionItem(
-                        suggestion = suggestion,
-                        onClick = {
-                            selectedSuggestion = suggestion
-                        }, // This lambda is passed to the SuggestionItem composable
-                        modifier =
-                        Modifier.clickable { selectedSuggestion = suggestion }
-                            .testTag("suggestion${index + 1}"),
-                        tripId = tripId,
-                        viewModel = suggestionRepository)
-                }
-            }
-        }
+    // When a suggestion is selected, display the popup
+    selectedSuggestion?.let { suggestion ->
+      SuggestionDetailPopup(
+          suggestion = suggestion,
+          comments = suggestion.comments,
+          viewModel = suggestionRepository,
+          onDismiss = { selectedSuggestion = null }, // When the popup is dismissed
+          onLikeClicked = {
+            // Call toggleLikeSuggestion from the ViewModel
+            suggestionRepository.toggleLikeSuggestion(tripId, suggestion)
+          })
     }
+
+    // If suggestion list is empty, display a message
+    if (suggestionList.isEmpty()) {
+      Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            modifier =
+                Modifier.width(260.dp)
+                    .height(55.dp)
+                    .align(Alignment.Center)
+                    .testTag("noSuggestionsForUserText"),
+            text = "Looks like there is no suggestions yet. ",
+            style =
+                TextStyle(
+                    lineHeight = 20.sp,
+                    letterSpacing = 0.5.sp,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(500),
+                    textAlign = TextAlign.Center,
+                    color = Color(0xFF000000)),
+        )
+      }
+    } else {
+      // LazyColumn to display the list of suggestions with sorting and search filtering
+      // (Note: can only have one LazyColumn in a composable function)
+      LazyColumn {
+        itemsIndexed(displayList) { index, suggestion ->
+          SuggestionItem(
+              suggestion = suggestion,
+              onClick = {
+                selectedSuggestion = suggestion
+              }, // This lambda is passed to the SuggestionItem composable
+              modifier =
+                  Modifier.clickable { selectedSuggestion = suggestion }
+                      .testTag("suggestion${index + 1}"),
+              tripId = tripId,
+              viewModel = suggestionRepository)
+        }
+      }
+    }
+  }
 }

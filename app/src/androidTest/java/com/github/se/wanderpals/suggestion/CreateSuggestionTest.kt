@@ -35,18 +35,18 @@ private val testSuggestion: Suggestion =
         text = "",
         createdAt = LocalDate.now(),
         stop =
-        Stop(
-            stopId = "",
-            title = "Stop",
-            address = "",
-            date = LocalDate.of(2024, 4, 16),
-            startTime = LocalTime.of(12, 0),
-            budget = 20.0,
-            duration = 120,
-            description = "This is a Stop",
-            geoCords = GeoCords(0.0, 0.0),
-            website = "www.example.com",
-        ))
+            Stop(
+                stopId = "",
+                title = "Stop",
+                address = "",
+                date = LocalDate.of(2024, 4, 16),
+                startTime = LocalTime.of(12, 0),
+                budget = 20.0,
+                duration = 120,
+                description = "This is a Stop",
+                geoCords = GeoCords(0.0, 0.0),
+                website = "www.example.com",
+            ))
 
 private val testSuggestion2: Suggestion =
     Suggestion(
@@ -56,869 +56,894 @@ private val testSuggestion2: Suggestion =
         text = "",
         createdAt = LocalDate.now(),
         stop =
-        Stop(
-            stopId = "",
-            title = "Stop",
-            address = "",
-            date = LocalDate.of(2024, 4, 16),
-            startTime = LocalTime.of(12, 0),
-            budget = 0.0,
-            duration = 120,
-            description = "This is a Stop",
-            geoCords = GeoCords(0.0, 0.0),
-        ))
+            Stop(
+                stopId = "",
+                title = "Stop",
+                address = "",
+                date = LocalDate.of(2024, 4, 16),
+                startTime = LocalTime.of(12, 0),
+                budget = 0.0,
+                duration = 120,
+                description = "This is a Stop",
+                geoCords = GeoCords(0.0, 0.0),
+            ))
 
 open class CreateSuggestionViewModelTest(tripsRepository: TripsRepository) :
     CreateSuggestionViewModel(tripsRepository) {
-    override fun addSuggestion(tripId: String, suggestion: Suggestion): Boolean {
-        assert(suggestion == testSuggestion || suggestion == testSuggestion2)
-        return true
-    }
+  override fun addSuggestion(tripId: String, suggestion: Suggestion): Boolean {
+    assert(suggestion == testSuggestion || suggestion == testSuggestion2)
+    return true
+  }
 }
 
 @RunWith(AndroidJUnit4::class)
 class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
 
-    @get:Rule val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @get:Rule val mockkRule = MockKRule(this)
+  @get:Rule val mockkRule = MockKRule(this)
 
-    @RelaxedMockK lateinit var mockNavActions: NavigationActions
+  @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
-    @Test
-    fun createSuggestionReturnToSuggestionOnCancel() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+  @Test
+  fun createSuggestionReturnToSuggestionOnCancel() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
 
-            goBackButton {
-                assertIsDisplayed()
-                assertIsEnabled()
-                performClick()
-            }
+      goBackButton {
+        assertIsDisplayed()
+        assertIsEnabled()
+        performClick()
+      }
 
-            verify { mockNavActions.navigateTo(Route.DASHBOARD) }
-            confirmVerified(mockNavActions)
-        }
+      verify { mockNavActions.navigateTo(Route.DASHBOARD) }
+      confirmVerified(mockNavActions)
     }
+  }
 
-    @Test
-    fun createSuggestionReturnToSuggestionWhenSuccessful() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+  @Test
+  fun createSuggestionReturnToSuggestionWhenSuccessful() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
 
-                    assertTextContains("Suggestion Title*")
+          assertTextContains("Suggestion Title*")
 
-                    performTextClearance()
-                    performTextInput("Stop")
-                }
-
-                inputBudget {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Budget")
-
-                    performTextClearance()
-                    performTextInput("20.0")
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                    performTextInput("This is a Stop")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("12:00")
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("14:00")
-                }
-
-                inputAddress { assertIsNotDisplayed() }
-
-                inputWebsite {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Website")
-
-                    performTextClearance()
-                    performTextInput("www.example.com")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions.navigateTo(Route.SUGGESTION) }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("Stop")
         }
-    }
 
-    @Test
-    fun createSuggestionWorksWithOnlyMandatoryField() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+          assertTextContains("Budget")
 
-                    assertTextContains("Suggestion Title*")
-
-                    performTextClearance()
-                    performTextInput("Stop")
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                    performTextInput("This is a Stop")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("12:00")
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("14:00")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions.navigateTo(Route.SUGGESTION) }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("20.0")
         }
-    }
 
-    @Test
-    fun createSuggestionFailsWithMissingTitle() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
 
-                    assertTextContains("Suggestion Title*")
-
-                    performTextClearance()
-                }
-
-                inputBudget {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Budget")
-
-                    performTextClearance()
-                    performTextInput("20.0")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("12:00")
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("14:00")
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                    performTextInput("This is a Stop")
-                }
-
-                inputWebsite {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Website")
-
-                    performTextClearance()
-                    performTextInput("www.example.com")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions wasNot Called }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("This is a Stop")
         }
-    }
 
-    @Test
-    fun createSuggestionFailsWithMissingStartDate() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+        inputStartDate {
+          assertIsDisplayed()
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+          assertTextContains("From*")
 
-                    assertTextContains("Suggestion Title*")
-
-                    performTextClearance()
-                    performTextInput("Stop")
-                }
-
-                inputBudget {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Budget")
-
-                    performTextClearance()
-                    performTextInput("20.0")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("12:00")
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("14:00")
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                    performTextInput("This is a Stop")
-                }
-
-                inputWebsite {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Website")
-
-                    performTextClearance()
-                    performTextInput("www.example.com")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions wasNot Called }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("2024-04-16")
         }
-    }
 
-    @Test
-    fun createSuggestionFailsWithMissingEndDate() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+        inputEndDate {
+          assertIsDisplayed()
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+          assertTextContains("To*")
 
-                    assertTextContains("Suggestion Title*")
-
-                    performTextClearance()
-                    performTextInput("Stop")
-                }
-
-                inputBudget {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Budget")
-
-                    performTextClearance()
-                    performTextInput("20.0")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("12:00")
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("14:00")
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                    performTextInput("This is a Stop")
-                }
-
-                inputWebsite {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Website")
-
-                    performTextClearance()
-                    performTextInput("www.example.com")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions wasNot Called }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("2024-04-16")
         }
-    }
 
-    @Test
-    fun createSuggestionFailsWithMissingStartTime() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+        inputStartTime {
+          assertIsDisplayed()
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+          assertTextContains("00:00")
 
-                    assertTextContains("Suggestion Title*")
-
-                    performTextClearance()
-                    performTextInput("Stop")
-                }
-
-                inputBudget {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Budget")
-
-                    performTextClearance()
-                    performTextInput("20.0")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("14:00")
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                    performTextInput("This is a Stop")
-                }
-
-                inputWebsite {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Website")
-
-                    performTextClearance()
-                    performTextInput("www.example.com")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions wasNot Called }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("12:00")
         }
-    }
 
-    @Test
-    fun createSuggestionFailsWithMissingEndTime() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+        inputEndTime {
+          assertIsDisplayed()
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+          assertTextContains("00:00")
 
-                    assertTextContains("Suggestion Title*")
-
-                    performTextClearance()
-                    performTextInput("Stop")
-                }
-
-                inputBudget {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Budget")
-
-                    performTextClearance()
-                    performTextInput("20.0")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("12:00")
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                    performTextInput("This is a Stop")
-                }
-
-                inputWebsite {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Website")
-
-                    performTextClearance()
-                    performTextInput("www.example.com")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions wasNot Called }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("14:00")
         }
-    }
 
-    @Test
-    fun createSuggestionFailsWithMissingDescription() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
+        inputAddress { assertIsNotDisplayed() }
 
-            step("Open create suggestion screen") {
-                inputTitle {
-                    assertIsDisplayed()
-                    performClick()
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
 
-                    assertTextContains("Suggestion Title*")
+          assertTextContains("Website")
 
-                    performTextClearance()
-                    performTextInput("Stop")
-                }
-
-                inputBudget {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Budget")
-
-                    performTextClearance()
-                    performTextInput("20.0")
-                }
-
-                inputStartDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("From*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputEndDate {
-                    assertIsDisplayed()
-
-                    assertTextContains("To*")
-
-                    performTextClearance()
-                    performTextInput("2024-04-16")
-                }
-
-                inputStartTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("12:00")
-                }
-
-                inputEndTime {
-                    assertIsDisplayed()
-
-                    assertTextContains("00:00")
-
-                    performTextClearance()
-                    performTextInput("14:00")
-                }
-
-                inputDescription {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Suggestion Description*")
-                    assertTextContains("Describe the suggestion")
-
-                    performTextClearance()
-                }
-
-                inputWebsite {
-                    assertIsDisplayed()
-                    performClick()
-
-                    assertTextContains("Website")
-
-                    performTextClearance()
-                    performTextInput("www.example.com")
-                }
-
-                createButton {
-                    assertIsDisplayed()
-                    performClick()
-                }
-
-                verify { mockNavActions wasNot Called }
-                confirmVerified(mockNavActions)
-            }
+          performTextClearance()
+          performTextInput("www.example.com")
         }
-    }
 
-    @Test
-    fun createSuggestionWithoutAddress() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent {
-                CreateSuggestion(
-                    "aaa",
-                    vm,
-                    onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
-                    onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
-            }
-
-            step("Open create suggestion screen") { inputAddress { assertIsNotDisplayed() } }
+        createButton {
+          assertIsDisplayed()
+          performClick()
         }
+
+        verify { mockNavActions.navigateTo(Route.SUGGESTION) }
+        confirmVerified(mockNavActions)
+      }
     }
+  }
 
-    @Test
-    fun createSuggestionWithAddress() = run {
-        ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
-            val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-            composeTestRule.setContent { CreateSuggestion("aaa", vm, addr = "Example address") }
+  @Test
+  fun createSuggestionWorksWithOnlyMandatoryField() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
 
-            inputAddress {
-                assertIsDisplayed()
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
 
-                assertTextContains("Example address")
-            }
+          assertTextContains("Suggestion Title*")
+
+          performTextClearance()
+          performTextInput("Stop")
         }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("From*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("To*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputStartTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("12:00")
+        }
+
+        inputEndTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("14:00")
+        }
+
+        createButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions.navigateTo(Route.SUGGESTION) }
+        confirmVerified(mockNavActions)
+      }
     }
+  }
+
+  @Test
+  fun createSuggestionFailsWithMissingTitle() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Title*")
+
+          performTextClearance()
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("20.0")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("From*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("To*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputStartTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("12:00")
+        }
+
+        inputEndTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
+        }
+
+        createButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionFailsWithMissingStartDate() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Title*")
+
+          performTextClearance()
+          performTextInput("Stop")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("20.0")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("From*")
+
+          performTextClearance()
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("To*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputStartTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("12:00")
+        }
+
+        inputEndTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
+        }
+
+        createButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionFailsWithMissingEndDate() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Title*")
+
+          performTextClearance()
+          performTextInput("Stop")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("20.0")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("From*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("To*")
+
+          performTextClearance()
+        }
+
+        inputStartTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("12:00")
+        }
+
+        inputEndTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
+        }
+
+        createButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionFailsWithMissingStartTime() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Title*")
+
+          performTextClearance()
+          performTextInput("Stop")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("20.0")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("From*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("To*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputStartTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+        }
+
+        inputEndTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
+        }
+
+        createButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionFailsWithMissingEndTime() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Title*")
+
+          performTextClearance()
+          performTextInput("Stop")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("20.0")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("From*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("To*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputStartTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("12:00")
+        }
+
+        inputEndTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+          performTextInput("This is a Stop")
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
+        }
+
+        createButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionFailsWithMissingDescription() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
+      step("Open create suggestion screen") {
+        inputTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Title*")
+
+          performTextClearance()
+          performTextInput("Stop")
+        }
+
+        inputBudget {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Budget")
+
+          performTextClearance()
+          performTextInput("20.0")
+        }
+
+        inputStartDate {
+          assertIsDisplayed()
+
+          assertTextContains("From*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputEndDate {
+          assertIsDisplayed()
+
+          assertTextContains("To*")
+
+          performTextClearance()
+          performTextInput("2024-04-16")
+        }
+
+        inputStartTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("12:00")
+        }
+
+        inputEndTime {
+          assertIsDisplayed()
+
+          assertTextContains("00:00")
+
+          performTextClearance()
+          performTextInput("14:00")
+        }
+
+        inputDescription {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Suggestion Description*")
+          assertTextContains("Describe the suggestion")
+
+          performTextClearance()
+        }
+
+        inputWebsite {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Website")
+
+          performTextClearance()
+          performTextInput("www.example.com")
+        }
+
+        createButton {
+          assertIsDisplayed()
+          performClick()
+        }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionWithoutAddress() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion(
+            "aaa",
+            vm,
+            onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
+            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+      }
+
+      step("Open create suggestion screen") { inputAddress { assertIsNotDisplayed() } }
+    }
+  }
+
+  @Test
+  fun createSuggestionWithAddress() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent { CreateSuggestion("aaa", vm, addr = "Example address") }
+
+      inputAddress {
+        assertIsDisplayed()
+
+        assertTextContains("Example address")
+      }
+    }
+  }
+
+  /**
+   * Test that the navigation to the CreateSuggestion screen is triggered when the button is
+   * clicked.
+   */
+  @Test
+  fun navigateToCreateSuggestionOnButtonPress() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val suggestionVm = FakeSuggestionsViewModel()
+
+      composeTestRule.setContent {
+        com.github.se.wanderpals.ui.screens.trip.Suggestion(
+            oldNavActions = mockNavActions,
+            tripId = "testTripId",
+            suggestionsViewModel = suggestionVm)
+      }
+
+      // Simulate the button click that should lead to the CreateSuggestion screen
+      suggestionButtonExists.performClick()
+
+      // Verify that the navigation action to CreateSuggestion is called with the correct parameters
+      verify { mockNavActions.navigateTo("${Route.CREATE_SUGGESTION}/testTripId") }
+      confirmVerified(mockNavActions)
+    }
+  }
 }

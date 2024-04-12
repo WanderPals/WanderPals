@@ -8,13 +8,13 @@ import kotlinx.coroutines.launch
 
 open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewModel() {
 
-    private val _tripsRepository = tripsRepository
+  private val _tripsRepository = tripsRepository
 
-    open fun addSuggestion(tripId: String, suggestion: Suggestion): Boolean {
-        var a: Boolean = true
-        viewModelScope.launch {
-            _tripsRepository.addSuggestionToTrip(tripId, suggestion).also { a = it }
-        }
-        return a
+  open fun addSuggestion(tripId: String, suggestion: Suggestion): Boolean {
+    var a: Boolean = true
+    viewModelScope.launch {
+      _tripsRepository.addSuggestionToTrip(tripId, suggestion).also { a = it }
     }
+    return a
+  }
 }

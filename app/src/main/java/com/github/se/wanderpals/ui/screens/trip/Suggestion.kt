@@ -21,6 +21,8 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
  *
  * @param oldNavActions The navigation actions of the button that was clicked to navigate to the
  *   screen.
+ * @param tripId The ID of the trip.
+ * @param suggestionsViewModel The ViewModel for managing suggestions.
  */
 @Composable
 fun Suggestion(
@@ -29,31 +31,31 @@ fun Suggestion(
     suggestionsViewModel: SuggestionsViewModel
 ) {
 
-    // get the suggestion list from the firebase database
-    val suggestionList by suggestionsViewModel.state.collectAsState()
+  // get the suggestion list from the firebase database
+  val suggestionList by suggestionsViewModel.state.collectAsState()
 
-    // State for managing search suggestion text (the filter)
-    var searchSuggestionText by remember { mutableStateOf("") }
+  // State for managing search suggestion text (the filter)
+  var searchSuggestionText by remember { mutableStateOf("") }
 
-    Scaffold(
-        modifier = Modifier.testTag("suggestionFeedScreen"),
-        topBar = {
-            // Top bar with search functionality based on the title of the trips
-            SuggestionTopBar(
-                searchSuggestionText = searchSuggestionText,
-                onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-                    searchSuggestionText = newSearchSuggestionText
-                })
-        },
-        bottomBar = {
-            SuggestionBottomBar(
-                onSuggestionClick = { oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId") })
-        }) { innerPadding ->
+  Scaffold(
+      modifier = Modifier.testTag("suggestionFeedScreen"),
+      topBar = {
+        // Top bar with search functionality based on the title of the trips
+        SuggestionTopBar(
+            searchSuggestionText = searchSuggestionText,
+            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+              searchSuggestionText = newSearchSuggestionText
+            })
+      },
+      bottomBar = {
+        SuggestionBottomBar(
+            onSuggestionClick = { oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId") })
+      }) { innerPadding ->
         SuggestionFeedContent(
             innerPadding = innerPadding,
             suggestionList = suggestionList,
             searchSuggestionText = searchSuggestionText,
             tripId = tripId,
             suggestionRepository = suggestionsViewModel)
-    }
+      }
 }

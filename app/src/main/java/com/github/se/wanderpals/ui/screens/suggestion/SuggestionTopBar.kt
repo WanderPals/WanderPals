@@ -50,8 +50,7 @@ fun SuggestionTopBar(
         onSearch = {},
         active = false,
         onActiveChange = { active = it },
-        placeholder = { Text(
-            "Search a suggestion") },
+        placeholder = { Text("Search a suggestion") },
         trailingIcon = {
           // Show search icon if search text is empty, otherwise show clear icon
           if (searchSuggestionText.isEmpty()) {
@@ -66,8 +65,7 @@ fun SuggestionTopBar(
                   Icon(
                       imageVector = Icons.Default.Clear,
                       contentDescription = Icons.Default.Clear.name,
-                      modifier = Modifier.size(24.dp)
-                  )
+                      modifier = Modifier.size(24.dp))
                 }
           }
         },
