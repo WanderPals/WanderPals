@@ -8,7 +8,6 @@ on:
   pull_request:
     types:
       - closed
-      - reopened
 
 jobs:
   build:
@@ -46,12 +45,3 @@ jobs:
         with:
           name: app
           path: app/build/outputs/apk/debug/app-debug.apk
-
-      # Upload APK to Release
-      - name: Upload APK to Release
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        with:
-          asset_path: ./app/build/outputs/apk/debug/app-debug.apk
-          asset_name: WanderPals.apk
-          asset_content_type: application/zip
