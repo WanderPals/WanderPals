@@ -259,9 +259,7 @@ fun SuggestionDetailPopup(
                             Text(
                                 text = "Send comment",
                                 modifier =
-                                    Modifier
-                                        //            .padding(8.dp)
-                                        .clip(RoundedCornerShape(8.dp))
+                                    Modifier.clip(RoundedCornerShape(8.dp))
                                         .clickable(
                                             onClick = {
                                               if (newCommentText.isNotEmpty()) {
