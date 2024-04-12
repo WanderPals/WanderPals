@@ -1,5 +1,6 @@
 package com.github.se.wanderpals
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -31,11 +32,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
 
+const val EMPTY_CODE = ""
+
 class MainActivity : ComponentActivity() {
+
   private lateinit var signInClient: GoogleSignInClient
 
   private lateinit var navController: NavHostController
@@ -43,6 +48,8 @@ class MainActivity : ComponentActivity() {
   private lateinit var navigationActions: NavigationActions
 
   private lateinit var tripsRepository: TripsRepository
+
+  private lateinit var context: Context
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -76,6 +83,8 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
+    context = this
+
     val gso: GoogleSignInOptions =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.web_client_id))
@@ -96,7 +105,13 @@ class MainActivity : ComponentActivity() {
           NavHost(navController = navController, startDestination = Route.SIGN_IN) {
             composable(Route.SIGN_IN) {
               BackHandler(true) {}
-              SignIn(onClick = { launcher.launch(signInClient.signInIntent) })
+              SignIn(
+                  onClick1 = { launcher.launch(signInClient.signInIntent) },
+                  onClick2 = {
+                    tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
+                    tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
+                    navigationActions.navigateTo(Route.OVERVIEW)
+                  })
             }
             composable(Route.OVERVIEW) {
               BackHandler(true) {}
@@ -104,7 +119,7 @@ class MainActivity : ComponentActivity() {
                   overviewViewModel = OverviewViewModel(tripsRepository),
                   navigationActions = navigationActions)
             }
-            composable(Route.TRIP) { navBackStackEntry ->
+            composable(Route.TRIP) {
               BackHandler(true) {}
               Trip(navigationActions, navigationActions.currentTrip, tripsRepository, placesClient)
             }
