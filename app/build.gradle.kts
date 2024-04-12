@@ -133,6 +133,7 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 }
 
 dependencies {
+    implementation(libs.test.core.ktx)
     val composeBom = platform(libs.compose.bom)
 
     implementation(libs.androidx.navigation.runtime.ktx)
