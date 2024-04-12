@@ -72,17 +72,14 @@ class MainActivity : ComponentActivity() {
                       Log.d("SignIn", "Login result " + account.displayName)
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
-                        Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT)
-                            .show()
+                      Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
                     }
                   }
                   .addOnFailureListener {
-                    Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
                   }
                   .addOnCanceledListener {
-                    Toast.makeText(context, "FireBase Canceled", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(context, "FireBase Canceled", Toast.LENGTH_SHORT).show()
                   }
             }
             .addOnFailureListener {
