@@ -65,50 +65,44 @@ open class SuggestionsViewModel(
    */
   open fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
 
-    Log.d("Liked Suggestions", _likedSuggestions.value.toString())
-    Log.d("Suggestions Liked Users", suggestion.userLikes.toString())
-    Log.d("Suggestion Is Liked", getIsLiked(suggestion.suggestionId).toString())
-
-    val liked = getIsLiked(suggestion.suggestionId)
-
-    // Toggle the like status in the local state
-    _likedSuggestions.value =
-        if (liked) {
-          _likedSuggestions.value - suggestion.suggestionId
-        } else {
-          _likedSuggestions.value + suggestion.suggestionId
-        }
-
-    // Prepare the updated suggestion for backend update
-    val newUserLike =
-        if (liked) { // if the suggestion is already liked, remove the current user's ID
-          suggestion.userLikes - currentLoggedInUId // Remove the current user's ID from the list
-        } else {
-          suggestion.userLikes + currentLoggedInUId
-        }
-    val updatedSuggestion = suggestion.copy(userLikes = newUserLike)
-
     // Update the backend by calling the TripsRepository function
     viewModelScope.launch {
+      val currentSuggestion =
+          suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+
+      Log.d("Liked Suggestions", _likedSuggestions.value.toString())
+      Log.d("Suggestions Liked Users", currentSuggestion.userLikes.toString())
+      Log.d("Suggestion Is Liked", getIsLiked(currentSuggestion.suggestionId).toString())
+
+      val liked = getIsLiked(currentSuggestion.suggestionId)
+
+      // Toggle the like status in the local state
+      _likedSuggestions.value =
+          if (liked) {
+            _likedSuggestions.value - currentSuggestion.suggestionId
+          } else {
+            _likedSuggestions.value + currentSuggestion.suggestionId
+          }
+
+      // Prepare the updated suggestion for backend update
+      val newUserLike =
+          if (liked) { // if the suggestion is already liked, remove the current user's ID
+            currentSuggestion.userLikes -
+                currentLoggedInUId // Remove the current user's ID from the list
+          } else {
+            currentSuggestion.userLikes + currentLoggedInUId
+          }
+      val updatedSuggestion = currentSuggestion.copy(userLikes = newUserLike)
       // Call the repository function to update the suggestion
       val wasUpdateSuccessful =
-          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+          suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
       if (wasUpdateSuccessful) { // If the backend update is successful,
-        // Update the local state with the modified suggestion
-        _state.value =
-            _state.value.map {
-              if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
-            }
+        _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
 
-        // Update the list of suggestions with the new like count
-        _state.value =
-            _state.value.map { existingSuggestion ->
-              if (existingSuggestion.suggestionId == suggestion.suggestionId) {
-                existingSuggestion.copy(userLikes = updatedSuggestion.userLikes)
-              } else {
-                existingSuggestion
-              }
-            }
+        _likedSuggestions.value =
+            _state.value
+                .filter { it.userLikes.contains(currentLoggedInUId) }
+                .map { it.suggestionId }
       }
     }
   }
