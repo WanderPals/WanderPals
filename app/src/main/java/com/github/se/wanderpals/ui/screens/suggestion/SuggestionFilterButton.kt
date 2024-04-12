@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -20,11 +21,11 @@ fun SuggestionFilterButton(text: String, isSelected: Boolean, onSelect: () -> Un
     Text(
         text = text,
         modifier = Modifier
-//            .padding(8.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onSelect)
             .background(backgroundColor)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .testTag("suggestionFilterButton"),
         color = textColor,
         style = MaterialTheme.typography.bodyMedium
     )
