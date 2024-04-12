@@ -113,14 +113,7 @@ fun SuggestionFeedContent(
           },
           onComment = { comment ->
             suggestionRepository.addComment(
-                tripId,
-                suggestion,
-                Comment(
-                    comment,
-                    suggestionRepository.currentLoggedInUId,
-                    "tempUsername",
-                    comment,
-                    LocalDate.now()))
+                tripId, suggestion, Comment("", "", "tempUsername", comment, LocalDate.now()))
           })
     }
 

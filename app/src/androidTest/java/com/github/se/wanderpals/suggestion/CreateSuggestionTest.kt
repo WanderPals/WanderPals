@@ -942,7 +942,10 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
       suggestionButtonExists.performClick()
 
       // Verify that the navigation action to CreateSuggestion is called with the correct parameters
-      verify { mockNavActions.navigateTo("${Route.CREATE_SUGGESTION}/testTripId") }
+      verify {
+        mockNavActions.currentTrip = "testTripId"
+        mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
+      }
       confirmVerified(mockNavActions)
     }
   }

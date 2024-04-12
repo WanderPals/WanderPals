@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +65,7 @@ fun SuggestionDetailPopup(
   // State for the like count, which depends on the `userLikes` size
   // Calculate the like count dynamically based on whether the suggestion is liked
   val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
-  
+
   Dialog(
       onDismissRequest =
           onDismiss) { // todo: (after M1) uncomment dialog and create onclick function to go from
@@ -293,12 +295,13 @@ fun SuggestionDetailPopup(
                             .sortedByDescending { it.createdAt }
                             .forEach { comment ->
                               SuggestionComment(comment = comment)
-                              if (comments.indexOf(comment) != comments.size - 1) {
+                              if (comments.sortedByDescending { it.createdAt }.indexOf(comment) !=
+                                  comments.size - 1) {
                                 HorizontalDivider(
                                     modifier =
                                         Modifier.padding(vertical = 8.dp)
                                             .testTag(
-                                                "suggestionPopupDivider${comments.indexOf(comment)}"),
+                                                "suggestionPopupDivider${comments.sortedByDescending { it.createdAt }.indexOf(comment)}"),
                                     color =
                                         Color(0xFF5A7BF0)) // Add a divider between comments except
                                 // for the last one

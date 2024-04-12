@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.suggestion
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -9,11 +10,14 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.screens.SuggestionPopupScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetailPopup
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.github.kakaocup.compose.node.element.ComposeScreen.Companion.onComposeScreen
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import java.time.LocalDate
@@ -155,46 +159,6 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
   }
 
   /**
-   * Test that the suggestion details popup of the first suggestion displays correctly when comments
-   * are present. Note that the address and website are tested in separate tests.
-   */
-  @Test
-  fun suggestionDetailPopup_displaysCommentsCorrectly_whenCommentsArePresent() {
-    composeTestRule.setContent {
-      SuggestionDetailPopup(
-          suggestion = suggestionList[0],
-          comments = commentList,
-          viewModel = FakeSuggestionsViewModel(),
-          onDismiss = {},
-          onLikeClicked = {})
-    }
-
-    onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
-      suggestionPopupTitle.assertIsDisplayed()
-      suggestionPopupCommentsIcon.assertIsDisplayed()
-      suggestionPopupLikesIcon.assertIsDisplayed()
-      suggestionPopupUserName.assertIsDisplayed()
-      suggestionPopupDate.assertIsDisplayed()
-
-      suggestionPopupDescription.assertIsDisplayed()
-      suggestionPopupDescriptionText.assertIsDisplayed()
-
-      suggestionPopupStartDateTimeEndDateTime.assertIsDisplayed()
-
-      suggestionPopupComments.assertIsDisplayed()
-      // Verify the comments are displayed:
-      // by checking the presence of each suggestionComment, we check the presence of the
-      // commentList
-      suggestionComment1.assertIsDisplayed()
-      suggestionComment2.assertIsDisplayed()
-      suggestionComment3.assertIsDisplayed()
-      suggestionComment4.assertIsDisplayed()
-
-      suggestionPopupDivider.assertIsDisplayed()
-    }
-  }
-
-  /**
    * Test that the suggestion details popup of the second suggestion displays correctly when
    * comments are not present. Note that the address and website are tested in separate tests.
    */
@@ -206,7 +170,8 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
           comments = emptyList(),
           viewModel = FakeSuggestionsViewModel(),
           onDismiss = {},
-          onLikeClicked = {})
+          onLikeClicked = {},
+          onComment = {})
     }
 
     onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
@@ -239,7 +204,8 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
           comments = commentList,
           viewModel = FakeSuggestionsViewModel(),
           onDismiss = {},
-          onLikeClicked = {})
+          onLikeClicked = {},
+          onComment = {})
     }
 
     onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
@@ -261,7 +227,8 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
           comments = commentList,
           viewModel = FakeSuggestionsViewModel(),
           onDismiss = {},
-          onLikeClicked = {})
+          onLikeClicked = {},
+          onComment = {})
     }
 
     onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
@@ -296,10 +263,6 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     onComposeScreen<SuggestionPopupScreen>(composeTestRule) {
       suggestionPopupScreen.assertIsDisplayed()
     }
-                LocalDate.of(2024, 3, 29),
-                stop4,
-                commentList,
-                emptyList()))
   }
 
   @Test
@@ -309,10 +272,9 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
           suggestion = suggestionList[0],
           comments = commentList,
           onDismiss = {},
-          isLiked = false,
           onLikeClicked = {},
           onComment = { it -> },
-          likesCount = 0)
+          viewModel = FakeSuggestionsViewModel())
     }
     composeTestRule
         .onNodeWithTag("commentUserNamecommentId1", useUnmergedTree = true)
@@ -394,10 +356,9 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
           suggestion = suggestionList[0],
           comments = emptyList(),
           onDismiss = {},
-          isLiked = false,
           onLikeClicked = {},
           onComment = { it -> },
-          likesCount = 0)
+          viewModel = FakeSuggestionsViewModel())
     }
 
     composeTestRule

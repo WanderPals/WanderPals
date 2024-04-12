@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
@@ -65,7 +66,8 @@ fun Suggestion(
         bottomBar = {
           SuggestionBottomBar(
               onSuggestionClick = {
-                oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
+                oldNavActions.currentTrip = tripId
+                oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
               })
         }) { innerPadding ->
           SuggestionFeedContent(
