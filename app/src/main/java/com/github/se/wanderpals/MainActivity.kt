@@ -121,18 +121,56 @@ class MainActivity : ComponentActivity() {
             }
             composable(Route.TRIP) {
               BackHandler(true) {}
-              Trip(navigationActions, navigationActions.currentTrip, tripsRepository, placesClient)
+              if (navigationActions.variables.suggestionId != "") {
+                Trip(
+                    navigationActions,
+                    navigationActions.variables.currentTrip,
+                    tripsRepository,
+                    placesClient,
+                    Route.SUGGESTION)
+              } else if (navigationActions.variables.currentAddress != "") {
+                Trip(
+                    navigationActions,
+                    navigationActions.variables.currentTrip,
+                    tripsRepository,
+                    placesClient,
+                    Route.MAP)
+              } else {
+                Trip(
+                    navigationActions,
+                    navigationActions.variables.currentTrip,
+                    tripsRepository,
+                    placesClient)
+              }
             }
             composable(Route.CREATE_TRIP) {
               BackHandler(true) {}
               CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
             }
 
-            composable(Route.CREATE_SUGGESTION) { navBackStackEntry ->
+            composable(Route.CREATE_SUGGESTION) {
               BackHandler(true) {}
+              val loc = navigationActions.variables.currentAddress
+              val cord = navigationActions.variables.currentGeoCords
+              Log.d("CREATE_SUGGESTION", "Location: $loc")
+              Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
+              val onAction: () -> Unit = {
+                if (loc != "") {
+                  navigationActions.navigateToMap(
+                      navigationActions.variables.currentTrip, cord, loc)
+                } else {
+                  navigationActions.navigateToSuggestion(
+                      navigationActions.variables.currentTrip,
+                      navigationActions.variables.suggestionId)
+                }
+              }
               CreateSuggestion(
-                  tripId = navigationActions.currentTrip,
-                  viewModel = CreateSuggestionViewModel(tripsRepository))
+                  tripId = navigationActions.variables.currentTrip,
+                  viewModel = CreateSuggestionViewModel(tripsRepository),
+                  addr = loc,
+                  geoCords = cord,
+                  onSuccess = onAction,
+                  onCancel = onAction)
             }
           }
         }

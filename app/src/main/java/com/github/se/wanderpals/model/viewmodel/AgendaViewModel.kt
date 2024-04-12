@@ -122,9 +122,13 @@ open class AgendaViewModel(
   private suspend fun getDailyActivities(selectedDate: LocalDate): List<Stop>? {
     // Assuming tripsRepository.getAllStopsFromTrip returns a List<Stop>
     val allStops = tripsRepository?.getAllStopsFromTrip(tripId)
+    val allStopsFromSubscribedTrips =
+        tripsRepository?.getAllSuggestionsFromTrip(tripId)?.map { it.stop }
+    val displayedStops =
+        allStops?.toMutableList()?.apply { addAll(allStopsFromSubscribedTrips ?: emptyList()) }
 
     // Filter stops to include only those that occur on the selected date
-    return allStops?.filter { stop -> stop.date.isEqual(selectedDate) }
+    return displayedStops?.filter { stop -> stop.date.isEqual(selectedDate) }
   }
 
   fun fetchDailyActivities(selectedDate: LocalDate) {
