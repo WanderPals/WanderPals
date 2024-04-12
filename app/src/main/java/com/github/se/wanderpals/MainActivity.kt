@@ -55,32 +55,42 @@ class MainActivity : ComponentActivity() {
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        task.addOnSuccessListener { account ->
-          val googleTokenId = account.idToken ?: ""
-          val credential = GoogleAuthProvider.getCredential(googleTokenId, null)
-          FirebaseAuth.getInstance()
-              .signInWithCredential(credential)
-              .addOnCompleteListener {
-                if (it.isSuccessful) {
-                  Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
-                  val uid = it.result?.user?.uid ?: ""
-                  Log.d("MainActivity", "Firebase UID: $uid")
-                  tripsRepository = TripsRepository(uid, Dispatchers.IO)
-                  tripsRepository.initFirestore()
-                  Log.d("MainActivity", "Firebase Initialized")
-                  Log.d("SignIn", "Login result " + account.displayName)
-                  navigationActions.navigateTo(Route.OVERVIEW)
-                } else {
-                  Log.d("MainActivity", "SignIn: Firebase Login Completed Unsuccessfully")
-                }
-              }
-              .addOnFailureListener {
-                Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
-              }
-              .addOnCanceledListener {
-                Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
-              }
-        }
+        task
+            .addOnSuccessListener { account ->
+              val googleTokenId = account.idToken ?: ""
+              val credential = GoogleAuthProvider.getCredential(googleTokenId, null)
+              FirebaseAuth.getInstance()
+                  .signInWithCredential(credential)
+                  .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                      Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
+                      val uid = it.result?.user?.uid ?: ""
+                      Log.d("MainActivity", "Firebase UID: $uid")
+                      tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                      tripsRepository.initFirestore()
+                      Log.d("MainActivity", "Firebase Initialized")
+                      Log.d("SignIn", "Login result " + account.displayName)
+                      navigationActions.navigateTo(Route.OVERVIEW)
+                    } else {
+                        Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                  }
+                  .addOnFailureListener {
+                    Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT)
+                        .show()
+                  }
+                  .addOnCanceledListener {
+                    Toast.makeText(context, "FireBase Canceled", Toast.LENGTH_SHORT)
+                        .show()
+                  }
+            }
+            .addOnFailureListener {
+              Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
+            }
+            .addOnCanceledListener {
+              Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show()
+            }
       }
 
   private lateinit var placesClient: PlacesClient
