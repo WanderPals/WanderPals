@@ -30,53 +30,13 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/**
+ * A fake implementation of the SuggestionsViewModel class for testing purposes. It is used anywhere
+ * when the SuggestionsViewModel class is required.
+ */
 class FakeSuggestionsViewModel(tripsRepository: TripsRepository? = TripsRepository("fake_uid", Dispatchers.Unconfined)
                                , tripId: String = "") :
     SuggestionsViewModel(tripsRepository, tripId) {
-    //todo: change values for No duplications
-        /*private val testSuggestion: Suggestion =
-        Suggestion(
-            suggestionId = "",
-            userId = "",
-            userName = "tempUsername",
-            text = "",
-            createdAt = LocalDate.now(),
-            stop =
-            Stop(
-                stopId = "",
-                title = "Stop",
-                address = "",
-                date = LocalDate.of(2024, 4, 16),
-                startTime = LocalTime.of(12, 0),
-                budget = 20.0,
-                duration = 120,
-                description = "This is a Stop",
-                geoCords = GeoCords(0.0, 0.0),
-                website = "www.example.com",
-            ))
-
-    private val testSuggestion2: Suggestion =
-        Suggestion(
-            suggestionId = "",
-            userId = "",
-            userName = "tempUsername",
-            text = "",
-            createdAt = LocalDate.now(),
-            stop =
-            Stop(
-                stopId = "",
-                title = "Stop",
-                address = "",
-                date = LocalDate.of(2024, 4, 16),
-                startTime = LocalTime.of(12, 0),
-                budget = 0.0,
-                duration = 120,
-                description = "This is a Stop",
-                geoCords = GeoCords(0.0, 0.0),
-            ))
-
-    private val _state = MutableStateFlow(listOf(testSuggestion, testSuggestion2))
-    override val state: StateFlow<List<Suggestion>> = _state*/
 
     // Override any other necessary open functions with dummy implementations if required
 }
@@ -287,6 +247,9 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
     }
   }
 
+    /**
+     * Test that the suggestion filter options exists and is displayed on the Suggestions Feed screen.
+     */
     @Test
     fun suggestionFilterOptions_ExistsAndIsDisplayed() {
         composeTestRule.setContent {
@@ -299,6 +262,9 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
         }
     }
 
+    /**
+     * Test that the suggestion filter button exists and is displayed on the Suggestions Feed screen.
+     */
     @Test
     fun suggestionFilterButton_ExistsAndIsDisplayed() {
         composeTestRule.setContent {
@@ -315,6 +281,9 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
         }
     }
 
+    /**
+     * Test that the suggestion search bar exists and is displayed on the Suggestions Feed screen.
+     */
     @Test
     fun suggestionSearchBar_ExistsAndIsDisplayed() {
         composeTestRule.setContent {
@@ -329,6 +298,10 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
             suggestionSearchBar.assertIsDisplayed()
         }
     }
+
+    /**
+     * Test that the clear suggestion search button exists, is displayed, and performs a click action.
+     */
     @Test
     fun clearSuggestionSearchButton_ExistsAndIsDisplayedAndPerformsClick() {
         composeTestRule.setContent {
