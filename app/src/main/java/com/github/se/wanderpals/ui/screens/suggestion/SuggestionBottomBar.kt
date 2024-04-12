@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SuggestionBottomBar(onSuggestionClick: () -> Unit) {
+fun SuggestionBottomBar(onSuggestionClick: () -> Unit = {}) {
   Column(Modifier.padding(30.dp)) {
 
     // Button to create a suggestion

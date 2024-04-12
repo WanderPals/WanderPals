@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -23,24 +22,37 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 
-/** The Suggestion screen. */
+/**
+ * The Suggestion screen.
+ *
+ * @param oldNavActions The navigation actions of the button that was clicked to navigate to the
+ *   screen.
+ * @param tripId The ID of the trip.
+ * @param suggestionsViewModel The ViewModel for managing suggestions.
+ */
 @Composable
-fun Suggestion(tripId: String, suggestionsViewModel: SuggestionsViewModel) {
-  val navController = rememberNavController()
-  val navActions = NavigationActions(navController)
+fun Suggestion(
+    oldNavActions: NavigationActions,
+    tripId: String,
+    suggestionsViewModel: SuggestionsViewModel
+) {
 
-  // Collecting suggestions list and loading state from view model
+  // get the suggestion list from the firebase database
   val suggestionList by suggestionsViewModel.state.collectAsState()
-  val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
-  // State for managing search text (the filter) <-todo: for sprint3
+  // State for managing search suggestion text (the filter)
   var searchSuggestionText by remember { mutableStateOf("") }
+
+  // State for managing the loading state
+  val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
-      CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
+      CircularProgressIndicator(
+          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
     }
   } else {
+
     Scaffold(
         modifier = Modifier.testTag("suggestionFeedScreen"),
         topBar = {
@@ -53,15 +65,16 @@ fun Suggestion(tripId: String, suggestionsViewModel: SuggestionsViewModel) {
         },
         bottomBar = {
           SuggestionBottomBar(
-              onSuggestionClick = { navActions.navigateTo(Route.CREATE_SUGGESTION) })
+              onSuggestionClick = {
+                oldNavActions.navigateTo("${Route.CREATE_SUGGESTION}/$tripId")
+              })
         }) { innerPadding ->
-          //    NavHost(navController, startDestination = Route.DASHBOARD,
-          // Modifier.padding(innerPadding))
           SuggestionFeedContent(
               innerPadding = innerPadding,
-              navigationActions = navActions,
               suggestionList = suggestionList,
-              searchSuggestionText = searchSuggestionText)
+              searchSuggestionText = searchSuggestionText,
+              tripId = tripId,
+              suggestionRepository = suggestionsViewModel)
         }
   }
 }

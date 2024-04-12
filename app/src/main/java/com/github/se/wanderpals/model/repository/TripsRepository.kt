@@ -27,7 +27,7 @@ import kotlinx.coroutines.withContext
  *   in short)
  */
 class TripsRepository(
-    private val uid: String,
+    val uid: String,
     private val dispatcher: CoroutineDispatcher // Inject dispatcher
 ) {
 

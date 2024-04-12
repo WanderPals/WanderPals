@@ -13,6 +13,9 @@ import com.github.se.wanderpals.screens.SuggestionFeedScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFilterButton
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFilterOptions
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -22,16 +25,56 @@ import io.mockk.mockk
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
+/**
+ * A fake implementation of the SuggestionsViewModel class for testing purposes. It is used anywhere
+ * when the SuggestionsViewModel class is required.
+ */
+class FakeSuggestionsViewModel(
+    tripsRepository: TripsRepository? = TripsRepository("fake_uid", Dispatchers.Unconfined),
+    tripId: String = ""
+) : SuggestionsViewModel(tripsRepository, tripId) {
+
+  // Override any other necessary open functions with dummy implementations if required
+
+  private val _state = MutableStateFlow(emptyList<Suggestion>())
+  private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
+  private val currentLoggedInUId = tripsRepository?.uid!!
+
+  // Function to directly set the suggestion list state for testing
+  fun updateSuggestionList(suggestions: List<Suggestion>) {
+    _state.value = suggestions
+    _likedSuggestions.value =
+        suggestions.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
+  }
+
+  override fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
+    val suggestionIndex = _state.value.indexOfFirst { it.suggestionId == suggestion.suggestionId }
+    val isLiked = _likedSuggestions.value.contains(suggestion.suggestionId)
+
+    if (isLiked) {
+      val updatedSuggestion = suggestion.copy(userLikes = suggestion.userLikes - currentLoggedInUId)
+      _state.value = _state.value.toMutableList().apply { set(suggestionIndex, updatedSuggestion) }
+      _likedSuggestions.value -= suggestion.suggestionId
+    } else {
+      val updatedSuggestion = suggestion.copy(userLikes = suggestion.userLikes + currentLoggedInUId)
+      _state.value = _state.value.toMutableList().apply { set(suggestionIndex, updatedSuggestion) }
+      _likedSuggestions.value += suggestion.suggestionId
+    }
+  }
+}
 
 @RunWith(AndroidJUnit4::class)
 class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
 
   @get:Rule val composeTestRule = createComposeRule()
   private lateinit var suggestionList: List<Suggestion>
+  private lateinit var commentList: List<Comment>
 
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
@@ -40,42 +83,12 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
     // Initialize the mock NavigationActions
     mockNavActions = mockk(relaxed = true)
 
-    // Setup dummy data for testing:
-
-    //        val tripId = "dummyTripId"
-
-    val stop1 =
+    // Initialize the suggestion list with dummy data
+    val stop4 =
         Stop(
-            stopId = "OSK001",
-            title = "Osaka Castle",
-            address = "1-1 Osakajo, Chuo Ward, Osaka, 540-0002, Japan",
-            date = LocalDate.of(2024, 4, 10),
-            startTime = LocalTime.of(9, 0),
-            duration = 120,
-            budget = 600.0,
-            description = "Osaka Castle is one of Japan's most famous landmarks...",
-            geoCords = GeoCords(latitude = 34.687315, longitude = 135.526201),
-            website = "https://www.osakacastle.net/",
-            imageUrl = "")
-    val stop2 =
-        Stop(
-            stopId = "OSK002",
-            title = "Dotonbori",
-            address = "Dotonbori, Chuo Ward, Osaka, 542-0071, Japan",
-            date = LocalDate.of(2024, 4, 10),
-            startTime = LocalTime.of(18, 0), // Best experienced in the evening
-            duration = 180, // Approximately 3 hours
-            budget = 3000.0, // Food, shopping, and other activities
-            description =
-                "Dotonbori is Osaka's most famous tourist destination, known for its bright neon lights, extravagant signage, and abundant dining options.",
-            geoCords = GeoCords(latitude = 34.668723, longitude = 135.501295),
-            website = "https://www.dotonbori.or.jp/en/",
-            imageUrl = "")
-    val stop3 =
-        Stop(
-            stopId = "OSK003",
-            title = "Umeda Sky Building",
-            address = "1-1-88 Oyodonaka, Kita Ward, Osaka, 531-0076, Japan",
+            stopId = "OSK004",
+            title = "Umeda Sky Building 2",
+            address = "",
             date = LocalDate.of(2024, 4, 11),
             startTime = LocalTime.of(10, 30), // Opens at 10:30 AM
             duration = 90, // 1.5 hours visit
@@ -83,7 +96,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
             description =
                 "The Umeda Sky Building is a spectacular high rise building in the Kita district of Osaka, featuring a futuristic observatory, the Floating Garden.",
             geoCords = GeoCords(latitude = 34.705938, longitude = 135.490357),
-            website = "http://www.kuchu-teien.com/",
+            website = "",
             imageUrl = "")
 
     val comment1 =
@@ -103,53 +116,100 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
             "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now())
 
     // Example list of comments
-    val dummyCommentList = listOf(comment1, comment2, comment3, comment4)
+    val dummyCommentList2 = listOf(comment1, comment2)
+    val dummyCommentList3 = listOf(comment1, comment2, comment3)
+    val dummyCommentList4 = listOf(comment1, comment2, comment3, comment4)
 
-    // Use `this.suggestionList` to ensure we're assigning to the class-level variable.
-    this.suggestionList =
+    val userLikes1 = listOf("ulId1", "ulId2")
+    val userLikes3 = listOf("ulId1", "ulId2", "ulId3", "ulId5", "ulId6")
+    val userLikes4 = listOf("ulId1", "ulId2", "ulId3", "ulId4")
+
+    commentList = listOf(comment1, comment2, comment3, comment4)
+
+    suggestionList =
         listOf(
             Suggestion(
-                "suggestionId1",
-                "userId1",
-                "userName1",
-                "Let us go here!",
-                LocalDate.of(2024, 1, 1),
-                stop1,
-                dummyCommentList,
-                emptyList()),
-            Suggestion(
-                "suggestionId2",
-                "userId2",
-                "userName2",
-                "I love this place",
-                LocalDate.of(2024, 2, 2),
-                stop2,
+                suggestionId = "sugg1",
+                userId = "user1",
+                userName = "userOne",
+                text = "First suggestion",
+                createdAt = LocalDate.now(),
+                stop =
+                    Stop(
+                        stopId = "stop1",
+                        title = "First Stop",
+                        address = "123 First Street",
+                        date = LocalDate.of(2024, 4, 16),
+                        startTime = LocalTime.of(12, 0),
+                        budget = 20.0,
+                        duration = 60,
+                        description = "Description for first stop",
+                        geoCords = GeoCords(37.7749, -122.4194),
+                        website = "http://firststop.example.com"),
                 emptyList(),
+                userLikes1),
+            Suggestion(
+                suggestionId = "sugg2",
+                userId = "user2",
+                userName = "userTwo",
+                text = "Second suggestion",
+                createdAt = LocalDate.now(),
+                stop =
+                    Stop(
+                        stopId = "stop2",
+                        title = "Second Stop",
+                        address = "456 Second Avenue",
+                        date = LocalDate.of(2024, 4, 17),
+                        startTime = LocalTime.of(14, 30),
+                        budget = 50.0,
+                        duration = 90,
+                        description = "Description for second stop",
+                        geoCords = GeoCords(40.7128, -74.0060),
+                        website = "http://secondstop.example.com"),
+                dummyCommentList2,
                 emptyList()),
             Suggestion(
-                "suggestionId3",
-                "userId3",
-                "userName3",
+                suggestionId = "sugg3",
+                userId = "user3",
+                userName = "userThree",
+                text = "Third suggestion",
+                createdAt = LocalDate.now(),
+                stop =
+                    Stop(
+                        stopId = "stop3",
+                        title = "Third Stop",
+                        address = "789 Third Boulevard",
+                        date = LocalDate.of(2024, 4, 18),
+                        startTime = LocalTime.of(10, 0),
+                        budget = 30.0,
+                        duration = 120,
+                        description = "Description for third stop",
+                        geoCords = GeoCords(34.0522, -118.2437),
+                        website = "http://thirdstop.example.com"),
+                dummyCommentList3,
+                userLikes3),
+            Suggestion(
+                "sugg4",
+                "userId4",
+                "userName4",
                 "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
                     "Trying to convince you to go here with me. coz I know you will love it!",
-                LocalDate.of(2024, 3, 29),
-                stop3,
-                dummyCommentList,
-                emptyList()))
+                LocalDate.of(2024, 9, 29),
+                stop4,
+                dummyCommentList4,
+                userLikes4))
   }
 
   /** Test that the suggestion feed screen displays the suggestions when the list is not empty. */
   @Test
   fun suggestionFeedScreen_showsSuggestions_whenListIsNotEmpty() {
     composeTestRule.setContent {
-      // Mock NavigationActions or use a dummy implementation for testing
-      //            val navigationActions = NavigationActions(/* pass necessary arguments or mocks
-      // */)
       SuggestionFeedContent(
           innerPadding = PaddingValues(),
-          navigationActions = mockNavActions,
           suggestionList = suggestionList,
-          searchSuggestionText = "")
+          searchSuggestionText = "",
+          tripId = "dummyTestTripId",
+          suggestionRepository = FakeSuggestionsViewModel())
     }
 
     // Check if the three suggestions are displayed on the Suggestions Feed screen
@@ -166,9 +226,10 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
     composeTestRule.setContent {
       SuggestionFeedContent(
           innerPadding = PaddingValues(),
-          navigationActions = mockNavActions,
           suggestionList = emptyList(),
-          searchSuggestionText = "")
+          searchSuggestionText = "",
+          tripId = "dummyTestTripId", // a dummy trip ID
+          suggestionRepository = FakeSuggestionsViewModel())
     }
     // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
@@ -182,7 +243,9 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
     composeTestRule.setContent {
       // Simulate the Suggestion composable with the provided tripId
       com.github.se.wanderpals.ui.screens.trip.Suggestion(
-          tripId = "dummyTestTripId", SuggestionsViewModel(TripsRepository("", Dispatchers.IO), ""))
+          oldNavActions = mockNavActions,
+          tripId = "dummyTestTripId", // a dummy trip ID
+          suggestionsViewModel = FakeSuggestionsViewModel())
     }
 
     // Now check if the suggestion feed screen is displayed
@@ -199,12 +262,70 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun suggestionButtonExists_isDisplayed() {
     composeTestRule.setContent {
       // Place the SuggestionBottomBar composable within the test context
-      SuggestionBottomBar(onSuggestionClick = {}) // todo: will have onSuggestionClick after William
+      SuggestionBottomBar(onSuggestionClick = {})
     }
 
     // Now check if the button with the testTag "suggestionButtonExists" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
       suggestionButtonExists.assertIsDisplayed()
+    }
+  }
+
+  /**
+   * Test that the suggestion sorting options exists and is displayed on the Suggestions Feed
+   * screen.
+   */
+  @Test
+  fun suggestionFilterOptions_ExistsAndIsDisplayed() {
+    composeTestRule.setContent { SuggestionFilterOptions(onFilterSelected = {}) }
+
+    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
+      suggestionSortingOptions.assertExists()
+      suggestionSortingOptions.assertIsDisplayed()
+    }
+  }
+
+  /**
+   * Test that the suggestion sorting button exists and is displayed on the Suggestions Feed screen.
+   */
+  @Test
+  fun suggestionSortingButton_ExistsAndIsDisplayed() {
+    composeTestRule.setContent {
+      SuggestionFilterButton(text = "Creation date", isSelected = false, onSelect = {})
+    }
+
+    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
+      suggestionSortingButton.assertExists()
+      suggestionSortingButton.assertIsDisplayed()
+    }
+  }
+
+  /** Test that the suggestion search bar exists and is displayed on the Suggestions Feed screen. */
+  @Test
+  fun suggestionSearchBar_ExistsAndIsDisplayed() {
+    composeTestRule.setContent {
+      SuggestionTopBar(searchSuggestionText = "", onSearchSuggestionTextChanged = {})
+    }
+
+    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
+      suggestionSearchBar.assertExists()
+      suggestionSearchBar.assertIsDisplayed()
+    }
+  }
+
+  /**
+   * Test that the clear suggestion search button exists, is displayed, and performs a click action.
+   */
+  @Test
+  fun clearSuggestionSearchButton_ExistsAndIsDisplayedAndPerformsClick() {
+    composeTestRule.setContent {
+      SuggestionTopBar(searchSuggestionText = "test", onSearchSuggestionTextChanged = {})
+    }
+
+    onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
+      clearSuggestionSearchButton.assertExists()
+      clearSuggestionSearchButton.assertIsDisplayed()
+      clearSuggestionSearchButton.performClick()
     }
   }
 }

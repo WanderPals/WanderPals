@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Card
@@ -24,34 +26,44 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import java.time.format.DateTimeFormatter
 
 /**
  * Composable function that represents a single suggestion item in the suggestion feed.
  *
  * @param suggestion The suggestion object to be displayed.
- * @param navigationActions The navigation actions used for navigating to detailed suggestion view.
- *   todo: will be displayed later (overlay)
  * @param modifier The modifier to be applied to the suggestion item.
  */
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun SuggestionItem(
     suggestion: Suggestion,
-    navigationActions: NavigationActions,
-    onClick: () -> Unit, // Callback when the item is clicked
+    onClick: () -> Unit, // this callback is for the suggestion item click
+    tripId: String, // the trip id of the suggestion
+    viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
+
+  // State for the like status of the suggestion
+  val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
+
+  // State for the like count, which depends on the `userLikes` size
+  // Calculate the like count dynamically based on whether the suggestion is liked
+  val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
+
   // Define card colors with a white background
   val cardColors =
       CardDefaults.cardColors(
           containerColor = Color.White // This sets the background color of the Card
           )
+
   // Use Card for elevation and surface coloring, if needed
   Card(
       modifier =
@@ -114,20 +126,28 @@ fun SuggestionItem(
                     modifier = Modifier.size(18.dp))
 
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
+
                 Text(
                     text = "${suggestion.comments.size}",
                 )
 
                 Spacer(modifier = Modifier.weight(1f)) // Pushes the heart icon to the end
 
+                // Icon click handler
                 Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = null, // Decorative element
-                    modifier = Modifier.size(18.dp))
+                    imageVector =
+                        if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "Like",
+                    modifier =
+                        Modifier.size(18.dp)
+                            .clickable { viewModel.toggleLikeSuggestion(tripId, suggestion) }
+                            .testTag("likeIconSuggestionFeedScreen_sugg1"))
+
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
+
                 Text(
-                    text = "${suggestion.userLikes.size}",
-                )
+                    text = likesCount,
+                    modifier = Modifier.testTag("likeCountTextSuggestionFeedScreen_sugg1"))
               }
         }
       }
