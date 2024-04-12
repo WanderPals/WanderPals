@@ -3,6 +3,7 @@ package com.github.se.wanderpals
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -73,8 +74,8 @@ class MainActivity : ComponentActivity() {
                   Log.d("MainActivity", "SignIn: Firebase Login Completed Unsuccessfully")
                 }
               }
-              .addOnFailureListener { Log.d("MainActivity", "SignIn: Firebase Login Failed") }
-              .addOnCanceledListener { Log.d("MainActivity", "SignIn: Firebase Login Canceled") }
+              .addOnFailureListener { Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show() }
+              .addOnCanceledListener { Toast.makeText(context, "Check Google Privacy Settings", Toast.LENGTH_SHORT).show() }
         }
       }
 
