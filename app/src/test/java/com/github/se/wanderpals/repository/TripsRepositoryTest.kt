@@ -255,18 +255,21 @@ class TripsRepositoryTest {
             suggestions = emptyList())
 
     // Initialize a stop at the Colosseum with detailed information.
-      val user1 = User(
-          userId = "testUser123",
-          name = "John Doe",
-          email = "john.doe@example.com",
-          nickname = "",  // Assuming an empty nickname
-          role = Role.MEMBER,  // Adjusted from "Traveler" to a valid enum, assuming MEMBER as a placeholder
-          lastPosition = GeoCords(0.0, 0.0),  // Assuming default coordinates
-          profilePictureURL = ""  // Assuming no profile picture URL provided
-      )
+    val user1 =
+        User(
+            userId = "testUser123",
+            name = "John Doe",
+            email = "john.doe@example.com",
+            nickname = "", // Assuming an empty nickname
+            role =
+                Role
+                    .MEMBER, // Adjusted from "Traveler" to a valid enum, assuming MEMBER as a
+                             // placeholder
+            lastPosition = GeoCords(0.0, 0.0), // Assuming default coordinates
+            profilePictureURL = "" // Assuming no profile picture URL provided
+            )
 
-
-      val elapsedTime = measureTimeMillis {
+    val elapsedTime = measureTimeMillis {
       try {
         withTimeout(10000) {
           // Add the trip and validate the addition.

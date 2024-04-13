@@ -1,8 +1,8 @@
 package com.github.se.wanderpals.model.data
 
 /**
- * Defines user details within the application, including their roles and permissions.
- * This class now includes additional fields such as nickname, lastPosition, and profilePictureURL.
+ * Defines user details within the application, including their roles and permissions. This class
+ * now includes additional fields such as nickname, lastPosition, and profilePictureURL.
  *
  * @param userId Unique identifier for the user.
  * @param name User's full name for display and identification.

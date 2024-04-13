@@ -284,10 +284,10 @@ class TripsRepository(
                   .get()
                   .await()
 
-            val firestoreUser = documentSnapshot.toObject<FirestoreUser>()
-            if(firestoreUser != null){
-                firestoreUser.toUser()
-            } else {
+          val firestoreUser = documentSnapshot.toObject<FirestoreUser>()
+          if (firestoreUser != null) {
+            firestoreUser.toUser()
+          } else {
             Log.e("TripsRepository", "getUserFromTrip: Not found user $userId from trip $tripId.")
             null
           }
@@ -338,7 +338,7 @@ class TripsRepository(
       withContext(dispatcher) {
         try {
           // for users, there IDs are google ids currently no need to gen a new one
-            val firestoreUser = FirestoreUser.fromUser(user.copy(userId = uid))
+          val firestoreUser = FirestoreUser.fromUser(user.copy(userId = uid))
           val userDocument =
               tripsCollection
                   .document(tripId)
@@ -377,7 +377,7 @@ class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateUserInTrip: Updating a user in trip $tripId")
-            val firestoreUser = FirestoreUser.fromUser(user)
+          val firestoreUser = FirestoreUser.fromUser(user)
           tripsCollection
               .document(tripId)
               .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
