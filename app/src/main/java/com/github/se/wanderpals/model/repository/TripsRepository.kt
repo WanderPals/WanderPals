@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
+import com.github.se.wanderpals.model.firestoreData.FirestoreUser
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -282,10 +283,11 @@ class TripsRepository(
                   .document(userId)
                   .get()
                   .await()
-          val user = documentSnapshot.toObject<User>()
-          if (user != null) {
-            user
-          } else {
+
+            val firestoreUser = documentSnapshot.toObject<FirestoreUser>()
+            if(firestoreUser != null){
+                firestoreUser.toUser()
+            } else {
             Log.e("TripsRepository", "getUserFromTrip: Not found user $userId from trip $tripId.")
             null
           }
@@ -336,13 +338,13 @@ class TripsRepository(
       withContext(dispatcher) {
         try {
           // for users, there IDs are google ids currently no need to gen a new one
-
+            val firestoreUser = FirestoreUser.fromUser(user.copy(userId = uid))
           val userDocument =
               tripsCollection
                   .document(tripId)
                   .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
-                  .document(user.userId)
-          userDocument.set(user).await()
+                  .document(firestoreUser.userId)
+          userDocument.set(firestoreUser).await()
           Log.d("TripsRepository", "addUserToTrip: User added successfully to trip $tripId.")
           val trip = getTrip(tripId)
           if (trip != null) {
@@ -375,12 +377,12 @@ class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateUserInTrip: Updating a user in trip $tripId")
-
+            val firestoreUser = FirestoreUser.fromUser(user)
           tripsCollection
               .document(tripId)
               .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
               .document(user.userId)
-              .set(user)
+              .set(firestoreUser)
               .await()
           Log.d(
               "TripsRepository",
