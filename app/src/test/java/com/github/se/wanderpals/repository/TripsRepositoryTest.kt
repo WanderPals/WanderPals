@@ -261,10 +261,8 @@ class TripsRepositoryTest {
             name = "John Doe",
             email = "john.doe@example.com",
             nickname = "", // Assuming an empty nickname
-            role =
-                Role
-                    .MEMBER, // Adjusted from "Traveler" to a valid enum, assuming MEMBER as a
-                             // placeholder
+            role = Role.MEMBER, // Adjusted from "Traveler" to a valid enum, assuming MEMBER as a
+            // placeholder
             lastPosition = GeoCords(0.0, 0.0), // Assuming default coordinates
             profilePictureURL = "" // Assuming no profile picture URL provided
             )
