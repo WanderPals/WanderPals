@@ -35,5 +35,6 @@ data class Trip(
     // These are IDs of the documents in their respective sub-collections
     val stops: List<String> = emptyList(),
     val users: List<String> = emptyList(),
-    val suggestions: List<String> = emptyList()
+    val suggestions: List<String> = emptyList(),
+    val tripNotifications: List<String> = emptyList()
 )
