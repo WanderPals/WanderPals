@@ -18,6 +18,6 @@ data class User(
     val email: String = "",
     val nickname: String = "",
     val role: Role = Role.MEMBER,
-    val lastPosition: GeoCords = GeoCords(0.0,0.0),
+    val lastPosition: GeoCords = GeoCords(0.0, 0.0),
     val profilePictureURL: String = ""
 )
