@@ -20,6 +20,7 @@ import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.CreateTrip
@@ -65,11 +66,19 @@ class MainActivity : ComponentActivity() {
                     if (it.isSuccessful) {
                       Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
                       val uid = it.result?.user?.uid ?: ""
+                        val displayName = account.displayName ?: ""
+                        val email = account.email ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
                       tripsRepository = TripsRepository(uid, Dispatchers.IO)
                       tripsRepository.initFirestore()
                       Log.d("MainActivity", "Firebase Initialized")
                       Log.d("SignIn", "Login result " + account.displayName)
+
+
+                        //set SessionManager User information
+                        SessionManager.setUserSession(userId = uid, name = displayName,email=email)
+
+
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
                       Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
@@ -122,6 +131,8 @@ class MainActivity : ComponentActivity() {
                   onClick2 = {
                     tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
                     tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
+                      val displayName = it.substringBefore('@')
+                      SessionManager.setUserSession(userId = it.hashCode().toString(), name = displayName,email=it)
                     navigationActions.navigateTo(Route.OVERVIEW)
                   })
             }
