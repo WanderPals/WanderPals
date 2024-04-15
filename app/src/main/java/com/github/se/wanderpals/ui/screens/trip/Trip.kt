@@ -29,7 +29,6 @@ import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
-import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
@@ -59,8 +58,8 @@ fun Trip(
   // update the SessionManagers Users Role, from the User In the Trip Object
   val sessionViewModel: SessionViewModel = SessionViewModel(tripsRepository)
   LaunchedEffect(key1 = tripId) { sessionViewModel.updateRoleForCurrentUser(tripId) }
-    
-    Scaffold(
+
+  Scaffold(
       modifier = Modifier.testTag("tripScreen"),
       topBar = {},
       bottomBar = { BottomBar(navActions) }) { innerPadding ->
