@@ -53,9 +53,7 @@ object SessionManager {
    * @return true if the user has administrative rights or owns the item.
    */
   fun canRemove(userId: String = ""): Boolean {
-    return currentUser?.role == Role.ADMIN ||
-        currentUser?.role == Role.OWNER ||
-        currentUser?.userId == userId
+    return isAdmin() || currentUser?.userId == userId
   }
 
   /**
