@@ -2,6 +2,7 @@ package com.github.se.wanderpals.model.repository
 
 import FirestoreTrip
 import android.util.Log
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
@@ -9,6 +10,7 @@ import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
 import com.github.se.wanderpals.model.firestoreData.FirestoreUser
+import com.github.se.wanderpals.service.SessionManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -632,7 +634,7 @@ class TripsRepository(
               .document(uniqueID)
               .set(firestoreTrip)
               .await() // Stores the FirestoreTrip DTO in Firestore
-          addTripId(uniqueID)
+          addTripId(uniqueID, isOwner = true) // The creator of the Trip is automatic
           Log.d("TripsRepository", "addTrip: Trip added successfully with ID $uniqueID.")
 
           true
@@ -755,6 +757,25 @@ class TripsRepository(
       }
 
   /**
+   * Assigns a role to a user in a trip based on their ownership status and updates the trip's
+   * participant list.
+   *
+   * This suspend function should be invoked within a coroutine context. It fetches the current
+   * user's details, assigns either the 'OWNER' or 'MEMBER' role based on the `isOwner` flag, and
+   * updates the trip accordingly.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param isOwner Indicates if the user should be added as an owner (`true`) or member (`false`).
+   * @throws IllegalStateException if the current user cannot be retrieved.
+   */
+  private suspend fun manageUserTripRole(tripId: String, isOwner: Boolean) {
+    val currentUser = SessionManager.getCurrentUser()!!
+    val role = if (isOwner) Role.OWNER else Role.MEMBER
+    val user = User(uid, currentUser.name, currentUser.email, currentUser.name, role)
+    addUserToTrip(tripId, user)
+  }
+
+  /**
    * Adds a trip ID to the current user's list of trip IDs in their document within the 'Users'
    * collection. If the user's document does not already contain a list of trip IDs, or if the
    * specified trip ID is not already in the list, it adds the trip ID to the list.
@@ -764,7 +785,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun addTripId(tripId: String): Boolean =
+  suspend fun addTripId(tripId: String, isOwner: Boolean = false): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
 
@@ -814,10 +835,12 @@ class TripsRepository(
                     } // No change needed
                   }
                   .await()
-          Log.d(
-              "TripsRepository",
-              "addTripId: Successfully added trip ID $tripId to user $uid's document.")
-
+          if (transactionResult) {
+            manageUserTripRole(tripId, isOwner)
+            Log.d(
+                "TripsRepository",
+                "addTripId: Successfully added trip ID $tripId to user $uid's document, and updated users role.")
+          }
           transactionResult
         } catch (e: Exception) {
           Log.e(
