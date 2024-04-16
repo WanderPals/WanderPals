@@ -79,7 +79,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     val trip2 =
         Trip(
@@ -92,7 +93,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     val updatedTrip2 =
         Trip(
@@ -105,7 +107,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png))))",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     val elapsedTime = measureTimeMillis {
       try {
@@ -168,7 +171,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     // Initialize a stop at the Colosseum with detailed information.
     val colosseumStop =
@@ -252,7 +256,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     // Initialize a stop at the Colosseum with detailed information.
     val user1 =
@@ -335,7 +340,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     // Initialize a stop within the suggestion for the trip.
     val stop =
