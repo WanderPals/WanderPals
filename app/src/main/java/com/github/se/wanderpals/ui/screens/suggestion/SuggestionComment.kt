@@ -23,10 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Comment
+import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun SuggestionComment(comment: Comment) {
+fun SuggestionComment(comment: Comment, suggestionsViewModel: SuggestionsViewModel, suggestion: Suggestion) {
   Column(
       modifier =
           Modifier.border(1.dp, Color.Gray, shape = RoundedCornerShape(8.dp))
@@ -48,8 +50,7 @@ fun SuggestionComment(comment: Comment) {
               contentDescription = "Options",
               modifier =
                   Modifier.clickable {
-                        // Handle click action here
-                        // For example, show a popup menu
+                      // Open comment options bottom sheet
                       }
                       .testTag("commentOptionsIcon" + comment.commentId)
                       .padding(8.dp))

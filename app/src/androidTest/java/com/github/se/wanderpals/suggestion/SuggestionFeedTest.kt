@@ -210,7 +210,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           suggestionList = suggestionList,
           searchSuggestionText = "",
           tripId = "dummyTestTripId",
-          suggestionRepository = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel())
     }
 
     // Check if the three suggestions are displayed on the Suggestions Feed screen
@@ -230,7 +230,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           suggestionList = emptyList(),
           searchSuggestionText = "",
           tripId = "dummyTestTripId", // a dummy trip ID
-          suggestionRepository = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel())
     }
     // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {

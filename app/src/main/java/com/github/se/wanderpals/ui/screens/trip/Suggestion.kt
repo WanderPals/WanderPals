@@ -46,10 +46,16 @@ fun Suggestion(
   // State for managing the loading state
   val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
+    // State for managing the displaying of the bottom sheet
+    val bottomSheetVisible by suggestionsViewModel.bottomSheetVisible.collectAsState()
+
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
       CircularProgressIndicator(
-          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+          modifier = Modifier
+              .size(50.dp)
+              .align(Alignment.Center)
+              .testTag("loading"))
     }
   } else {
 
@@ -70,7 +76,7 @@ fun Suggestion(
               suggestionList = suggestionList,
               searchSuggestionText = searchSuggestionText,
               tripId = tripId,
-              suggestionRepository = suggestionsViewModel)
+              suggestionsViewModel = suggestionsViewModel)
         }
   }
 }

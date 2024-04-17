@@ -28,6 +28,18 @@ open class SuggestionsViewModel(
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    // State flow to handle the displaying of the bottom sheet
+    private val _bottomSheetVisible = MutableStateFlow(false)
+    val bottomSheetVisible: StateFlow<Boolean> = _bottomSheetVisible.asStateFlow()
+
+    // State flow to remember the comment that is being interacted with
+    private val _selectedComment = MutableStateFlow<Comment?>(null)
+    val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
+
+    // State flow to remember the suggestion that is being interacted with
+    private val _selectedSuggestion = MutableStateFlow<Suggestion?>(null)
+    val selectedSuggestion: StateFlow<Suggestion?> = _selectedSuggestion.asStateFlow()
+
   // the like status of each suggestion to be held to prevent repeated network calls for the same
   // item:
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
@@ -128,4 +140,27 @@ open class SuggestionsViewModel(
       }
     }
   }
+
+    fun setSuggestion(suggestion: Suggestion) {
+        _selectedSuggestion.value = suggestion
+    }
+
+    fun setSuggestionNull() {
+        _selectedSuggestion.value = null
+    }
+
+    fun showBottomSheet() {
+        viewModelScope.launch {
+            _bottomSheetVisible.value = true
+        }
+    }
+
+    fun hideBottomSheet() {
+        _bottomSheetVisible.value = false
+    }
+
+    fun deleteComment() {
+        // Implement your delete logic here
+        hideBottomSheet()
+    }
 }

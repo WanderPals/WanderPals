@@ -253,7 +253,7 @@ class SuggestionPopupTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
           suggestionList = suggestionList,
           searchSuggestionText = "",
           tripId = "dummyTestTripId",
-          suggestionRepository = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel())
     }
 
     // Simulate a click on the first SuggestionItem for testing purpose
