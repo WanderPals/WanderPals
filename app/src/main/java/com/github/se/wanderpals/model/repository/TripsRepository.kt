@@ -66,206 +66,226 @@ class TripsRepository(
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
-
-    /**
-     * Retrieves a specific trip notification from a trip based on the notification's unique identifier.
-     * This method queries the Firestore subcollection for trip notifications within a specific trip document.
-     *
-     * @param tripId The unique identifier of the trip.
-     * @param tripNotificationId The unique identifier of the trip notification to be retrieved.
-     * @return A `TripNotification` object if found, or `null` if the notification is not found or if an error occurs.
-     * The method logs an error and returns `null` in case of failure.
-     */
-    suspend fun getTripNotificationFromTrip(tripId: String, tripNotificationId: String): TripNotification? =
-        withContext(dispatcher) {
-            try {
-                val documentSnapshot =
-                    tripsCollection
-                        .document(tripId)
-                        .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
-                        .document(tripNotificationId)
-                        .get()
-                        .await()
-                val firestoreTripNotification = documentSnapshot.toObject<FirestoreTripNotification>()
-                if (firestoreTripNotification != null) {
-                    firestoreTripNotification.toTripNotification()
-                } else {
-                    Log.e(
-                        "TripsRepository",
-                        "getTripNotificationFromTrip: Not found TripNotification $tripNotificationId from trip $tripId.")
-                    null
-                }
-            } catch (e: Exception) {
-                Log.e(
-                    "TripsRepository",
-                    "getTripNotificationFromTrip: Error getting a TripNotification $tripNotificationId from trip $tripId.",
-                    e)
-                null // error
-            }
+  /**
+   * Retrieves a specific trip notification from a trip based on the notification's unique
+   * identifier. This method queries the Firestore subcollection for trip notifications within a
+   * specific trip document.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param tripNotificationId The unique identifier of the trip notification to be retrieved.
+   * @return A `TripNotification` object if found, or `null` if the notification is not found or if
+   *   an error occurs. The method logs an error and returns `null` in case of failure.
+   */
+  suspend fun getTripNotificationFromTrip(
+      tripId: String,
+      tripNotificationId: String
+  ): TripNotification? =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+                  .document(tripNotificationId)
+                  .get()
+                  .await()
+          val firestoreTripNotification = documentSnapshot.toObject<FirestoreTripNotification>()
+          if (firestoreTripNotification != null) {
+            firestoreTripNotification.toTripNotification()
+          } else {
+            Log.e(
+                "TripsRepository",
+                "getTripNotificationFromTrip: Not found TripNotification $tripNotificationId from trip $tripId.")
+            null
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "getTripNotificationFromTrip: Error getting a TripNotification $tripNotificationId from trip $tripId.",
+              e)
+          null // error
         }
+      }
 
+  /**
+   * Retrieves all trip notifications associated with a specific trip. It iterates over all
+   * notification IDs stored within the trip document and fetches their corresponding trip
+   * notification objects.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @return A list of `TripNotification` objects. Returns an empty list if the trip is not found,
+   *   if there are no notifications associated with the trip, or in case of an error during data
+   *   retrieval.
+   */
+  suspend fun getAllTripNotificationsFromTrip(tripId: String): List<TripNotification> =
+      withContext(dispatcher) {
+        try {
+          val trip = getTrip(tripId)
 
-    /**
-     * Retrieves all trip notifications associated with a specific trip. It iterates over all notification IDs
-     * stored within the trip document and fetches their corresponding trip notification objects.
-     *
-     * @param tripId The unique identifier of the trip.
-     * @return A list of `TripNotification` objects. Returns an empty list if the trip is not found, if
-     * there are no notifications associated with the trip, or in case of an error during data retrieval.
-     */
-    suspend fun getAllTripNotificationsFromTrip(tripId: String): List<TripNotification> =
-        withContext(dispatcher) {
-            try {
-                val trip = getTrip(tripId)
-
-                if (trip != null) {
-                    val tripNotificationIds = trip.tripNotifications
-                    tripNotificationIds.mapNotNull { tripNotificationId -> getTripNotificationFromTrip(tripId, tripNotificationId) }
-                } else {
-                    Log.e("TripsRepository", "getAllTripNotificationsFromTrip: Trip not found with ID $tripId.")
-                    emptyList()
-                }
-            } catch (e: Exception) {
-
-                Log.e(
-                    "TripsRepository",
-                    "getAllTripNotificationsFromTrip: Error fetching TripNotification to trip $tripId.",
-                    e)
-                emptyList()
+          if (trip != null) {
+            val tripNotificationIds = trip.tripNotifications
+            tripNotificationIds.mapNotNull { tripNotificationId ->
+              getTripNotificationFromTrip(tripId, tripNotificationId)
             }
+          } else {
+            Log.e(
+                "TripsRepository",
+                "getAllTripNotificationsFromTrip: Trip not found with ID $tripId.")
+            emptyList()
+          }
+        } catch (e: Exception) {
+
+          Log.e(
+              "TripsRepository",
+              "getAllTripNotificationsFromTrip: Error fetching TripNotification to trip $tripId.",
+              e)
+          emptyList()
         }
+      }
 
+  /**
+   * Adds a notification to a specific trip in the Firestore database. This method generates a
+   * unique ID for the new notification, creates a corresponding FirestoreTripNotification object,
+   * and commits it to the trip's notification subcollection.
+   *
+   * It also updates the trip's document to include this new notification ID in its list.
+   *
+   * @param tripId The unique identifier of the trip where the notification will be added.
+   * @param tripNotification The TripNotification object to add.
+   * @return Boolean indicating the success (true) or failure (false) of the operation.
+   */
+  suspend fun addTripNotificationToTrip(
+      tripId: String,
+      tripNotification: TripNotification
+  ): Boolean =
+      withContext(dispatcher) {
+        try {
+          val uniqueID = UUID.randomUUID().toString()
+          val firebaseTripNotification =
+              FirestoreTripNotification.fromTripNotification(
+                  tripNotification.copy(
+                      notificationId = uniqueID,
+                      userId = uid)) // we already know who creates the TripNotification
+          val tripNotificationDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+                  .document(uniqueID)
+          tripNotificationDocument.set(firebaseTripNotification).await()
+          Log.d(
+              "TripsRepository",
+              "addTripNotificationToTrip: TripNotification added successfully to trip $tripId.")
 
-    /**
-     * Adds a notification to a specific trip in the Firestore database. This method generates a unique ID for the new
-     * notification, creates a corresponding FirestoreTripNotification object, and commits it to the trip's
-     * notification subcollection.
-     *
-     * It also updates the trip's document to include this new notification ID in its list.
-     *
-     * @param tripId The unique identifier of the trip where the notification will be added.
-     * @param tripNotification The TripNotification object to add.
-     * @return Boolean indicating the success (true) or failure (false) of the operation.
-     */
-    suspend fun addTripNotificationToTrip(tripId: String, tripNotification: TripNotification): Boolean =
-        withContext(dispatcher) {
-            try {
-                val uniqueID = UUID.randomUUID().toString()
-                val firebaseTripNotification =
-                    FirestoreTripNotification.fromTripNotification(
-                        tripNotification.copy(
-                            notificationId = uniqueID,
-                            userId = uid)) // we already know who creates the TripNotification
-                val tripNotificationDocument =
-                    tripsCollection
-                        .document(tripId)
-                        .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
-                        .document(uniqueID)
-                tripNotificationDocument.set(firebaseTripNotification).await()
-                Log.d(
-                    "TripsRepository",
-                    "addTripNotificationToTrip: TripNotification added successfully to trip $tripId.")
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            // Add the new tripNotificationId to the trip's tripsNotifications list and update the
+            // trip
+            val updatedTripNotificationsList = trip.tripNotifications + uniqueID
+            val updatedTrip = trip.copy(tripNotifications = updatedTripNotificationsList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "addTripNotificationToTrip: TripNotification ID added to trip successfully.")
+            true
+          } else {
 
-                val trip = getTrip(tripId)
-                if (trip != null) {
-                    // Add the new tripNotificationId to the trip's tripsNotifications list and update the trip
-                    val updatedTripNotificationsList = trip.tripNotifications + uniqueID
-                    val updatedTrip = trip.copy(tripNotifications = updatedTripNotificationsList)
-                    updateTrip(updatedTrip)
-                    Log.d(
-                        "TripsRepository", "addTripNotificationToTrip: TripNotification ID added to trip successfully.")
-                    true
-                } else {
-
-                    Log.e("TripsRepository", "addTripNotificationToTrip: Trip not found with ID $tripId.")
-                    false
-                }
-            } catch (e: Exception) {
-                Log.e(
-                    "TripsRepository", "addTripNotificationToTrip: Error adding TripNotification to trip $tripId.", e)
-                false
-            }
+            Log.e("TripsRepository", "addTripNotificationToTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "addTripNotificationToTrip: Error adding TripNotification to trip $tripId.",
+              e)
+          false
         }
+      }
 
+  /**
+   * Removes a specific notification from a trip's notification list and the Firestore database.
+   * This method first deletes the notification document from the trip's notification subcollection.
+   *
+   * It also updates the trip's document to remove the notification ID from its list.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param tripNotificationId The unique identifier of the notification to be removed.
+   * @return Boolean indicating the success (true) or failure (false) of the operation.
+   */
+  suspend fun removeTripNotificationFromTrip(tripId: String, tripNotificationId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d(
+              "TripsRepository",
+              "removeSuggestionFromTrip: removing TripNotification $tripNotificationId from trip $tripId")
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+              .document(tripNotificationId)
+              .delete()
+              .await()
 
-    /**
-     * Removes a specific notification from a trip's notification list and the Firestore database.
-     * This method first deletes the notification document from the trip's notification subcollection.
-     *
-     * It also updates the trip's document to remove the notification ID from its list.
-     *
-     * @param tripId The unique identifier of the trip.
-     * @param tripNotificationId The unique identifier of the notification to be removed.
-     * @return Boolean indicating the success (true) or failure (false) of the operation.
-     */
-    suspend fun removeTripNotificationFromTrip(tripId: String, tripNotificationId: String): Boolean =
-        withContext(dispatcher) {
-            try {
-                Log.d(
-                    "TripsRepository",
-                    "removeSuggestionFromTrip: removing TripNotification $tripNotificationId from trip $tripId")
-                tripsCollection
-                    .document(tripId)
-                    .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
-                    .document(tripNotificationId)
-                    .delete()
-                    .await()
-
-                val trip = getTrip(tripId)
-                if (trip != null) {
-                    val updatedTripNotificationsList = trip.tripNotifications.filterNot { it == tripNotificationId }
-                    val updatedTrip = trip.copy(suggestions = updatedTripNotificationsList)
-                    updateTrip(updatedTrip)
-                    Log.d(
-                        "TripsRepository",
-                        "removeSuggestionFromTrip: TripNotification $tripNotificationId remove and trip updated successfully.")
-                    true
-                } else {
-                    Log.e("TripsRepository", "removeSuggestionFromTrip: Trip not found with ID $tripId.")
-                    false
-                }
-            } catch (e: Exception) {
-                Log.e(
-                    "TripsRepository",
-                    "removeSuggestionFromTrip: Error removing TripNotification $tripNotificationId from trip $tripId.",
-                    e)
-                false
-            }
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val updatedTripNotificationsList =
+                trip.tripNotifications.filterNot { it == tripNotificationId }
+            val updatedTrip = trip.copy(suggestions = updatedTripNotificationsList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "removeSuggestionFromTrip: TripNotification $tripNotificationId remove and trip updated successfully.")
+            true
+          } else {
+            Log.e("TripsRepository", "removeSuggestionFromTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "removeSuggestionFromTrip: Error removing TripNotification $tripNotificationId from trip $tripId.",
+              e)
+          false
         }
+      }
 
-
-    /**
-     * Updates a specific notification in a trip's notification subcollection in the Firestore database.
-     * This method creates a FirestoreTripNotification object from the provided TripNotification object
-     * and sets it to the corresponding document identified by the notification ID.
-     *
-     * @param tripId The unique identifier of the trip.
-     * @param tripNotification The TripNotification object that contains updated data.
-     * @return Boolean indicating the success (true) or failure (false) of the operation.
-     */
-    suspend fun updateTripNotificationInTrip(tripId: String, tripNotification: TripNotification): Boolean =
-        withContext(dispatcher) {
-            try {
-                Log.d("TripsRepository", "updateTripNotificationInTrip: Updating a TripNotification in trip $tripId")
-                val firestoreTripNotification = FirestoreTripNotification.fromTripNotification(tripNotification)
-                tripsCollection
-                    .document(tripId)
-                    .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
-                    .document(firestoreTripNotification.notificationId)
-                    .set(firestoreTripNotification)
-                    .await()
-                Log.d(
-                    "TripsRepository",
-                    "updateTripNotificationInTrip: Trip's TripNotification updated successfully for ID $tripId.")
-                true
-            } catch (e: Exception) {
-                Log.e(
-                    "TripsRepository",
-                    "updateTripNotificationInTrip: Error updating tripNotification with ID ${tripNotification.notificationId} in trip with ID $tripId",
-                    e)
-                false
-            }
+  /**
+   * Updates a specific notification in a trip's notification subcollection in the Firestore
+   * database. This method creates a FirestoreTripNotification object from the provided
+   * TripNotification object and sets it to the corresponding document identified by the
+   * notification ID.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param tripNotification The TripNotification object that contains updated data.
+   * @return Boolean indicating the success (true) or failure (false) of the operation.
+   */
+  suspend fun updateTripNotificationInTrip(
+      tripId: String,
+      tripNotification: TripNotification
+  ): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d(
+              "TripsRepository",
+              "updateTripNotificationInTrip: Updating a TripNotification in trip $tripId")
+          val firestoreTripNotification =
+              FirestoreTripNotification.fromTripNotification(tripNotification)
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+              .document(firestoreTripNotification.notificationId)
+              .set(firestoreTripNotification)
+              .await()
+          Log.d(
+              "TripsRepository",
+              "updateTripNotificationInTrip: Trip's TripNotification updated successfully for ID $tripId.")
+          true
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "updateTripNotificationInTrip: Error updating tripNotification with ID ${tripNotification.notificationId} in trip with ID $tripId",
+              e)
+          false
         }
+      }
 
   /**
    * Retrieves a specific suggestion from a trip based on the suggestion's unique identifier. This
