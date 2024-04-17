@@ -250,7 +250,7 @@ class TripsRepository(
                 val firestoreTripNotification = FirestoreTripNotification.fromTripNotification(tripNotification)
                 tripsCollection
                     .document(tripId)
-                    .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
+                    .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
                     .document(firestoreTripNotification.notificationId)
                     .set(firestoreTripNotification)
                     .await()
