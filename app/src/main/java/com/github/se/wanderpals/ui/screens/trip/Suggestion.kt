@@ -73,7 +73,8 @@ fun Suggestion(
               suggestionList = suggestionList,
               searchSuggestionText = searchSuggestionText,
               tripId = tripId,
-              suggestionsViewModel = suggestionsViewModel)
+              suggestionsViewModel = suggestionsViewModel,
+              navigationActions = oldNavActions)
           if (bottomSheetVisible) {
             CommentBottomSheet(onDismiss = { suggestionsViewModel.hideBottomSheet() })
           }

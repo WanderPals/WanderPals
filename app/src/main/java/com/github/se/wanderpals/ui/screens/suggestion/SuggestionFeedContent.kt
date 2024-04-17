@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,10 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
-import java.time.LocalDate
+import com.github.se.wanderpals.ui.navigation.NavigationActions
 
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
@@ -47,10 +45,11 @@ fun SuggestionFeedContent(
     suggestionList: List<Suggestion>,
     searchSuggestionText: String,
     tripId: String,
-    suggestionsViewModel: SuggestionsViewModel
+    suggestionsViewModel: SuggestionsViewModel,
+    navigationActions: NavigationActions
 ) {
   // State to track the currently selected suggestion item
-  val selectedSuggestion by suggestionsViewModel.selectedSuggestion.collectAsState()
+  var selectedSuggestion by remember { mutableStateOf<Suggestion?>(null) }
 
   // State to track the selected filter criteria
   var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
@@ -100,21 +99,10 @@ fun SuggestionFeedContent(
 
     SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
-    // When a suggestion is selected, display the popup
+    // When a suggestion is selected, display the detail screen
     selectedSuggestion?.let { suggestion ->
-      SuggestionDetailPopup(
-          suggestion = suggestion,
-          comments = suggestion.comments,
-          viewModel = suggestionsViewModel,
-          onDismiss = { suggestionsViewModel.setSuggestionNull() }, // When the popup is dismissed
-          onLikeClicked = {
-            // Call toggleLikeSuggestion from the ViewModel
-            suggestionsViewModel.toggleLikeSuggestion(tripId, suggestion)
-          },
-          onComment = { comment ->
-            suggestionsViewModel.addComment(
-                tripId, suggestion, Comment("", "", "tempUsername", comment, LocalDate.now()))
-          })
+      navigationActions.navigateToSuggestionDetail(
+          suggestionId = suggestion.suggestionId, tripId = tripId)
     }
 
     // If suggestion list is empty, display a message
@@ -145,7 +133,7 @@ fun SuggestionFeedContent(
           SuggestionItem(
               suggestion = suggestion,
               onClick = {
-                suggestionsViewModel.setSuggestion(suggestion = suggestion)
+                selectedSuggestion = suggestion
               }, // This lambda is passed to the SuggestionItem composable
               modifier = Modifier.testTag("suggestion${index + 1}"),
               tripId = tripId,

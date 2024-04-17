@@ -84,6 +84,17 @@ class NavigationActions(private val navController: NavHostController) {
     }
   }
 
+  fun navigateToSuggestionDetail(suggestionId: String, tripId: String) {
+    Log.d("NAVIGATION", "Navigating to suggestion detail")
+    navController.navigate(Route.SUGGESTION_DETAIL) {
+      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+      launchSingleTop = true
+      restoreState = true
+      variables.currentTrip = tripId
+      variables.suggestionId = suggestionId
+    }
+  }
+
   /** Navigate back in the navigation stack. */
   fun goBack() {
     navController.navigateUp()
