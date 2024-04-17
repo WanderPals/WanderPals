@@ -292,7 +292,7 @@ fun SuggestionDetailPopup(
                         comments
                             .sortedByDescending { it.createdAt }
                             .forEach { comment ->
-                              SuggestionComment(comment = comment, suggestionsViewModel = viewModel, suggestion = suggestion)
+                              SuggestionComment(comment = comment, suggestionsViewModel = viewModel)
                               if (comments.sortedByDescending { it.createdAt }.indexOf(comment) !=
                                   comments.size - 1) {
                                 HorizontalDivider(

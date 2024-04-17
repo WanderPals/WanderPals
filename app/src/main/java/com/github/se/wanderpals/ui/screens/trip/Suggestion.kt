@@ -17,6 +17,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.screens.suggestion.CommentBottomSheet
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
@@ -46,19 +47,15 @@ fun Suggestion(
   // State for managing the loading state
   val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
-    // State for managing the displaying of the bottom sheet
-    val bottomSheetVisible by suggestionsViewModel.bottomSheetVisible.collectAsState()
+  // State for managing the displaying of the bottom sheet
+  val bottomSheetVisible by suggestionsViewModel.bottomSheetVisible.collectAsState()
 
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
       CircularProgressIndicator(
-          modifier = Modifier
-              .size(50.dp)
-              .align(Alignment.Center)
-              .testTag("loading"))
+          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
     }
   } else {
-
     Scaffold(
         modifier = Modifier.testTag("suggestionFeedScreen"),
         topBar = {
@@ -77,6 +74,9 @@ fun Suggestion(
               searchSuggestionText = searchSuggestionText,
               tripId = tripId,
               suggestionsViewModel = suggestionsViewModel)
+          if (bottomSheetVisible) {
+            CommentBottomSheet(onDismiss = { suggestionsViewModel.hideBottomSheet() })
+          }
         }
   }
 }

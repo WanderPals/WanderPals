@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -77,9 +76,7 @@ fun SuggestionFeedContent(
         }
       }
 
-  Column(modifier = Modifier
-      .fillMaxWidth()
-      .padding(innerPadding)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
 
     // Title for the list of suggestions
     Text(
@@ -125,11 +122,10 @@ fun SuggestionFeedContent(
       Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier =
-            Modifier
-                .width(260.dp)
-                .height(55.dp)
-                .align(Alignment.Center)
-                .testTag("noSuggestionsForUserText"),
+                Modifier.width(260.dp)
+                    .height(55.dp)
+                    .align(Alignment.Center)
+                    .testTag("noSuggestionsForUserText"),
             text = "Looks like there is no suggestions yet. ",
             style =
                 TextStyle(
@@ -151,9 +147,7 @@ fun SuggestionFeedContent(
               onClick = {
                 suggestionsViewModel.setSuggestion(suggestion = suggestion)
               }, // This lambda is passed to the SuggestionItem composable
-              modifier =
-              Modifier
-                  .testTag("suggestion${index + 1}"),
+              modifier = Modifier.testTag("suggestion${index + 1}"),
               tripId = tripId,
               viewModel = suggestionsViewModel)
         }
