@@ -2,6 +2,9 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
@@ -64,7 +67,8 @@ class FakeViewModel(testSuggestions: List<Suggestion>) :
   override fun addComment(suggestion: Suggestion, comment: Comment) {
     // Just add the comment to the list of comments of the suggestion and update the state with the
     // new suggestion
-    val newSuggestion = suggestion.copy(comments = suggestion.comments + comment)
+      // modify the comment to change the commentId
+    val newSuggestion = suggestion.copy(comments = suggestion.comments + comment.copy(userId = "userid", userName = "John Doe", commentId = "comment2"))
     updateSuggestionList(
         _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
   }
@@ -197,4 +201,40 @@ class SuggestionDetailTest {
 
     composeTestRule.onNodeWithTag("NewCommentInput").assertIsDisplayed()
   }
+
+    // Test that likes are incremented when the like button is clicked
+    @Test
+    fun testLikeButtonIncrementsLikes() {
+        composeTestRule.setContent {
+            SuggestionDetail(
+                suggestionId = mockSuggestion.suggestionId,
+                viewModel = FakeViewModel(listOf(mockSuggestion)),
+                navActions = mockNavActions)
+        }
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag("LikeButton").performClick()
+
+        composeTestRule.onNodeWithTag("LikesCount").assertTextEquals("2")
+    }
+
+    // Test that the comment is added when the send button is clicked
+    @Test
+    fun testAddComment() {
+        composeTestRule.setContent {
+            SuggestionDetail(
+                suggestionId = mockSuggestion.suggestionId,
+                viewModel = FakeViewModel(listOf(mockSuggestion)),
+                navActions = mockNavActions)
+        }
+
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithTag("NewCommentInput").performClick().performTextInput("This is a new comment")
+
+        composeTestRule.onNodeWithTag("SendButton").performClick()
+
+        composeTestRule.onNodeWithTag("commentUserNamecomment2", useUnmergedTree = true).assertExists()
+    }
 }
