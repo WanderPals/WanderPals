@@ -71,10 +71,10 @@ fun SuggestionDetail(
     val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
     val likesCount = viewModel.getNbrLiked(suggestion.suggestionId)
 
-      // Get a reference to the keyboard controller
-      val keyboardController = LocalSoftwareKeyboardController.current
-      val focusRequester = remember { FocusRequester() }  // For managing focus
-      var submitComment by remember { mutableStateOf(false) }
+    // Get a reference to the keyboard controller
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() } // For managing focus
+    var submitComment by remember { mutableStateOf(false) }
 
     var newCommentText by remember { mutableStateOf("") }
 
@@ -230,55 +230,54 @@ fun SuggestionDetail(
                       modifier = Modifier.testTag("CommentsCount"))
                 }
 
-              // Listen for submitComment changes to dismiss keyboard and clear focus
-              LaunchedEffect(submitComment) {
+                // Listen for submitComment changes to dismiss keyboard and clear focus
+                LaunchedEffect(submitComment) {
                   if (submitComment) {
-                      keyboardController?.hide()
-                      focusRequester.freeFocus()
-                      submitComment = false  // Reset the trigger
+                    keyboardController?.hide()
+                    focusRequester.freeFocus()
+                    submitComment = false // Reset the trigger
                   }
-              }
+                }
 
                 // Add a text field for adding a new comment
-              OutlinedTextField(
-                  value = newCommentText,
-                  onValueChange = { newCommentText = it },
-                  placeholder = { Text("Add a comment") },
-                  modifier = Modifier
-                      .fillMaxWidth()
-                      .padding(vertical = 2.dp)
-                      .testTag("NewCommentInput")
-                      .focusRequester(focusRequester)
-                      .focusable(true),  // Ensure it’s still focusable for user interaction
-                  trailingIcon = {
+                OutlinedTextField(
+                    value = newCommentText,
+                    onValueChange = { newCommentText = it },
+                    placeholder = { Text("Add a comment") },
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                            .testTag("NewCommentInput")
+                            .focusRequester(focusRequester)
+                            .focusable(true), // Ensure it’s still focusable for user interaction
+                    trailingIcon = {
                       IconButton(
                           onClick = {
-                              if (newCommentText.isNotBlank()) {
-                                  viewModel.addComment(
-                                      suggestion,
-                                      Comment("", "", "tempUsername", newCommentText, LocalDate.now())
-                                  )
-                                  newCommentText = ""
-                                  submitComment = true  // Set the trigger for side effects
-                              }
+                            if (newCommentText.isNotBlank()) {
+                              viewModel.addComment(
+                                  suggestion,
+                                  Comment("", "", "tempUsername", newCommentText, LocalDate.now()))
+                              newCommentText = ""
+                              submitComment = true // Set the trigger for side effects
+                            }
                           },
-                          modifier = Modifier.testTag("SendButton")
-                      ) {
-                          Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = "Send")
-                      }
-                  },
-                  keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                  keyboardActions = KeyboardActions(onDone = {
-                      if (newCommentText.isNotBlank()) {
-                          viewModel.addComment(
-                              suggestion,
-                              Comment("", "", "tempUsername", newCommentText, LocalDate.now())
-                          )
-                          newCommentText = ""
-                          submitComment = true  // Set the trigger for side effects
-                      }
-                  })
-              )
+                          modifier = Modifier.testTag("SendButton")) {
+                            Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = "Send")
+                          }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions =
+                        KeyboardActions(
+                            onDone = {
+                              if (newCommentText.isNotBlank()) {
+                                viewModel.addComment(
+                                    suggestion,
+                                    Comment(
+                                        "", "", "tempUsername", newCommentText, LocalDate.now()))
+                                newCommentText = ""
+                                submitComment = true // Set the trigger for side effects
+                              }
+                            }))
 
                 // Display the comments
                 if (suggestion.comments.isNotEmpty()) {
