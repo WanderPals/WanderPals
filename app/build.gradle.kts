@@ -190,8 +190,6 @@ dependencies {
     debugImplementation(libs.compose.tooling)
     // UI Tests
     debugImplementation(libs.compose.test.manifest)
-    debugImplementation("androidx.compose.ui:ui-tooling:1.6.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.1")
     globalTestImplementation(libs.compose.test.junit)
 
     // --------- Kaspresso test framework ----------
