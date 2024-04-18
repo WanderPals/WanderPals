@@ -12,4 +12,5 @@ object Route {
   const val MAP = "map"
   const val CREATE_TRIP = "createTrip"
   const val CREATE_SUGGESTION = "createSuggestion"
+  const val MEMBERS = "members"
 }

@@ -66,7 +66,7 @@ fun Dashboard(
 
   ModalNavigationDrawer(
       drawerState = drawerState,
-      drawerContent = { Menu(scope, drawerState, oldNavActions) },
+      drawerContent = { Menu(scope, drawerState, oldNavActions, navActions) },
   ) {
     Text(modifier = Modifier.testTag("dashboardScreen"), text = " ")
     if (isLoading) {
@@ -109,7 +109,7 @@ fun Dashboard(
  * oldNavActions is used to navigate back to the overview screen.
  */
 @Composable
-fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: NavigationActions) {
+fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: NavigationActions, navActions: NavigationActions) {
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
@@ -145,7 +145,7 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
           onClick = {
               scope.launch {
                   drawerState.close()
-                  oldNavActions.navigateTo(Route.OVERVIEW)
+                  navActions.navigateTo(Route.MEMBERS)
               }
           })
 

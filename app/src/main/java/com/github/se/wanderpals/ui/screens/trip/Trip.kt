@@ -32,6 +32,7 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
+import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberList
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -57,6 +58,7 @@ fun Trip(
 
   // update the SessionManagers Users Role, from the User In the Trip Object
   val sessionViewModel: SessionViewModel = SessionViewModel(tripsRepository)
+    val dashboardViewModel = DashboardViewModel(tripsRepository, tripId)
   LaunchedEffect(key1 = tripId) { sessionViewModel.updateRoleForCurrentUser(tripId) }
 
   Scaffold(
@@ -67,8 +69,12 @@ fun Trip(
           composable(Route.DASHBOARD) {
             BackHandler(true) {}
             Dashboard(
-                tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions, navActions)
+                tripId, dashboardViewModel, oldNavActions, navActions)
           }
+            composable(Route.MEMBERS) {
+                BackHandler(true) {}
+                DashboardMemberList(dashboardViewModel, navActions)
+            }
           composable(Route.AGENDA) {
             BackHandler(true) {}
             Agenda(AgendaViewModel(tripId, tripsRepository))
