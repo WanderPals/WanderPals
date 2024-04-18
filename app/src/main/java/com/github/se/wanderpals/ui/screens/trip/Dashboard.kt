@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -70,7 +72,10 @@ fun Dashboard(
     if (isLoading) {
       Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(
-            modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+            modifier = Modifier
+                .size(50.dp)
+                .align(Alignment.Center)
+                .testTag("loading"))
       }
     } else {
       Scaffold(
@@ -78,9 +83,10 @@ fun Dashboard(
       ) { contentPadding ->
         Surface(
             modifier =
-                Modifier.background(Color.White)
-                    .padding(contentPadding)
-                    .testTag("dashboardSuggestions")) {
+            Modifier
+                .background(Color.White)
+                .padding(contentPadding)
+                .testTag("dashboardSuggestions")) {
               Column {
                 DashboardSuggestionWidget(
                     viewModel = dashboardViewModel,
@@ -107,7 +113,11 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
-          Modifier.testTag("menuNav").requiredWidth(200.dp).requiredHeight(250.dp).padding(8.dp),
+      Modifier
+          .testTag("menuNav")
+          .requiredWidth(200.dp)
+          .requiredHeight(250.dp)
+          .padding(8.dp),
   ) {
     ElevatedButton(
         modifier = Modifier.testTag("backToOverview"),
@@ -123,6 +133,22 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
             oldNavActions.navigateTo(Route.OVERVIEW)
           }
         })
+      Spacer(modifier = Modifier.padding(2.dp))
+      ElevatedButton(
+          modifier = Modifier.testTag("MemberListMenu"),
+          content = {
+              Row {
+                  Icon(Icons.Default.Person, contentDescription = "Member List")
+                  Text("Member List       ")
+              }
+          },
+          onClick = {
+              scope.launch {
+                  drawerState.close()
+                  oldNavActions.navigateTo(Route.OVERVIEW)
+              }
+          })
+
   }
 }
 
@@ -137,7 +163,9 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
  */
 @Composable
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState) {
-  Column(modifier = Modifier.padding(8.dp).testTag("dashboardTopBar")) {
+  Column(modifier = Modifier
+      .padding(8.dp)
+      .testTag("dashboardTopBar")) {
     Row(modifier = Modifier.fillMaxWidth()) {
       ElevatedButton(
           modifier = Modifier.testTag("menuButton"),

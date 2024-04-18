@@ -3,6 +3,7 @@ package com.github.se.wanderpals.model.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +19,13 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  private val _members = MutableStateFlow(emptyList<User>())
+  open val members: StateFlow<List<User>> = _members.asStateFlow()
+
   init {
     // Fetch all trips when the ViewModel is initialized
     loadSuggestion(tripId)
+    loadMembers(tripId)
   }
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
@@ -29,6 +34,15 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
       _isLoading.value = true
       // Fetch all trips from the repository
       _state.value = tripsRepository.getAllSuggestionsFromTrip(tripId)
+      _isLoading.value = false
+    }
+  }
+
+  open fun loadMembers(tripId: String) {
+    viewModelScope.launch {
+      _isLoading.value = true
+      // Fetch all trips from the repository
+      _members.value = tripsRepository.getAllUsersFromTrip(tripId)
       _isLoading.value = false
     }
   }
