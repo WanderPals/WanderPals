@@ -140,7 +140,7 @@ fun SuggestionItem(
                     contentDescription = "Like",
                     modifier =
                         Modifier.size(18.dp)
-                            .clickable { viewModel.toggleLikeSuggestion(tripId, suggestion) }
+                            .clickable { viewModel.toggleLikeSuggestion(suggestion) }
                             .testTag("likeIconSuggestionFeedScreen_sugg1"))
 
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text

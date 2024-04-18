@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,
-    tripId: String
+    val tripId: String
 ) : ViewModel() {
 
   private val currentLoggedInUId =
@@ -27,6 +27,14 @@ open class SuggestionsViewModel(
 
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+  // State flow to handle the displaying of the bottom sheet
+  private val _bottomSheetVisible = MutableStateFlow(false)
+  val bottomSheetVisible: StateFlow<Boolean> = _bottomSheetVisible.asStateFlow()
+
+  // State flow to remember the comment that is being interacted with
+  private val _selectedComment = MutableStateFlow<Comment?>(null)
+  val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
   // the like status of each suggestion to be held to prevent repeated network calls for the same
   // item:
@@ -46,7 +54,7 @@ open class SuggestionsViewModel(
   }
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
-  open fun loadSuggestion(tripId: String) {
+  private fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
       _isLoading.value = true
       // Fetch all trips from the repository
@@ -65,7 +73,7 @@ open class SuggestionsViewModel(
    * Note: open keyword is used to allow overriding this function in a subclass of
    * SuggestionsViewModel, namely the MockSuggestionsViewModel class when testing.
    */
-  open fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
+  open fun toggleLikeSuggestion(suggestion: Suggestion) {
 
     // Update the backend by calling the TripsRepository function
     viewModelScope.launch {
@@ -109,7 +117,7 @@ open class SuggestionsViewModel(
     }
   }
 
-  open fun addComment(tripId: String, suggestion: Suggestion, comment: Comment) {
+  open fun addComment(suggestion: Suggestion, comment: Comment) {
     val updatedSuggestion =
         suggestion.copy(
             comments =
@@ -127,5 +135,21 @@ open class SuggestionsViewModel(
         loadSuggestion(tripId)
       }
     }
+  }
+
+  fun showBottomSheet(comment: Comment) {
+    viewModelScope.launch {
+      _bottomSheetVisible.value = true
+      _selectedComment.value = comment
+    }
+  }
+
+  private fun hideBottomSheet() {
+    _bottomSheetVisible.value = false
+  }
+
+  fun deleteComment() {
+    // Implement your delete logic here
+    hideBottomSheet()
   }
 }

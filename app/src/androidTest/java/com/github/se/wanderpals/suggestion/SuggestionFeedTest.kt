@@ -54,7 +54,7 @@ class FakeSuggestionsViewModel(
         suggestions.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
   }
 
-  override fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
+  fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
     val suggestionIndex = _state.value.indexOfFirst { it.suggestionId == suggestion.suggestionId }
     val isLiked = _likedSuggestions.value.contains(suggestion.suggestionId)
 
@@ -210,7 +210,8 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           suggestionList = suggestionList,
           searchSuggestionText = "",
           tripId = "dummyTestTripId",
-          suggestionRepository = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel(),
+          navigationActions = mockNavActions)
     }
 
     // Check if the three suggestions are displayed on the Suggestions Feed screen
@@ -230,7 +231,8 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           suggestionList = emptyList(),
           searchSuggestionText = "",
           tripId = "dummyTestTripId", // a dummy trip ID
-          suggestionRepository = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel(),
+          navigationActions = mockNavActions)
     }
     // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
