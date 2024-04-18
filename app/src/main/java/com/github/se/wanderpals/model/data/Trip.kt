@@ -23,6 +23,8 @@ import java.time.LocalDate
  * @param suggestions A list of document IDs referencing the suggestions sub-collection. These
  *   suggestions are potential stops or activities proposed by users for consideration to be
  *   included in the trip itinerary.
+ * @param tripNotifications A list of document IDs referencing the tripNotifications sub-collection.
+ *   They are the notification linked to a particular trip
  */
 data class Trip(
     val tripId: String,
@@ -35,5 +37,6 @@ data class Trip(
     // These are IDs of the documents in their respective sub-collections
     val stops: List<String> = emptyList(),
     val users: List<String> = emptyList(),
-    val suggestions: List<String> = emptyList()
+    val suggestions: List<String> = emptyList(),
+    val tripNotifications: List<String> = emptyList()
 )

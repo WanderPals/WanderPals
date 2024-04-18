@@ -14,6 +14,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -26,6 +27,7 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
+import com.github.se.wanderpals.model.viewmodel.SessionViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -53,6 +55,10 @@ fun Trip(
 ) {
   val navController = rememberNavController()
   val navActions = NavigationActions(navController)
+
+  // update the SessionManagers Users Role, from the User In the Trip Object
+  val sessionViewModel: SessionViewModel = SessionViewModel(tripsRepository)
+  LaunchedEffect(key1 = tripId) { sessionViewModel.updateRoleForCurrentUser(tripId) }
 
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),

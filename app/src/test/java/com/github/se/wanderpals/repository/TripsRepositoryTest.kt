@@ -8,10 +8,12 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.google.firebase.FirebaseApp
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 import junit.framework.TestCase.assertEquals
@@ -79,7 +81,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     val trip2 =
         Trip(
@@ -92,7 +95,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     val updatedTrip2 =
         Trip(
@@ -105,7 +109,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png))))",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     val elapsedTime = measureTimeMillis {
       try {
@@ -168,7 +173,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     // Initialize a stop at the Colosseum with detailed information.
     val colosseumStop =
@@ -252,7 +258,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     // Initialize a stop at the Colosseum with detailed information.
     val user1 =
@@ -335,7 +342,8 @@ class TripsRepositoryTest {
             imageUrl = "https://example.com/image.png",
             stops = emptyList(),
             users = emptyList(),
-            suggestions = emptyList())
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
 
     // Initialize a stop within the suggestion for the trip.
     val stop =
@@ -426,6 +434,95 @@ class TripsRepositoryTest {
     println("Execution time for testTripLifecycleWithSuggestions: $elapsedTime ms")
   }
 
+  @Test
+  fun testTripLifecycleWithTripNotifications() = runBlocking {
+    // Initialize a trip with details for a summer vacation in Italy.
+    val trip =
+        Trip(
+            tripId = "trip123",
+            title = "Summer Vacation",
+            startDate = LocalDate.of(2024, 5, 20),
+            endDate = LocalDate.of(2024, 6, 10),
+            totalBudget = 2000.0,
+            description = "Our summer vacation trip to Italy.",
+            imageUrl = "https://example.com/image.png",
+            stops = emptyList(),
+            users = emptyList(),
+            suggestions = emptyList(),
+            tripNotifications = emptyList())
+
+    // Define a trip notification object.
+    val tripNotification =
+        TripNotification(
+            notificationId = "",
+            userId = "user123",
+            title = "Flight Booking Reminder",
+            userName = "System",
+            description = "Reminder to book your flight to Italy",
+            timestamp = LocalDateTime.now())
+
+    val elapsedTime = measureTimeMillis {
+      try {
+        withTimeout(10000) {
+          // Add the trip and validate the addition.
+          assertTrue(repository.addTrip(trip))
+
+          var fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
+          // Add a trip notification to the trip and validate.
+          assertTrue(
+              repository.addTripNotificationToTrip(tripId = fetchedTrip.tripId, tripNotification))
+
+          // Fetch and validate the added trip notification.
+          val notifications = repository.getAllTripNotificationsFromTrip(fetchedTrip.tripId)
+          assertTrue(notifications.isNotEmpty())
+
+          val fetchedNotification = notifications.first()
+          assertNotNull(fetchedNotification)
+          assertEquals("Reminder to book your flight to Italy", fetchedNotification.description)
+
+          // Fetch and validate the added TripNotification.
+          fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
+
+          val fetchedTripNotification =
+              repository.getTripNotificationFromTrip(
+                  fetchedTrip.tripId, fetchedTrip.tripNotifications.first())
+          assertNotNull(fetchedTripNotification)
+          assertEquals(
+              "Reminder to book your flight to Italy", fetchedTripNotification?.description)
+
+          // Update the trip notification and validate the update.
+          val updatedNotification =
+              fetchedNotification.copy(description = "Updated: Confirm your hotel booking as well.")
+          assertTrue(
+              repository.updateTripNotificationInTrip(fetchedTrip.tripId, updatedNotification))
+
+          // Validate the update was successful.
+          val updatedFetchedNotification =
+              repository.getTripNotificationFromTrip(
+                  fetchedTrip.tripId, updatedNotification.notificationId)
+          assertNotNull(updatedFetchedNotification)
+          assertEquals(
+              "Updated: Confirm your hotel booking as well.",
+              updatedFetchedNotification?.description)
+
+          // Remove the TripNotification from the trip and validate its removal.
+          assertTrue(
+              repository.removeTripNotificationFromTrip(
+                  fetchedTrip.tripId, fetchedTrip.tripNotifications.first()))
+
+          // Validate the TripNotification list is empty after deletion.
+          assertTrue(repository.getAllTripNotificationsFromTrip(fetchedTrip.tripId).isEmpty())
+
+          // Cleanup: Delete the trip.
+          assertTrue(repository.deleteTrip(fetchedTrip.tripId))
+        }
+      } catch (e: TimeoutCancellationException) {
+        fail("The operation timed out after 10 seconds")
+      }
+    }
+    println("Execution time for testTripLifecycleWithSuggestions: $elapsedTime ms")
+  }
+
   @After
   fun tearDown() = runBlocking {
     // for debugging
@@ -457,6 +554,11 @@ class TripsRepositoryTest {
           val suggestionIds = trip.suggestions
           suggestionIds.forEach { suggestionId ->
             repository.removeSuggestionFromTrip(tripId, suggestionId)
+          }
+
+          val tripNotificationIds = trip.tripNotifications
+          tripNotificationIds.forEach { tripNotificationId ->
+            repository.removeTripNotificationFromTrip(tripId, tripNotificationId)
           }
           repository.deleteTrip(tripId)
           repository.removeTripId(tripId)
