@@ -68,8 +68,7 @@ fun SuggestionDetailPopup(
 
   Dialog(
       onDismissRequest =
-          onDismiss) { // todo: (after M1) uncomment dialog and create onclick function to go from
-        // suggestionItem to the page SuggestionDetailPopup
+          onDismiss) {
         // The semi-transparent overlay will be provided by the Dialog itself
         BoxWithConstraints {
           val maxHeight = with(LocalDensity.current) { constraints.maxHeight.toDp() * 0.8f }

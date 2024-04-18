@@ -266,9 +266,9 @@ fun CreateSuggestion(
           Button(
               modifier = Modifier.testTag("createSuggestionButton"),
               onClick = {
-                title_err = suggestionText.isEmpty()
+                title_err = suggestionText.trim().isEmpty()
                 budget_err = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
-                desc_err = description.isEmpty()
+                desc_err = description.trim().isEmpty()
                 // addr_err = address.isEmpty()
                 start_d_err = !isStringInFormat(startDate, dateRegexPattern)
                 start_t_err = !isStringInFormat(startTime, timeRegexPattern)
