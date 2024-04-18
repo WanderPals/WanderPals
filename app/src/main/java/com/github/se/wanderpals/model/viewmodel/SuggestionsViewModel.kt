@@ -144,7 +144,7 @@ open class SuggestionsViewModel(
     }
   }
 
-  fun hideBottomSheet() {
+  private fun hideBottomSheet() {
     _bottomSheetVisible.value = false
   }
 
