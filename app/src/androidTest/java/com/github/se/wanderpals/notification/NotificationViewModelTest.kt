@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.notification
 
+import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.NotificationViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -14,6 +15,7 @@ import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class NotificationViewModelTest {
@@ -25,10 +27,10 @@ class NotificationViewModelTest {
   fun testSetup() {
     // Mock the TripsRepository
     tripsRepository = mockk()
-    // Initialize the viewModel with the mocked repository
-    viewModel = NotificationViewModel(tripsRepository)
     // Mock the SessionManager object
     mockkObject(SessionManager)
+    // Initialize the viewModel with the mocked repository
+    viewModel = NotificationViewModel(tripsRepository)
   }
 
   /**
@@ -40,7 +42,16 @@ class NotificationViewModelTest {
       runBlockingTest {
         // Arrange
         val tripId = "trip123"
-        val notificationId = "notification123"
+        val notificationId = "notifAdminId"
+        val tripNotificationAdmin = TripNotification(
+          notificationId = "notifAdminId",
+          userId = "userAdmin",
+          title = "Admin Notification",
+          userName = "Admin User",
+          description = "This is an admin notification",
+          timestamp = LocalDateTime.now()
+        )
+
         // Assume the user is an admin
         every { SessionManager.isAdmin() } returns true
         // Assume the repository delete operation is successful
@@ -48,7 +59,7 @@ class NotificationViewModelTest {
             true
 
         // Act
-        val result = viewModel.deleteTripNotification(tripId, notificationId)
+        val result = viewModel.deleteTripNotification(tripId, tripNotificationAdmin)
 
         // Assert
         assertTrue(result)
@@ -62,12 +73,20 @@ class NotificationViewModelTest {
   fun deleteTripNotification_returnsFalse_whenUserIsNotAdmin() = runBlockingTest {
     // Arrange
     val tripId = "trip123"
-    val notificationId = "notification123"
+    val tripNotificationNotAdmin = TripNotification(
+      notificationId = "notifNotAdminId",
+      userId = "userNotAdmin",
+      title = "Regular User Notification",
+      userName = "Regular User",
+      description = "",
+      timestamp = LocalDateTime.now()
+    )
+
     // Assume the user is not an admin
     every { SessionManager.isAdmin() } returns false
 
     // Act
-    val result = viewModel.deleteTripNotification(tripId, notificationId)
+    val result = viewModel.deleteTripNotification(tripId, tripNotificationNotAdmin)
 
     // Assert
     assertFalse(result)
