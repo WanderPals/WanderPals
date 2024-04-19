@@ -31,6 +31,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -256,7 +257,8 @@ fun SuggestionDetail(
                             if (newCommentText.isNotBlank()) {
                               viewModel.addComment(
                                   suggestion,
-                                  Comment("", "", "tempUsername", newCommentText, LocalDate.now()))
+                                  Comment("", "", "tempUsername", newCommentText, LocalDate.now(),
+                                      LocalTime.now()))
                               newCommentText = ""
                               submitComment = true // Set the trigger for side effects
                             }
@@ -273,7 +275,7 @@ fun SuggestionDetail(
                                 viewModel.addComment(
                                     suggestion,
                                     Comment(
-                                        "", "", "tempUsername", newCommentText, LocalDate.now()))
+                                        "", "", "tempUsername", newCommentText, LocalDate.now(), LocalTime.now()))
                                 newCommentText = ""
                                 submitComment = true // Set the trigger for side effects
                               }

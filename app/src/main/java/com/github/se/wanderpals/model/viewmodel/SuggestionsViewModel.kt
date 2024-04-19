@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,
@@ -127,7 +128,8 @@ open class SuggestionsViewModel(
                         userId = currentLoggedInUId,
                         userName = comment.userName,
                         text = comment.text,
-                        createdAt = comment.createdAt))
+                        createdAt = comment.createdAt,
+                        createdAtTime = LocalTime.now()))
     viewModelScope.launch {
       val wasUpdateSuccessful =
           suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
