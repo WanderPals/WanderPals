@@ -25,11 +25,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentBottomSheet(viewModel: SuggestionsViewModel) {
+fun CommentBottomSheet(viewModel: SuggestionsViewModel, suggestion : Suggestion) {
 
   val bottomSheetVisible by viewModel.bottomSheetVisible.collectAsState()
   val selectedComment by viewModel.selectedComment.collectAsState()
@@ -49,7 +50,7 @@ fun CommentBottomSheet(viewModel: SuggestionsViewModel) {
         Box(
             modifier =
                 Modifier.fillMaxWidth()
-                    .clickable(onClick = { viewModel.deleteComment() })
+                    .clickable(onClick = { viewModel.deleteComment(suggestion) })
                     .padding(16.dp),
             contentAlignment = Alignment.CenterStart) {
               Row(verticalAlignment = Alignment.CenterVertically) {

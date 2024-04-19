@@ -294,7 +294,7 @@ fun SuggestionDetail(
                 }
               }
           // Bottom sheet for comment options
-          CommentBottomSheet(viewModel = viewModel)
+          CommentBottomSheet(viewModel = viewModel, suggestion = suggestion)
         }
   }
 }

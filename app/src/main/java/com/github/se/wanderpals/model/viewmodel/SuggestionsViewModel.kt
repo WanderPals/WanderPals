@@ -148,8 +148,17 @@ open class SuggestionsViewModel(
     _bottomSheetVisible.value = false
   }
 
-  fun deleteComment() {
-    // Implement your delete logic here
+  fun deleteComment(suggestion: Suggestion) {
+    // delete selected comment logic
+      val updatedSuggestion = suggestion.copy(comments = suggestion.comments - _selectedComment.value!!)
+      viewModelScope.launch {
+          val wasUpdateSuccessful =
+              suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+          if (wasUpdateSuccessful) {
+              loadSuggestion(tripId)
+          }
+      }
+    _selectedComment.value = null
     hideBottomSheet()
   }
 }
