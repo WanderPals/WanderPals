@@ -37,6 +37,7 @@ private val suggestion1: Suggestion =
         suggestionId = "1",
         userName = "User",
         createdAt = LocalDate.now().minusDays(1),
+        createdAtTime = LocalTime.now(),
         stop =
             Stop(
                 stopId = "1",
@@ -59,6 +60,7 @@ private val suggestion2: Suggestion =
         suggestionId = "2",
         userName = "User",
         createdAt = LocalDate.now(),
+        createdAtTime = LocalTime.now(),
         stop =
             Stop(
                 stopId = "2",
@@ -81,6 +83,7 @@ private val suggestion3: Suggestion =
         suggestionId = "3",
         userName = "User",
         createdAt = LocalDate.now(),
+        createdAtTime = LocalTime.now(),
         stop =
             Stop(
                 stopId = "3",
@@ -103,6 +106,7 @@ private val suggestion4: Suggestion =
         suggestionId = "4",
         userName = "User",
         createdAt = LocalDate.now(),
+        createdAtTime = LocalTime.now(),
         stop =
             Stop(
                 stopId = "4",
