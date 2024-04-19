@@ -57,7 +57,7 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
   @Test
-  fun createTripNotificationReturnToNotificationOnCancel() = run {
+  fun createTripNotificationReturnToNotificationBack() = run {
     ComposeScreen.onComposeScreen<CreateNotificationScreen>(composeTestRule) {
       val vm = CreateNotificationViewModelTest(TripsRepository("testUser001", Dispatchers.IO))
       composeTestRule.setContent {
