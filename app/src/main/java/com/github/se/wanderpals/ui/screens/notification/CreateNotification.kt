@@ -34,8 +34,6 @@ import java.time.LocalDateTime
 fun CreateNotification(
     tripId: String,
     viewModel: CreateNotificationViewModel,
-    //    title: String = "",
-    //    description: String = "",
     onNavigationBack: () -> Unit =
         {}, // is either onSuccess or onCancel, because the user is navigating back to the previous
     // screen which is the same screen for both actions
