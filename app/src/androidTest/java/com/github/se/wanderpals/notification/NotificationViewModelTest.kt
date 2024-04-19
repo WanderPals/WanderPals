@@ -9,13 +9,13 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
+import java.time.LocalDateTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import java.time.LocalDateTime
 
 @ExperimentalCoroutinesApi
 class NotificationViewModelTest {
@@ -43,14 +43,14 @@ class NotificationViewModelTest {
         // Arrange
         val tripId = "trip123"
         val notificationId = "notifAdminId"
-        val tripNotificationAdmin = TripNotification(
-          notificationId = "notifAdminId",
-          userId = "userAdmin",
-          title = "Admin Notification",
-          userName = "Admin User",
-          description = "This is an admin notification",
-          timestamp = LocalDateTime.now()
-        )
+        val tripNotificationAdmin =
+            TripNotification(
+                notificationId = "notifAdminId",
+                userId = "userAdmin",
+                title = "Admin Notification",
+                userName = "Admin User",
+                description = "This is an admin notification",
+                timestamp = LocalDateTime.now())
 
         // Assume the user is an admin
         every { SessionManager.isAdmin() } returns true
@@ -73,14 +73,14 @@ class NotificationViewModelTest {
   fun deleteTripNotification_returnsFalse_whenUserIsNotAdmin() = runBlockingTest {
     // Arrange
     val tripId = "trip123"
-    val tripNotificationNotAdmin = TripNotification(
-      notificationId = "notifNotAdminId",
-      userId = "userNotAdmin",
-      title = "Regular User Notification",
-      userName = "Regular User",
-      description = "",
-      timestamp = LocalDateTime.now()
-    )
+    val tripNotificationNotAdmin =
+        TripNotification(
+            notificationId = "notifNotAdminId",
+            userId = "userNotAdmin",
+            title = "Regular User Notification",
+            userName = "Regular User",
+            description = "",
+            timestamp = LocalDateTime.now())
 
     // Assume the user is not an admin
     every { SessionManager.isAdmin() } returns false
