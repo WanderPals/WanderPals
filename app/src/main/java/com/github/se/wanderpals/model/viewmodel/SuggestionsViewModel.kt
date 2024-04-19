@@ -30,11 +30,11 @@ open class SuggestionsViewModel(
 
   // State flow to handle the displaying of the bottom sheet
   private val _bottomSheetVisible = MutableStateFlow(false)
-  val bottomSheetVisible: StateFlow<Boolean> = _bottomSheetVisible.asStateFlow()
+  open val bottomSheetVisible: StateFlow<Boolean> = _bottomSheetVisible.asStateFlow()
 
   // State flow to remember the comment that is being interacted with
   private val _selectedComment = MutableStateFlow<Comment?>(null)
-  val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
+  open val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
   // the like status of each suggestion to be held to prevent repeated network calls for the same
   // item:
@@ -137,27 +137,28 @@ open class SuggestionsViewModel(
     }
   }
 
-  fun showBottomSheet(comment: Comment) {
+  open fun showBottomSheet(comment: Comment) {
     viewModelScope.launch {
       _bottomSheetVisible.value = true
       _selectedComment.value = comment
     }
   }
 
-  fun hideBottomSheet() {
+  open fun hideBottomSheet() {
     _bottomSheetVisible.value = false
   }
 
-  fun deleteComment(suggestion: Suggestion) {
+  open fun deleteComment(suggestion: Suggestion) {
     // delete selected comment logic
-      val updatedSuggestion = suggestion.copy(comments = suggestion.comments - _selectedComment.value!!)
-      viewModelScope.launch {
-          val wasUpdateSuccessful =
-              suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
-          if (wasUpdateSuccessful) {
-              loadSuggestion(tripId)
-          }
+    val updatedSuggestion =
+        suggestion.copy(comments = suggestion.comments - _selectedComment.value!!)
+    viewModelScope.launch {
+      val wasUpdateSuccessful =
+          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+      if (wasUpdateSuccessful) {
+        loadSuggestion(tripId)
       }
+    }
     _selectedComment.value = null
     hideBottomSheet()
   }

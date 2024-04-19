@@ -1,11 +1,10 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.lifecycle.viewModelScope
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
@@ -23,19 +22,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
 // Define a fake suggestion view model class for testing purposes
-class FakeViewModelDetails(testSuggestions: List<Suggestion>) :
+class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
     SuggestionsViewModel(TripsRepository("userid", Dispatchers.IO), "") {
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   override val state: StateFlow<List<Suggestion>> = _state
 
   private val _isLoading = MutableStateFlow(true)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+  // State flow to handle the displaying of the bottom sheet
+  private val _bottomSheetVisible = MutableStateFlow(false)
+  override val bottomSheetVisible: StateFlow<Boolean> = _bottomSheetVisible.asStateFlow()
+
+  // State flow to remember the comment that is being interacted with
+  private val _selectedComment = MutableStateFlow<Comment?>(null)
+  override val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
   private fun updateSuggestionList(suggestions: List<Suggestion>) {
     _state.value = suggestions
@@ -46,25 +54,7 @@ class FakeViewModelDetails(testSuggestions: List<Suggestion>) :
     updateSuggestionList(testSuggestions)
   }
 
-  override fun getIsLiked(suggestionId: String): Boolean {
-    // Check whether the uid is present in the list of likes
-    return _state.value.find { it.suggestionId == suggestionId }?.userLikes?.contains("userid")
-        ?: false
-  }
-
-  override fun getNbrLiked(suggestionId: String): Int {
-    return _state.value.find { it.suggestionId == suggestionId }?.userLikes?.size ?: 0
-  }
-
-  // Mock toggleLikeSuggestion function
-  override fun toggleLikeSuggestion(suggestion: Suggestion) {
-    // just add the user to the list of likes
-    val newSuggestion = suggestion.copy(userLikes = suggestion.userLikes + "userid")
-    updateSuggestionList(
-        _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
-  }
-
-  // Mock AddComment function
+  // Mock addComment function
   override fun addComment(suggestion: Suggestion, comment: Comment) {
     // Just add the comment to the list of comments of the suggestion and update the state with the
     // new suggestion
@@ -77,10 +67,41 @@ class FakeViewModelDetails(testSuggestions: List<Suggestion>) :
     updateSuggestionList(
         _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
   }
+
+  // Mock deleteComment function
+  override fun deleteComment(suggestion: Suggestion) {
+    // Just remove the comment from the list of comments of the suggestion and update the state with
+    // the
+    // new suggestion
+    val newSuggestion =
+        suggestion.copy(
+            comments =
+                suggestion.comments.filter { it.commentId != selectedComment.value?.commentId })
+    updateSuggestionList(
+        _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
+    _selectedComment.value = null
+    hideBottomSheet()
+  }
+
+  // Mock showBottomSheet
+  override fun showBottomSheet(comment: Comment) {
+    viewModelScope.launch {
+      _bottomSheetVisible.value = true
+      _selectedComment.value = comment
+    }
+  }
+
+  // Mock hideBottomSheet
+  override fun hideBottomSheet() {
+    viewModelScope.launch {
+      _bottomSheetVisible.value = false
+      _selectedComment.value = null
+    }
+  }
 }
 
 @RunWith(AndroidJUnit4::class)
-class SuggestionDetailTest {
+class CommentOptionsBottomSheetTest {
 
   private val mockSuggestion =
       Suggestion(
@@ -121,128 +142,113 @@ class SuggestionDetailTest {
     mockNavActions = mockk()
   }
 
+  // Add a test that checks the bottom sheet is indeed displayed when the comment 3 dot option icon
+  // is clicked
   @Test
-  fun testSuggestionDetailsVisible() {
+  fun testCommentOptionsBottomSheetVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
           navActions = mockNavActions)
     }
 
-    composeTestRule.waitForIdle()
-
-    composeTestRule.onNodeWithTag("SuggestionTitle").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("CreatedByText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("DescriptionText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("AddressText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("WebsiteText").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("ScheduleText").assertIsDisplayed()
-  }
-
-  @Test
-  fun testSuggestionDetailIconsAreVisible() {
-    composeTestRule.setContent {
-      SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
-    }
-
-    composeTestRule.waitForIdle()
-
-    composeTestRule.onNodeWithTag("LikeButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("CommentButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("BackButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("LocationIcon").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("WebsiteIcon").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("SendButton").assertIsDisplayed()
-  }
-
-  @Test
-  fun testSuggestionDetailCommentsAreVisible() {
-    composeTestRule.setContent {
-      SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
-    }
-
-    composeTestRule.waitForIdle()
-
+    // Click on the comment 3 dot option icon
     composeTestRule
-        .onNodeWithTag("commentUserNamecomment1", useUnmergedTree = true)
-        .assertExists()
-        .assertTextEquals("Jane Doe")
-  }
-
-  @Test
-  fun testNoCommentsMessageIsDisplayedWhenNoCommentsPresent() {
-    // Prepare a mock suggestion with no comments
-    val mockSuggestionNoComments = mockSuggestion.copy(comments = emptyList())
-
-    composeTestRule.setContent {
-      SuggestionDetail(
-          suggestionId = mockSuggestionNoComments.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestionNoComments)),
-          navActions = mockNavActions)
-    }
-
-    composeTestRule.waitForIdle()
-
-    composeTestRule.onNodeWithTag("NoCommentsMessage").assertIsDisplayed()
-  }
-
-  @Test
-  fun testAddCommentButtonIsVisible() {
-    composeTestRule.setContent {
-      SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
-    }
-
-    composeTestRule.waitForIdle()
-
-    composeTestRule.onNodeWithTag("NewCommentInput").assertIsDisplayed()
-  }
-
-  // Test that likes are incremented when the like button is clicked
-  @Test
-  fun testLikeButtonIncrementsLikes() {
-    composeTestRule.setContent {
-      SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
-    }
-
-    composeTestRule.waitForIdle()
-
-    composeTestRule.onNodeWithTag("LikeButton").performClick()
-
-    composeTestRule.onNodeWithTag("LikesCount").assertTextEquals("2")
-  }
-
-  // Test that the comment is added when the send button is clicked
-  @Test
-  fun testAddComment() {
-    composeTestRule.setContent {
-      SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
-    }
-
-    composeTestRule.waitForIdle()
-
-    composeTestRule
-        .onNodeWithTag("NewCommentInput")
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
         .performClick()
-        .performTextInput("This is a new comment")
 
-    composeTestRule.onNodeWithTag("SendButton").performClick()
+    // Check if the bottom sheet is displayed
+    composeTestRule.onNodeWithTag("commentBottomSheet").assertIsDisplayed()
+  }
 
-    composeTestRule.onNodeWithTag("commentUserNamecomment2", useUnmergedTree = true).assertExists()
+  // Add a test that checks the delete comment option is displayed in the bottom sheet
+  @Test
+  fun testDeleteCommentOptionVisible() {
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the delete comment option is displayed
+    composeTestRule.onNodeWithTag("deleteCommentOption").assertIsDisplayed()
+  }
+
+  // Add a test that checks the delete comment option deletes the comment when clicked
+  @Test
+  fun testDeleteCommentOptionDeletesComment() {
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Click on the delete comment option
+    composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
+
+    // Check if the comment is deleted
+    composeTestRule.onNodeWithTag("comment1").assertDoesNotExist()
+  }
+
+  // Add a test that checks the bottom sheet is hidden when the delete comment option is clicked
+  @Test
+  fun testDeleteCommentOptionHidesBottomSheet() {
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Click on the delete comment option
+    composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
+
+    // Check if the bottom sheet is hidden
+    composeTestRule.onNodeWithTag("commentBottomSheet").assertDoesNotExist()
+  }
+
+  // Add a test that checks the bottom sheet is hidden when the the user taps somewhere outside the
+  // bottom sheet
+  @Test
+  fun testBottomSheetHidesWhenDismissed() {
+    val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = viewModel,
+          navActions = mockNavActions)
+    }
+
+    // Open the bottom sheet
+    viewModel.showBottomSheet(mockSuggestion.comments.first())
+
+    composeTestRule.onNodeWithTag("commentBottomSheet").assertExists()
+
+    // Simulate the logic that would be executed on tapping outside
+    viewModel.hideBottomSheet()
+
+    composeTestRule.waitForIdle()
+
+    // Assert that the bottom sheet is no longer visible
+    composeTestRule.onNodeWithTag("commentBottomSheet").assertDoesNotExist()
   }
 }
