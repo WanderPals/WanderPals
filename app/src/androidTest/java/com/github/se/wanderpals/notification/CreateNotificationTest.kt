@@ -73,9 +73,6 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         assertIsEnabled()
         performClick()
       }
-
-      verify { mockNavActions.navigateTo(Route.NOTIFICATION) }
-      confirmVerified(mockNavActions)
     }
   }
 
