@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
+import java.time.LocalTime
 import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -131,7 +132,8 @@ open class SuggestionsViewModel(
                         userId = currentLoggedInUId,
                         userName = comment.userName,
                         text = comment.text,
-                        createdAt = comment.createdAt))
+                        createdAt = comment.createdAt,
+                        createdAtTime = LocalTime.now()))
     viewModelScope.launch {
       val wasUpdateSuccessful =
           suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!

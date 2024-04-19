@@ -369,6 +369,7 @@ class TripsRepositoryTest {
             text =
                 "Suggesting a visit to the Colosseum, one of the greatest architectural achievements in Rome.",
             createdAt = LocalDate.now(),
+            createdAtTime = LocalTime.now(),
             stop = stop, // Embed the Stop object directly within the suggestion.
             comments =
                 listOf(
@@ -377,7 +378,8 @@ class TripsRepositoryTest {
                         userId = "user456",
                         userName = "Bob",
                         text = "Great idea! It's a must-see.",
-                        createdAt = LocalDate.now())),
+                        createdAt = LocalDate.now(),
+                        createdAtTime = LocalTime.now())),
             userLikes = emptyList())
 
     val elapsedTime = measureTimeMillis {

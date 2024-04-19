@@ -130,6 +130,7 @@ class CommentOptionsBottomSheetTest {
           userName = "John Doe",
           text = "This is a suggestion",
           createdAt = LocalDate.now(),
+          createdAtTime = LocalTime.now(),
           stop =
               Stop(
                   stopId = "stop1",
@@ -150,7 +151,9 @@ class CommentOptionsBottomSheetTest {
                       userId = "user1",
                       userName = "Jane Doe",
                       text = "This is a comment",
-                      createdAt = LocalDate.now())),
+                      createdAt = LocalDate.now(),
+                      createdAtTime = LocalTime.now()),
+              ),
           userLikes = listOf("user1"))
 
   @get:Rule val composeTestRule = createComposeRule()

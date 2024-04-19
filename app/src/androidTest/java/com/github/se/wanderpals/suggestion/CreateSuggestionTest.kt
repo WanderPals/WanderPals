@@ -27,6 +27,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+val fixedTime = LocalTime.of(14, 30, 15)
 private val testSuggestion: Suggestion =
     Suggestion(
         suggestionId = "",
@@ -34,6 +35,7 @@ private val testSuggestion: Suggestion =
         userName = "tempUsername",
         text = "",
         createdAt = LocalDate.now(),
+        createdAtTime = fixedTime,
         stop =
             Stop(
                 stopId = "",
@@ -55,6 +57,7 @@ private val testSuggestion2: Suggestion =
         userName = "tempUsername",
         text = "",
         createdAt = LocalDate.now(),
+        createdAtTime = fixedTime,
         stop =
             Stop(
                 stopId = "",
@@ -71,7 +74,12 @@ private val testSuggestion2: Suggestion =
 open class CreateSuggestionViewModelTest(tripsRepository: TripsRepository) :
     CreateSuggestionViewModel(tripsRepository) {
   override fun addSuggestion(tripId: String, suggestion: Suggestion): Boolean {
-    assert(suggestion == testSuggestion || suggestion == testSuggestion2)
+    assert(
+        suggestion == testSuggestion.copy(createdAtTime = suggestion.createdAtTime) ||
+            suggestion ==
+                testSuggestion2.copy(
+                    createdAtTime =
+                        suggestion.createdAtTime)) // We can't get the same LocalTime.Now
     return true
   }
 }
