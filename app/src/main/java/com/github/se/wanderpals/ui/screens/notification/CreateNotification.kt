@@ -38,7 +38,7 @@ fun CreateNotification(
     //    description: String = "",
     onNavigationBack: () -> Unit =
         {}, // is either onSuccess or onCancel, because the user is navigating back to the previous
-            // screen which is the same screen for both actions
+    // screen which is the same screen for both actions
     onFailure: () -> Unit = {}
 ) {
 
@@ -88,8 +88,8 @@ fun CreateNotification(
                       title
                           .trim()
                           .isEmpty(), // Only set isError to true if the title is actually empty, so
-                                      // that the error message is shown and the field is
-                                      // highlighted in red
+              // that the error message is shown and the field is
+              // highlighted in red
               singleLine = true)
 
           Text(
@@ -131,8 +131,8 @@ fun CreateNotification(
                       description
                           .trim()
                           .isEmpty(), // Only set isError to true if the description is actually
-                                      // empty so that the error message is shown and the field is
-                                      // highlighted in red
+              // empty so that the error message is shown and the field is
+              // highlighted in red
               singleLine = false)
           if (descriptionError.isNotEmpty() && description.trim().isEmpty()) {
             Text(
