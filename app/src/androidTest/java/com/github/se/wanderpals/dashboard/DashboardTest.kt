@@ -1,21 +1,27 @@
 package com.github.se.wanderpals.dashboard
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.Dashboard
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
+import io.mockk.verify
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
@@ -114,7 +120,7 @@ private val suggestion4: Suggestion =
         text = "This is a suggestion for a stop.",
         userId = "1")
 
-class DashboardViewModelTest(list: List<Suggestion>) :
+class DashboardViewModelTest(list: List<Suggestion> = listOf(), users: List<User> = listOf()) :
     DashboardViewModel(tripId = "", tripsRepository = TripsRepository("", Dispatchers.IO)) {
   private val _isLoading = MutableStateFlow(false)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -122,11 +128,16 @@ class DashboardViewModelTest(list: List<Suggestion>) :
   private val _state = MutableStateFlow(list)
   override val state: StateFlow<List<Suggestion>> = _state.asStateFlow()
 
+  private val _members = MutableStateFlow(users)
+  override val members: StateFlow<List<User>> = _members.asStateFlow()
+
   override fun loadSuggestion(tripId: String) {}
 
   fun setLoading(isLoading: Boolean) {
     _isLoading.value = isLoading
   }
+
+  override fun loadMembers(tripId: String) {}
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -363,5 +374,24 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
         .assertIsDisplayed()
     // Check that the time is displayed
     composeTestRule.onNodeWithTag("time", useUnmergedTree = true).assertExists().assertIsDisplayed()
+  }
+
+  @Test
+  fun clickMemberList() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(
+          tripId = "",
+          dashboardViewModel = viewModel,
+          oldNavActions = mockNavActions,
+          navActions = mockNavActions2)
+    }
+    composeTestRule.onNodeWithTag("menuButton").performClick()
+    composeTestRule.onNodeWithTag("MemberListMenu").performClick()
+    composeTestRule.onNodeWithTag("menuNav").assertIsNotDisplayed()
+
+    verify { mockNavActions2.navigateTo(Route.MEMBERS) }
+    confirmVerified(mockNavActions2)
   }
 }

@@ -58,7 +58,7 @@ fun Trip(
 
   // update the SessionManagers Users Role, from the User In the Trip Object
   val sessionViewModel: SessionViewModel = SessionViewModel(tripsRepository)
-    val dashboardViewModel = DashboardViewModel(tripsRepository, tripId)
+  val dashboardViewModel = DashboardViewModel(tripsRepository, tripId)
   LaunchedEffect(key1 = tripId) { sessionViewModel.updateRoleForCurrentUser(tripId) }
 
   Scaffold(
@@ -68,13 +68,12 @@ fun Trip(
         NavHost(navController, startDestination = startingRoute, Modifier.padding(innerPadding)) {
           composable(Route.DASHBOARD) {
             BackHandler(true) {}
-            Dashboard(
-                tripId, dashboardViewModel, oldNavActions, navActions)
+            Dashboard(tripId, dashboardViewModel, oldNavActions, navActions)
           }
-            composable(Route.MEMBERS) {
-                BackHandler(true) {}
-                DashboardMemberList(dashboardViewModel, navActions)
-            }
+          composable(Route.MEMBERS) {
+            BackHandler(true) {}
+            DashboardMemberList(dashboardViewModel, navActions)
+          }
           composable(Route.AGENDA) {
             BackHandler(true) {}
             Agenda(AgendaViewModel(tripId, tripsRepository))

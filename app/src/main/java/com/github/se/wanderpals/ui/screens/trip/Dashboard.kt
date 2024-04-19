@@ -38,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
-import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
@@ -73,10 +72,7 @@ fun Dashboard(
     if (isLoading) {
       Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(
-            modifier = Modifier
-                .size(50.dp)
-                .align(Alignment.Center)
-                .testTag("loading"))
+            modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
       }
     } else {
       Scaffold(
@@ -84,10 +80,9 @@ fun Dashboard(
       ) { contentPadding ->
         Surface(
             modifier =
-            Modifier
-                .background(Color.White)
-                .padding(contentPadding)
-                .testTag("dashboardSuggestions")) {
+                Modifier.background(Color.White)
+                    .padding(contentPadding)
+                    .testTag("dashboardSuggestions")) {
               Column {
                 DashboardSuggestionWidget(
                     viewModel = dashboardViewModel,
@@ -110,15 +105,16 @@ fun Dashboard(
  * oldNavActions is used to navigate back to the overview screen.
  */
 @Composable
-fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: NavigationActions, navActions: NavigationActions) {
+fun Menu(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    oldNavActions: NavigationActions,
+    navActions: NavigationActions
+) {
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
-      Modifier
-          .testTag("menuNav")
-          .requiredWidth(200.dp)
-          .requiredHeight(250.dp)
-          .padding(8.dp),
+          Modifier.testTag("menuNav").requiredWidth(200.dp).requiredHeight(250.dp).padding(8.dp),
   ) {
     ElevatedButton(
         modifier = Modifier.testTag("backToOverview"),
@@ -134,22 +130,21 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
             oldNavActions.navigateTo(Route.OVERVIEW)
           }
         })
-      Spacer(modifier = Modifier.padding(2.dp))
-      ElevatedButton(
-          modifier = Modifier.testTag("MemberListMenu"),
-          content = {
-              Row {
-                  Icon(Icons.Default.Person, contentDescription = "Member List")
-                  Text("Member List       ")
-              }
-          },
-          onClick = {
-              scope.launch {
-                  drawerState.close()
-                  navActions.navigateTo(Route.MEMBERS)
-              }
-          })
-
+    Spacer(modifier = Modifier.padding(2.dp))
+    ElevatedButton(
+        modifier = Modifier.testTag("MemberListMenu"),
+        content = {
+          Row {
+            Icon(Icons.Default.Person, contentDescription = "Member List")
+            Text("Member List       ")
+          }
+        },
+        onClick = {
+          scope.launch {
+            drawerState.close()
+            navActions.navigateTo(Route.MEMBERS)
+          }
+        })
   }
 }
 
@@ -164,9 +159,7 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
  */
 @Composable
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState) {
-  Column(modifier = Modifier
-      .padding(8.dp)
-      .testTag("dashboardTopBar")) {
+  Column(modifier = Modifier.padding(8.dp).testTag("dashboardTopBar")) {
     Row(modifier = Modifier.fillMaxWidth()) {
       ElevatedButton(
           modifier = Modifier.testTag("menuButton"),

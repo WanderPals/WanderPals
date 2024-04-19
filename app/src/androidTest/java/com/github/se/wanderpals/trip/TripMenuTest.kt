@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.trip
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.TripScreen
