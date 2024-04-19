@@ -12,13 +12,14 @@ import org.junit.Test
 
 class FirestoreSuggestionTest {
 
-    @Test
-    fun testFromSuggestionConversion() {
-        val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-        val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
-        val fixedTime = LocalTime.of(14, 30, 15)  // Fixed time for testing, including seconds
+  @Test
+  fun testFromSuggestionConversion() {
+    val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+    val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+    val fixedTime = LocalTime.of(14, 30, 15) // Fixed time for testing, including seconds
 
-        val stop = Stop(
+    val stop =
+        Stop(
             stopId = "stop1",
             title = "Location Name",
             address = "123 Main St",
@@ -31,7 +32,8 @@ class FirestoreSuggestionTest {
             website = "http://example.com",
             imageUrl = "http://example.com/image.png")
 
-        val comments = listOf(
+    val comments =
+        listOf(
             Comment(
                 commentId = "comment1",
                 userId = "user1",
@@ -40,7 +42,8 @@ class FirestoreSuggestionTest {
                 createdAt = LocalDate.now(),
                 createdAtTime = fixedTime))
 
-        val suggestion = Suggestion(
+    val suggestion =
+        Suggestion(
             suggestionId = "suggestion1",
             userId = "user1",
             userName = "User One",
@@ -51,24 +54,25 @@ class FirestoreSuggestionTest {
             comments = comments,
             userLikes = emptyList())
 
-        val firestoreSuggestion = FirestoreSuggestion.fromSuggestion(suggestion)
-        assertEquals("suggestion1", firestoreSuggestion.suggestionId)
-        assertEquals("Suggestion text", firestoreSuggestion.text)
-        assertEquals(LocalDate.now().format(dateFormatter), firestoreSuggestion.createdAt)
-        assertEquals(fixedTime.format(timeFormatter), firestoreSuggestion.createdAtTime)
-        assertEquals("stop1", firestoreSuggestion.stop.stopId)
-        assertEquals(1, firestoreSuggestion.comments.size)
-        assertEquals("comment1", firestoreSuggestion.comments.first().commentId)
-    }
+    val firestoreSuggestion = FirestoreSuggestion.fromSuggestion(suggestion)
+    assertEquals("suggestion1", firestoreSuggestion.suggestionId)
+    assertEquals("Suggestion text", firestoreSuggestion.text)
+    assertEquals(LocalDate.now().format(dateFormatter), firestoreSuggestion.createdAt)
+    assertEquals(fixedTime.format(timeFormatter), firestoreSuggestion.createdAtTime)
+    assertEquals("stop1", firestoreSuggestion.stop.stopId)
+    assertEquals(1, firestoreSuggestion.comments.size)
+    assertEquals("comment1", firestoreSuggestion.comments.first().commentId)
+  }
 
-    @Test
-    fun testToSuggestionConversion() {
-        val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-        val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
-        val fixedDate = LocalDate.now()
-        val fixedTime = LocalTime.of(14, 30, 15)  // Fixed time for testing, including seconds
+  @Test
+  fun testToSuggestionConversion() {
+    val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+    val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+    val fixedDate = LocalDate.now()
+    val fixedTime = LocalTime.of(14, 30, 15) // Fixed time for testing, including seconds
 
-        val firestoreStop = FirestoreStop(
+    val firestoreStop =
+        FirestoreStop(
             stopId = "stop1",
             title = "Location Name",
             address = "123 Main St",
@@ -81,7 +85,8 @@ class FirestoreSuggestionTest {
             website = "http://example.com",
             imageUrl = "http://example.com/image.png")
 
-        val firestoreComments = listOf(
+    val firestoreComments =
+        listOf(
             FirestoreComment(
                 commentId = "comment1",
                 userId = "user1",
@@ -90,7 +95,8 @@ class FirestoreSuggestionTest {
                 createdAt = fixedDate.toString(),
                 createdAtTime = fixedTime.format(timeFormatter)))
 
-        val firestoreSuggestion = FirestoreSuggestion(
+    val firestoreSuggestion =
+        FirestoreSuggestion(
             suggestionId = "suggestion1",
             userId = "user1",
             userName = "User One",
@@ -101,13 +107,13 @@ class FirestoreSuggestionTest {
             comments = firestoreComments,
             userLikes = emptyList())
 
-        val suggestion = firestoreSuggestion.toSuggestion()
-        assertEquals("suggestion1", suggestion.suggestionId)
-        assertEquals("Suggestion text", suggestion.text)
-        assertEquals(fixedDate, suggestion.createdAt)
-        assertEquals(fixedTime, suggestion.createdAtTime)
-        assertEquals("stop1", suggestion.stop.stopId)
-        assertEquals(1, suggestion.comments.size)
-        assertEquals("comment1", suggestion.comments.first().commentId)
-    }
+    val suggestion = firestoreSuggestion.toSuggestion()
+    assertEquals("suggestion1", suggestion.suggestionId)
+    assertEquals("Suggestion text", suggestion.text)
+    assertEquals(fixedDate, suggestion.createdAt)
+    assertEquals(fixedTime, suggestion.createdAtTime)
+    assertEquals("stop1", suggestion.stop.stopId)
+    assertEquals(1, suggestion.comments.size)
+    assertEquals("comment1", suggestion.comments.first().commentId)
+  }
 }

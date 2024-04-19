@@ -257,7 +257,12 @@ fun SuggestionDetail(
                             if (newCommentText.isNotBlank()) {
                               viewModel.addComment(
                                   suggestion,
-                                  Comment("", "", "tempUsername", newCommentText, LocalDate.now(),
+                                  Comment(
+                                      "",
+                                      "",
+                                      "tempUsername",
+                                      newCommentText,
+                                      LocalDate.now(),
                                       LocalTime.now()))
                               newCommentText = ""
                               submitComment = true // Set the trigger for side effects
@@ -275,7 +280,12 @@ fun SuggestionDetail(
                                 viewModel.addComment(
                                     suggestion,
                                     Comment(
-                                        "", "", "tempUsername", newCommentText, LocalDate.now(), LocalTime.now()))
+                                        "",
+                                        "",
+                                        "tempUsername",
+                                        newCommentText,
+                                        LocalDate.now(),
+                                        LocalTime.now()))
                                 newCommentText = ""
                                 submitComment = true // Set the trigger for side effects
                               }

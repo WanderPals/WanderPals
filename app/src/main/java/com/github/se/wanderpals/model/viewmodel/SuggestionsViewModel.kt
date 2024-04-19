@@ -6,12 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
+import java.time.LocalTime
 import java.util.UUID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalTime
 
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,

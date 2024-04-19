@@ -26,44 +26,42 @@ data class FirestoreComment(
     val createdAt: String = "",
     val createdAtTime: String = ""
 ) {
-    companion object {
-        /**
-         * Converts a domain model Comment to a FirestoreComment DTO, formatting the date and time
-         * to strings suitable for Firestore storage.
-         *
-         * @param comment The Comment object to convert.
-         * @return A FirestoreComment DTO with the date and time properly formatted as strings.
-         */
-        fun fromComment(comment: Comment): FirestoreComment {
-            val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-            val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
-            return FirestoreComment(
-                commentId = comment.commentId,
-                userId = comment.userId,
-                userName = comment.userName,
-                text = comment.text,
-                createdAt = comment.createdAt.format(dateFormatter),
-                createdAtTime = comment.createdAtTime.format(timeFormatter)
-            )
-        }
-    }
-
+  companion object {
     /**
-     * Converts this FirestoreComment DTO back into a domain model Comment, parsing the string
-     * representations of date and time back into LocalDate and LocalTime objects.
+     * Converts a domain model Comment to a FirestoreComment DTO, formatting the date and time to
+     * strings suitable for Firestore storage.
      *
-     * @return A Comment object with parsed LocalDate and LocalTime fields.
+     * @param comment The Comment object to convert.
+     * @return A FirestoreComment DTO with the date and time properly formatted as strings.
      */
-    fun toComment(): Comment {
-        val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
-        val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
-        return Comment(
-            commentId = commentId,
-            userId = userId,
-            userName = userName,
-            text = text,
-            createdAt = LocalDate.parse(createdAt, dateFormatter),
-            createdAtTime = LocalTime.parse(createdAtTime, timeFormatter)
-        )
+    fun fromComment(comment: Comment): FirestoreComment {
+      val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+      val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+      return FirestoreComment(
+          commentId = comment.commentId,
+          userId = comment.userId,
+          userName = comment.userName,
+          text = comment.text,
+          createdAt = comment.createdAt.format(dateFormatter),
+          createdAtTime = comment.createdAtTime.format(timeFormatter))
     }
+  }
+
+  /**
+   * Converts this FirestoreComment DTO back into a domain model Comment, parsing the string
+   * representations of date and time back into LocalDate and LocalTime objects.
+   *
+   * @return A Comment object with parsed LocalDate and LocalTime fields.
+   */
+  fun toComment(): Comment {
+    val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+    val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+    return Comment(
+        commentId = commentId,
+        userId = userId,
+        userName = userName,
+        text = text,
+        createdAt = LocalDate.parse(createdAt, dateFormatter),
+        createdAtTime = LocalTime.parse(createdAtTime, timeFormatter))
+  }
 }
