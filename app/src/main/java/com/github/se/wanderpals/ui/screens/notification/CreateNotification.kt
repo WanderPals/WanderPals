@@ -39,7 +39,6 @@ fun CreateNotification(
     onNavigationBack: () -> Unit =
         {}, // is either onSuccess or onCancel, because the user is navigating back to the previous
     // screen which is the same screen for both actions
-    onFailure: () -> Unit = {}
 ) {
 
   val MAX_NOTIF_TITLE_LENGTH = 55 // limit the trip notification title to 55 characters
@@ -165,8 +164,6 @@ fun CreateNotification(
                   // if successful, call onSuccess(), otherwise onFailure()
                   if (viewModel.addNotification(tripId, tripNotification)) {
                     onNavigationBack()
-                  } else {
-                    onFailure()
                   }
                 }
               }) {
