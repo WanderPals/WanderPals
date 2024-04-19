@@ -36,6 +36,10 @@ open class SuggestionsViewModel(
   private val _selectedComment = MutableStateFlow<Comment?>(null)
   open val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
+  // State flow to handle the displaying of the delete dialog
+  private val _showDeleteDialog = MutableStateFlow(false)
+  open val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
+
   // the like status of each suggestion to be held to prevent repeated network calls for the same
   // item:
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
@@ -160,6 +164,20 @@ open class SuggestionsViewModel(
       }
     }
     _selectedComment.value = null
+    hideBottomSheet()
+  }
+
+  open fun showDeleteDialog() {
+    _showDeleteDialog.value = true
+  }
+
+  open fun hideDeleteDialog() {
+    _showDeleteDialog.value = false
+  }
+
+  open fun confirmDeleteComment(suggestion: Suggestion) {
+    deleteComment(suggestion) // Assuming deleteComment handles all necessary logic
+    hideDeleteDialog()
     hideBottomSheet()
   }
 }

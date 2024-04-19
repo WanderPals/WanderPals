@@ -8,10 +8,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import io.mockk.impl.annotations.RelaxedMockK
@@ -44,6 +46,10 @@ class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
   // State flow to remember the comment that is being interacted with
   private val _selectedComment = MutableStateFlow<Comment?>(null)
   override val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
+
+  // State flow to handle the displaying of the delete dialog
+  private val _showDeleteDialog = MutableStateFlow(false)
+  override val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
 
   private fun updateSuggestionList(suggestions: List<Suggestion>) {
     _state.value = suggestions
@@ -98,6 +104,20 @@ class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
       _selectedComment.value = null
     }
   }
+
+  override fun showDeleteDialog() {
+    _showDeleteDialog.value = true
+  }
+
+  override fun hideDeleteDialog() {
+    _showDeleteDialog.value = false
+  }
+
+  override fun confirmDeleteComment(suggestion: Suggestion) {
+    deleteComment(suggestion) // Assuming deleteComment handles all necessary logic
+    hideDeleteDialog()
+    hideBottomSheet()
+  }
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -140,6 +160,9 @@ class CommentOptionsBottomSheetTest {
   @Before
   fun setUp() {
     mockNavActions = mockk()
+
+    // Set the user session for the test as ADMIN by default
+    SessionManager.setUserSession(userId = "userid", role = Role.ADMIN)
   }
 
   // Add a test that checks the bottom sheet is indeed displayed when the comment 3 dot option icon
@@ -199,6 +222,9 @@ class CommentOptionsBottomSheetTest {
     // Click on the delete comment option
     composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
 
+    // Click on the confirm delete comment button
+    composeTestRule.onNodeWithTag("confirmDeleteCommentButton").performClick()
+
     // Check if the comment is deleted
     composeTestRule.onNodeWithTag("comment1").assertDoesNotExist()
   }
@@ -220,6 +246,9 @@ class CommentOptionsBottomSheetTest {
 
     // Click on the delete comment option
     composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
+
+    // Click on the confirm delete comment button
+    composeTestRule.onNodeWithTag("confirmDeleteCommentButton").performClick()
 
     // Check if the bottom sheet is hidden
     composeTestRule.onNodeWithTag("commentBottomSheet").assertDoesNotExist()
@@ -250,5 +279,158 @@ class CommentOptionsBottomSheetTest {
 
     // Assert that the bottom sheet is no longer visible
     composeTestRule.onNodeWithTag("commentBottomSheet").assertDoesNotExist()
+  }
+
+  // Add a test that checks the delete dialog is displayed when the delete comment option is clicked
+  @Test
+  fun testDeleteDialogVisible() {
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Click on the delete comment option
+    composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
+
+    // Check if the delete dialog is displayed
+    composeTestRule.onNodeWithTag("deleteCommentDialog").assertIsDisplayed()
+  }
+
+  // Add a test that checks the delete dialog is hidden when the cancel button is clicked
+  @Test
+  fun testDeleteDialogHidesWhenCanceled() {
+    val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = viewModel,
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Click on the delete comment option
+    composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
+
+    // Click on the cancel delete comment button
+    composeTestRule.onNodeWithTag("cancelDeleteCommentButton").performClick()
+
+    // Check if the delete dialog is hidden
+    composeTestRule.onNodeWithTag("deleteCommentDialog").assertDoesNotExist()
+  }
+
+  // Add a test that checks the delete dialog is hidden when the confirm button is clicked
+  @Test
+  fun testDeleteDialogHidesWhenConfirmed() {
+    val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = viewModel,
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Click on the delete comment option
+    composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
+
+    // Click on the confirm delete comment button
+    composeTestRule.onNodeWithTag("confirmDeleteCommentButton").performClick()
+
+    // Check if the delete dialog is hidden
+    composeTestRule.onNodeWithTag("deleteCommentDialog").assertDoesNotExist()
+  }
+
+  // Add a test that checks that if the user doesn't have the permission the delete comment option
+  // is not displayed
+  @Test
+  fun testDeleteCommentOptionNotVisibleForOtherUserNonAdmin() {
+    SessionManager.setUserSession(
+        // use a different user id to simulate a different user
+        userId = "userid2",
+        // must not be an admin
+        role = Role.VIEWER)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the delete comment option is not displayed
+    composeTestRule.onNodeWithTag("deleteCommentOption").assertDoesNotExist()
+  }
+
+  // Add a test that checks that if the user is the owner of the comment the delete comment option
+  // is displayed
+  @Test
+  fun testDeleteCommentOptionVisibleForOwner() {
+    SessionManager.setUserSession(
+        // use the same user id as the comment owner
+        userId = "user1",
+        // must not be an admin
+        role = Role.VIEWER)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the delete comment option is displayed
+    composeTestRule.onNodeWithTag("deleteCommentOption").assertIsDisplayed()
+  }
+
+  // Add a test that checks that if the user is an admin the delete comment option is displayed
+  @Test
+  fun testDeleteCommentOptionVisibleForAdmin() {
+    SessionManager.setUserSession(
+        // use a different user id to simulate a different user
+        userId = "userid2",
+        // must be an admin
+        role = Role.ADMIN)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the delete comment option is displayed
+    composeTestRule.onNodeWithTag("deleteCommentOption").assertIsDisplayed()
   }
 }
