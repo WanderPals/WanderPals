@@ -293,6 +293,8 @@ fun SuggestionDetail(
                       modifier = Modifier.testTag("NoCommentsMessage"))
                 }
               }
+          // Bottom sheet for comment options
+          CommentBottomSheet(viewModel = viewModel)
         }
   }
 }
