@@ -36,26 +36,29 @@ fun CreateNotification(
     viewModel: CreateNotificationViewModel,
     //    title: String = "",
     //    description: String = "",
-    onSuccess: () -> Unit = {},
-    onFailure: () -> Unit = {},
-    onCancel: () -> Unit = {}
+    onNavigationBack: () -> Unit =
+        {}, // is either onSuccess or onCancel, because the user is navigating back to the previous
+            // screen which is the same screen for both actions
+    onFailure: () -> Unit = {}
 ) {
 
   val MAX_NOTIF_TITLE_LENGTH = 55 // limit the trip notification title to 55 characters
 
   var title by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
-  var titleError by remember { mutableStateOf(false) }
-  var descriptionError by remember { mutableStateOf(false) }
+  var titleError by remember { mutableStateOf("") }
+  var descriptionError by remember { mutableStateOf("") }
 
   Surface(modifier = Modifier.padding(12.dp)) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
+        modifier =
+            Modifier.fillMaxSize()
+                .padding(start = 20.dp, end = 20.dp, top = 8.dp), // reduced top padding
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       OutlinedButton(
           modifier = Modifier.align(Alignment.Start).testTag("tripNotifGoBackButton"),
-          onClick = { onCancel() }) {
+          onClick = { onNavigationBack() }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                 contentDescription = "Back",
@@ -63,44 +66,93 @@ fun CreateNotification(
           }
     }
 
+    Spacer(modifier = Modifier.height(8.dp)) // Reduced space for a closer layout
+
     Column(
         modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center) {
           OutlinedTextField(
               value = title,
-              onValueChange = { if (it.length <= MAX_NOTIF_TITLE_LENGTH) title = it },
+              onValueChange = {
+                if (it.length <= MAX_NOTIF_TITLE_LENGTH) {
+                  title = it
+                  // Reset titleError if the user starts typing again after an error was shown
+                  titleError = if (title.trim().isEmpty()) "Title cannot be empty" else ""
+                }
+              },
               label = { Text("Trip Notification Title*") },
               modifier = Modifier.fillMaxWidth().testTag("inputNotificationTitle"),
-              isError = titleError,
+              isError =
+                  titleError.isNotEmpty() &&
+                      title
+                          .trim()
+                          .isEmpty(), // Only set isError to true if the title is actually empty, so
+                                      // that the error message is shown and the field is
+                                      // highlighted in red
               singleLine = true)
+
           Text(
               text = "${title.length}/$MAX_NOTIF_TITLE_LENGTH",
               modifier =
                   Modifier.align(Alignment.End).padding(end = 8.dp).testTag("notifTitleLengthText"),
-              style = TextStyle(fontSize = 12.sp, color = Color.Gray))
+              style =
+                  TextStyle(
+                      fontSize = 12.sp,
+                      color =
+                          if (titleError.isNotEmpty() && title.trim().isEmpty()) Color.Red
+                          else Color.Gray))
+          if (titleError.isNotEmpty() && title.trim().isEmpty()) {
+            // then display the error message
+            Text(
+                text = titleError,
+                color = Color.Red,
+                modifier = Modifier.align(Alignment.End).padding(end = 8.dp),
+                style = TextStyle(fontSize = 12.sp))
+          }
 
-          Spacer(modifier = Modifier.height(12.dp))
+          Spacer(modifier = Modifier.height(8.dp))
 
           OutlinedTextField(
               value = description,
-              onValueChange = { description = it },
+              onValueChange = {
+                description = it
+                // Reset descriptionError if the user starts typing again after an error was shown
+                descriptionError =
+                    if (description.trim().isEmpty()) "Description cannot be empty" else ""
+              },
               label = { Text("Trip Notification Description*") },
               modifier =
-                  Modifier.fillMaxWidth().height(150.dp).testTag("inputNotificationDescription"),
-              isError = descriptionError,
+                  Modifier.fillMaxWidth()
+                      .height(450.dp) // the height for a the description field area
+                      .testTag("inputNotificationDescription"),
+              isError =
+                  descriptionError.isNotEmpty() &&
+                      description
+                          .trim()
+                          .isEmpty(), // Only set isError to true if the description is actually
+                                      // empty so that the error message is shown and the field is
+                                      // highlighted in red
               singleLine = false)
+          if (descriptionError.isNotEmpty() && description.trim().isEmpty()) {
+            Text(
+                text = descriptionError,
+                color = Color.Red,
+                modifier = Modifier.align(Alignment.End).padding(end = 8.dp),
+                style = TextStyle(fontSize = 12.sp))
+          }
 
-          Spacer(modifier = Modifier.height(24.dp))
+          Spacer(modifier = Modifier.height(32.dp))
 
           Button(
               modifier = Modifier.fillMaxWidth().height(50.dp).testTag("createNotificationButton"),
               onClick = {
-                titleError =
-                    title.trim().isEmpty() // add trim() to remove leading and trailing whitespaces
-                descriptionError = description.trim().isEmpty()
+                titleError = if (title.trim().isEmpty()) "Title cannot be empty" else ""
+                // add trim() to remove leading and trailing whitespaces
+                descriptionError =
+                    if (description.trim().isEmpty()) "Description cannot be empty" else ""
 
-                if (!titleError && !descriptionError) {
+                if (titleError.isEmpty() && descriptionError.isEmpty()) {
                   // Logic to create notification
                   val tripNotification =
                       TripNotification(
@@ -112,7 +164,7 @@ fun CreateNotification(
                           timestamp = LocalDateTime.now())
                   // if successful, call onSuccess(), otherwise onFailure()
                   if (viewModel.addNotification(tripId, tripNotification)) {
-                    onSuccess()
+                    onNavigationBack()
                   } else {
                     onFailure()
                   }
@@ -124,17 +176,16 @@ fun CreateNotification(
   }
 }
 
-/*
-@Preview(showBackground = true)
-@Composable
-fun PreviewCreateNotification() {
-    val fakeViewModel = CreateNotificationViewModel() // Ensure this has a default constructor or provide necessary initializations
-    CreateNotification(
-        tripId = "123",
-        viewModel = fakeViewModel,
-        onSuccess = { /* Preview success */ },
-        onFailure = { /* Preview failure */ },
-        onCancel = { /* Preview cancel */ }
-    )
-}
-*/
+// @Preview(showBackground = true)
+// @Composable
+// fun PreviewCreateNotification() {
+//  val fakeViewModel =
+//      CreateNotificationViewModel() // Ensure this has a default constructor or provide necessary
+//                                    // initializations
+//  CreateNotification(
+//      tripId = "123",
+//      viewModel = fakeViewModel,
+//      onNavigationBack = { /* Preview success */},
+//      onFailure = { /* Preview failure */}
+//    )
+// }

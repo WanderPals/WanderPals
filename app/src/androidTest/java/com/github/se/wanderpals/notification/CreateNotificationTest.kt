@@ -64,8 +64,8 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         CreateNotification(
             "tripId001",
             vm,
-            onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+            onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+        )
       }
 
       tripNotifGoBackButton {
@@ -74,7 +74,7 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         performClick()
       }
 
-      verify { mockNavActions.navigateTo(Route.DASHBOARD) }
+      verify { mockNavActions.navigateTo(Route.NOTIFICATION) }
       confirmVerified(mockNavActions)
     }
   }
@@ -88,8 +88,8 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
             CreateNotification(
                 "tripId1",
                 vm,
-                onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-                onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+                onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+            )
           }
 
           step("Open create tripNotifiation screen") {
@@ -137,8 +137,8 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         CreateNotification(
             "tripId1",
             vm,
-            onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+            onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+        )
       }
 
       step("Open create tripNotification screen") {
@@ -186,8 +186,8 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         CreateNotification(
             "tripId1",
             vm,
-            onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+            onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+        )
       }
 
       step("Open create tripNotification screen") {
