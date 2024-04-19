@@ -29,7 +29,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 // Define a fake suggestion view model class for testing purposes
-class FakeViewModel(testSuggestions: List<Suggestion>) :
+class FakeViewModelDetails(testSuggestions: List<Suggestion>) :
     SuggestionsViewModel(TripsRepository("userid", Dispatchers.IO), "") {
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   override val state: StateFlow<List<Suggestion>> = _state
@@ -126,7 +126,7 @@ class SuggestionDetailTest {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModel(listOf(mockSuggestion)),
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
           navActions = mockNavActions)
     }
 
@@ -145,7 +145,7 @@ class SuggestionDetailTest {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModel(listOf(mockSuggestion)),
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
           navActions = mockNavActions)
     }
 
@@ -164,7 +164,7 @@ class SuggestionDetailTest {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModel(listOf(mockSuggestion)),
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
           navActions = mockNavActions)
     }
 
@@ -184,7 +184,7 @@ class SuggestionDetailTest {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestionNoComments.suggestionId,
-          viewModel = FakeViewModel(listOf(mockSuggestionNoComments)),
+          viewModel = FakeViewModelDetails(listOf(mockSuggestionNoComments)),
           navActions = mockNavActions)
     }
 
@@ -198,7 +198,7 @@ class SuggestionDetailTest {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModel(listOf(mockSuggestion)),
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
           navActions = mockNavActions)
     }
 
@@ -213,7 +213,7 @@ class SuggestionDetailTest {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModel(listOf(mockSuggestion)),
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
           navActions = mockNavActions)
     }
 
@@ -230,7 +230,7 @@ class SuggestionDetailTest {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModel(listOf(mockSuggestion)),
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
           navActions = mockNavActions)
     }
 
