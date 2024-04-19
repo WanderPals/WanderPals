@@ -36,6 +36,7 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import kotlinx.coroutines.Dispatchers
 import java.time.format.DateTimeFormatter
@@ -46,6 +47,7 @@ fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
         CardDefaults.cardColors(
             containerColor = Color.White // This sets the background color of the Card
         )
+    val currentUser = SessionManager.getCurrentUser()
 
     Card(
         modifier =
@@ -64,7 +66,7 @@ fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = if(member.nickname.isEmpty()) member.name else member.nickname,
+                    text = member.name + if (member.userId == currentUser?.userId) " (You)" else "",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.testTag("memberName" + member.userId)

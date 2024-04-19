@@ -80,6 +80,11 @@ fun DashboardMemberList(
         {
             for (member in members.value) {
                 DashboardMemberItem(member = member, onClick = {selectedMember = member})
+                if(member != members.value.last()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
             }
         }
     }

@@ -55,39 +55,11 @@ fun DashboardMemberDetail(member: User, onDismiss : () -> Unit)
                 ) {
                     Row()
                     {
-                        //Image(painter = , contentDescription = ) profile picture, don't know how to get the image
-                        if(member.nickname.length > 10){
-                            Column(modifier = Modifier.width(180.dp)) {
-                                Text(
-                                    text = member.name+ " - ",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.testTag("memberName" + member.userId))
-                                Text(
-                                    text =  member.nickname,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.testTag("memberName" + member.userId),
-                                    color = Color.Gray)
-                            }
-                        }
-                        else {
-                            Row(modifier = Modifier.width(180.dp)) {
-                                Text(
-                                    text = member.name,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.testTag("memberName" + member.userId)
-                                )
-                                Text(
-                                    text = " - " + member.nickname,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 14.sp,
-                                    modifier = Modifier.testTag("memberName" + member.userId),
-                                    color = Color.Gray
-                                )
-                            }
-                        }
+                        Text(
+                            text = member.name,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.testTag("memberName" + member.userId))
                     }
                     Text(
                         text = member.role.toString(),
