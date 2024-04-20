@@ -136,7 +136,7 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
                     onClick = { },
                     modifier =
                     Modifier
-                        .width(300.dp)
+                        .padding(horizontal = 20.dp)
                         .height(50.dp)
                         .align(Alignment.Center),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
