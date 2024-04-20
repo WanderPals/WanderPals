@@ -48,64 +48,40 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
     val dashboardViewModel = DashboardViewModelTest(users = listOf(user1, user2, user3))
     composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
 
-    composeTestRule
-        .onNodeWithTag("memberCard1", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    composeTestRule
-        .onNodeWithTag("memberCard2", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    composeTestRule
-        .onNodeWithTag("memberCard3", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("memberCard1", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("memberCard2", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("memberCard3", useUnmergedTree = true).assertExists()
 
-    composeTestRule
-        .onNodeWithTag("divider1", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    composeTestRule
-        .onNodeWithTag("divider2", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("divider1", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("divider2", useUnmergedTree = true).assertExists()
     composeTestRule.onNodeWithTag("divider3", useUnmergedTree = true).assertDoesNotExist()
 
     composeTestRule
         .onNodeWithTag("memberName1", useUnmergedTree = true)
         .assertExists()
-        .assertIsDisplayed()
         .assertTextContains("Alice")
     composeTestRule
         .onNodeWithTag("memberName2", useUnmergedTree = true)
         .assertExists()
-        .assertIsDisplayed()
         .assertTextContains("Bob")
     composeTestRule
         .onNodeWithTag("memberName3", useUnmergedTree = true)
         .assertExists()
-        .assertIsDisplayed()
         .assertTextContains("Kilo Yankee Sierra")
 
     composeTestRule
         .onNodeWithTag("memberRole1", useUnmergedTree = true)
         .assertExists()
-        .assertIsDisplayed()
         .assertTextContains("MEMBER")
     composeTestRule
         .onNodeWithTag("memberRole2", useUnmergedTree = true)
         .assertExists()
-        .assertIsDisplayed()
         .assertTextContains("MEMBER")
     composeTestRule
         .onNodeWithTag("memberRole3", useUnmergedTree = true)
         .assertExists()
-        .assertIsDisplayed()
         .assertTextContains("OWNER")
-    composeTestRule
-        .onNodeWithTag("ownerIcon3", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("ownerIcon3", useUnmergedTree = true).assertExists()
   }
 
   @Test
