@@ -143,27 +143,20 @@ class MainActivity : ComponentActivity() {
             }
             composable(Route.TRIP) {
               BackHandler(true) {}
-              if (navigationActions.variables.suggestionId != "") {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient,
-                    Route.SUGGESTION)
-              } else if (navigationActions.variables.currentAddress != "") {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient,
-                    Route.MAP)
-              } else {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient)
-              }
+              val routeToGo =
+                  if (navigationActions.variables.suggestionId != "") {
+                    Route.SUGGESTION
+                  } else if (navigationActions.variables.currentAddress != "") {
+                    Route.MAP
+                  } else {
+                    Route.DASHBOARD
+                  }
+              Trip(
+                  navigationActions,
+                  navigationActions.variables.currentTrip,
+                  tripsRepository,
+                  placesClient,
+                  routeToGo)
             }
             composable(Route.CREATE_TRIP) {
               BackHandler(true) {}
