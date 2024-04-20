@@ -59,9 +59,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
   // Display loading indicator waiting for database to fetch the trips of the user
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
-      CircularProgressIndicator(modifier = Modifier
-          .size(50.dp)
-          .align(Alignment.Center))
+      CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
     }
   } else {
 
@@ -122,9 +120,7 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
         tripCode = EMPTY_CODE
       }) {
         Surface(
-            modifier = Modifier
-                .height(200.dp)
-                .testTag("dialog"),
+            modifier = Modifier.height(200.dp).testTag("dialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)) {
               Column(

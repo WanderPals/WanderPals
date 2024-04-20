@@ -1,8 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip
 
-import android.content.res.Resources
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
@@ -41,8 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -53,7 +47,6 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.round
 
 /**
  * The Dashboard screen.
@@ -83,10 +76,7 @@ fun Dashboard(
     if (isLoading) {
       Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(
-            modifier = Modifier
-                .size(50.dp)
-                .align(Alignment.Center)
-                .testTag("loading"))
+            modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
       }
     } else {
       Scaffold(
@@ -94,10 +84,9 @@ fun Dashboard(
       ) { contentPadding ->
         Surface(
             modifier =
-            Modifier
-                .background(Color.White)
-                .padding(contentPadding)
-                .testTag("dashboardSuggestions")) {
+                Modifier.background(Color.White)
+                    .padding(contentPadding)
+                    .testTag("dashboardSuggestions")) {
               Column {
                 DashboardSuggestionWidget(
                     viewModel = dashboardViewModel,
@@ -124,52 +113,45 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
-      Modifier
-          .testTag("menuNav")
-          .requiredWidth(200.dp)
-          .requiredHeight(250.dp)
-          .padding(8.dp),
+          Modifier.testTag("menuNav").requiredWidth(200.dp).requiredHeight(250.dp).padding(8.dp),
   ) {
-      Column {
-          ElevatedButton(
-              modifier = Modifier.testTag("backToOverview"),
-              content = {
-                      Row {
-                          Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                          Text("Back to overview")
-                      }
-              },
-              onClick = {
-                  scope.launch {
-                      drawerState.close()
-                      oldNavActions.navigateTo(Route.OVERVIEW)
-                  }
-              })
-          ElevatedButton(
-              content = {
-                  Row {
-
-
-                      Image(painterResource(id = R.drawable.logo_nsa),
-                          contentDescription = "NSA",
-                          modifier = Modifier
-                              .clip(RoundedCornerShape(16.dp))
-                              .size(40.dp))
-                      Text(
-                          text = "Admin",
-                          modifier = Modifier
-                              .padding(horizontal = 8.dp, vertical = 8.dp)
-                              .clickable {
-                              oldNavActions.navigateTo(Route.ADMIN_PAGE)
-                          })
-                  }
-              },
-              onClick = { scope.launch {
+    Column {
+      ElevatedButton(
+          modifier = Modifier.testTag("backToOverview"),
+          content = {
+            Row {
+              Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+              Text("Back to overview")
+            }
+          },
+          onClick = {
+            scope.launch {
+              drawerState.close()
+              oldNavActions.navigateTo(Route.OVERVIEW)
+            }
+          })
+      ElevatedButton(
+          content = {
+            Row {
+              Image(
+                  painterResource(id = R.drawable.logo_nsa),
+                  contentDescription = "NSA",
+                  modifier = Modifier.clip(RoundedCornerShape(16.dp)).size(40.dp))
+              Text(
+                  text = "Admin",
+                  modifier =
+                      Modifier.padding(horizontal = 8.dp, vertical = 8.dp).clickable {
+                        oldNavActions.navigateTo(Route.ADMIN_PAGE)
+                      })
+            }
+          },
+          onClick = {
+            scope.launch {
               drawerState.close()
               oldNavActions.navigateTo(Route.ADMIN_PAGE)
-          } })
-
-      }
+            }
+          })
+    }
   }
 }
 
@@ -184,9 +166,7 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
  */
 @Composable
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState) {
-  Column(modifier = Modifier
-      .padding(8.dp)
-      .testTag("dashboardTopBar")) {
+  Column(modifier = Modifier.padding(8.dp).testTag("dashboardTopBar")) {
     Row(modifier = Modifier.fillMaxWidth()) {
       ElevatedButton(
           modifier = Modifier.testTag("menuButton"),

@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
@@ -30,6 +31,7 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
+import com.github.se.wanderpals.ui.screens.Admin
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.net.PlacesClient

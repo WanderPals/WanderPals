@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -185,9 +186,7 @@ class MainActivity : ComponentActivity() {
                   onSuccess = onAction,
                   onCancel = onAction)
             }
-              composable(Route.ADMIN_PAGE){
-                  Admin()
-              }
+            composable(Route.ADMIN_PAGE) { Admin( AdminViewModel(tripsRepository, navigationActions.variables.currentTrip )) }
           }
         }
       }

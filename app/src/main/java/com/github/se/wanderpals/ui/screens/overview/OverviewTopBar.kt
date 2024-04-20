@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.overview
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,7 +9,6 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DockedSearchBar
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.Route
 
 // Constant for empty search text
 const val EMPTY_SEARCH = ""
@@ -38,21 +35,21 @@ const val EMPTY_SEARCH = ""
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit, navigationAction: NavigationActions) {
+fun OverviewTopBar(
+    searchText: String,
+    onSearchTextChanged: (String) -> Unit,
+    navigationAction: NavigationActions
+) {
 
   // State to track search bar activation
   var active by remember { mutableStateOf(false) }
-    var enabled by remember { mutableStateOf(false) }
-    var expand by remember{ mutableStateOf(true) }
+  var enabled by remember { mutableStateOf(false) }
+  var expand by remember { mutableStateOf(true) }
 
-
-    Box(modifier = Modifier.fillMaxWidth()) {
+  Box(modifier = Modifier.fillMaxWidth()) {
     // DockedSearchBar component
     DockedSearchBar(
-        modifier = Modifier
-            .align(Alignment.Center)
-            .padding(top = 16.dp)
-            .testTag("dockedSearchBar"),
+        modifier = Modifier.align(Alignment.Center).padding(top = 16.dp).testTag("dockedSearchBar"),
         query = searchText,
         onQueryChange = { newText -> onSearchTextChanged(newText) },
         onSearch = {},
@@ -78,7 +75,7 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit, na
           }
         },
         leadingIcon = {
-          IconButton(modifier = Modifier.testTag("menuButton"), onClick ={}) {
+          IconButton(modifier = Modifier.testTag("menuButton"), onClick = {}) {
             Icon(
                 imageVector = Icons.Default.Menu,
                 contentDescription = Icons.Default.Menu.name,
@@ -86,5 +83,4 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit, na
           }
         }) {}
   }
-
 }
