@@ -124,7 +124,7 @@ data class NavigationActions(
    * @param route The route to navigate to.
    */
   fun navigateTo(route: String) {
-    if (TRIP_DESTINATIONS.any { it.route == route }) {
+    if (TRIP_BOTTOM_BAR.any { it.route == route }) {
       tripNavigation.navigateTo(route)
     } else {
       mainNavigation.navigateTo(route)

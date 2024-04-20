@@ -14,10 +14,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -131,14 +134,16 @@ fun BottomBar(navActions: NavigationActions) {
       tonalElevation = NavigationBarDefaults.Elevation,
       windowInsets = NavigationBarDefaults.windowInsets,
   ) {
+    var currentRoute by remember { mutableStateOf(Route.DASHBOARD) }
+
     TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
           modifier = Modifier.testTag(destination.text).size(56.dp),
-          selected =
-              navActions.tripNavigation.getCurrentDestination()?.hierarchy?.any {
-                it.route == destination.route
-              } == true,
-          onClick = { navActions.navigateTo(destination.route) },
+          selected = currentRoute == destination.route,
+          onClick = {
+            currentRoute = destination.route
+            navActions.navigateTo(destination.route)
+          },
           icon = { Image(imageVector = destination.icon, contentDescription = null) },
       )
     }
