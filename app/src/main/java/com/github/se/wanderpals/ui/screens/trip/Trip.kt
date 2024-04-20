@@ -31,7 +31,7 @@ import com.github.se.wanderpals.model.viewmodel.SessionViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.navigation.TRIP_DESTINATIONS
+import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.google.android.gms.maps.model.LatLng
@@ -80,7 +80,6 @@ fun Trip(
                           tripId,
                           SuggestionsViewModel(tripsRepository, tripId),
                           onSuggestionClick = {
-                            oldNavActions.setVariablesTrip(tripId)
                             oldNavActions.setVariablesLocation(GeoCords(0.0, 0.0), "")
                             oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                           })
@@ -132,7 +131,7 @@ fun BottomBar(navActions: NavigationActions) {
       tonalElevation = NavigationBarDefaults.Elevation,
       windowInsets = NavigationBarDefaults.windowInsets,
   ) {
-    TRIP_DESTINATIONS.forEach { destination ->
+    TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
           modifier = Modifier.testTag(destination.text).size(56.dp),
           selected =
