@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip
 
 import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,6 +21,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
@@ -53,67 +53,65 @@ fun Trip(
     client: PlacesClient?,
     startingRoute: String = Route.DASHBOARD
 ) {
-  val navController = rememberNavController()
-  val navActions = NavigationActions(navController)
 
   // update the SessionManagers Users Role, from the User In the Trip Object
-  val sessionViewModel: SessionViewModel = SessionViewModel(tripsRepository)
+  val sessionViewModel = SessionViewModel(tripsRepository)
   LaunchedEffect(key1 = tripId) { sessionViewModel.updateRoleForCurrentUser(tripId) }
 
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),
       topBar = {},
-      bottomBar = { BottomBar(navActions) }) { innerPadding ->
-        NavHost(navController, startDestination = startingRoute, Modifier.padding(innerPadding)) {
-          composable(Route.DASHBOARD) {
-            BackHandler(true) {}
-            Dashboard(
-                tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions, navActions)
-          }
-          composable(Route.AGENDA) {
-            BackHandler(true) {}
-            Agenda(AgendaViewModel(tripId, tripsRepository))
-          }
-          composable(Route.SUGGESTION) {
-            BackHandler(true) {}
-            Suggestion(
-                navActions,
-                tripId,
-                SuggestionsViewModel(tripsRepository, tripId),
-                onSuggestionClick = {
-                  oldNavActions.navigateToCreateSuggestion(tripId, GeoCords(0.0, 0.0), "")
-                })
-          }
-          composable(Route.MAP) {
-            BackHandler(true) {}
-            if (client != null) {
-              if (navActions.variables.currentAddress == "") {
-                Log.d("NAVIGATION", "Navigating to map with empty address")
-                Map(oldNavActions, MapViewModel(tripsRepository, tripId), client)
-              } else {
-                Log.d("NAVIGATION", "Navigating to map with address")
-                val latLong =
-                    LatLng(
-                        navActions.variables.currentGeoCords.latitude,
-                        navActions.variables.currentGeoCords.longitude)
-                Map(oldNavActions, MapViewModel(tripsRepository, tripId), client, latLong)
+      bottomBar = { BottomBar(oldNavActions) }) { innerPadding ->
+        oldNavActions.tripNavigation.setNavController(rememberNavController())
+        NavHost(
+            oldNavActions.tripNavigation.getNavController,
+            startDestination = Route.TRIP,
+            route = Route.ROOT_ROUTE,
+            modifier = Modifier.padding(innerPadding)) {
+              navigation(startDestination = startingRoute, route = Route.TRIP) {
+                composable(Route.DASHBOARD) {
+                  Dashboard(tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions)
+                }
+                composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId, tripsRepository)) }
+                composable(Route.SUGGESTION) {
+                  Suggestion(
+                      oldNavActions,
+                      tripId,
+                      SuggestionsViewModel(tripsRepository, tripId),
+                      onSuggestionClick = {
+                        oldNavActions.navigateToCreateSuggestion(tripId, GeoCords(0.0, 0.0), "")
+                      })
+                }
+                composable(Route.MAP) {
+                  if (client != null) {
+                    if (oldNavActions.variables.currentAddress == "") {
+                      Log.d("NAVIGATION", "Navigating to map with empty address")
+                      Map(oldNavActions, MapViewModel(tripsRepository, tripId), client)
+                    } else {
+                      Log.d("NAVIGATION", "Navigating to map with address")
+                      val latLong =
+                          LatLng(
+                              oldNavActions.variables.currentGeoCords.latitude,
+                              oldNavActions.variables.currentGeoCords.longitude)
+                      Map(oldNavActions, MapViewModel(tripsRepository, tripId), client, latLong)
+                    }
+                  }
+                }
+                composable(Route.NOTIFICATION) { Notification(tripId) }
+
+                composable(Route.SUGGESTION_DETAIL) {
+                  Log.d(
+                      "SuggestionDetail",
+                      "SuggestionDetail: ${oldNavActions.variables.suggestionId}")
+                  SuggestionDetail(
+                      suggestionId = oldNavActions.variables.suggestionId,
+                      viewModel =
+                          SuggestionsViewModel(
+                              tripsRepository, oldNavActions.variables.currentTrip),
+                      navActions = oldNavActions)
+                }
               }
             }
-          }
-          composable(Route.NOTIFICATION) {
-            BackHandler(true) {}
-            Notification(tripId)
-          }
-
-          composable(Route.SUGGESTION_DETAIL) {
-            BackHandler(true) {}
-            Log.d("SuggestionDetail", "SuggestionDetail: ${navActions.variables.suggestionId}")
-            SuggestionDetail(
-                suggestionId = navActions.variables.suggestionId,
-                viewModel = SuggestionsViewModel(tripsRepository, navActions.variables.currentTrip),
-                navActions = navActions)
-          }
-        }
       }
 }
 
@@ -135,7 +133,7 @@ fun BottomBar(navActions: NavigationActions) {
       NavigationBarItem(
           modifier = Modifier.testTag(destination.text).size(56.dp),
           selected =
-              navActions.getCurrentDestination()?.hierarchy?.any {
+              navActions.tripNavigation.getCurrentDestination()?.hierarchy?.any {
                 it.route == destination.route
               } == true,
           onClick = { navActions.navigateTo(destination.route) },
