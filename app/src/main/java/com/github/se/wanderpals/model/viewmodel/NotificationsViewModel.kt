@@ -36,11 +36,13 @@ open class NotificationsViewModel(private val tripsRepository: TripsRepository) 
         description = "Unfortunately, your trip for next month has been canceled.",
         timestamp = LocalDateTime.now()
     )
-    val tempList = listOf(notification1,notification2,notification3)
+    val tempList = listOf(notification1,notification2,notification3,notification1,notification2,notification3,notification1,notification2,notification3)
 
     private val _notifStateList = MutableStateFlow(tempList)
     open val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
 
+    private val _announcementStateList = MutableStateFlow(tempList)
+    open val announcementStateList: StateFlow<List<TripNotification>> = _announcementStateList
     // State flow to track loading state
     private val _isLoading = MutableStateFlow(true)
     open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
