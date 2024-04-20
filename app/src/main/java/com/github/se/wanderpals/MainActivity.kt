@@ -157,7 +157,9 @@ class MainActivity : ComponentActivity() {
                         Route.DASHBOARD
                       }
                   val tripId = navigationActions.variables.currentTrip
-                  Trip(navigationActions, tripId, tripsRepository, placesClient, routeToGo)
+                  navigationActions.tripNavigation.setNavController(rememberNavController())
+                  navigationActions.tripNavigation.setStartDestination(routeToGo)
+                  Trip(navigationActions, tripId, tripsRepository, placesClient)
                 }
                 composable(Route.CREATE_TRIP) {
                   CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
@@ -170,12 +172,11 @@ class MainActivity : ComponentActivity() {
                   Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
                   val onAction: () -> Unit = {
                     if (loc != "") {
-                      navigationActions.navigateToMap(
-                          navigationActions.variables.currentTrip, cord, loc)
+                      navigationActions.tripNavigation.setStartDestination(Route.MAP)
+                      navigationActions.navigateTo(Route.TRIP) // Directly to map
                     } else {
-                      navigationActions.navigateToSuggestion(
-                          navigationActions.variables.currentTrip,
-                          navigationActions.variables.suggestionId)
+                      navigationActions.tripNavigation.setStartDestination(Route.SUGGESTION)
+                      navigationActions.navigateTo(Route.TRIP) // Directly to suggestion
                     }
                   }
                   CreateSuggestion(

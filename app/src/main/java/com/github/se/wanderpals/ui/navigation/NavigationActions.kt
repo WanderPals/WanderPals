@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.ui.navigation
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -132,37 +131,16 @@ data class NavigationActions(
     }
   }
 
-  fun navigateToMap(tripId: String, geoCords: GeoCords, address: String) {
-    Log.d("NAVIGATION", "Navigating to map")
-    mainNavigation.navigateTo(Route.TRIP)
-    variables.currentTrip = tripId
+  fun setVariablesLocation(geoCords: GeoCords, address: String) {
     variables.currentGeoCords = geoCords
     variables.currentAddress = address
-    variables.suggestionId = ""
   }
 
-  fun navigateToSuggestion(tripId: String, suggestionId: String) {
-    Log.d("NAVIGATION", "Navigating to suggestion")
-    mainNavigation.navigateTo(Route.TRIP)
+  fun setVariablesTrip(tripId: String) {
     variables.currentTrip = tripId
-    variables.currentGeoCords = GeoCords(0.0, 0.0)
-    variables.currentAddress = ""
-    variables.suggestionId = suggestionId
   }
 
-  fun navigateToCreateSuggestion(tripId: String, geoCords: GeoCords, address: String) {
-    Log.d("NAVIGATION", "Navigating to create suggestion")
-    mainNavigation.navigateTo(Route.CREATE_SUGGESTION)
-    variables.currentTrip = tripId
-    variables.currentGeoCords = geoCords
-    variables.currentAddress = address
-    variables.suggestionId = ""
-  }
-
-  fun navigateToSuggestionDetail(suggestionId: String, tripId: String) {
-    Log.d("NAVIGATION", "Navigating to suggestion detail")
-    tripNavigation.navigateTo(Route.SUGGESTION_DETAIL)
-    variables.currentTrip = tripId
+  fun setVariablesSuggestion(suggestionId: String) {
     variables.suggestionId = suggestionId
   }
 }

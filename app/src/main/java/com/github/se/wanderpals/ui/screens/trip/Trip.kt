@@ -50,8 +50,7 @@ fun Trip(
     oldNavActions: NavigationActions,
     tripId: String,
     tripsRepository: TripsRepository,
-    client: PlacesClient?,
-    startingRoute: String = Route.DASHBOARD
+    client: PlacesClient?
 ) {
 
   // update the SessionManagers Users Role, from the User In the Trip Object
@@ -68,49 +67,53 @@ fun Trip(
             startDestination = Route.TRIP,
             route = Route.ROOT_ROUTE,
             modifier = Modifier.padding(innerPadding)) {
-              navigation(startDestination = startingRoute, route = Route.TRIP) {
-                composable(Route.DASHBOARD) {
-                  Dashboard(tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions)
-                }
-                composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId, tripsRepository)) }
-                composable(Route.SUGGESTION) {
-                  Suggestion(
-                      oldNavActions,
-                      tripId,
-                      SuggestionsViewModel(tripsRepository, tripId),
-                      onSuggestionClick = {
-                        oldNavActions.navigateToCreateSuggestion(tripId, GeoCords(0.0, 0.0), "")
-                      })
-                }
-                composable(Route.MAP) {
-                  if (client != null) {
-                    if (oldNavActions.variables.currentAddress == "") {
-                      Log.d("NAVIGATION", "Navigating to map with empty address")
-                      Map(oldNavActions, MapViewModel(tripsRepository, tripId), client)
-                    } else {
-                      Log.d("NAVIGATION", "Navigating to map with address")
-                      val latLong =
-                          LatLng(
-                              oldNavActions.variables.currentGeoCords.latitude,
-                              oldNavActions.variables.currentGeoCords.longitude)
-                      Map(oldNavActions, MapViewModel(tripsRepository, tripId), client, latLong)
+              navigation(
+                  startDestination = oldNavActions.tripNavigation.getStartDestination(),
+                  route = Route.TRIP) {
+                    composable(Route.DASHBOARD) {
+                      Dashboard(tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions)
+                    }
+                    composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId, tripsRepository)) }
+                    composable(Route.SUGGESTION) {
+                      Suggestion(
+                          oldNavActions,
+                          tripId,
+                          SuggestionsViewModel(tripsRepository, tripId),
+                          onSuggestionClick = {
+                            oldNavActions.setVariablesTrip(tripId)
+                            oldNavActions.setVariablesLocation(GeoCords(0.0, 0.0), "")
+                            oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
+                          })
+                    }
+                    composable(Route.MAP) {
+                      if (client != null) {
+                        if (oldNavActions.variables.currentAddress == "") {
+                          Log.d("NAVIGATION", "Navigating to map with empty address")
+                          Map(oldNavActions, MapViewModel(tripsRepository, tripId), client)
+                        } else {
+                          Log.d("NAVIGATION", "Navigating to map with address")
+                          val latLong =
+                              LatLng(
+                                  oldNavActions.variables.currentGeoCords.latitude,
+                                  oldNavActions.variables.currentGeoCords.longitude)
+                          Map(oldNavActions, MapViewModel(tripsRepository, tripId), client, latLong)
+                        }
+                      }
+                    }
+                    composable(Route.NOTIFICATION) { Notification(tripId) }
+
+                    composable(Route.SUGGESTION_DETAIL) {
+                      Log.d(
+                          "SuggestionDetail",
+                          "SuggestionDetail: ${oldNavActions.variables.suggestionId}")
+                      SuggestionDetail(
+                          suggestionId = oldNavActions.variables.suggestionId,
+                          viewModel =
+                              SuggestionsViewModel(
+                                  tripsRepository, oldNavActions.variables.currentTrip),
+                          navActions = oldNavActions)
                     }
                   }
-                }
-                composable(Route.NOTIFICATION) { Notification(tripId) }
-
-                composable(Route.SUGGESTION_DETAIL) {
-                  Log.d(
-                      "SuggestionDetail",
-                      "SuggestionDetail: ${oldNavActions.variables.suggestionId}")
-                  SuggestionDetail(
-                      suggestionId = oldNavActions.variables.suggestionId,
-                      viewModel =
-                          SuggestionsViewModel(
-                              tripsRepository, oldNavActions.variables.currentTrip),
-                      navActions = oldNavActions)
-                }
-              }
             }
       }
 }
