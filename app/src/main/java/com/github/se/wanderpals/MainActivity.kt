@@ -22,6 +22,7 @@ import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.Admin
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
@@ -184,6 +185,9 @@ class MainActivity : ComponentActivity() {
                   onSuccess = onAction,
                   onCancel = onAction)
             }
+              composable(Route.ADMIN_PAGE){
+                  Admin()
+              }
           }
         }
       }

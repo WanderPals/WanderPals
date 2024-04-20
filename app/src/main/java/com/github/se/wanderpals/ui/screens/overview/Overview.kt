@@ -35,6 +35,7 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
+const val EMPTY_CODE = ""
 /**
  * Composable function that represents the Overview screen, displaying the list of trips of a user.
  * Provides functionalities such as searching trips by their title, creating a new trip, and joining
@@ -58,7 +59,9 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
   // Display loading indicator waiting for database to fetch the trips of the user
   if (isLoading) {
     Box(modifier = Modifier.fillMaxSize()) {
-      CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
+      CircularProgressIndicator(modifier = Modifier
+          .size(50.dp)
+          .align(Alignment.Center))
     }
   } else {
 
@@ -77,7 +80,8 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
           // Top bar with search functionality based on the title of the trips
           OverviewTopBar(
               searchText = searchText,
-              onSearchTextChanged = { newSearchText -> searchText = newSearchText })
+              onSearchTextChanged = { newSearchText -> searchText = newSearchText },
+              navigationAction = navigationActions)
         },
         bottomBar = {
           // Bottom bar containing buttons to create a new trip and join a trip
@@ -106,7 +110,6 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
 @Composable
 fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -> Boolean) {
 
-  val EMPTY_CODE = ""
   // Mutable state to hold the trip code input and error state
   var tripCode by remember { mutableStateOf(EMPTY_CODE) }
   var isError by remember { mutableStateOf(false) }
@@ -119,7 +122,9 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
         tripCode = EMPTY_CODE
       }) {
         Surface(
-            modifier = Modifier.height(200.dp).testTag("dialog"),
+            modifier = Modifier
+                .height(200.dp)
+                .testTag("dialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)) {
               Column(
