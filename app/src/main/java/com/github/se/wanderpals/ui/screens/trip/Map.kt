@@ -287,7 +287,6 @@ fun Map(
                 title = "Click to Create Suggestions",
                 visible = visible,
                 onInfoWindowClick = {
-                  oldNavActions.setVariablesTrip(oldNavActions.variables.currentTrip)
                   oldNavActions.setVariablesLocation(
                       GeoCords(markerState.position.latitude, markerState.position.longitude),
                       placeAddress)

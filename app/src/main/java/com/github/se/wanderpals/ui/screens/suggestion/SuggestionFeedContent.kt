@@ -102,9 +102,8 @@ fun SuggestionFeedContent(
 
     // When a suggestion is selected, display the detail screen
     selectedSuggestion?.let { suggestion ->
-      navigationActions.setVariablesTrip(tripId)
       navigationActions.setVariablesSuggestion(suggestion.suggestionId)
-      navigationActions.tripNavigation.navigateTo(Route.SUGGESTION_DETAIL)
+      navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
     }
 
     // If suggestion list is empty, display a message

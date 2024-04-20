@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
                       // set SessionManager User information
                       SessionManager.setUserSession(userId = uid, name = displayName, email = email)
 
-                      navigationActions.mainNavigation.navigateTo(Route.OVERVIEW)
+                      navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
                       Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
                     }
@@ -138,7 +138,7 @@ class MainActivity : ComponentActivity() {
                         val displayName = it.substringBefore('@')
                         SessionManager.setUserSession(
                             userId = it.hashCode().toString(), name = displayName, email = it)
-                        navigationActions.mainNavigation.navigateTo(Route.OVERVIEW)
+                        navigationActions.navigateTo(Route.OVERVIEW)
                       })
                 }
                 composable(Route.OVERVIEW) {

@@ -91,7 +91,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
     // Button representing the trip overview
     Button(
         onClick = {
-          navigationActions.variables.currentTrip = trip.tripId
+          navigationActions.setVariablesTrip(trip.tripId)
           navigationActions.navigateTo(Route.TRIP)
         },
         modifier =
