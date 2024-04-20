@@ -46,7 +46,8 @@ import kotlinx.coroutines.launch
  * The Dashboard screen.
  *
  * @param tripId the trip ID
- * @param oldNavActions the old navigation actions
+ * @param dashboardViewModel the dashboard view model
+ * @param navActions the navigation actions
  *
  * The tripId is used to identify the trip currently being displayed and interacted with. The
  * oldNavActions is used to navigate back to the overview screen.
