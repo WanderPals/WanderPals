@@ -306,6 +306,7 @@ fun CreateSuggestion(
                           userName = "tempUsername", // modified by database
                           text = "", // Empty for now
                           createdAt = LocalDate.now(), // Should add time
+                          createdAtTime = LocalTime.now(),
                           stop =
                               Stop(
                                   "", // modified by database

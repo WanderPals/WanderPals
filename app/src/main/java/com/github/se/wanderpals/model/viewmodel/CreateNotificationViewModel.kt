@@ -13,6 +13,13 @@ import kotlinx.coroutines.launch
 open class CreateNotificationViewModel(tripsRepository: TripsRepository) : ViewModel() {
   private val _tripsRepository = tripsRepository
 
+  /**
+   * Adds a notification by the administrator to a trip.
+   *
+   * @param tripId The ID of the trip to which the notification is to be added.
+   * @param tripNotification The notification object to be added.
+   * @return A boolean representing the success of the operation.
+   */
   open fun addNotification(tripId: String, tripNotification: TripNotification): Boolean {
     var a: Boolean = true
     viewModelScope.launch {
@@ -22,9 +29,9 @@ open class CreateNotificationViewModel(tripsRepository: TripsRepository) : ViewM
   }
 
   /*
-  //This is for @Preview purposes only
-  fun addNotification(tripId: String, tripNotification: TripNotification) : Boolean{
-      return true
+  // This is for @Preview purposes only
+  fun addNotification(tripId: String, tripNotification: TripNotification): Boolean {
+    return true
   }
-  */
+    */
 }

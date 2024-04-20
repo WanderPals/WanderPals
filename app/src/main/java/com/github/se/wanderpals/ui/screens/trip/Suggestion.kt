@@ -52,7 +52,6 @@ fun Suggestion(
           modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
     }
   } else {
-
     Scaffold(
         modifier = Modifier.testTag("suggestionFeedScreen"),
         topBar = {
@@ -70,7 +69,8 @@ fun Suggestion(
               suggestionList = suggestionList,
               searchSuggestionText = searchSuggestionText,
               tripId = tripId,
-              suggestionRepository = suggestionsViewModel)
+              suggestionsViewModel = suggestionsViewModel,
+              navigationActions = oldNavActions)
         }
   }
 }

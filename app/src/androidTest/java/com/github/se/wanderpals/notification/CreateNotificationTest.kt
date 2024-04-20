@@ -57,15 +57,15 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
   @Test
-  fun createTripNotificationReturnToNotificationOnCancel() = run {
+  fun createTripNotificationReturnToNotificationBack() = run {
     ComposeScreen.onComposeScreen<CreateNotificationScreen>(composeTestRule) {
       val vm = CreateNotificationViewModelTest(TripsRepository("testUser001", Dispatchers.IO))
       composeTestRule.setContent {
         CreateNotification(
             "tripId001",
             vm,
-            onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+            onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+        )
       }
 
       tripNotifGoBackButton {
@@ -73,9 +73,6 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         assertIsEnabled()
         performClick()
       }
-
-      verify { mockNavActions.navigateTo(Route.DASHBOARD) }
-      confirmVerified(mockNavActions)
     }
   }
 
@@ -88,8 +85,8 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
             CreateNotification(
                 "tripId1",
                 vm,
-                onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-                onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+                onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+            )
           }
 
           step("Open create tripNotifiation screen") {
@@ -137,8 +134,8 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         CreateNotification(
             "tripId1",
             vm,
-            onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+            onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+        )
       }
 
       step("Open create tripNotification screen") {
@@ -186,8 +183,8 @@ class CreateNotificationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         CreateNotification(
             "tripId1",
             vm,
-            onSuccess = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-            onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
+            onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+        )
       }
 
       step("Open create tripNotification screen") {
