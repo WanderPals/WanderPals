@@ -17,7 +17,7 @@ data class User(
     val name: String = "",
     val email: String = "",
     val nickname: String = "",
-    val role: Role,
+    var role: Role,
     val lastPosition: GeoCords,
     val profilePictureURL: String = ""
 )

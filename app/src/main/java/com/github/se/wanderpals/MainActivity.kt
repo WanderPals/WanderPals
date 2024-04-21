@@ -186,7 +186,9 @@ class MainActivity : ComponentActivity() {
                   onSuccess = onAction,
                   onCancel = onAction)
             }
-            composable(Route.ADMIN_PAGE) { Admin( AdminViewModel(tripsRepository, navigationActions.variables.currentTrip )) }
+            composable(Route.ADMIN_PAGE) {
+              Admin(AdminViewModel(tripsRepository, navigationActions.variables.currentTrip))
+            }
           }
         }
       }
