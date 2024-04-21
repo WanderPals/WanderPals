@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -60,7 +61,9 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
     var notificationSelected by remember { mutableStateOf(true) }
 
 
-    Column {
+    Column(
+        modifier = Modifier.testTag("notificationScreen")
+    ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -77,7 +80,8 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
                 Button(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .weight(1f),
+                        .weight(1f)
+                        .testTag("notificationButton"),
                     onClick = { notificationSelected = true },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
@@ -94,7 +98,8 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
                 Button(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .weight(1f),
+                        .weight(1f)
+                        .testTag("announcementButton"),
                     onClick = { notificationSelected = false },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (!notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
@@ -142,7 +147,8 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
                     Modifier
                         .padding(horizontal = 20.dp)
                         .height(50.dp)
-                        .align(Alignment.Center),
+                        .align(Alignment.Center)
+                        .testTag("createAnnouncementButton"),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
                 ) {
                     Row(
