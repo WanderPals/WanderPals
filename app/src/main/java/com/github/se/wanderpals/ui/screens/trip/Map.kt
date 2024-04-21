@@ -48,6 +48,7 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -286,10 +287,10 @@ fun Map(
                 title = "Click to Create Suggestions",
                 visible = visible,
                 onInfoWindowClick = {
-                  oldNavActions.navigateToCreateSuggestion(
-                      oldNavActions.variables.currentTrip,
+                  oldNavActions.setVariablesLocation(
                       GeoCords(markerState.position.latitude, markerState.position.longitude),
                       placeAddress)
+                  oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                 })
           }
 

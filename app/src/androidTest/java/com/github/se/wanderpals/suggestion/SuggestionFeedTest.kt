@@ -54,7 +54,7 @@ class FakeSuggestionsViewModel(
         suggestions.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
   }
 
-  override fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
+  fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
     val suggestionIndex = _state.value.indexOfFirst { it.suggestionId == suggestion.suggestionId }
     val isLiked = _likedSuggestions.value.contains(suggestion.suggestionId)
 
@@ -101,20 +101,37 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
             imageUrl = "")
 
     val comment1 =
-        Comment("commentId1", "usercmtId1", "userNamecmt1", "Great idea!", LocalDate.now())
+        Comment(
+            "commentId1",
+            "usercmtId1",
+            "userNamecmt1",
+            "Great idea!",
+            LocalDate.now(),
+            LocalTime.now())
     val comment2 =
         Comment(
             "commentId2",
             "usercmtId2",
             "userNamecmt2",
             "I've been here before, it's wonderful.",
-            LocalDate.now())
+            LocalDate.now(),
+            LocalTime.now())
     val comment3 =
         Comment(
-            "commentId3", "usercmtId3", "userNamecmt3", "This fits our schedule.", LocalDate.now())
+            "commentId3",
+            "usercmtId3",
+            "userNamecmt3",
+            "This fits our schedule.",
+            LocalDate.now(),
+            LocalTime.now())
     val comment4 =
         Comment(
-            "commentId4", "usercmtId4", "userNamecmt4", "This place seems great.", LocalDate.now())
+            "commentId4",
+            "usercmtId4",
+            "userNamecmt4",
+            "This place seems great.",
+            LocalDate.now(),
+            LocalTime.now())
 
     // Example list of comments
     val dummyCommentList2 = listOf(comment1, comment2)
@@ -135,6 +152,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                 userName = "userOne",
                 text = "First suggestion",
                 createdAt = LocalDate.now(),
+                createdAtTime = LocalTime.now(),
                 stop =
                     Stop(
                         stopId = "stop1",
@@ -155,6 +173,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                 userName = "userTwo",
                 text = "Second suggestion",
                 createdAt = LocalDate.now(),
+                createdAtTime = LocalTime.now(),
                 stop =
                     Stop(
                         stopId = "stop2",
@@ -175,6 +194,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                 userName = "userThree",
                 text = "Third suggestion",
                 createdAt = LocalDate.now(),
+                createdAtTime = LocalTime.now(),
                 stop =
                     Stop(
                         stopId = "stop3",
@@ -196,6 +216,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
                 "This is a great place to visit. Let us go here together! I am sure you will love it! I have been there before and it was amazing! " +
                     "Trying to convince you to go here with me. coz I know you will love it!",
                 LocalDate.of(2024, 9, 29),
+                createdAtTime = LocalTime.now(),
                 stop4,
                 dummyCommentList4,
                 userLikes4))
@@ -210,7 +231,8 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           suggestionList = suggestionList,
           searchSuggestionText = "",
           tripId = "dummyTestTripId",
-          suggestionRepository = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel(),
+          navigationActions = mockNavActions)
     }
 
     // Check if the three suggestions are displayed on the Suggestions Feed screen
@@ -230,7 +252,8 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           suggestionList = emptyList(),
           searchSuggestionText = "",
           tripId = "dummyTestTripId", // a dummy trip ID
-          suggestionRepository = FakeSuggestionsViewModel())
+          suggestionsViewModel = FakeSuggestionsViewModel(),
+          navigationActions = mockNavActions)
     }
     // Check if the message that has the testTag "noSuggestionsForUserText" is displayed
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
@@ -248,7 +271,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           tripId = "dummyTestTripId", // a dummy trip ID
           suggestionsViewModel = FakeSuggestionsViewModel(),
           onSuggestionClick = {
-            mockNavActions.variables.currentTrip = "dummyTestTripId"
+            mockNavActions.setVariablesTrip("dummyTestTripId")
             mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
           })
     }

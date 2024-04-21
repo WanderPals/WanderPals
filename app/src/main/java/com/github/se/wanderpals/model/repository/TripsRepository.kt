@@ -2,13 +2,17 @@ package com.github.se.wanderpals.model.repository
 
 import FirestoreTrip
 import android.util.Log
+import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.User
+import com.github.se.wanderpals.model.firestoreData.FirestoreAnnouncement
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
 import com.github.se.wanderpals.model.firestoreData.FirestoreUser
+import com.github.se.wanderpals.service.SessionManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -63,6 +67,213 @@ class TripsRepository(
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
+
+  /**
+   * Retrieves a specific trip Announcement from a trip based on the Announcement's unique
+   * identifier. This method queries the Firestore subcollection for trip Announcements within a
+   * specific trip document.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param announcementId The unique identifier of the trip Announcement to be retrieved.
+   * @return A `Announcement` object if found, or `null` if the Announcement is not found or if an
+   *   error occurs. The method logs an error and returns `null` in case of failure.
+   */
+  suspend fun getAnnouncementFromTrip(tripId: String, announcementId: String): Announcement? =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
+                  .document(announcementId)
+                  .get()
+                  .await()
+          val firestoreAnnouncement = documentSnapshot.toObject<FirestoreAnnouncement>()
+          if (firestoreAnnouncement != null) {
+            firestoreAnnouncement.toAnnouncement()
+          } else {
+            Log.e(
+                "TripsRepository",
+                "getAnnouncementFromTrip: Not found Announcement $announcementId from trip $tripId.")
+            null
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "getAnnouncementFromTrip: Error getting a Announcement $announcementId from trip $tripId.",
+              e)
+          null // error
+        }
+      }
+
+  /**
+   * Retrieves all trip Announcements associated with a specific trip. It iterates over all
+   * Announcement IDs stored within the trip document and fetches their corresponding trip
+   * Announcement objects.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @return A list of `Announcement` objects. Returns an empty list if the trip is not found, if
+   *   there are no Announcements associated with the trip, or in case of an error during data
+   *   retrieval.
+   */
+  suspend fun getAllAnnouncementsFromTrip(tripId: String): List<Announcement> =
+      withContext(dispatcher) {
+        try {
+          val trip = getTrip(tripId)
+
+          if (trip != null) {
+            val announcementIds = trip.announcements
+            announcementIds.mapNotNull { announcementId ->
+              getAnnouncementFromTrip(tripId, announcementId)
+            }
+          } else {
+            Log.e("TripsRepository", "getAllAnnouncementsFromTrip: Trip not found with ID $tripId.")
+            emptyList()
+          }
+        } catch (e: Exception) {
+
+          Log.e(
+              "TripsRepository",
+              "getAllAnnouncementsFromTrip: Error fetching Announcement to trip $tripId.",
+              e)
+          emptyList()
+        }
+      }
+
+  /**
+   * Adds a Announcement to a specific trip in the Firestore database. This method generates a
+   * unique ID for the new Announcement, creates a corresponding FirestoreAnnouncement object, and
+   * commits it to the trip's Announcements subcollection.
+   *
+   * It also updates the trip's document to include this new Announcement ID in its list.
+   *
+   * @param tripId The unique identifier of the trip where the Announcement will be added.
+   * @param announcement The Announcement object to add.
+   * @return Boolean indicating the success (true) or failure (false) of the operation.
+   */
+  suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
+      withContext(dispatcher) {
+        try {
+          val uniqueID = UUID.randomUUID().toString()
+          val firebaseAnnouncement =
+              FirestoreAnnouncement.fromAnnouncement(
+                  announcement.copy(
+                      announcementId = uniqueID,
+                      userId = uid)) // we already know who creates the Announcement
+          val announcementDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
+                  .document(uniqueID)
+          announcementDocument.set(firebaseAnnouncement).await()
+          Log.d(
+              "TripsRepository",
+              "addAnnouncementToTrip: Announcement added successfully to trip $tripId.")
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            // Add the new AnnouncementId to the trip's Announcements list and update the
+            // trip
+            val updatedAnnouncementsList = trip.announcements + uniqueID
+            val updatedTrip = trip.copy(announcements = updatedAnnouncementsList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "addAnnouncementToTrip: Announcement ID added to trip successfully.")
+            true
+          } else {
+
+            Log.e("TripsRepository", "addAnnouncementToTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "addAnnouncementToTrip: Error adding Announcement to trip $tripId.",
+              e)
+          false
+        }
+      }
+
+  /**
+   * Removes a specific Announcement from a trip's Announcement list and the Firestore database.
+   * This method first deletes the Announcement document from the trip's Announcement subcollection.
+   *
+   * It also updates the trip's document to remove the Announcement ID from its list.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param announcementId The unique identifier of the Announcement to be removed.
+   * @return Boolean indicating the success (true) or failure (false) of the operation.
+   */
+  suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d(
+              "TripsRepository",
+              "removeAnnouncementFromTrip: removing Announcement $announcementId from trip $tripId")
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
+              .document(announcementId)
+              .delete()
+              .await()
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val updatedAnnouncementsList = trip.announcements.filterNot { it == announcementId }
+            val updatedTrip = trip.copy(announcements = updatedAnnouncementsList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "removeAnnouncementFromTrip: Announcement $announcementId remove and trip updated successfully.")
+            true
+          } else {
+            Log.e("TripsRepository", "removeAnnouncementFromTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "removeAnnouncementFromTrip: Error removing Announcement $announcementId from trip $tripId.",
+              e)
+          false
+        }
+      }
+
+  /**
+   * Updates a specific Announcement in a trip's Announcement subcollection in the Firestore
+   * database. This method creates a FirestoreAnnouncement object from the provided Announcement
+   * object and sets it to the corresponding document identified by the Announcement ID.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param announcement The Announcement object that contains updated data.
+   * @return Boolean indicating the success (true) or failure (false) of the operation.
+   */
+  suspend fun updateAnnouncementInTrip(tripId: String, announcement: Announcement): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d(
+              "TripsRepository",
+              "updateAnnouncementInTrip: Updating a Announcement in trip $tripId")
+          val firestoreAnnouncement = FirestoreAnnouncement.fromAnnouncement(announcement)
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
+              .document(firestoreAnnouncement.announcementId)
+              .set(firestoreAnnouncement)
+              .await()
+          Log.d(
+              "TripsRepository",
+              "updateAnnouncementInTrip: Trip's Announcement updated successfully for ID $tripId.")
+          true
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "updateAnnouncementInTrip: Error updating Announcement with ID ${announcement.announcementId} in trip with ID $tripId",
+              e)
+          false
+        }
+      }
 
   /**
    * Retrieves a specific suggestion from a trip based on the suggestion's unique identifier. This
@@ -165,7 +376,7 @@ class TripsRepository(
 
           val trip = getTrip(tripId)
           if (trip != null) {
-            // Add the new stopId to the trip's stops list and update the trip
+            // Add the new suggestionId to the trip's suggestions list and update the trip
             val updatedSuggestionsList = trip.suggestions + uniqueID
             val updatedTrip = trip.copy(suggestions = updatedSuggestionsList)
             updateTrip(updatedTrip)
@@ -632,7 +843,7 @@ class TripsRepository(
               .document(uniqueID)
               .set(firestoreTrip)
               .await() // Stores the FirestoreTrip DTO in Firestore
-          addTripId(uniqueID)
+          addTripId(uniqueID, isOwner = true) // The creator of the Trip is automatic
           Log.d("TripsRepository", "addTrip: Trip added successfully with ID $uniqueID.")
 
           true
@@ -755,6 +966,25 @@ class TripsRepository(
       }
 
   /**
+   * Assigns a role to a user in a trip based on their ownership status and updates the trip's
+   * participant list.
+   *
+   * This suspend function should be invoked within a coroutine context. It fetches the current
+   * user's details, assigns either the 'OWNER' or 'MEMBER' role based on the `isOwner` flag, and
+   * updates the trip accordingly.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param isOwner Indicates if the user should be added as an owner (`true`) or member (`false`).
+   * @throws IllegalStateException if the current user cannot be retrieved.
+   */
+  private suspend fun manageUserTripRole(tripId: String, isOwner: Boolean) {
+    val currentUser = SessionManager.getCurrentUser()!!
+    val role = if (isOwner) Role.OWNER else Role.MEMBER
+    val user = User(uid, currentUser.name, currentUser.email, currentUser.name, role)
+    addUserToTrip(tripId, user)
+  }
+
+  /**
    * Adds a trip ID to the current user's list of trip IDs in their document within the 'Users'
    * collection. If the user's document does not already contain a list of trip IDs, or if the
    * specified trip ID is not already in the list, it adds the trip ID to the list.
@@ -764,7 +994,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun addTripId(tripId: String): Boolean =
+  suspend fun addTripId(tripId: String, isOwner: Boolean = false): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
 
@@ -814,10 +1044,12 @@ class TripsRepository(
                     } // No change needed
                   }
                   .await()
-          Log.d(
-              "TripsRepository",
-              "addTripId: Successfully added trip ID $tripId to user $uid's document.")
-
+          if (transactionResult) {
+            manageUserTripRole(tripId, isOwner)
+            Log.d(
+                "TripsRepository",
+                "addTripId: Successfully added trip ID $tripId to user $uid's document, and updated users role.")
+          }
           transactionResult
         } catch (e: Exception) {
           Log.e(
