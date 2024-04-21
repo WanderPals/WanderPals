@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.service.SessionManager
 
@@ -42,61 +41,61 @@ import com.github.se.wanderpals.service.SessionManager
 @Composable
 fun SuggestionBottomSheet(viewModel: SuggestionsViewModel) {
 
-    val bottomSheetVisible by viewModel.bottomSheetVisible.collectAsState()
-    val selectedSuggestion by viewModel.selectedSuggestion.collectAsState()
-    val showDeleteDialog by viewModel.showDeleteDialog.collectAsState()
+  val bottomSheetVisible by viewModel.bottomSheetVisible.collectAsState()
+  val selectedSuggestion by viewModel.selectedSuggestion.collectAsState()
+  val showDeleteDialog by viewModel.showDeleteDialog.collectAsState()
 
-    val modalBottomSheetState = rememberModalBottomSheetState()
+  val modalBottomSheetState = rememberModalBottomSheetState()
 
-    if (selectedSuggestion != null && bottomSheetVisible) {
-        ModalBottomSheet(
-            onDismissRequest = { viewModel.hideBottomSheet() },
-            sheetState = modalBottomSheetState,
-            dragHandle = { BottomSheetDefaults.DragHandle() },
-            modifier = Modifier.testTag("suggestionBottomSheet")) {
-            // Add a list of options to be displayed in the bottom sheet
-            Column(modifier = Modifier.navigationBarsPadding()) {
-                // Only displays the option if the user is Admin or it is his comment
-                if (SessionManager.canRemove(selectedSuggestion!!.userId)) {
-                    Box(
-                        modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable(onClick = { viewModel.showDeleteDialog() })
-                            .padding(16.dp)
-                            .testTag("deleteSuggestionOption"),
-                        contentAlignment = Alignment.CenterStart) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = "Delete",
-                                modifier = Modifier.size(24.dp))
-                            Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                            Text("Delete suggestion", style = MaterialTheme.typography.bodyLarge)
-                        }
+  if (selectedSuggestion != null && bottomSheetVisible) {
+    ModalBottomSheet(
+        onDismissRequest = { viewModel.hideBottomSheet() },
+        sheetState = modalBottomSheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        modifier = Modifier.testTag("suggestionBottomSheet")) {
+          // Add a list of options to be displayed in the bottom sheet
+          Column(modifier = Modifier.navigationBarsPadding()) {
+            // Only displays the option if the user is Admin or it is his comment
+            if (SessionManager.canRemove(selectedSuggestion!!.userId)) {
+              Box(
+                  modifier =
+                      Modifier.fillMaxWidth()
+                          .clickable(onClick = { viewModel.showDeleteDialog() })
+                          .padding(16.dp)
+                          .testTag("deleteSuggestionOption"),
+                  contentAlignment = Alignment.CenterStart) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                      Icon(
+                          imageVector = Icons.Outlined.Delete,
+                          contentDescription = "Delete",
+                          modifier = Modifier.size(24.dp))
+                      Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                      Text("Delete suggestion", style = MaterialTheme.typography.bodyLarge)
                     }
-                }
+                  }
             }
+          }
         }
-    }
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { viewModel.hideDeleteDialog() },
-            title = { Text("Confirm Deletion") },
-            text = { Text("Are you sure you want to delete this suggestion?") },
-            confirmButton = {
-                TextButton(
-                    onClick = { viewModel.confirmDeleteSuggestion(selectedSuggestion) },
-                    modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
-                    Text("Confirm")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { viewModel.hideDeleteDialog() },
-                    modifier = Modifier.testTag("cancelDeleteSuggestionButton")) {
-                    Text("Cancel")
-                }
-            },
-            modifier = Modifier.testTag("deleteCommentDialog"))
-    }
+  }
+  if (showDeleteDialog) {
+    AlertDialog(
+        onDismissRequest = { viewModel.hideDeleteDialog() },
+        title = { Text("Confirm Deletion") },
+        text = { Text("Are you sure you want to delete this suggestion?") },
+        confirmButton = {
+          TextButton(
+              onClick = { viewModel.confirmDeleteSuggestion(selectedSuggestion!!) },
+              modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
+                Text("Confirm")
+              }
+        },
+        dismissButton = {
+          TextButton(
+              onClick = { viewModel.hideDeleteDialog() },
+              modifier = Modifier.testTag("cancelDeleteSuggestionButton")) {
+                Text("Cancel")
+              }
+        },
+        modifier = Modifier.testTag("deleteCommentDialog"))
+  }
 }

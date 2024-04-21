@@ -76,9 +76,7 @@ fun SuggestionFeedContent(
         }
       }
 
-  Column(modifier = Modifier
-      .fillMaxWidth()
-      .padding(innerPadding)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
 
     // Title for the list of suggestions
     Text(
@@ -113,11 +111,10 @@ fun SuggestionFeedContent(
       Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier =
-            Modifier
-                .width(260.dp)
-                .height(55.dp)
-                .align(Alignment.Center)
-                .testTag("noSuggestionsForUserText"),
+                Modifier.width(260.dp)
+                    .height(55.dp)
+                    .align(Alignment.Center)
+                    .testTag("noSuggestionsForUserText"),
             text = "Looks like there is no suggestions yet. ",
             style =
                 TextStyle(
@@ -146,6 +143,6 @@ fun SuggestionFeedContent(
       }
     }
 
-      SuggestionBottomSheet(viewModel = suggestionsViewModel)
+    SuggestionBottomSheet(viewModel = suggestionsViewModel)
   }
 }

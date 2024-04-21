@@ -68,24 +68,19 @@ fun SuggestionItem(
   // Use Card for elevation and surface coloring, if needed
   Card(
       modifier =
-      modifier
-          .padding(8.dp)
-          .width(380.dp) // the width of the Card
-          .height(166.dp) // the height of the Card
-          .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
-          .clickable(
-              onClick = onClick
-          ), // Invoke the onClick lambda when the item is clicked (see
+          modifier
+              .padding(8.dp)
+              .width(380.dp) // the width of the Card
+              .height(166.dp) // the height of the Card
+              .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
+              .clickable(
+                  onClick = onClick), // Invoke the onClick lambda when the item is clicked (see
       // SuggestionFeedContent.kt)
       colors = cardColors // Use the cardColors with the white background
       ) {
-        Column(modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
           Row( // Row for title and date
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(bottom = 8.dp),
+              modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
               horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(text = suggestion.stop.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Text(
@@ -121,9 +116,7 @@ fun SuggestionItem(
           Spacer(modifier = Modifier.weight(1f)) // Pushes the icons to the bottom
 
           Row( // Row for comments and likes
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(top = 8.dp),
+              modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
               horizontalArrangement = Arrangement.SpaceBetween,
               verticalAlignment = Alignment.CenterVertically) {
                 Spacer(Modifier.width(240.dp)) // Use the space to align the mail icon
@@ -147,10 +140,9 @@ fun SuggestionItem(
                         if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "Like",
                     modifier =
-                    Modifier
-                        .size(18.dp)
-                        .clickable { viewModel.toggleLikeSuggestion(suggestion) }
-                        .testTag("likeIconSuggestionFeedScreen_sugg1"))
+                        Modifier.size(18.dp)
+                            .clickable { viewModel.toggleLikeSuggestion(suggestion) }
+                            .testTag("likeIconSuggestionFeedScreen_sugg1"))
 
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
 
@@ -158,15 +150,15 @@ fun SuggestionItem(
                     text = likesCount,
                     modifier = Modifier.testTag("likeCountTextSuggestionFeedScreen_sugg1"))
 
-              Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(4.dp))
 
-              Icon(
-                  imageVector = Icons.Outlined.MoreVert,
-                  contentDescription = "Options",
-                  modifier =
-                  Modifier.clickable { viewModel.showSuggestionBottomSheet(suggestion) }
-                      .testTag("suggestionOptionIcon" + suggestion.suggestionId)
-                      .padding(8.dp))
+                Icon(
+                    imageVector = Icons.Outlined.MoreVert,
+                    contentDescription = "Options",
+                    modifier =
+                        Modifier.clickable { viewModel.showSuggestionBottomSheet(suggestion) }
+                            .testTag("suggestionOptionIcon" + suggestion.suggestionId)
+                            .padding(8.dp))
               }
         }
       }
