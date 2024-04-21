@@ -30,6 +30,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+/** Mock SuggestionsViewModelSheetTest class to test the SuggestionBottomSheet. */
 class SuggestionsViewModelSheetTest(testSuggestions: List<Suggestion>) :
     SuggestionsViewModel(TripsRepository("userid", Dispatchers.IO), "") {
   private val _state = MutableStateFlow(testSuggestions)
