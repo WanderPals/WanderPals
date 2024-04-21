@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,6 +21,8 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
+import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
@@ -41,13 +41,11 @@ import kotlinx.coroutines.Dispatchers
 
 const val EMPTY_CODE = ""
 
+lateinit var navigationActions: NavigationActions
+
 class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
-
-  private lateinit var navController: NavHostController
-
-  private lateinit var navigationActions: NavigationActions
 
   private lateinit var tripsRepository: TripsRepository
 
@@ -118,83 +116,58 @@ class MainActivity : ComponentActivity() {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          navController = rememberNavController()
-          navigationActions = NavigationActions(navController)
+          navigationActions =
+              NavigationActions(
+                  mainNavigation = rememberMultiNavigationAppState(startDestination = ROOT_ROUTE),
+                  tripNavigation =
+                      rememberMultiNavigationAppState(startDestination = Route.DASHBOARD))
 
-          NavHost(navController = navController, startDestination = Route.SIGN_IN) {
-            composable(Route.SIGN_IN) {
-              BackHandler(true) {}
-              SignIn(
-                  onClick1 = { launcher.launch(signInClient.signInIntent) },
-                  onClick2 = {
-                    tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
-                    tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
-                    val displayName = it.substringBefore('@')
-                    SessionManager.setUserSession(
-                        userId = it.hashCode().toString(), name = displayName, email = it)
-                    navigationActions.navigateTo(Route.OVERVIEW)
-                  })
-            }
-            composable(Route.OVERVIEW) {
-              BackHandler(true) {}
-              Overview(
-                  overviewViewModel = OverviewViewModel(tripsRepository),
-                  navigationActions = navigationActions)
-            }
-            composable(Route.TRIP) {
-              BackHandler(true) {}
-              if (navigationActions.variables.suggestionId != "") {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient,
-                    Route.SUGGESTION)
-              } else if (navigationActions.variables.currentAddress != "") {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient,
-                    Route.MAP)
-              } else {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient)
-              }
-            }
-            composable(Route.CREATE_TRIP) {
-              BackHandler(true) {}
-              CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
-            }
+          NavHost(
+              navController = navigationActions.mainNavigation.getNavController,
+              startDestination = Route.SIGN_IN,
+              route = ROOT_ROUTE) {
+                composable(Route.SIGN_IN) {
+                  SignIn(
+                      onClick1 = { launcher.launch(signInClient.signInIntent) },
+                      onClick2 = {
+                        tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
+                        tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
+                        val displayName = it.substringBefore('@')
+                        SessionManager.setUserSession(
+                            userId = it.hashCode().toString(), name = displayName, email = it)
+                        navigationActions.navigateTo(Route.OVERVIEW)
+                      })
+                }
+                composable(Route.OVERVIEW) {
+                  Overview(
+                      overviewViewModel = OverviewViewModel(tripsRepository),
+                      navigationActions = navigationActions)
+                }
+                composable(Route.TRIP) {
+                  navigationActions.tripNavigation.setNavController(rememberNavController())
+                  val tripId = navigationActions.variables.currentTrip
+                  navigationActions.tripNavigation.setNavController(rememberNavController())
+                  Trip(navigationActions, tripId, tripsRepository, placesClient)
+                }
+                composable(Route.CREATE_TRIP) {
+                  CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
+                }
 
-            composable(Route.CREATE_SUGGESTION) {
-              BackHandler(true) {}
-              val loc = navigationActions.variables.currentAddress
-              val cord = navigationActions.variables.currentGeoCords
-              Log.d("CREATE_SUGGESTION", "Location: $loc")
-              Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
-              val onAction: () -> Unit = {
-                if (loc != "") {
-                  navigationActions.navigateToMap(
-                      navigationActions.variables.currentTrip, cord, loc)
-                } else {
-                  navigationActions.navigateToSuggestion(
-                      navigationActions.variables.currentTrip,
-                      navigationActions.variables.suggestionId)
+                composable(Route.CREATE_SUGGESTION) {
+                  val loc = navigationActions.variables.currentAddress
+                  val cord = navigationActions.variables.currentGeoCords
+                  Log.d("CREATE_SUGGESTION", "Location: $loc")
+                  Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
+                  val onAction: () -> Unit = { navigationActions.goBack() }
+                  CreateSuggestion(
+                      tripId = navigationActions.variables.currentTrip,
+                      viewModel = CreateSuggestionViewModel(tripsRepository),
+                      addr = loc,
+                      geoCords = cord,
+                      onSuccess = onAction,
+                      onCancel = onAction)
                 }
               }
-              CreateSuggestion(
-                  tripId = navigationActions.variables.currentTrip,
-                  viewModel = CreateSuggestionViewModel(tripsRepository),
-                  addr = loc,
-                  geoCords = cord,
-                  onSuccess = onAction,
-                  onCancel = onAction)
-            }
-          }
         }
       }
     }

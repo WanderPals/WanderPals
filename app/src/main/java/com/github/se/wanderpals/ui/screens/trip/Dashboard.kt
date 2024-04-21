@@ -46,7 +46,8 @@ import kotlinx.coroutines.launch
  * The Dashboard screen.
  *
  * @param tripId the trip ID
- * @param oldNavActions the old navigation actions
+ * @param dashboardViewModel the dashboard view model
+ * @param navActions the navigation actions
  *
  * The tripId is used to identify the trip currently being displayed and interacted with. The
  * oldNavActions is used to navigate back to the overview screen.
@@ -55,7 +56,6 @@ import kotlinx.coroutines.launch
 fun Dashboard(
     tripId: String,
     dashboardViewModel: DashboardViewModel,
-    oldNavActions: NavigationActions,
     navActions: NavigationActions
 ) {
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -64,7 +64,7 @@ fun Dashboard(
 
   ModalNavigationDrawer(
       drawerState = drawerState,
-      drawerContent = { Menu(scope, drawerState, oldNavActions) },
+      drawerContent = { Menu(scope, drawerState, navActions) },
   ) {
     Text(modifier = Modifier.testTag("dashboardScreen"), text = " ")
     if (isLoading) {
@@ -97,13 +97,13 @@ fun Dashboard(
  *
  * @param scope the coroutine scope
  * @param drawerState the drawer state
- * @param oldNavActions the old navigation actions
+ * @param navActions the old navigation actions
  *
  * The scope is used to launch coroutines. The drawerState is used to control the drawer. The
  * oldNavActions is used to navigate back to the overview screen.
  */
 @Composable
-fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: NavigationActions) {
+fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: NavigationActions) {
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
@@ -120,7 +120,7 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, oldNavActions: Navigat
         onClick = {
           scope.launch {
             drawerState.close()
-            oldNavActions.navigateTo(Route.OVERVIEW)
+            navActions.navigateTo(Route.OVERVIEW)
           }
         })
   }
