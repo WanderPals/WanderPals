@@ -152,18 +152,13 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
   @get:Rule val mockkRule = MockKRule(this)
 
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
-  @RelaxedMockK lateinit var mockNavActions2: NavigationActions
 
   @Test
   fun testDashboardLoading() {
     val viewModel = DashboardViewModelTest(listOf())
     viewModel.setLoading(true)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
     // Check that the loading indicator is displayed
     composeTestRule.onNodeWithTag("loading").assertIsDisplayed()
@@ -177,11 +172,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     val viewModel = DashboardViewModelTest(listOf())
     viewModel.setLoading(false)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
 
     // Check that the top bar is displayed
@@ -201,11 +192,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     val viewModel = DashboardViewModelTest(listOf(suggestion1))
     viewModel.setLoading(false)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
 
     // Check that the suggestion widget doesn't display "No suggestions yet."
@@ -226,11 +213,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     val viewModel = DashboardViewModelTest(listOf(suggestion1, suggestion2))
     viewModel.setLoading(false)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
 
     // Check that the suggestion widget doesn't display "No suggestions yet."
@@ -261,11 +244,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     val viewModel = DashboardViewModelTest(listOf(suggestion1, suggestion2, suggestion3))
     viewModel.setLoading(false)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
 
     // Check that the suggestion widget doesn't display "No suggestions yet."
@@ -307,11 +286,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
         DashboardViewModelTest(listOf(suggestion1, suggestion2, suggestion3, suggestion4))
     viewModel.setLoading(false)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
 
     // Check that the suggestion widget doesn't display "No suggestions yet."
@@ -354,11 +329,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     val viewModel = DashboardViewModelTest(listOf(suggestion1))
     viewModel.setLoading(false)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
 
     // Check that the stop title is displayed

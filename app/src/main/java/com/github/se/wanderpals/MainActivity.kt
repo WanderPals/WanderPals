@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -23,6 +21,8 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
+import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
@@ -34,20 +34,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
 
 const val EMPTY_CODE = ""
 
+lateinit var navigationActions: NavigationActions
+
 class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
-
-  private lateinit var navController: NavHostController
-
-  private lateinit var navigationActions: NavigationActions
 
   private lateinit var tripsRepository: TripsRepository
 
@@ -66,8 +64,6 @@ class MainActivity : ComponentActivity() {
                     if (it.isSuccessful) {
                       Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
                       val uid = it.result?.user?.uid ?: ""
-                      val displayName = account.displayName ?: ""
-                      val email = account.email ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
                       tripsRepository = TripsRepository(uid, Dispatchers.IO)
                       tripsRepository.initFirestore()
@@ -75,7 +71,10 @@ class MainActivity : ComponentActivity() {
                       Log.d("SignIn", "Login result " + account.displayName)
 
                       // set SessionManager User information
-                      SessionManager.setUserSession(userId = uid, name = displayName, email = email)
+                      SessionManager.setUserSession(
+                          userId = uid,
+                          name = account.displayName ?: "",
+                          email = account.email ?: "")
 
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
@@ -118,83 +117,88 @@ class MainActivity : ComponentActivity() {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          navController = rememberNavController()
-          navigationActions = NavigationActions(navController)
+          navigationActions =
+              NavigationActions(
+                  mainNavigation = rememberMultiNavigationAppState(startDestination = ROOT_ROUTE),
+                  tripNavigation =
+                      rememberMultiNavigationAppState(startDestination = Route.DASHBOARD))
 
-          NavHost(navController = navController, startDestination = Route.SIGN_IN) {
-            composable(Route.SIGN_IN) {
-              BackHandler(true) {}
-              SignIn(
-                  onClick1 = { launcher.launch(signInClient.signInIntent) },
-                  onClick2 = {
-                    tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
-                    tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
-                    val displayName = it.substringBefore('@')
-                    SessionManager.setUserSession(
-                        userId = it.hashCode().toString(), name = displayName, email = it)
-                    navigationActions.navigateTo(Route.OVERVIEW)
-                  })
-            }
-            composable(Route.OVERVIEW) {
-              BackHandler(true) {}
-              Overview(
-                  overviewViewModel = OverviewViewModel(tripsRepository),
-                  navigationActions = navigationActions)
-            }
-            composable(Route.TRIP) {
-              BackHandler(true) {}
-              if (navigationActions.variables.suggestionId != "") {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient,
-                    Route.SUGGESTION)
-              } else if (navigationActions.variables.currentAddress != "") {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient,
-                    Route.MAP)
-              } else {
-                Trip(
-                    navigationActions,
-                    navigationActions.variables.currentTrip,
-                    tripsRepository,
-                    placesClient)
-              }
-            }
-            composable(Route.CREATE_TRIP) {
-              BackHandler(true) {}
-              CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
-            }
+          NavHost(
+              navController = navigationActions.mainNavigation.getNavController,
+              startDestination = Route.SIGN_IN,
+              route = ROOT_ROUTE) {
+                composable(Route.SIGN_IN) {
+                  SignIn(
+                      onClick1 = { launcher.launch(signInClient.signInIntent) },
+                      onClick2 = {
+                        FirebaseAuth.getInstance()
+                            .signInAnonymously()
+                            .addOnSuccessListener { result ->
+                              val uid = result.user?.uid ?: ""
+                              tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                              tripsRepository.initFirestore()
+                              SessionManager.setUserSession(
+                                  userId = uid, name = "Anonymous User", email = "")
+                              navigationActions.navigateTo(Route.OVERVIEW)
+                            }
+                            .addOnFailureListener {
+                              Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
+                            }
+                      },
+                      onClick3 = { email, password ->
+                        val onSucess = { result: AuthResult ->
+                          val uid = result.user?.uid ?: ""
+                          tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                          tripsRepository.initFirestore()
+                          SessionManager.setUserSession(
+                              userId = uid,
+                              name = result.user?.displayName ?: "",
+                              email = result.user?.email ?: "")
+                          navigationActions.navigateTo(Route.OVERVIEW)
+                        }
+                        FirebaseAuth.getInstance()
+                            .signInWithEmailAndPassword(email, password)
+                            .addOnSuccessListener { result -> onSucess(result) }
+                            .addOnFailureListener {
+                              FirebaseAuth.getInstance()
+                                  .createUserWithEmailAndPassword(email, password)
+                                  .addOnSuccessListener { result -> onSucess(result) }
+                                  .addOnFailureListener {
+                                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                                  }
+                            }
+                      })
+                }
+                composable(Route.OVERVIEW) {
+                  Overview(
+                      overviewViewModel = OverviewViewModel(tripsRepository),
+                      navigationActions = navigationActions)
+                }
+                composable(Route.TRIP) {
+                  navigationActions.tripNavigation.setNavController(rememberNavController())
+                  val tripId = navigationActions.variables.currentTrip
+                  navigationActions.tripNavigation.setNavController(rememberNavController())
+                  Trip(navigationActions, tripId, tripsRepository, placesClient)
+                }
+                composable(Route.CREATE_TRIP) {
+                  CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
+                }
 
-            composable(Route.CREATE_SUGGESTION) {
-              BackHandler(true) {}
-              val loc = navigationActions.variables.currentAddress
-              val cord = navigationActions.variables.currentGeoCords
-              Log.d("CREATE_SUGGESTION", "Location: $loc")
-              Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
-              val onAction: () -> Unit = {
-                if (loc != "") {
-                  navigationActions.navigateToMap(
-                      navigationActions.variables.currentTrip, cord, loc)
-                } else {
-                  navigationActions.navigateToSuggestion(
-                      navigationActions.variables.currentTrip,
-                      navigationActions.variables.suggestionId)
+                composable(Route.CREATE_SUGGESTION) {
+                  val loc = navigationActions.variables.currentAddress
+                  val cord = navigationActions.variables.currentGeoCords
+                  Log.d("CREATE_SUGGESTION", "Location: $loc")
+                  Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
+                  val onAction: () -> Unit = { navigationActions.goBack() }
+                  CreateSuggestion(
+                      tripId = navigationActions.variables.currentTrip,
+                      viewModel = CreateSuggestionViewModel(tripsRepository),
+                      addr = loc,
+                      geoCords = cord,
+                      onSuccess = onAction,
+                      onCancel = onAction)
                 }
               }
-              CreateSuggestion(
-                  tripId = navigationActions.variables.currentTrip,
-                  viewModel = CreateSuggestionViewModel(tripsRepository),
-                  addr = loc,
-                  geoCords = cord,
-                  onSuccess = onAction,
-                  onCancel = onAction)
-            }
-          }
         }
       }
     }

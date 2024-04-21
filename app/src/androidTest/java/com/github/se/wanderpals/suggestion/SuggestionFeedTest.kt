@@ -271,7 +271,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
           tripId = "dummyTestTripId", // a dummy trip ID
           suggestionsViewModel = FakeSuggestionsViewModel(),
           onSuggestionClick = {
-            mockNavActions.variables.currentTrip = "dummyTestTripId"
+            mockNavActions.setVariablesTrip("dummyTestTripId")
             mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
           })
     }

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
@@ -101,8 +102,8 @@ fun SuggestionFeedContent(
 
     // When a suggestion is selected, display the detail screen
     selectedSuggestion?.let { suggestion ->
-      navigationActions.navigateToSuggestionDetail(
-          suggestionId = suggestion.suggestionId, tripId = tripId)
+      navigationActions.setVariablesSuggestion(suggestion.suggestionId)
+      navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
     }
 
     // If suggestion list is empty, display a message

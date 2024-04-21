@@ -341,7 +341,7 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
         performClick()
       }
       verify {
-        mockNavActions.variables.currentTrip = "1"
+        mockNavActions.setVariablesTrip("1")
         mockNavActions.navigateTo(Route.TRIP)
       }
       confirmVerified(mockNavActions)

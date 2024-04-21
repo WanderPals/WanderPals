@@ -945,7 +945,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
             tripId = "testTripId",
             suggestionsViewModel = suggestionVm,
             onSuggestionClick = {
-              mockNavActions.variables.currentTrip = "testTripId"
+              mockNavActions.setVariablesTrip("testTripId")
               mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
             })
       }
@@ -955,7 +955,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
 
       // Verify that the navigation action to CreateSuggestion is called with the correct parameters
       verify {
-        mockNavActions.variables.currentTrip = "testTripId"
+        mockNavActions.setVariablesTrip("testTripId")
         mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
       }
       confirmVerified(mockNavActions)

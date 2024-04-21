@@ -20,6 +20,7 @@ import com.github.se.wanderpals.screens.OverviewScreen
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.overview.Overview
 import com.github.se.wanderpals.ui.screens.trip.Trip
@@ -47,6 +48,8 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
 
   @RelaxedMockK lateinit var mockNavController: NavHostController
 
+  @RelaxedMockK lateinit var mockNavController2: NavHostController
+
   @Before
   fun testSetup() {
 
@@ -56,7 +59,15 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
 
     composeTestRule.setContent {
       mockNavController = rememberNavController()
-      mockNavActions = NavigationActions(mockNavController)
+      mockNavController2 = rememberNavController()
+      mockNavActions =
+          NavigationActions(
+              mainNavigation =
+                  rememberMultiNavigationAppState(
+                      startDestination = Route.ROOT_ROUTE, mockNavController),
+              tripNavigation =
+                  rememberMultiNavigationAppState(
+                      startDestination = Route.DASHBOARD, mockNavController2))
       val overviewViewModelTest = OverviewViewModelTest()
 
       NavHost(navController = mockNavController, startDestination = Route.OVERVIEW) {
@@ -68,7 +79,7 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
           BackHandler(true) {}
           CreateTrip(overviewViewModelTest, mockNavActions)
         }
-        composable(Route.TRIP) { navBackStackEntry ->
+        composable(Route.TRIP) {
           BackHandler(true) {}
           Trip(
               mockNavActions,

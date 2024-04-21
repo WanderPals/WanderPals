@@ -6,5 +6,5 @@ enum class FirebaseCollections(val path: String) {
   STOPS_SUBCOLLECTION("Stops"),
   USERS_SUBCOLLECTION("Users"),
   SUGGESTIONS_SUBCOLLECTION("Suggestions"),
-  TRIPS_NOTIFICATION_SUBCOLLECTION("TripsNotifications")
+  ANNOUNCEMENTS_SUBCOLLECTION("Announcements")
 }

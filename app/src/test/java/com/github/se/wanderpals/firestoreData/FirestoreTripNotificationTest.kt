@@ -14,20 +14,14 @@ class TripNotificationTest {
   fun testFromTripNotificationToFirestoreTripNotification() {
     val tripNotification =
         TripNotification(
-            notificationId = "notif123",
-            userId = "user456",
-            title = "Trip Alert",
-            userName = "Jane Doe",
-            description = "Your trip to Paris is coming up soon!",
+            title = "Upcoming Journey",
+            path = "/user/trips/upcoming/journey",
             timestamp = LocalDateTime.parse("2024-04-01T12:30:00", formatter))
 
     val firestoreTripNotification = FirestoreTripNotification.fromTripNotification(tripNotification)
 
-    assertEquals(tripNotification.notificationId, firestoreTripNotification.notificationId)
-    assertEquals(tripNotification.userId, firestoreTripNotification.userId)
     assertEquals(tripNotification.title, firestoreTripNotification.title)
-    assertEquals(tripNotification.userName, firestoreTripNotification.userName)
-    assertEquals(tripNotification.description, firestoreTripNotification.description)
+    assertEquals(tripNotification.path, firestoreTripNotification.path)
     assertEquals(tripNotification.timestamp.format(formatter), firestoreTripNotification.timestamp)
   }
 
@@ -35,20 +29,14 @@ class TripNotificationTest {
   fun testFromFirestoreTripNotificationToTripNotification() {
     val firestoreTripNotification =
         FirestoreTripNotification(
-            notificationId = "notif123",
-            userId = "user456",
-            title = "Trip Alert",
-            userName = "Jane Doe",
-            description = "Your trip to Paris is coming up soon!",
+            title = "Upcoming Journey",
+            path = "/user/trips/upcoming/journey",
             timestamp = "2024-04-01T12:30:00")
 
     val tripNotification = firestoreTripNotification.toTripNotification()
 
-    assertEquals(firestoreTripNotification.notificationId, tripNotification.notificationId)
-    assertEquals(firestoreTripNotification.userId, tripNotification.userId)
     assertEquals(firestoreTripNotification.title, tripNotification.title)
-    assertEquals(firestoreTripNotification.userName, tripNotification.userName)
-    assertEquals(firestoreTripNotification.description, tripNotification.description)
+    assertEquals(firestoreTripNotification.path, tripNotification.path)
     assertEquals(
         LocalDateTime.parse(firestoreTripNotification.timestamp, formatter),
         tripNotification.timestamp)

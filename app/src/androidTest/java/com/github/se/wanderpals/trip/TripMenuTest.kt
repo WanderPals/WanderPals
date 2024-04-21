@@ -1,21 +1,21 @@
 package com.github.se.wanderpals.trip
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.performClick
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import org.junit.Before
 import org.junit.Rule
@@ -28,11 +28,25 @@ class TripMenuTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
   @get:Rule val mockkRule = MockKRule(this)
 
+  @RelaxedMockK lateinit var mockNavController: NavHostController
+
+  @RelaxedMockK lateinit var mockNavController2: NavHostController
+
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
   @Before
   fun testSetup() {
     composeTestRule.setContent {
+      mockNavController = rememberNavController()
+      mockNavController2 = rememberNavController()
+      mockNavActions =
+          NavigationActions(
+              mainNavigation =
+                  rememberMultiNavigationAppState(
+                      startDestination = Route.ROOT_ROUTE, mockNavController),
+              tripNavigation =
+                  rememberMultiNavigationAppState(
+                      startDestination = Route.DASHBOARD, mockNavController2))
       Trip(mockNavActions, "id", TripsRepository("-1", dispatcher = Dispatchers.IO), null)
     }
   }
