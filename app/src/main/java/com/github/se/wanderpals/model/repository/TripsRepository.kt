@@ -2,15 +2,15 @@ package com.github.se.wanderpals.model.repository
 
 import FirestoreTrip
 import android.util.Log
+import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
-import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.User
+import com.github.se.wanderpals.model.firestoreData.FirestoreAnnouncement
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
-import com.github.se.wanderpals.model.firestoreData.FirestoreAnnouncement
 import com.github.se.wanderpals.model.firestoreData.FirestoreUser
 import com.github.se.wanderpals.service.SessionManager
 import com.google.firebase.FirebaseApp
@@ -75,19 +75,16 @@ class TripsRepository(
    *
    * @param tripId The unique identifier of the trip.
    * @param announcementId The unique identifier of the trip Announcement to be retrieved.
-   * @return A `Announcement` object if found, or `null` if the Announcement is not found or if
-   *   an error occurs. The method logs an error and returns `null` in case of failure.
+   * @return A `Announcement` object if found, or `null` if the Announcement is not found or if an
+   *   error occurs. The method logs an error and returns `null` in case of failure.
    */
-  suspend fun getAnnouncementFromTrip(
-      tripId: String,
-      announcementId: String
-  ): Announcement? =
+  suspend fun getAnnouncementFromTrip(tripId: String, announcementId: String): Announcement? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
               tripsCollection
                   .document(tripId)
-                  .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+                  .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
                   .document(announcementId)
                   .get()
                   .await()
@@ -97,13 +94,13 @@ class TripsRepository(
           } else {
             Log.e(
                 "TripsRepository",
-                "getTripNotificationFromTrip: Not found TripNotification $announcementId from trip $tripId.")
+                "getAnnouncementFromTrip: Not found Announcement $announcementId from trip $tripId.")
             null
           }
         } catch (e: Exception) {
           Log.e(
               "TripsRepository",
-              "getTripNotificationFromTrip: Error getting a TripNotification $announcementId from trip $tripId.",
+              "getAnnouncementFromTrip: Error getting a Announcement $announcementId from trip $tripId.",
               e)
           null // error
         }
@@ -115,8 +112,8 @@ class TripsRepository(
    * Announcement objects.
    *
    * @param tripId The unique identifier of the trip.
-   * @return A list of `Announcement` objects. Returns an empty list if the trip is not found,
-   *   if there are no Announcements associated with the trip, or in case of an error during data
+   * @return A list of `Announcement` objects. Returns an empty list if the trip is not found, if
+   *   there are no Announcements associated with the trip, or in case of an error during data
    *   retrieval.
    */
   suspend fun getAllAnnouncementsFromTrip(tripId: String): List<Announcement> =
@@ -130,16 +127,14 @@ class TripsRepository(
               getAnnouncementFromTrip(tripId, announcementId)
             }
           } else {
-            Log.e(
-                "TripsRepository",
-                "getAllTripNotificationsFromTrip: Trip not found with ID $tripId.")
+            Log.e("TripsRepository", "getAllAnnouncementsFromTrip: Trip not found with ID $tripId.")
             emptyList()
           }
         } catch (e: Exception) {
 
           Log.e(
               "TripsRepository",
-              "getAllTripNotificationsFromTrip: Error fetching TripNotification to trip $tripId.",
+              "getAllAnnouncementsFromTrip: Error fetching Announcement to trip $tripId.",
               e)
           emptyList()
         }
@@ -147,8 +142,8 @@ class TripsRepository(
 
   /**
    * Adds a Announcement to a specific trip in the Firestore database. This method generates a
-   * unique ID for the new Announcement, creates a corresponding FirestoreAnnouncement object,
-   * and commits it to the trip's Announcements subcollection.
+   * unique ID for the new Announcement, creates a corresponding FirestoreAnnouncement object, and
+   * commits it to the trip's Announcements subcollection.
    *
    * It also updates the trip's document to include this new Announcement ID in its list.
    *
@@ -156,10 +151,7 @@ class TripsRepository(
    * @param announcement The Announcement object to add.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun addAnnouncementToTrip(
-      tripId: String,
-      announcement: Announcement
-  ): Boolean =
+  suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -171,12 +163,12 @@ class TripsRepository(
           val announcementDocument =
               tripsCollection
                   .document(tripId)
-                  .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+                  .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
                   .document(uniqueID)
           announcementDocument.set(firebaseAnnouncement).await()
           Log.d(
               "TripsRepository",
-              "addTripNotificationToTrip: TripNotification added successfully to trip $tripId.")
+              "addAnnouncementToTrip: Announcement added successfully to trip $tripId.")
 
           val trip = getTrip(tripId)
           if (trip != null) {
@@ -187,17 +179,17 @@ class TripsRepository(
             updateTrip(updatedTrip)
             Log.d(
                 "TripsRepository",
-                "addTripNotificationToTrip: TripNotification ID added to trip successfully.")
+                "addAnnouncementToTrip: Announcement ID added to trip successfully.")
             true
           } else {
 
-            Log.e("TripsRepository", "addTripNotificationToTrip: Trip not found with ID $tripId.")
+            Log.e("TripsRepository", "addAnnouncementToTrip: Trip not found with ID $tripId.")
             false
           }
         } catch (e: Exception) {
           Log.e(
               "TripsRepository",
-              "addTripNotificationToTrip: Error adding TripNotification to trip $tripId.",
+              "addAnnouncementToTrip: Error adding Announcement to trip $tripId.",
               e)
           false
         }
@@ -213,37 +205,36 @@ class TripsRepository(
    * @param announcementId The unique identifier of the Announcement to be removed.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun removeTripNotificationFromTrip(tripId: String, announcementId: String): Boolean =
+  suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
               "TripsRepository",
-              "removeSuggestionFromTrip: removing TripNotification $announcementId from trip $tripId")
+              "removeAnnouncementFromTrip: removing Announcement $announcementId from trip $tripId")
           tripsCollection
               .document(tripId)
-              .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+              .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
               .document(announcementId)
               .delete()
               .await()
 
           val trip = getTrip(tripId)
           if (trip != null) {
-            val updatedAnnouncementsList =
-                trip.announcements.filterNot { it == announcementId }
+            val updatedAnnouncementsList = trip.announcements.filterNot { it == announcementId }
             val updatedTrip = trip.copy(announcements = updatedAnnouncementsList)
             updateTrip(updatedTrip)
             Log.d(
                 "TripsRepository",
-                "removeSuggestionFromTrip: TripNotification $announcementId remove and trip updated successfully.")
+                "removeAnnouncementFromTrip: Announcement $announcementId remove and trip updated successfully.")
             true
           } else {
-            Log.e("TripsRepository", "removeSuggestionFromTrip: Trip not found with ID $tripId.")
+            Log.e("TripsRepository", "removeAnnouncementFromTrip: Trip not found with ID $tripId.")
             false
           }
         } catch (e: Exception) {
           Log.e(
               "TripsRepository",
-              "removeSuggestionFromTrip: Error removing TripNotification $announcementId from trip $tripId.",
+              "removeAnnouncementFromTrip: Error removing Announcement $announcementId from trip $tripId.",
               e)
           false
         }
@@ -251,39 +242,34 @@ class TripsRepository(
 
   /**
    * Updates a specific Announcement in a trip's Announcement subcollection in the Firestore
-   * database. This method creates a FirestoreAnnouncement object from the provided
-   * Announcement object and sets it to the corresponding document identified by the
-   * notification ID.
+   * database. This method creates a FirestoreAnnouncement object from the provided Announcement
+   * object and sets it to the corresponding document identified by the Announcement ID.
    *
    * @param tripId The unique identifier of the trip.
    * @param announcement The Announcement object that contains updated data.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun updateTripNotificationInTrip(
-      tripId: String,
-      announcement: Announcement
-  ): Boolean =
+  suspend fun updateAnnouncementInTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
               "TripsRepository",
-              "updateTripNotificationInTrip: Updating a TripNotification in trip $tripId")
-          val firestoreAnnouncement =
-              FirestoreAnnouncement.fromAnnouncement(announcement)
+              "updateAnnouncementInTrip: Updating a Announcement in trip $tripId")
+          val firestoreAnnouncement = FirestoreAnnouncement.fromAnnouncement(announcement)
           tripsCollection
               .document(tripId)
-              .collection(FirebaseCollections.TRIPS_NOTIFICATION_SUBCOLLECTION.path)
+              .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
               .document(firestoreAnnouncement.announcementId)
               .set(firestoreAnnouncement)
               .await()
           Log.d(
               "TripsRepository",
-              "updateTripNotificationInTrip: Trip's TripNotification updated successfully for ID $tripId.")
+              "updateAnnouncementInTrip: Trip's Announcement updated successfully for ID $tripId.")
           true
         } catch (e: Exception) {
           Log.e(
               "TripsRepository",
-              "updateTripNotificationInTrip: Error updating tripNotification with ID ${announcement.announcementId} in trip with ID $tripId",
+              "updateAnnouncementInTrip: Error updating Announcement with ID ${announcement.announcementId} in trip with ID $tripId",
               e)
           false
         }

@@ -17,7 +17,7 @@ class NotificationViewModel(private val tripsRepository: TripsRepository) {
     // Check if the current user has permission to remove items, only admins can delete
     // notifications
     return if (SessionManager.canRemove(tripNotification.userId)) {
-      tripsRepository.removeTripNotificationFromTrip(tripId, tripNotification.announcementId)
+      tripsRepository.removeAnnouncementFromTrip(tripId, tripNotification.announcementId)
     } else {
       false
     }

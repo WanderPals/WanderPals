@@ -2,13 +2,13 @@ package com.github.se.wanderpals.repository
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
-import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.google.firebase.FirebaseApp
@@ -495,8 +495,7 @@ class TripsRepositoryTest {
           // Update the trip notification and validate the update.
           val updatedNotification =
               fetchedNotification.copy(description = "Updated: Confirm your hotel booking as well.")
-          assertTrue(
-              repository.updateTripNotificationInTrip(fetchedTrip.tripId, updatedNotification))
+          assertTrue(repository.updateAnnouncementInTrip(fetchedTrip.tripId, updatedNotification))
 
           // Validate the update was successful.
           val updatedFetchedNotification =
@@ -509,7 +508,7 @@ class TripsRepositoryTest {
 
           // Remove the TripNotification from the trip and validate its removal.
           assertTrue(
-              repository.removeTripNotificationFromTrip(
+              repository.removeAnnouncementFromTrip(
                   fetchedTrip.tripId, fetchedTrip.announcements.first()))
 
           // Validate the TripNotification list is empty after deletion.
@@ -560,7 +559,7 @@ class TripsRepositoryTest {
 
           val tripNotificationIds = trip.announcements
           tripNotificationIds.forEach { tripNotificationId ->
-            repository.removeTripNotificationFromTrip(tripId, tripNotificationId)
+            repository.removeAnnouncementFromTrip(tripId, tripNotificationId)
           }
           repository.deleteTrip(tripId)
           repository.removeTripId(tripId)

@@ -50,7 +50,6 @@ class AnnouncementTest {
     assertEquals(firestoreAnnouncement.userName, announcement.userName)
     assertEquals(firestoreAnnouncement.description, announcement.description)
     assertEquals(
-        LocalDateTime.parse(firestoreAnnouncement.timestamp, formatter),
-        announcement.timestamp)
+        LocalDateTime.parse(firestoreAnnouncement.timestamp, formatter), announcement.timestamp)
   }
 }

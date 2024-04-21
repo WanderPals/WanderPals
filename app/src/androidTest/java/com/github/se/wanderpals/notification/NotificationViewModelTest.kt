@@ -55,8 +55,7 @@ class NotificationViewModelTest {
         // Assume the user is an admin
         every { SessionManager.isAdmin() } returns true
         // Assume the repository delete operation is successful
-        coEvery { tripsRepository.removeTripNotificationFromTrip(tripId, notificationId) } returns
-            true
+        coEvery { tripsRepository.removeAnnouncementFromTrip(tripId, notificationId) } returns true
 
         // Act
         val result = viewModel.deleteTripNotification(tripId, tripNotificationAdmin)
