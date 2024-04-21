@@ -1,55 +1,44 @@
 package com.github.se.wanderpals.model.firestoreData
 
-import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.TripNotification
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import junit.framework.TestCase.assertEquals
 import org.junit.Test
 
-class AnnouncementTest {
+class TripNotificationTest {
 
   private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
   @Test
-  fun testFromAnnouncementToFirestoreAnnouncement() {
-    val announcement =
-        Announcement(
-            announcementId = "notif123",
-            userId = "user456",
-            title = "Trip Alert",
-            userName = "Jane Doe",
-            description = "Your trip to Paris is coming up soon!",
+  fun testFromTripNotificationToFirestoreTripNotification() {
+    val tripNotification =
+        TripNotification(
+            title = "Upcoming Journey",
+            path = "/user/trips/upcoming/journey",
             timestamp = LocalDateTime.parse("2024-04-01T12:30:00", formatter))
 
-    val firestoreAnnouncement = FirestoreAnnouncement.fromAnnouncement(announcement)
+    val firestoreTripNotification = FirestoreTripNotification.fromTripNotification(tripNotification)
 
-    assertEquals(announcement.announcementId, firestoreAnnouncement.announcementId)
-    assertEquals(announcement.userId, firestoreAnnouncement.userId)
-    assertEquals(announcement.title, firestoreAnnouncement.title)
-    assertEquals(announcement.userName, firestoreAnnouncement.userName)
-    assertEquals(announcement.description, firestoreAnnouncement.description)
-    assertEquals(announcement.timestamp.format(formatter), firestoreAnnouncement.timestamp)
+    assertEquals(tripNotification.title, firestoreTripNotification.title)
+    assertEquals(tripNotification.path, firestoreTripNotification.path)
+    assertEquals(tripNotification.timestamp.format(formatter), firestoreTripNotification.timestamp)
   }
 
   @Test
-  fun testFromFirestoreAnnouncementToAnnouncement() {
-    val firestoreAnnouncement =
-        FirestoreAnnouncement(
-            announcementId = "notif123",
-            userId = "user456",
-            title = "Trip Alert",
-            userName = "Jane Doe",
-            description = "Your trip to Paris is coming up soon!",
+  fun testFromFirestoreTripNotificationToTripNotification() {
+    val firestoreTripNotification =
+        FirestoreTripNotification(
+            title = "Upcoming Journey",
+            path = "/user/trips/upcoming/journey",
             timestamp = "2024-04-01T12:30:00")
 
-    val announcement = firestoreAnnouncement.toAnnouncement()
+    val tripNotification = firestoreTripNotification.toTripNotification()
 
-    assertEquals(firestoreAnnouncement.announcementId, announcement.announcementId)
-    assertEquals(firestoreAnnouncement.userId, announcement.userId)
-    assertEquals(firestoreAnnouncement.title, announcement.title)
-    assertEquals(firestoreAnnouncement.userName, announcement.userName)
-    assertEquals(firestoreAnnouncement.description, announcement.description)
+    assertEquals(firestoreTripNotification.title, tripNotification.title)
+    assertEquals(firestoreTripNotification.path, tripNotification.path)
     assertEquals(
-        LocalDateTime.parse(firestoreAnnouncement.timestamp, formatter), announcement.timestamp)
+        LocalDateTime.parse(firestoreTripNotification.timestamp, formatter),
+        tripNotification.timestamp)
   }
 }
