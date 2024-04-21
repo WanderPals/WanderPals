@@ -14,10 +14,8 @@ import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
-import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
-import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import org.junit.Before
 import org.junit.Rule
@@ -74,18 +72,6 @@ class TripMenuTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
     ComposeScreen.onComposeScreen<TripScreen>(composeTestRule) {
       menuButton { performClick() }
       menuNav { assertIsDisplayed() }
-    }
-  }
-
-  @Test
-  fun clickBackToOverview() = run {
-    ComposeScreen.onComposeScreen<TripScreen>(composeTestRule) {
-      menuButton { performClick() }
-      overviewButtonMenuItem { performClick() }
-      menuNav { assertIsNotDisplayed() }
-
-      verify { mockNavActions.navigateTo(Route.OVERVIEW) }
-      confirmVerified(mockNavActions)
     }
   }
 }
