@@ -9,7 +9,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -124,7 +123,7 @@ private val suggestion4: Suggestion =
         text = "This is a suggestion for a stop.",
         userId = "1")
 
-class DashboardViewModelTest(list: List<Suggestion> = listOf(), users: List<User> = listOf()) :
+class DashboardViewModelTest(list: List<Suggestion>) :
     DashboardViewModel(tripId = "", tripsRepository = TripsRepository("", Dispatchers.IO)) {
   private val _isLoading = MutableStateFlow(false)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -132,16 +131,11 @@ class DashboardViewModelTest(list: List<Suggestion> = listOf(), users: List<User
   private val _state = MutableStateFlow(list)
   override val state: StateFlow<List<Suggestion>> = _state.asStateFlow()
 
-  private val _members = MutableStateFlow(users)
-  override val members: StateFlow<List<User>> = _members.asStateFlow()
-
   override fun loadSuggestion(tripId: String) {}
 
   fun setLoading(isLoading: Boolean) {
     _isLoading.value = isLoading
   }
-
-  override fun loadMembers(tripId: String) {}
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -356,17 +350,13 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     val viewModel = DashboardViewModelTest(listOf(suggestion1))
     viewModel.setLoading(false)
     composeTestRule.setContent {
-      Dashboard(
-          tripId = "",
-          dashboardViewModel = viewModel,
-          oldNavActions = mockNavActions,
-          navActions = mockNavActions2)
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
     composeTestRule.onNodeWithTag("menuButton").performClick()
     composeTestRule.onNodeWithTag("MemberListMenu").performClick()
     composeTestRule.onNodeWithTag("menuNav").assertIsNotDisplayed()
 
-    verify { mockNavActions2.navigateTo(Route.MEMBERS) }
-    confirmVerified(mockNavActions2)
+    verify { mockNavActions.navigateTo(Route.MEMBERS) }
+    confirmVerified(mockNavActions)
   }
 }

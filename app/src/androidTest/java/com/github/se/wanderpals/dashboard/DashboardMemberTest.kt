@@ -8,6 +8,8 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
+import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.MembersViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberList
 import com.kaspersky.components.composesupport.config.withComposeSupport
@@ -17,6 +19,10 @@ import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,6 +40,21 @@ private val user3 =
         email = "kilosierra@gmail.com",
         role = Role.OWNER)
 
+class MembersViewModelTest(list: List<User>) :
+    MembersViewModel(tripId = "", tripsRepository = TripsRepository("", Dispatchers.IO)) {
+  private val _isLoading = MutableStateFlow(false)
+  override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+  private val _members = MutableStateFlow(list)
+  override val members: StateFlow<List<User>> = _members.asStateFlow()
+
+  override fun loadMembers(tripId: String) {}
+
+  fun setLoading(isLoading: Boolean) {
+    _isLoading.value = isLoading
+  }
+}
+
 @RunWith(AndroidJUnit4::class)
 class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
 
@@ -45,8 +66,8 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
   @Test
   fun checkViews() = run {
-    val dashboardViewModel = DashboardViewModelTest(users = listOf(user1, user2, user3))
-    composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
+    val membersViewModel = MembersViewModelTest(listOf(user1, user2, user3))
+    composeTestRule.setContent { DashboardMemberList(membersViewModel, mockNavActions) }
 
     composeTestRule.onNodeWithTag("memberCard1", useUnmergedTree = true).assertExists()
     composeTestRule.onNodeWithTag("memberCard2", useUnmergedTree = true).assertExists()
@@ -86,8 +107,8 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
   @Test
   fun checkViewsEmpty() = run {
-    val dashboardViewModel = DashboardViewModelTest(users = emptyList())
-    composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
+    val membersViewModel = MembersViewModelTest(listOf(user1, user2, user3))
+    composeTestRule.setContent { DashboardMemberList(membersViewModel, mockNavActions) }
 
     composeTestRule
         .onNodeWithTag("MemberListTitle", useUnmergedTree = true)
@@ -101,8 +122,8 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
   @Test
   fun checkViewsSingle() = run {
-    val dashboardViewModel = DashboardViewModelTest(users = listOf(user1))
-    composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
+    val membersViewModel = MembersViewModelTest(listOf(user1))
+    composeTestRule.setContent { DashboardMemberList(membersViewModel, mockNavActions) }
 
     composeTestRule
         .onNodeWithTag("memberCard1", useUnmergedTree = true)
@@ -113,8 +134,8 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
   @Test
   fun checkViewsTwo() = run {
-    val dashboardViewModel = DashboardViewModelTest(users = listOf(user1, user2))
-    composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
+    val membersViewModel = MembersViewModelTest(listOf(user1, user2))
+    composeTestRule.setContent { DashboardMemberList(membersViewModel, mockNavActions) }
 
     composeTestRule
         .onNodeWithTag("memberCard1", useUnmergedTree = true)
@@ -134,8 +155,8 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
   @Test
   fun checkGoBack() = run {
-    val dashboardViewModel = DashboardViewModelTest(users = listOf(user1, user2, user3))
-    composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
+    val membersViewModel = MembersViewModelTest(listOf(user1, user2, user3))
+    composeTestRule.setContent { DashboardMemberList(membersViewModel, mockNavActions) }
     composeTestRule.onNodeWithTag("BackButton", useUnmergedTree = true).performClick()
 
     verify { mockNavActions.goBack() }
@@ -144,8 +165,8 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
   @Test
   fun checkDetailsMember() = run {
-    val dashboardViewModel = DashboardViewModelTest(users = listOf(user1, user2, user3))
-    composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
+    val membersViewModel = MembersViewModelTest(listOf(user1, user2, user3))
+    composeTestRule.setContent { DashboardMemberList(membersViewModel, mockNavActions) }
     composeTestRule.onNodeWithTag("memberCard1", useUnmergedTree = true).performClick()
 
     composeTestRule
@@ -171,8 +192,8 @@ class DashboardMemberTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCo
 
   @Test
   fun checkDetailsOwner() = run {
-    val dashboardViewModel = DashboardViewModelTest(users = listOf(user1, user2, user3))
-    composeTestRule.setContent { DashboardMemberList(dashboardViewModel, mockNavActions) }
+    val membersViewModel = MembersViewModelTest(listOf(user1, user2, user3))
+    composeTestRule.setContent { DashboardMemberList(membersViewModel, mockNavActions) }
     composeTestRule.onNodeWithTag("memberCard3", useUnmergedTree = true).performClick()
 
     composeTestRule

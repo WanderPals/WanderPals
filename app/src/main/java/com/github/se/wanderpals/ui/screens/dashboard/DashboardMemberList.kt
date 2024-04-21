@@ -9,16 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.User
-import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.model.viewmodel.MembersViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardMemberList(
-    dashboardViewModel: DashboardViewModel,
+    membersViewModel: MembersViewModel,
     navActions: NavigationActions,
 ) {
-  val members = dashboardViewModel.members.collectAsState()
+  val members = membersViewModel.members.collectAsState()
   var selectedMember by remember { mutableStateOf<User?>(null) }
 
   selectedMember?.let { user ->

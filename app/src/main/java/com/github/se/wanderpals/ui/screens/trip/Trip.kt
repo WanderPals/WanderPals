@@ -30,12 +30,14 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
+import com.github.se.wanderpals.model.viewmodel.MembersViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
+import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberList
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
@@ -106,6 +108,12 @@ fun Trip(
                     }
                     composable(Route.NOTIFICATION) {
                       Notification(NotificationsViewModel(tripsRepository))
+                    }
+
+                    composable(Route.MEMBERS) {
+                      DashboardMemberList(
+                          MembersViewModel(tripsRepository, oldNavActions.variables.currentTrip),
+                          oldNavActions)
                     }
 
                     composable(Route.SUGGESTION_DETAIL) {
