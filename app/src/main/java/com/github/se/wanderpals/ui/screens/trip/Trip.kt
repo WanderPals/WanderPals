@@ -104,7 +104,9 @@ fun Trip(
                         }
                       }
                     }
-                    composable(Route.NOTIFICATION) { Notification(NotificationsViewModel(tripsRepository)) }
+                    composable(Route.NOTIFICATION) {
+                      Notification(NotificationsViewModel(tripsRepository))
+                    }
 
                     composable(Route.SUGGESTION_DETAIL) {
                       Log.d(
