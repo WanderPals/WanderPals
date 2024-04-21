@@ -1,6 +1,6 @@
 package com.github.se.wanderpals.notification
 
-import com.github.se.wanderpals.model.data.TripNotification
+import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.NotificationViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -44,8 +44,8 @@ class NotificationViewModelTest {
         val tripId = "trip123"
         val notificationId = "notifAdminId"
         val tripNotificationAdmin =
-            TripNotification(
-                notificationId = "notifAdminId",
+            Announcement(
+                announcementId = "notifAdminId",
                 userId = "userAdmin",
                 title = "Admin Notification",
                 userName = "Admin User",
@@ -74,8 +74,8 @@ class NotificationViewModelTest {
     // Arrange
     val tripId = "trip123"
     val tripNotificationNotAdmin =
-        TripNotification(
-            notificationId = "notifNotAdminId",
+        Announcement(
+            announcementId = "notifNotAdminId",
             userId = "userNotAdmin",
             title = "Regular User Notification",
             userName = "Regular User",

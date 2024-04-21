@@ -2,9 +2,9 @@ package com.github.se.wanderpals.notification
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.wanderpals.model.data.TripNotification
+import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.CreateNotificationViewModel
+import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
 import com.github.se.wanderpals.screens.CreateNotificationScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -24,16 +24,16 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private val testNotification1: TripNotification =
-    TripNotification("", "", "Title1", "testUser001", "This is Title1.", LocalDateTime.now())
+private val testNotification1: Announcement =
+    Announcement("", "", "Title1", "testUser001", "This is Title1.", LocalDateTime.now())
 
-private val testNotification2: TripNotification =
-    TripNotification(
+private val testNotification2: Announcement =
+    Announcement(
         "", "", "Title2", "testUser002", "This is Title2.", LocalDateTime.now().minusDays(2))
 
 open class CreateNotificationViewModelTest(tripsRepository: TripsRepository) :
-    CreateNotificationViewModel(tripsRepository) {
-  override fun addNotification(tripId: String, tripNotification: TripNotification): Boolean {
+    CreateAnnouncementViewModel(tripsRepository) {
+  override fun addNotification(tripId: String, tripNotification: Announcement): Boolean {
     // Check only relevant fields, i.e. title and description, as the rest are not user inputs of
     // the create notification screen
     assert(

@@ -8,7 +8,7 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
-import com.github.se.wanderpals.model.data.TripNotification
+import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.google.firebase.FirebaseApp
@@ -82,7 +82,7 @@ class TripsRepositoryTest {
             stops = emptyList(),
             users = emptyList(),
             suggestions = emptyList(),
-            tripNotifications = emptyList())
+            announcements = emptyList())
 
     val trip2 =
         Trip(
@@ -96,7 +96,7 @@ class TripsRepositoryTest {
             stops = emptyList(),
             users = emptyList(),
             suggestions = emptyList(),
-            tripNotifications = emptyList())
+            announcements = emptyList())
 
     val updatedTrip2 =
         Trip(
@@ -110,7 +110,7 @@ class TripsRepositoryTest {
             stops = emptyList(),
             users = emptyList(),
             suggestions = emptyList(),
-            tripNotifications = emptyList())
+            announcements = emptyList())
 
     val elapsedTime = measureTimeMillis {
       try {
@@ -174,7 +174,7 @@ class TripsRepositoryTest {
             stops = emptyList(),
             users = emptyList(),
             suggestions = emptyList(),
-            tripNotifications = emptyList())
+            announcements = emptyList())
 
     // Initialize a stop at the Colosseum with detailed information.
     val colosseumStop =
@@ -259,7 +259,7 @@ class TripsRepositoryTest {
             stops = emptyList(),
             users = emptyList(),
             suggestions = emptyList(),
-            tripNotifications = emptyList())
+            announcements = emptyList())
 
     // Initialize a stop at the Colosseum with detailed information.
     val user1 =
@@ -343,7 +343,7 @@ class TripsRepositoryTest {
             stops = emptyList(),
             users = emptyList(),
             suggestions = emptyList(),
-            tripNotifications = emptyList())
+            announcements = emptyList())
 
     // Initialize a stop within the suggestion for the trip.
     val stop =
@@ -451,12 +451,12 @@ class TripsRepositoryTest {
             stops = emptyList(),
             users = emptyList(),
             suggestions = emptyList(),
-            tripNotifications = emptyList())
+            announcements = emptyList())
 
     // Define a trip notification object.
     val tripNotification =
-        TripNotification(
-            notificationId = "",
+        Announcement(
+            announcementId = "",
             userId = "user123",
             title = "Flight Booking Reminder",
             userName = "System",
@@ -472,10 +472,10 @@ class TripsRepositoryTest {
           var fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
           // Add a trip notification to the trip and validate.
           assertTrue(
-              repository.addTripNotificationToTrip(tripId = fetchedTrip.tripId, tripNotification))
+              repository.addAnnouncementToTrip(tripId = fetchedTrip.tripId, tripNotification))
 
           // Fetch and validate the added trip notification.
-          val notifications = repository.getAllTripNotificationsFromTrip(fetchedTrip.tripId)
+          val notifications = repository.getAllAnnouncementsFromTrip(fetchedTrip.tripId)
           assertTrue(notifications.isNotEmpty())
 
           val fetchedNotification = notifications.first()
@@ -486,8 +486,8 @@ class TripsRepositoryTest {
           fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
 
           val fetchedTripNotification =
-              repository.getTripNotificationFromTrip(
-                  fetchedTrip.tripId, fetchedTrip.tripNotifications.first())
+              repository.getAnnouncementFromTrip(
+                  fetchedTrip.tripId, fetchedTrip.announcements.first())
           assertNotNull(fetchedTripNotification)
           assertEquals(
               "Reminder to book your flight to Italy", fetchedTripNotification?.description)
@@ -500,8 +500,8 @@ class TripsRepositoryTest {
 
           // Validate the update was successful.
           val updatedFetchedNotification =
-              repository.getTripNotificationFromTrip(
-                  fetchedTrip.tripId, updatedNotification.notificationId)
+              repository.getAnnouncementFromTrip(
+                  fetchedTrip.tripId, updatedNotification.announcementId)
           assertNotNull(updatedFetchedNotification)
           assertEquals(
               "Updated: Confirm your hotel booking as well.",
@@ -510,10 +510,10 @@ class TripsRepositoryTest {
           // Remove the TripNotification from the trip and validate its removal.
           assertTrue(
               repository.removeTripNotificationFromTrip(
-                  fetchedTrip.tripId, fetchedTrip.tripNotifications.first()))
+                  fetchedTrip.tripId, fetchedTrip.announcements.first()))
 
           // Validate the TripNotification list is empty after deletion.
-          assertTrue(repository.getAllTripNotificationsFromTrip(fetchedTrip.tripId).isEmpty())
+          assertTrue(repository.getAllAnnouncementsFromTrip(fetchedTrip.tripId).isEmpty())
 
           // Cleanup: Delete the trip.
           assertTrue(repository.deleteTrip(fetchedTrip.tripId))
@@ -558,7 +558,7 @@ class TripsRepositoryTest {
             repository.removeSuggestionFromTrip(tripId, suggestionId)
           }
 
-          val tripNotificationIds = trip.tripNotifications
+          val tripNotificationIds = trip.announcements
           tripNotificationIds.forEach { tripNotificationId ->
             repository.removeTripNotificationFromTrip(tripId, tripNotificationId)
           }
