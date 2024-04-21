@@ -34,7 +34,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
-import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.Dispatchers
@@ -64,8 +64,6 @@ class MainActivity : ComponentActivity() {
                     if (it.isSuccessful) {
                       Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
                       val uid = it.result?.user?.uid ?: ""
-                      val displayName = account.displayName ?: ""
-                      val email = account.email ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
                       tripsRepository = TripsRepository(uid, Dispatchers.IO)
                       tripsRepository.initFirestore()
@@ -73,7 +71,10 @@ class MainActivity : ComponentActivity() {
                       Log.d("SignIn", "Login result " + account.displayName)
 
                       // set SessionManager User information
-                      SessionManager.setUserSession(userId = uid, name = displayName, email = email)
+                      SessionManager.setUserSession(
+                          userId = uid,
+                          name = account.displayName ?: "",
+                          email = account.email ?: "")
 
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
@@ -130,12 +131,42 @@ class MainActivity : ComponentActivity() {
                   SignIn(
                       onClick1 = { launcher.launch(signInClient.signInIntent) },
                       onClick2 = {
-                        tripsRepository = TripsRepository(it.hashCode().toString(), Dispatchers.IO)
-                        tripsRepository.initFirestore(FirebaseApp.initializeApp(context)!!)
-                        val displayName = it.substringBefore('@')
-                        SessionManager.setUserSession(
-                            userId = it.hashCode().toString(), name = displayName, email = it)
-                        navigationActions.navigateTo(Route.OVERVIEW)
+                        FirebaseAuth.getInstance()
+                            .signInAnonymously()
+                            .addOnSuccessListener { result ->
+                              val uid = result.user?.uid ?: ""
+                              tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                              tripsRepository.initFirestore()
+                              SessionManager.setUserSession(
+                                  userId = uid, name = "Anonymous User", email = "")
+                              navigationActions.navigateTo(Route.OVERVIEW)
+                            }
+                            .addOnFailureListener {
+                              Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
+                            }
+                      },
+                      onClick3 = { email, password ->
+                        val onSucess = { result: AuthResult ->
+                          val uid = result.user?.uid ?: ""
+                          tripsRepository = TripsRepository(uid, Dispatchers.IO)
+                          tripsRepository.initFirestore()
+                          SessionManager.setUserSession(
+                              userId = uid,
+                              name = result.user?.displayName ?: "",
+                              email = result.user?.email ?: "")
+                          navigationActions.navigateTo(Route.OVERVIEW)
+                        }
+                        FirebaseAuth.getInstance()
+                            .signInWithEmailAndPassword(email, password)
+                            .addOnSuccessListener { result -> onSucess(result) }
+                            .addOnFailureListener {
+                              FirebaseAuth.getInstance()
+                                  .createUserWithEmailAndPassword(email, password)
+                                  .addOnSuccessListener { result -> onSucess(result) }
+                                  .addOnFailureListener {
+                                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                                  }
+                            }
                       })
                 }
                 composable(Route.OVERVIEW) {

@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -50,13 +52,13 @@ import com.github.se.wanderpals.R
  * @param onClick2 the action to be executed when the button is clicked.
  */
 @Composable
-fun SignIn(onClick1: () -> Unit, onClick2: (String) -> Unit) {
+fun SignIn(onClick1: () -> Unit, onClick2: () -> Unit, onClick3: (String, String) -> Unit) {
   var dialogIsOpen by remember { mutableStateOf(false) }
   if (dialogIsOpen) {
-    DialogHandler(closeDialogueAction = { dialogIsOpen = false }, processMail = onClick2)
+    DialogHandler(closeDialogueAction = { dialogIsOpen = false }, processMail = onClick3)
   }
   Column(
-      verticalArrangement = Arrangement.spacedBy(50.dp, Alignment.Top),
+      verticalArrangement = Arrangement.spacedBy(25.dp, Alignment.Top),
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier =
           Modifier.fillMaxSize()
@@ -70,8 +72,10 @@ fun SignIn(onClick1: () -> Unit, onClick2: (String) -> Unit) {
                     .clip(RoundedCornerShape(16.dp)))
         GoogleButton(onClick = onClick1)
 
-        // create a button for sign-in with email
-        EmailButton(onClick2 = { dialogIsOpen = true })
+        EmailButton { dialogIsOpen = true }
+
+        // create a button for sign-in anonymously
+        AnonButton(onClick2 = onClick2)
       }
 }
 
@@ -105,7 +109,7 @@ fun GoogleButton(onClick: () -> Unit) {
 
 @Composable
 fun EmailButton(onClick2: () -> Unit) {
-  OutlinedButton(onClick = onClick2, modifier = Modifier.testTag("LoginButton")) {
+  OutlinedButton(onClick = onClick2, modifier = Modifier.testTag("EmailButton")) {
     Image(
         modifier = Modifier.size(20.dp).testTag("GoogleIcon"),
         painter = painterResource(id = R.drawable.logo_email),
@@ -127,10 +131,34 @@ fun EmailButton(onClick2: () -> Unit) {
 }
 
 @Composable
-fun DialogHandler(closeDialogueAction: () -> Unit, processMail: (String) -> Unit) {
+fun AnonButton(onClick2: () -> Unit) {
+  OutlinedButton(onClick = onClick2, modifier = Modifier.testTag("AnonButton")) {
+    Image(
+        modifier = Modifier.size(20.dp).testTag("AnonIcon"),
+        imageVector = Icons.Default.Person,
+        contentDescription = "image_description")
+    Text(
+        modifier = Modifier.width(125.dp).height(17.dp),
+        text = "Sign in anonymously",
+        style =
+            TextStyle(
+                fontSize = 14.sp,
+                lineHeight = 17.sp,
+                fontFamily = FontFamily(Font(DeviceFontFamilyName("sans-serif-condensed"))),
+                fontWeight = FontWeight(500),
+                color = Color(0xFF3C4043),
+                textAlign = TextAlign.Center,
+                letterSpacing = 0.25.sp,
+            ))
+  }
+}
+
+@Composable
+fun DialogHandler(closeDialogueAction: () -> Unit, processMail: (String, String) -> Unit) {
 
   // Mutable state to hold the email input
   var email by remember { mutableStateOf(EMPTY_CODE) }
+  var password by remember { mutableStateOf(EMPTY_CODE) }
 
   // Dialog composable
   Dialog(
@@ -139,21 +167,36 @@ fun DialogHandler(closeDialogueAction: () -> Unit, processMail: (String) -> Unit
         email = EMPTY_CODE
       }) {
         Surface(
-            modifier = Modifier.height(200.dp).testTag("dialog"),
+            modifier = Modifier.height(220.dp).testTag("dialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)) {
               Column(
                   modifier = Modifier.padding(16.dp),
                   horizontalAlignment = Alignment.CenterHorizontally,
                   verticalArrangement = Arrangement.Center) {
-                    // Input field for trip code
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = email,
                         onValueChange = { email = it },
                         label = {
                           Text(
-                              text = "Insert your e-mail here",
+                              text = "Insert your email",
+                              style =
+                                  TextStyle(
+                                      fontSize = 18.sp,
+                                      textAlign = TextAlign.Center,
+                                      letterSpacing = 0.5.sp,
+                                  ),
+                          )
+                        },
+                        singleLine = true)
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = password,
+                        onValueChange = { password = it },
+                        label = {
+                          Text(
+                              text = "Insert your password",
                               style =
                                   TextStyle(
                                       fontSize = 18.sp,
@@ -167,7 +210,12 @@ fun DialogHandler(closeDialogueAction: () -> Unit, processMail: (String) -> Unit
 
                     // Button to sign in
                     Button(
-                        onClick = { processMail(email) },
+                        onClick = {
+                          if (email != EMPTY_CODE && password != EMPTY_CODE) {
+                            processMail(email, password)
+                            closeDialogueAction()
+                          }
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp)) {
                           Text(
