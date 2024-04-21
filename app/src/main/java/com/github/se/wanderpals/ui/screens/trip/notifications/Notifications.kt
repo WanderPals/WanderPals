@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import java.time.format.DateTimeFormatter
@@ -122,13 +123,17 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
                 .fillMaxSize()
                 .weight(1f)
         ) {
-            items(notificationsList) { notification ->
-
-                if (notificationSelected) {
-                    NotificationItem(notification = notification)
-                } else {
-                    AnnouncementItem(notification = notification)
+            val itemsList = if (notificationSelected) notificationsList else announcementList
+            items(itemsList) { item ->
+                when (item) {
+                    is TripNotification -> {
+                        NotificationItem(notification = item)
+                    }
+                    is Announcement -> {
+                        AnnouncementItem(announcement = item)
+                    }
                 }
+
                 HorizontalDivider(
                     color = Color.Gray,
                     thickness = 1.dp,
@@ -255,7 +260,7 @@ fun NotificationItem(notification: TripNotification) {
  * @param notification The announcement to display.
  */
 @Composable
-fun AnnouncementItem(notification: TripNotification) {
+fun AnnouncementItem(announcement: Announcement) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -273,7 +278,7 @@ fun AnnouncementItem(notification: TripNotification) {
             ) {
                 // Title Text
                 Text(
-                    text = notification.title,
+                    text = announcement.title,
                     style = TextStyle(fontSize = 16.sp),
                     color = Color.Black,
                     modifier = Modifier
@@ -295,18 +300,18 @@ fun AnnouncementItem(notification: TripNotification) {
 
                     // Date: hour
                     Text(
-                        text = notification.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        text = announcement.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
                         style = TextStyle(fontSize = 14.sp, color = Color.Gray)
                     )
                     // Date: day
                     Text(
-                        text = notification.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        text = announcement.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         style = TextStyle(fontSize = 14.sp, color = Color.Gray)
                     )
 
                     // Username
                     Text(
-                        text = notification.userName,
+                        text = announcement.userName,
                         style = TextStyle(fontSize = 14.sp, color = Color.Gray)
                     )
                 }
