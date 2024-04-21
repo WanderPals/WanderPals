@@ -437,7 +437,7 @@ class TripsRepositoryTest {
   }
 
   @Test
-  fun testTripLifecycleWithTripNotifications() = runBlocking {
+  fun testTripLifecycleWithAnnouncements() = runBlocking {
     // Initialize a trip with details for a summer vacation in Italy.
     val trip =
         Trip(
@@ -453,8 +453,8 @@ class TripsRepositoryTest {
             suggestions = emptyList(),
             announcements = emptyList())
 
-    // Define a trip notification object.
-    val tripNotification =
+    // Define a trip Announcement object.
+    val announcement =
         Announcement(
             announcementId = "",
             userId = "user123",
@@ -470,48 +470,47 @@ class TripsRepositoryTest {
           assertTrue(repository.addTrip(trip))
 
           var fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
-          // Add a trip notification to the trip and validate.
-          assertTrue(
-              repository.addAnnouncementToTrip(tripId = fetchedTrip.tripId, tripNotification))
+          // Add a trip Announcement to the trip and validate.
+          assertTrue(repository.addAnnouncementToTrip(tripId = fetchedTrip.tripId, announcement))
 
-          // Fetch and validate the added trip notification.
-          val notifications = repository.getAllAnnouncementsFromTrip(fetchedTrip.tripId)
-          assertTrue(notifications.isNotEmpty())
+          // Fetch and validate the added trip Announcement.
+          val announcements = repository.getAllAnnouncementsFromTrip(fetchedTrip.tripId)
+          assertTrue(announcements.isNotEmpty())
 
-          val fetchedNotification = notifications.first()
-          assertNotNull(fetchedNotification)
-          assertEquals("Reminder to book your flight to Italy", fetchedNotification.description)
+          val fetchedAnnouncement = announcements.first()
+          assertNotNull(fetchedAnnouncement)
+          assertEquals("Reminder to book your flight to Italy", fetchedAnnouncement.description)
 
-          // Fetch and validate the added TripNotification.
+          // Fetch and validate the added Announcement.
           fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
 
-          val fetchedTripNotification =
+          val fetchedTripAnnouncements =
               repository.getAnnouncementFromTrip(
                   fetchedTrip.tripId, fetchedTrip.announcements.first())
-          assertNotNull(fetchedTripNotification)
+          assertNotNull(fetchedTripAnnouncements)
           assertEquals(
-              "Reminder to book your flight to Italy", fetchedTripNotification?.description)
+              "Reminder to book your flight to Italy", fetchedTripAnnouncements?.description)
 
-          // Update the trip notification and validate the update.
-          val updatedNotification =
-              fetchedNotification.copy(description = "Updated: Confirm your hotel booking as well.")
-          assertTrue(repository.updateAnnouncementInTrip(fetchedTrip.tripId, updatedNotification))
+          // Update the trip Announcement and validate the update.
+          val updatedAnnouncement =
+              fetchedAnnouncement.copy(description = "Updated: Confirm your hotel booking as well.")
+          assertTrue(repository.updateAnnouncementInTrip(fetchedTrip.tripId, updatedAnnouncement))
 
           // Validate the update was successful.
-          val updatedFetchedNotification =
+          val updatedFetchedAnnouncement =
               repository.getAnnouncementFromTrip(
-                  fetchedTrip.tripId, updatedNotification.announcementId)
-          assertNotNull(updatedFetchedNotification)
+                  fetchedTrip.tripId, updatedAnnouncement.announcementId)
+          assertNotNull(updatedFetchedAnnouncement)
           assertEquals(
               "Updated: Confirm your hotel booking as well.",
-              updatedFetchedNotification?.description)
+              updatedFetchedAnnouncement?.description)
 
-          // Remove the TripNotification from the trip and validate its removal.
+          // Remove the Announcement from the trip and validate its removal.
           assertTrue(
               repository.removeAnnouncementFromTrip(
                   fetchedTrip.tripId, fetchedTrip.announcements.first()))
 
-          // Validate the TripNotification list is empty after deletion.
+          // Validate the Announcement list is empty after deletion.
           assertTrue(repository.getAllAnnouncementsFromTrip(fetchedTrip.tripId).isEmpty())
 
           // Cleanup: Delete the trip.
@@ -557,9 +556,9 @@ class TripsRepositoryTest {
             repository.removeSuggestionFromTrip(tripId, suggestionId)
           }
 
-          val tripNotificationIds = trip.announcements
-          tripNotificationIds.forEach { tripNotificationId ->
-            repository.removeAnnouncementFromTrip(tripId, tripNotificationId)
+          val announcementIds = trip.announcements
+          announcementIds.forEach { announcementId ->
+            repository.removeAnnouncementFromTrip(tripId, announcementId)
           }
           repository.deleteTrip(tripId)
           repository.removeTripId(tripId)

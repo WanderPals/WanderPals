@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.screens.notification
+package com.github.se.wanderpals.ui.screens.announcement
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -22,16 +22,16 @@ import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
 import java.time.LocalDateTime
 
 /**
- * CreateNotification composable responsible for adding a notification.
+ * CreateAnnouncement composable responsible for adding a Announcement.
  *
- * @param tripId the id of the trip for which the notification is being created
- * @param viewModel a CreateNotificationViewModel that needs to be initialized beforehand
- * @param onSuccess code to execute after the successful creation of the notification
- * @param onFailure code to execute if the creation of the notification fails
- * @param onCancel code to execute if the user cancels the creation of the notification
+ * @param tripId the id of the trip for which the Announcement is being created
+ * @param viewModel a CreateAnnouncementViewModel that needs to be initialized beforehand
+ * @param onSuccess code to execute after the successful creation of the Announcement
+ * @param onFailure code to execute if the creation of the Announcement fails
+ * @param onCancel code to execute if the user cancels the creation of the Announcement
  */
 @Composable
-fun CreateNotification(
+fun CreateAnnouncement(
     tripId: String,
     viewModel: CreateAnnouncementViewModel,
     onNavigationBack: () -> Unit =
@@ -39,7 +39,7 @@ fun CreateNotification(
     // screen which is the same screen for both actions
 ) {
 
-  val MAX_NOTIF_TITLE_LENGTH = 55 // limit the trip notification title to 55 characters
+  val MAX_ANNOUNCEMENT_TITLE_LENGTH = 55 // limit the trip Announcement title to 55 characters
 
   var title by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
@@ -54,7 +54,7 @@ fun CreateNotification(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       OutlinedButton(
-          modifier = Modifier.align(Alignment.Start).testTag("tripNotifGoBackButton"),
+          modifier = Modifier.align(Alignment.Start).testTag("tripAnnouncementGoBackButton"),
           onClick = { onNavigationBack() }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -72,14 +72,14 @@ fun CreateNotification(
           OutlinedTextField(
               value = title,
               onValueChange = {
-                if (it.length <= MAX_NOTIF_TITLE_LENGTH) {
+                if (it.length <= MAX_ANNOUNCEMENT_TITLE_LENGTH) {
                   title = it
                   // Reset titleError if the user starts typing again after an error was shown
                   titleError = if (title.trim().isEmpty()) "Title cannot be empty" else ""
                 }
               },
-              label = { Text("Trip Notification Title*") },
-              modifier = Modifier.fillMaxWidth().testTag("inputNotificationTitle"),
+              label = { Text("Trip Announcement Title*") },
+              modifier = Modifier.fillMaxWidth().testTag("inputAnnouncementTitle"),
               isError =
                   titleError.isNotEmpty() &&
                       title
@@ -90,9 +90,11 @@ fun CreateNotification(
               singleLine = true)
 
           Text(
-              text = "${title.length}/$MAX_NOTIF_TITLE_LENGTH",
+              text = "${title.length}/$MAX_ANNOUNCEMENT_TITLE_LENGTH",
               modifier =
-                  Modifier.align(Alignment.End).padding(end = 8.dp).testTag("notifTitleLengthText"),
+                  Modifier.align(Alignment.End)
+                      .padding(end = 8.dp)
+                      .testTag("announcementTitleLengthText"),
               style =
                   TextStyle(
                       fontSize = 12.sp,
@@ -118,11 +120,11 @@ fun CreateNotification(
                 descriptionError =
                     if (description.trim().isEmpty()) "Description cannot be empty" else ""
               },
-              label = { Text("Trip Notification Description*") },
+              label = { Text("Trip Announcement Description*") },
               modifier =
                   Modifier.fillMaxWidth()
                       .height(450.dp) // the height for a the description field area
-                      .testTag("inputNotificationDescription"),
+                      .testTag("inputAnnouncementDescription"),
               isError =
                   descriptionError.isNotEmpty() &&
                       description
@@ -142,7 +144,7 @@ fun CreateNotification(
           Spacer(modifier = Modifier.height(32.dp))
 
           Button(
-              modifier = Modifier.fillMaxWidth().height(50.dp).testTag("createNotificationButton"),
+              modifier = Modifier.fillMaxWidth().height(50.dp).testTag("createAnnouncementButton"),
               onClick = {
                 titleError = if (title.trim().isEmpty()) "Title cannot be empty" else ""
                 // add trim() to remove leading and trailing whitespaces
@@ -150,8 +152,8 @@ fun CreateNotification(
                     if (description.trim().isEmpty()) "Description cannot be empty" else ""
 
                 if (titleError.isEmpty() && descriptionError.isEmpty()) {
-                  // Logic to create notification
-                  val tripNotification =
+                  // Logic to create Announcement
+                  val announcement =
                       Announcement(
                           announcementId = "", // modified by database
                           userId = "", // modified by database
@@ -160,7 +162,7 @@ fun CreateNotification(
                           description = description,
                           timestamp = LocalDateTime.now())
                   // if successful, call onSuccess(), otherwise onFailure()
-                  if (viewModel.addNotification(tripId, tripNotification)) {
+                  if (viewModel.addAnnouncement(tripId, announcement)) {
                     onNavigationBack()
                   }
                 }
@@ -170,17 +172,3 @@ fun CreateNotification(
         }
   }
 }
-
-// @Preview(showBackground = true)
-// @Composable
-// fun PreviewCreateNotification() {
-//  val fakeViewModel =
-//      CreateNotificationViewModel() // Ensure this has a default constructor or provide necessary
-//                                    // initializations
-//  CreateNotification(
-//      tripId = "123",
-//      viewModel = fakeViewModel,
-//      onNavigationBack = { /* Preview success */},
-//      onFailure = { /* Preview failure */}
-//    )
-// }
