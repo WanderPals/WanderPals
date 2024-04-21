@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 data class Destination(val route: String, val icon: ImageVector, val text: String)
 
+val TRIP_BOTTOM_BAR by lazy { TRIP_DESTINATIONS.subList(0, 5) }
+
 /** List of destinations in the trip screen. */
 val TRIP_DESTINATIONS =
     listOf(
@@ -28,4 +30,7 @@ val TRIP_DESTINATIONS =
         Destination(route = Route.MAP, icon = Icons.Default.Place, text = "Map"),
         Destination(
             route = Route.NOTIFICATION, icon = Icons.Default.Notifications, text = "Notification"),
-    )
+        Destination(
+            route = Route.SUGGESTION_DETAIL,
+            icon = Icons.AutoMirrored.Filled.List,
+            text = "Detail Suggestion"))

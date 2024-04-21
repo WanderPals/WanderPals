@@ -1,106 +1,156 @@
 package com.github.se.wanderpals.ui.navigation
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavDestination
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
 
 /**
- * Class defining the navigation actions in the app.
+ * rememberNavController with a start destination for MultiNavigationAppState.
  *
- * @param navController The navigation controller.
+ * @param startDestination The start destination.
+ * @param navController The nav controller.
  */
-class NavigationActions(private val navController: NavHostController) {
+@Composable
+fun rememberMultiNavigationAppState(
+    startDestination: String,
+    navController: NavHostController = rememberNavController()
+) =
+    remember(navController, startDestination) {
+      MultiNavigationAppState(navController, startDestination)
+    }
 
-  var variables = NavigationActionsVariables()
+class MultiNavigationAppState(
+    private var navController: NavHostController? = null,
+    private var startDestination: String? = null
+) {
+
+  /** Navigate back in the navigation stack. */
+  fun goBack() {
+    navController?.navigateUp()
+  }
 
   /**
-   * Navigate to a specific route.
+   * Set the nav controller.
    *
-   * Setup to avoid multiple instances of the same destination, restore previously selected item and
-   * pop up the start destination of the graph to avoid a large stack of destinations
+   * @param inputNavController The nav controller to set.
+   */
+  fun setNavController(inputNavController: NavHostController) {
+    navController = inputNavController
+  }
+
+  /**
+   * Get the nav controller.
+   *
+   * @return The nav controller.
+   */
+  var getNavController: NavHostController = navController!!
+    get() {
+      return navController!!
+    }
+    private set
+
+  /**
+   * Get the start destination.
+   *
+   * @return The start destination.
+   */
+  fun getStartDestination(): String {
+    return startDestination!!
+  }
+
+  /** Print the back stack. */
+  @SuppressLint("RestrictedApi")
+  fun printBackStack() {
+    println("--------------------")
+    navController!!.currentBackStack.value.forEach { println("screen : ${it.destination.route}") }
+    println("--------------------")
+  }
+
+  /**
+   * Navigate to a route.
+   *
+   * @param route The route to navigate to.
+   * @param popUpTo Whether to pop up to the route.
+   * @param popUpToInclusive Whether to pop up to the route inclusively.
+   */
+  fun navigateTo(route: String, popUpTo: Boolean = true, popUpToInclusive: Boolean = false) {
+    getNavController.navigate(route) {
+      if (popUpTo) {
+        popUpTo(route) {
+          inclusive = popUpToInclusive
+          saveState = false
+        }
+        launchSingleTop = true
+        restoreState = true
+      }
+    }
+  }
+}
+
+/** The navigation actions for the app. */
+data class NavigationActions(
+    var variables: NavigationActionsVariables = NavigationActionsVariables(),
+    var mainNavigation: MultiNavigationAppState = MultiNavigationAppState(),
+    var tripNavigation: MultiNavigationAppState = MultiNavigationAppState(),
+) {
+
+  private var lastlyUsedController = mainNavigation
+
+  /** Go back in the navigation stack. */
+  fun goBack() {
+    lastlyUsedController.goBack()
+  }
+
+  /**
+   * Navigate to a route depending on the route.
    *
    * @param route The route to navigate to.
    */
   fun navigateTo(route: String) {
-    navController.navigate(route) {
-      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-      launchSingleTop = true
-      restoreState = true
+    if (TRIP_DESTINATIONS.any { it.route == route }) {
+      lastlyUsedController = tripNavigation
+      tripNavigation.navigateTo(route)
+    } else {
+      lastlyUsedController = mainNavigation
+      mainNavigation.navigateTo(route)
     }
-  }
-
-  fun navigateToTrip(tripId: String) {
-    navController.navigate(Route.TRIP) {
-      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-      launchSingleTop = true
-      restoreState = true
-      variables.currentTrip = tripId
-      variables.currentGeoCords = GeoCords(0.0, 0.0)
-      variables.currentAddress = ""
-    }
-  }
-
-  fun navigateToMap(tripId: String, geoCords: GeoCords, address: String) {
-    Log.d("NAVIGATION", "Navigating to map")
-    navController.navigate(Route.TRIP) {
-      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-      launchSingleTop = true
-      restoreState = true
-      variables.currentTrip = tripId
-      variables.currentGeoCords = geoCords
-      variables.currentAddress = address
-      variables.suggestionId = ""
-    }
-  }
-
-  fun navigateToSuggestion(tripId: String, suggestionId: String) {
-    Log.d("NAVIGATION", "Navigating to suggestion")
-    navController.navigate(Route.TRIP) {
-      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-      launchSingleTop = true
-      restoreState = true
-      variables.currentTrip = tripId
-      variables.currentGeoCords = GeoCords(0.0, 0.0)
-      variables.currentAddress = ""
-      variables.suggestionId = suggestionId
-    }
-  }
-
-  fun navigateToCreateSuggestion(tripId: String, geoCords: GeoCords, address: String) {
-    Log.d("NAVIGATION", "Navigating to create suggestion")
-    navController.navigate(Route.CREATE_SUGGESTION) {
-      popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-      launchSingleTop = true
-      restoreState = true
-      variables.currentTrip = tripId
-      variables.currentGeoCords = geoCords
-      variables.currentAddress = address
-      variables.suggestionId = ""
-    }
-  }
-
-  /** Navigate back in the navigation stack. */
-  fun goBack() {
-    navController.navigateUp()
   }
 
   /**
-   * Get the current destination.
+   * Set the variables for the navigation actions.
    *
-   * @return The current destination.
+   * @param geoCords The geo cords.
+   * @param address The address.
    */
-  @Composable
-  fun getCurrentDestination(): NavDestination? {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    return navBackStackEntry?.destination
+  fun setVariablesLocation(geoCords: GeoCords, address: String) {
+    variables.currentGeoCords = geoCords
+    variables.currentAddress = address
+  }
+
+  /**
+   * Set the variables for the navigation actions.
+   *
+   * @param tripId The trip id.
+   */
+  fun setVariablesTrip(tripId: String) {
+    variables.currentTrip = tripId
+  }
+
+  /**
+   * Set the variables for the navigation actions.
+   *
+   * @param suggestionId The suggestion id.
+   */
+  fun setVariablesSuggestion(suggestionId: String) {
+    variables.suggestionId = suggestionId
   }
 }
 
+/** Variables for the navigation actions. */
 class NavigationActionsVariables {
   var currentTrip: String = ""
   var currentGeoCords: GeoCords = GeoCords(0.0, 0.0)
