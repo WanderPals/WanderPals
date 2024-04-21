@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -37,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,7 +45,13 @@ import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import java.time.format.DateTimeFormatter
 
-/** The Notification screen. */
+/**
+ * Composable function representing the Notification screen.
+ *
+ * This function displays notifications or announcements based on user selection.
+ *
+ * @param notificationsViewModel The view model containing notifications data.
+ */
 @Composable
 fun Notification(notificationsViewModel: NotificationsViewModel) {
 
@@ -173,6 +177,13 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
 
 }
 
+/**
+ * Composable function representing an item in the notification list.
+ *
+ * This function displays a single notification item with its title and timestamp.
+ *
+ * @param notification The notification to display.
+ */
 @Composable
 fun NotificationItem(notification: TripNotification) {
     Box(
@@ -230,6 +241,13 @@ fun NotificationItem(notification: TripNotification) {
     }
 }
 
+/**
+ * Composable function representing an item in the announcement list.
+ *
+ * This function displays a single announcement item with its title, timestamp, and username.
+ *
+ * @param notification The announcement to display.
+ */
 @Composable
 fun AnnouncementItem(notification: TripNotification) {
     Box(
