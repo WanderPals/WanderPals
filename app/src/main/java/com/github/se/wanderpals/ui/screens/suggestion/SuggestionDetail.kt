@@ -64,7 +64,7 @@ fun SuggestionDetail(
           duration = SnackbarDuration.Short)
       // Delay to allow user to read the message
       kotlinx.coroutines.delay(2000)
-      navActions.tripNavigation.goBack()
+      navActions.goBack()
     }
   }
   if (suggestion != null) {
@@ -90,8 +90,7 @@ fun SuggestionDetail(
               },
               navigationIcon = {
                 IconButton(
-                    onClick = { navActions.tripNavigation.goBack() },
-                    modifier = Modifier.testTag("BackButton")) {
+                    onClick = { navActions.goBack() }, modifier = Modifier.testTag("BackButton")) {
                       Icon(
                           imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                           contentDescription = "Go back",

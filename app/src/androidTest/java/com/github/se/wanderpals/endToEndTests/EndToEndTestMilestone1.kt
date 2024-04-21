@@ -19,9 +19,7 @@ import com.github.se.wanderpals.screens.CreateTripoScreen
 import com.github.se.wanderpals.screens.OverviewScreen
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.NavigationActionsVariables
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.navigation.globalVariables
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.overview.Overview
@@ -62,7 +60,6 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
     composeTestRule.setContent {
       mockNavController = rememberNavController()
       mockNavController2 = rememberNavController()
-      globalVariables = NavigationActionsVariables()
       mockNavActions =
           NavigationActions(
               mainNavigation =
@@ -82,7 +79,7 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
           BackHandler(true) {}
           CreateTrip(overviewViewModelTest, mockNavActions)
         }
-        composable(Route.TRIP) { navBackStackEntry ->
+        composable(Route.TRIP) {
           BackHandler(true) {}
           Trip(
               mockNavActions,

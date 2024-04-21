@@ -4,12 +4,16 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
 
+/**
+ * rememberNavController with a start destination for MultiNavigationAppState.
+ *
+ * @param startDestination The start destination.
+ * @param navController The nav controller.
+ */
 @Composable
 fun rememberMultiNavigationAppState(
     startDestination: String,
@@ -27,21 +31,6 @@ class MultiNavigationAppState(
   /** Navigate back in the navigation stack. */
   fun goBack() {
     navController?.navigateUp()
-  }
-
-  /**
-   * Get the current destination.
-   *
-   * @return The current destination.
-   */
-  @Composable
-  fun getCurrentDestination(): NavDestination? {
-    return if (navController != null) {
-      val navBackStackEntry by navController!!.currentBackStackEntryAsState()
-      navBackStackEntry?.destination
-    } else {
-      null
-    }
   }
 
   /**
@@ -63,15 +52,6 @@ class MultiNavigationAppState(
       return navController!!
     }
     private set
-
-  /**
-   * Set the start destination.
-   *
-   * @param route The route to set as the start destination.
-   */
-  fun setStartDestination(route: String) {
-    startDestination = route
-  }
 
   /**
    * Get the start destination.
@@ -113,10 +93,17 @@ class MultiNavigationAppState(
 
 /** The navigation actions for the app. */
 data class NavigationActions(
-    var variables: NavigationActionsVariables = globalVariables,
+    var variables: NavigationActionsVariables = NavigationActionsVariables(),
     var mainNavigation: MultiNavigationAppState = MultiNavigationAppState(),
     var tripNavigation: MultiNavigationAppState = MultiNavigationAppState(),
 ) {
+
+  private var lastlyUsedController = mainNavigation
+
+  /** Go back in the navigation stack. */
+  fun goBack() {
+    lastlyUsedController.goBack()
+  }
 
   /**
    * Navigate to a route depending on the route.
@@ -124,22 +111,40 @@ data class NavigationActions(
    * @param route The route to navigate to.
    */
   fun navigateTo(route: String) {
-    if (TRIP_BOTTOM_BAR.any { it.route == route }) {
+    if (TRIP_DESTINATIONS.any { it.route == route }) {
+      lastlyUsedController = tripNavigation
       tripNavigation.navigateTo(route)
     } else {
+      lastlyUsedController = mainNavigation
       mainNavigation.navigateTo(route)
     }
   }
 
+  /**
+   * Set the variables for the navigation actions.
+   *
+   * @param geoCords The geo cords.
+   * @param address The address.
+   */
   fun setVariablesLocation(geoCords: GeoCords, address: String) {
     variables.currentGeoCords = geoCords
     variables.currentAddress = address
   }
 
+  /**
+   * Set the variables for the navigation actions.
+   *
+   * @param tripId The trip id.
+   */
   fun setVariablesTrip(tripId: String) {
     variables.currentTrip = tripId
   }
 
+  /**
+   * Set the variables for the navigation actions.
+   *
+   * @param suggestionId The suggestion id.
+   */
   fun setVariablesSuggestion(suggestionId: String) {
     variables.suggestionId = suggestionId
   }
@@ -152,6 +157,3 @@ class NavigationActionsVariables {
   var currentAddress: String = ""
   var suggestionId: String = ""
 }
-
-/** Variables for the navigation actions instance. */
-lateinit var globalVariables: NavigationActionsVariables

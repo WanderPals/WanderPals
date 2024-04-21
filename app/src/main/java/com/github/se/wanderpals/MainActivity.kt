@@ -20,10 +20,8 @@ import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.NavigationActionsVariables
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
-import com.github.se.wanderpals.ui.navigation.globalVariables
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
@@ -43,11 +41,11 @@ import kotlinx.coroutines.Dispatchers
 
 const val EMPTY_CODE = ""
 
+lateinit var navigationActions: NavigationActions
+
 class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
-
-  private lateinit var navigationActions: NavigationActions
 
   private lateinit var tripsRepository: TripsRepository
 
@@ -118,7 +116,6 @@ class MainActivity : ComponentActivity() {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          globalVariables = NavigationActionsVariables()
           navigationActions =
               NavigationActions(
                   mainNavigation = rememberMultiNavigationAppState(startDestination = ROOT_ROUTE),
@@ -148,17 +145,8 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(Route.TRIP) {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
-                  val routeToGo =
-                      if (navigationActions.variables.suggestionId != "") {
-                        Route.SUGGESTION
-                      } else if (navigationActions.variables.currentAddress != "") {
-                        Route.MAP
-                      } else {
-                        Route.DASHBOARD
-                      }
                   val tripId = navigationActions.variables.currentTrip
                   navigationActions.tripNavigation.setNavController(rememberNavController())
-                  navigationActions.tripNavigation.setStartDestination(routeToGo)
                   Trip(navigationActions, tripId, tripsRepository, placesClient)
                 }
                 composable(Route.CREATE_TRIP) {
@@ -170,15 +158,7 @@ class MainActivity : ComponentActivity() {
                   val cord = navigationActions.variables.currentGeoCords
                   Log.d("CREATE_SUGGESTION", "Location: $loc")
                   Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
-                  val onAction: () -> Unit = {
-                    if (loc != "") {
-                      navigationActions.tripNavigation.setStartDestination(Route.MAP)
-                      navigationActions.navigateTo(Route.TRIP) // Directly to map
-                    } else {
-                      navigationActions.tripNavigation.setStartDestination(Route.SUGGESTION)
-                      navigationActions.navigateTo(Route.TRIP) // Directly to suggestion
-                    }
-                  }
+                  val onAction: () -> Unit = { navigationActions.goBack() }
                   CreateSuggestion(
                       tripId = navigationActions.variables.currentTrip,
                       viewModel = CreateSuggestionViewModel(tripsRepository),

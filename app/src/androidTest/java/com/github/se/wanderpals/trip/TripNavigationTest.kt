@@ -9,9 +9,7 @@ import com.github.se.wanderpals.BuildConfig
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.NavigationActionsVariables
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.navigation.globalVariables
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.google.android.libraries.places.api.Places
@@ -44,7 +42,6 @@ class TripNavigationTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
     composeTestRule.setContent {
       mockNavController = rememberNavController()
       mockNavController2 = rememberNavController()
-      globalVariables = NavigationActionsVariables()
       mockNavActions =
           NavigationActions(
               mainNavigation =

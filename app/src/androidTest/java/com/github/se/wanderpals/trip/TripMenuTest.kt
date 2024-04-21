@@ -7,9 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.NavigationActionsVariables
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.navigation.globalVariables
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.kaspersky.components.composesupport.config.withComposeSupport
@@ -41,7 +39,6 @@ class TripMenuTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
     composeTestRule.setContent {
       mockNavController = rememberNavController()
       mockNavController2 = rememberNavController()
-      globalVariables = NavigationActionsVariables()
       mockNavActions =
           NavigationActions(
               mainNavigation =
