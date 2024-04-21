@@ -161,6 +161,8 @@ class SuggestionBottomSheetTest {
         .assertExists()
         .assertIsDisplayed()
 
+    composeTestRule.waitForIdle()
+
     // Verify that the bottom sheet is visible
     composeTestRule.onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true).assertExists()
     composeTestRule
@@ -171,6 +173,8 @@ class SuggestionBottomSheetTest {
         .onNodeWithTag("confirmDeleteSuggestionButton", useUnmergedTree = true)
         .assertExists()
         .performClick()
+
+    composeTestRule.waitForIdle()
 
     // Verify that the bottom sheet is not visible
     composeTestRule
@@ -202,6 +206,8 @@ class SuggestionBottomSheetTest {
         .onNodeWithTag("suggestion1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
+
+    composeTestRule.waitForIdle()
 
     // Verify that the bottom sheet is visible
     composeTestRule.onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true).assertExists()
