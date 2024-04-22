@@ -82,8 +82,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
           // Top bar with search functionality based on the title of the trips
           OverviewTopBar(
               searchText = searchText,
-              onSearchTextChanged = { newSearchText -> searchText = newSearchText },
-              navigationAction = navigationActions)
+              onSearchTextChanged = { newSearchText -> searchText = newSearchText })
         },
         bottomBar = {
           // Bottom bar containing buttons to create a new trip and join a trip

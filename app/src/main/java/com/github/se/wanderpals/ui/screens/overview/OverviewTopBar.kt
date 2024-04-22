@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import com.github.se.wanderpals.ui.navigation.NavigationActions
 
 // Constant for empty search text
 const val EMPTY_SEARCH = ""
@@ -35,16 +34,10 @@ const val EMPTY_SEARCH = ""
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OverviewTopBar(
-    searchText: String,
-    onSearchTextChanged: (String) -> Unit,
-    navigationAction: NavigationActions
-) {
+fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
 
   // State to track search bar activation
   var active by remember { mutableStateOf(false) }
-  var enabled by remember { mutableStateOf(false) }
-  var expand by remember { mutableStateOf(true) }
 
   Box(modifier = Modifier.fillMaxWidth()) {
     // DockedSearchBar component
@@ -75,12 +68,10 @@ fun OverviewTopBar(
           }
         },
         leadingIcon = {
-          IconButton(modifier = Modifier.testTag("menuButton"), onClick = {}) {
-            Icon(
-                imageVector = Icons.Default.Menu,
-                contentDescription = Icons.Default.Menu.name,
-                modifier = Modifier.size(24.dp))
-          }
+          Icon(
+              imageVector = Icons.Default.Menu,
+              contentDescription = Icons.Default.Menu.name,
+              modifier = Modifier.size(24.dp))
         }) {}
   }
 }

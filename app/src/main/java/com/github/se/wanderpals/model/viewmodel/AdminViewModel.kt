@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -34,5 +35,18 @@ open class AdminViewModel(
   // Push a modified user to the database
   open fun modifyUser(user: User) {
     viewModelScope.launch { tripsRepository.updateUserInTrip(tripId, user) }
+  }
+
+  class AdminViewModelFactory(
+      private val tripId: String,
+      private val tripsRepository: TripsRepository
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(AdminViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST") return AdminViewModel(tripsRepository, tripId) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
+    }
   }
 }

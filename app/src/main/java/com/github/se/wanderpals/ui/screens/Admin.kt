@@ -68,7 +68,7 @@ fun Admin(adminViewModel: AdminViewModel) {
   }
 
   val radioOptions = listOf(Role.OWNER, Role.ADMIN, Role.MEMBER, Role.VIEWER)
-  val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
+  var (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
 
   val rainbowColorsBrush = remember {
     Brush.sweepGradient(
@@ -125,6 +125,10 @@ fun Admin(adminViewModel: AdminViewModel) {
             IconButton(
                 onClick = {
                   userToUpdate = user
+                  selectedOption = user.role
+                  Log.d("Admin", "User: $selectedOption")
+                  // change the onOptionSelected
+                  onOptionSelected(selectedOption)
                   displayedChoiceBox = true
                 },
                 modifier = Modifier.testTag("editRoleButton")) {

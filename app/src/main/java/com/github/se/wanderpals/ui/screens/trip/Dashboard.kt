@@ -2,7 +2,6 @@ package com.github.se.wanderpals.ui.screens.trip
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -139,12 +138,7 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
                 painterResource(id = R.drawable.logo_nsa),
                 contentDescription = "NSA",
                 modifier = Modifier.clip(RoundedCornerShape(16.dp)).size(40.dp))
-            Text(
-                text = "Admin",
-                modifier =
-                    Modifier.padding(horizontal = 8.dp, vertical = 8.dp).clickable {
-                      navActions.navigateTo(Route.ADMIN_PAGE)
-                    })
+            Text(text = "Admin", modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
           }
         },
         onClick = {
