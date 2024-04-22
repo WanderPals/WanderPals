@@ -61,9 +61,8 @@ fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
                     text =
                         member.name +
                             if (member.userId == currentUser?.userId) " (You)"
-                            else
-                                "", // Displays the name and a marker if the user is the current
-                                    // user
+                            else "", // Displays the name and a marker if the user is the current
+                    // user
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.testTag("memberName" + member.userId).width(230.dp))
