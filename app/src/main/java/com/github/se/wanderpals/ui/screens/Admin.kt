@@ -63,7 +63,9 @@ fun Admin(adminViewModel: AdminViewModel) {
   var displayed by remember { mutableStateOf(false) }
   var userToDelete by remember { mutableStateOf("") }
   var displayedChoiceBox by remember { mutableStateOf(false) }
-  var userToUpdate = User("", "", "", "", Role.VIEWER, GeoCords(0.0, 0.0), "")
+  var userToUpdate by remember {
+    mutableStateOf(User("", "", "", "", Role.VIEWER, GeoCords(0.0, 0.0), ""))
+  }
 
   val radioOptions = listOf(Role.OWNER, Role.ADMIN, Role.MEMBER, Role.VIEWER)
   val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
