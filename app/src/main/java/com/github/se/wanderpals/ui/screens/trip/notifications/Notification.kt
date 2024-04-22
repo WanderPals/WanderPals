@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,14 +58,22 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun Notification(notificationsViewModel: NotificationsViewModel,navigationActions: NavigationActions) {
 
+   LaunchedEffect(
+        Unit) { // This ensures updateStateLists is called once per composition, not on every recomposition
+        notificationsViewModel.updateStateLists()
+    }
+
   val notificationsList by notificationsViewModel.notifStateList.collectAsState()
   val announcementList by notificationsViewModel.announcementStateList.collectAsState()
-  var notificationSelected by remember { mutableStateOf(true) }
+  val notificationSelected by notificationsViewModel.isNotifSelected.collectAsState()
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
     Surface(
         modifier =
-            Modifier.fillMaxWidth().height(100.dp).padding(horizontal = 16.dp, vertical = 22.dp),
+        Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(horizontal = 16.dp, vertical = 22.dp),
         shape = RoundedCornerShape(70.dp),
         color = Color(0xFFA5B2C2)) {
           Row(
@@ -72,8 +81,11 @@ fun Notification(notificationsViewModel: NotificationsViewModel,navigationAction
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
                 Button(
-                    modifier = Modifier.fillMaxHeight().weight(1f).testTag("notificationButton"),
-                    onClick = { notificationSelected = true },
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .testTag("notificationButton"),
+                    onClick = { notificationsViewModel.setNotificationSelectionState(true) },
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor =
@@ -88,8 +100,11 @@ fun Notification(notificationsViewModel: NotificationsViewModel,navigationAction
                                       else FontWeight.Normal))
                     }
                 Button(
-                    modifier = Modifier.fillMaxHeight().weight(1f).testTag("announcementButton"),
-                    onClick = { notificationSelected = false },
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .testTag("announcementButton"),
+                    onClick = {  notificationsViewModel.setNotificationSelectionState(false) },
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor =
@@ -107,7 +122,9 @@ fun Notification(notificationsViewModel: NotificationsViewModel,navigationAction
         }
 
     HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-    LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+    LazyColumn(modifier = Modifier
+        .fillMaxSize()
+        .weight(1f)) {
       val itemsList = if (notificationSelected) notificationsList else announcementList
       items(itemsList) { item ->
         when (item) {
@@ -123,15 +140,20 @@ fun Notification(notificationsViewModel: NotificationsViewModel,navigationAction
       }
     }
     HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-    Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(100.dp)) {
       if (!notificationSelected) {
         Button(
-            onClick = {navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)},
+            onClick = {
+                navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)
+                      },
             modifier =
-                Modifier.padding(horizontal = 20.dp)
-                    .height(50.dp)
-                    .align(Alignment.Center)
-                    .testTag("createAnnouncementButton"),
+            Modifier
+                .padding(horizontal = 20.dp)
+                .height(50.dp)
+                .align(Alignment.Center)
+                .testTag("createAnnouncementButton"),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
               Row(
                   horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -167,18 +189,25 @@ fun Notification(notificationsViewModel: NotificationsViewModel,navigationAction
  */
 @Composable
 fun NotificationItem(notification: TripNotification) {
-  Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+  Box(modifier = Modifier
+      .fillMaxWidth()
+      .height(80.dp)) {
     Button(
         onClick = {},
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-          Row(modifier = Modifier.fillMaxSize().align(Alignment.CenterVertically)) {
+          Row(modifier = Modifier
+              .fillMaxSize()
+              .align(Alignment.CenterVertically)) {
             // Title Text
             Text(
                 text = notification.title,
                 style = TextStyle(fontSize = 16.sp),
                 color = Color.Black,
-                modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically),
                 textAlign = TextAlign.Start)
 
             // Spacer
@@ -214,18 +243,25 @@ fun NotificationItem(notification: TripNotification) {
  */
 @Composable
 fun AnnouncementItem(announcement: Announcement) {
-  Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+  Box(modifier = Modifier
+      .fillMaxWidth()
+      .height(80.dp)) {
     Button(
         onClick = {},
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-          Row(modifier = Modifier.fillMaxSize().align(Alignment.CenterVertically)) {
+          Row(modifier = Modifier
+              .fillMaxSize()
+              .align(Alignment.CenterVertically)) {
             // Title Text
             Text(
                 text = announcement.title,
                 style = TextStyle(fontSize = 16.sp),
                 color = Color.Black,
-                modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterVertically),
                 textAlign = TextAlign.Start)
 
             // Spacer

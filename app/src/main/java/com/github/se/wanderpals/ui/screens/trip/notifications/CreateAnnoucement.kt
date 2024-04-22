@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.notifications
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -29,9 +30,9 @@ import java.time.LocalDateTime
  * @param viewModel a CreateAnnouncementViewModel that needs to be initialized beforehand
  * @param onNavigationBack code to execute to go back on the previous screen
  */
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun CreateAnnouncement(
-    tripId: String,
     viewModel: NotificationsViewModel,
     onNavigationBack: () -> Unit // is either onSuccess or onCancel, because the user is navigating back to the previous
     // screen which is the same screen for both actions
@@ -160,10 +161,10 @@ fun CreateAnnouncement(
                               description = description,
                               timestamp = LocalDateTime.now())
 
-                  // if successful, call onSuccess(), otherwise onFailure()
-                  if (viewModel.addAnnouncement(tripId, announcement)) {
-                    onNavigationBack()
-                  }
+                  viewModel.addAnnouncement(announcement)
+                  viewModel.setNotificationSelectionState(false)
+                  onNavigationBack()
+
                 }
               }) {
                 Text("Announce", fontSize = 24.sp)

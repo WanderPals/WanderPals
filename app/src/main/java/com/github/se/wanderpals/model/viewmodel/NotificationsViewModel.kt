@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripId : String) : ViewModel() {
     val notification1 =
@@ -57,10 +59,13 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
     private val _isLoading = MutableStateFlow(true)
     open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    init{
-        getAllStateList()
-    }
-    open fun getAllStateList() {
+
+    // State flow to track loading state
+    private val _isNotifSelected = MutableStateFlow(true)
+    open val isNotifSelected: StateFlow<Boolean> = _isNotifSelected.asStateFlow()
+
+
+    open fun updateStateLists() {
         viewModelScope.launch {
             // Set loading state to true before fetching data
             _isLoading.value = true
@@ -77,12 +82,26 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
      * @param announcement The Announcement object to be added.
      * @return A boolean representing the success of the operation.
      */
-    open fun addAnnouncement(tripId: String, announcement: Announcement): Boolean {
-        var success: Boolean = true
-        viewModelScope.launch {
-            success =
-                tripsRepository.addAnnouncementToTrip(tripId, announcement)
+    open fun addAnnouncement(announcement: Announcement) {
+        runBlocking {
+            tripsRepository.addAnnouncementToTrip(tripId,announcement)
         }
-        return success
+    }
+
+
+    class NotificationsViewModelFactory(
+        private val tripsRepository: TripsRepository,
+        private val tripId: String
+    ) : ViewModelProvider.Factory {
+
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(NotificationsViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST") return NotificationsViewModel(tripsRepository, tripId) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
+    fun setNotificationSelectionState(value: Boolean) {
+        _isNotifSelected.value = value
     }
 }

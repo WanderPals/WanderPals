@@ -134,10 +134,18 @@ fun Trip(
                       }
                     }
                     composable(Route.NOTIFICATION) {
-                      Notification(NotificationsViewModel(tripsRepository,tripId),oldNavActions)
+                      val notificationsViewModel : NotificationsViewModel =
+                            viewModel(
+                                factory = NotificationsViewModel.NotificationsViewModelFactory(tripsRepository,tripId),
+                                key = "NotificationsViewModel")
+                      Notification(notificationsViewModel,oldNavActions)
                     }
                     composable(Route.CREATE_ANNOUNCEMENT){
-                      CreateAnnouncement(tripId = tripId, viewModel = NotificationsViewModel(tripsRepository,tripId), onNavigationBack = {oldNavActions.goBack()})
+                      val notificationsViewModel : NotificationsViewModel =
+                          viewModel(
+                              factory = NotificationsViewModel.NotificationsViewModelFactory(tripsRepository,tripId),
+                              key = "NotificationsViewModel")
+                      CreateAnnouncement(notificationsViewModel, onNavigationBack = {oldNavActions.goBack()})
                       }
 
                     composable(Route.MEMBERS) {
