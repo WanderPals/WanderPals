@@ -90,7 +90,7 @@ fun Admin(adminViewModel: AdminViewModel) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 15.dp)) {
           Image( // Icon for the admin screen
-              painterResource(id = R.drawable.ptn_file),
+              painterResource(id = R.drawable.logo_nsa),
               contentDescription = "Admin Icon",
               contentScale = ContentScale.Crop,
               modifier =
