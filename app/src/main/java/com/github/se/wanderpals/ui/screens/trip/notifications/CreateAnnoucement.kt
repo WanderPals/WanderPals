@@ -26,9 +26,7 @@ import java.time.LocalDateTime
  *
  * @param tripId the id of the trip for which the Announcement is being created
  * @param viewModel a CreateAnnouncementViewModel that needs to be initialized beforehand
- * @param onSuccess code to execute after the successful creation of the Announcement
- * @param onFailure code to execute if the creation of the Announcement fails
- * @param onCancel code to execute if the user cancels the creation of the Announcement
+ * @param onNavigationBack code to execute to go back on the previous screen
  */
 @Composable
 fun CreateAnnouncement(
