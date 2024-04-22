@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -134,6 +135,19 @@ open class AgendaViewModel(
   fun fetchDailyActivities(selectedDate: LocalDate) {
     viewModelScope.launch {
       _dailyActivities.value = getDailyActivities(selectedDate)?.toList() ?: emptyList()
+    }
+  }
+
+  class AgendaViewModelFactory(
+      private val tripId: String,
+      private val tripsRepository: TripsRepository
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(AgendaViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST") return AgendaViewModel(tripId, tripsRepository) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
     }
   }
 }

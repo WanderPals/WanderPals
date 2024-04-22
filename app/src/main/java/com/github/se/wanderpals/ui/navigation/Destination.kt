@@ -35,4 +35,5 @@ val TRIP_DESTINATIONS =
             route = Route.SUGGESTION_DETAIL,
             icon = Icons.AutoMirrored.Filled.List,
             text = "Detail Suggestion"),
+        Destination(route = Route.MEMBERS, icon = Icons.AutoMirrored.Filled.List, text = "Member List"),
         Destination(route = Route.CREATE_ANNOUNCEMENT, icon = Icons.Default.Create, text = "CreateAnnouncement"))
