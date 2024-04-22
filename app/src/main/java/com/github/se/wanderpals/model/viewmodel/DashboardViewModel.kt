@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -30,6 +31,19 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
       // Fetch all trips from the repository
       _state.value = tripsRepository.getAllSuggestionsFromTrip(tripId)
       _isLoading.value = false
+    }
+  }
+
+  class DashboardViewModelFactory(
+      private val tripsRepository: TripsRepository,
+      private val tripId: String
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(DashboardViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST") return DashboardViewModel(tripsRepository, tripId) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
     }
   }
 }

@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +46,10 @@ import com.github.se.wanderpals.ui.navigation.Route
  */
 @Composable
 fun Overview(overviewViewModel: OverviewViewModel, navigationActions: NavigationActions) {
-
+  LaunchedEffect(
+      Unit) { // This ensures getAllTrips is called once per composition, not on every recomposition
+        overviewViewModel.getAllTrips()
+      }
   // Collecting trips list and loading state from view model
   val tripsList by overviewViewModel.state.collectAsState()
   val isLoading by overviewViewModel.isLoading.collectAsState()

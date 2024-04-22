@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -170,9 +171,12 @@ class MainActivity : ComponentActivity() {
                       })
                 }
                 composable(Route.OVERVIEW) {
+                  val overviewViewModel: OverviewViewModel =
+                      viewModel(
+                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          key = "Overview")
                   Overview(
-                      overviewViewModel = OverviewViewModel(tripsRepository),
-                      navigationActions = navigationActions)
+                      overviewViewModel = overviewViewModel, navigationActions = navigationActions)
                 }
                 composable(Route.TRIP) {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
@@ -181,7 +185,11 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, tripsRepository, placesClient)
                 }
                 composable(Route.CREATE_TRIP) {
-                  CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
+                  val overviewViewModel: OverviewViewModel =
+                      viewModel(
+                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          key = "Overview")
+                  CreateTrip(overviewViewModel, navigationActions)
                 }
 
                 composable(Route.CREATE_SUGGESTION) {
@@ -190,9 +198,16 @@ class MainActivity : ComponentActivity() {
                   Log.d("CREATE_SUGGESTION", "Location: $loc")
                   Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
                   val onAction: () -> Unit = { navigationActions.goBack() }
+
+                  val createSuggestionViewModel: CreateSuggestionViewModel =
+                      viewModel(
+                          factory =
+                              CreateSuggestionViewModel.CreateSuggestionViewModelFactory(
+                                  tripsRepository),
+                          key = "CreateSuggestion")
                   CreateSuggestion(
                       tripId = navigationActions.variables.currentTrip,
-                      viewModel = CreateSuggestionViewModel(tripsRepository),
+                      viewModel = createSuggestionViewModel,
                       addr = loc,
                       geoCords = cord,
                       onSuccess = onAction,
