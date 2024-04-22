@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.screens.announcement
+package com.github.se.wanderpals.ui.screens.trip.notifications
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

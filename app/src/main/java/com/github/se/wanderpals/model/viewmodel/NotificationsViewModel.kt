@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -8,8 +9,9 @@ import java.time.LocalDateTime
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-open class NotificationsViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
+open class NotificationsViewModel(val tripsRepository: TripsRepository) : ViewModel() {
   val notification1 =
       TripNotification(title = "New Trip Alert", path = "", timestamp = LocalDateTime.now())
 
@@ -53,4 +55,19 @@ open class NotificationsViewModel(private val tripsRepository: TripsRepository) 
   // State flow to track loading state
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    /**
+     * Adds a Announcement by the administrator to a trip.
+     *
+     * @param tripId The ID of the trip to which the Announcement is to be added.
+     * @param announcement The Announcement object to be added.
+     * @return A boolean representing the success of the operation.
+     */
+   open fun addAnnouncement(tripId: String, announcement: Announcement): Boolean {
+        var success: Boolean = true
+        viewModelScope.launch {
+            success = tripsRepository.addAnnouncementToTrip(tripId, announcement).also { success = it }
+        }
+        return success
+    }
 }

@@ -8,7 +8,7 @@ import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
 import com.github.se.wanderpals.screens.CreateAnnouncementScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.announcement.CreateAnnouncement
+import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
