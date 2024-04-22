@@ -52,7 +52,11 @@ import com.github.se.wanderpals.model.data.Role as Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 
-/** The Admin screen. */
+/**
+ * Admin screen that allows the owner to manage the users of the trip.
+ *
+ * @param adminViewModel The ViewModel that manages the Admin screen.
+ */
 @Composable
 fun Admin(adminViewModel: AdminViewModel) {
   val userList by adminViewModel.listOfUsers.collectAsState()

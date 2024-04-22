@@ -7,6 +7,13 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * AdminViewModel is a ViewModel class that is used to manage the Admin screen. This class is used
+ * to manage the Admin screen and handle the business logic of the Admin screen.
+ *
+ * @param tripsRepository The repository that contains the trips.
+ * @param tripId The id of the trip.
+ */
 open class AdminViewModel(
     private val tripsRepository: TripsRepository,
     private val tripId: String
