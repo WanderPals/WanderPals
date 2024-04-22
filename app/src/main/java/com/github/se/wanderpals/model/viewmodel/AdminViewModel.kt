@@ -13,7 +13,7 @@ open class AdminViewModel(
 ) : ViewModel() {
   open var listOfUsers = MutableStateFlow(emptyList<User>())
   // delete a user from the database
-  fun deleteUser(userId: String) {
+  open fun deleteUser(userId: String) {
     viewModelScope.launch { tripsRepository.removeUserFromTrip(userId, tripId) }
   }
 
@@ -21,11 +21,11 @@ open class AdminViewModel(
     getUsers()
   }
   // get all the users from the trip
-  private fun getUsers() {
+  open fun getUsers() {
     viewModelScope.launch { listOfUsers.value += tripsRepository.getAllUsersFromTrip(tripId) }
   }
   // Push a modified user to the database
-  fun modifyUser(user: User) {
+  open fun modifyUser(user: User) {
     viewModelScope.launch { tripsRepository.updateUserInTrip(tripId, user) }
   }
 }

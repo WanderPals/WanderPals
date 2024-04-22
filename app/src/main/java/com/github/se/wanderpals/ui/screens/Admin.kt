@@ -76,12 +76,13 @@ fun Admin(adminViewModel: AdminViewModel) {
             Color(0xFF4DD0E1),
             Color(0xFF9575CD)))
   }
-  Column {
+  Column(Modifier.testTag("adminScreen")) {
     Card(
         modifier =
             Modifier.align(alignment = Alignment.CenterHorizontally)
                 .padding(vertical = 50.dp)
-                .size(width = 300.dp, height = 200.dp),
+                .size(width = 300.dp, height = 200.dp)
+                .testTag("adminScreenCard"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 15.dp)) {
           Image( // Icon for the admin screen
@@ -92,15 +93,16 @@ fun Admin(adminViewModel: AdminViewModel) {
                   Modifier.padding(40.dp)
                       .size(100.dp)
                       .clip(CircleShape)
-                      .border(3.dp, rainbowColorsBrush, CircleShape))
+                      .border(3.dp, rainbowColorsBrush, CircleShape)
+                      .testTag("IconAdminScreen"))
         }
 
     Text(
         text = "Admin",
         style = MaterialTheme.typography.displaySmall,
-        modifier = Modifier.padding(start = 30.dp),
+        modifier = Modifier.padding(start = 30.dp).testTag("AdminTitle"),
         fontWeight = FontWeight.Bold)
-    HorizontalDivider(modifier = Modifier.padding(20.dp))
+    HorizontalDivider(modifier = Modifier.padding(20.dp).testTag("AdminDivider"))
 
     for (user in userList) {
       Log.d("Admin", "User: $user")
@@ -111,14 +113,15 @@ fun Admin(adminViewModel: AdminViewModel) {
             Text(
                 text = user.name,
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 30.dp))
+                modifier = Modifier.padding(start = 30.dp).testTag("userName"))
 
             // to change the role of a user
             IconButton(
                 onClick = {
                   userToUpdate = user
                   displayedChoiceBox = true
-                }) {
+                },
+                modifier = Modifier.testTag("editRoleButton")) {
                   Icon(
                       imageVector = Icons.Default.Person,
                       contentDescription = "Edit Role",
@@ -129,7 +132,8 @@ fun Admin(adminViewModel: AdminViewModel) {
                 onClick = {
                   displayed = true
                   userToDelete = user.userId
-                }) {
+                },
+                modifier = Modifier.testTag("deleteUserButton")) {
                   Icon(
                       imageVector = Icons.Default.Close,
                       contentDescription = "Delete User",
@@ -170,7 +174,7 @@ fun Admin(adminViewModel: AdminViewModel) {
                     text = "Change Role",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp))
+                    modifier = Modifier.padding(16.dp).testTag("changeRoleTitle"))
                 HorizontalDivider()
 
                 Column(Modifier.selectableGroup()) {
@@ -185,14 +189,14 @@ fun Admin(adminViewModel: AdminViewModel) {
                             .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically) {
                           RadioButton(
+                              modifier = Modifier.testTag("radioButton"),
                               selected = (text == selectedOption),
-                              onClick =
-                                  null // null recommended for accessibility with ScreenReaders
+                              onClick = null // null recommended for accessibility with ScreenReaders
                               )
                           Text(
                               text = text.toString(),
                               style = MaterialTheme.typography.titleSmall,
-                              modifier = Modifier.padding(start = 16.dp))
+                              modifier = Modifier.padding(start = 16.dp).testTag("stringRole"))
                         }
                   }
                 }
@@ -201,11 +205,11 @@ fun Admin(adminViewModel: AdminViewModel) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                   TextButton(
                       onClick = {
-                        userToUpdate.role = selectedOption
+                        userToUpdate = userToUpdate.copy(role = selectedOption)
                         adminViewModel.modifyUser(user = userToUpdate)
                         displayedChoiceBox = false
                       },
-                      modifier = Modifier.padding(10.dp)) {
+                      modifier = Modifier.padding(10.dp).testTag("ConfirmRoleChangeButton")) {
                         Text("Update Role")
                       }
                 }
