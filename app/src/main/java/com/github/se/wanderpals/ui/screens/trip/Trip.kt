@@ -106,10 +106,10 @@ fun Trip(
                       }
                     }
                     composable(Route.NOTIFICATION) {
-                      Notification(NotificationsViewModel(tripsRepository),oldNavActions)
+                      Notification(NotificationsViewModel(tripsRepository,tripId),oldNavActions)
                     }
                     composable(Route.CREATE_ANNOUNCEMENT){
-                      CreateAnnouncement(tripId = tripId, viewModel = NotificationsViewModel(tripsRepository), onNavigationBack = {oldNavActions.goBack()})
+                      CreateAnnouncement(tripId = tripId, viewModel = NotificationsViewModel(tripsRepository,tripId), onNavigationBack = {oldNavActions.goBack()})
                       }
 
                     composable(Route.SUGGESTION_DETAIL) {

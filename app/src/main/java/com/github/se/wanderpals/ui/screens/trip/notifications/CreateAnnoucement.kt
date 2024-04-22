@@ -18,8 +18,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
-import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
+import com.github.se.wanderpals.service.SessionManager
 import java.time.LocalDateTime
 
 /**
@@ -152,13 +152,14 @@ fun CreateAnnouncement(
                 if (titleError.isEmpty() && descriptionError.isEmpty()) {
                   // Logic to create Announcement
                   val announcement =
-                      Announcement(
-                          announcementId = "", // modified by database
-                          userId = "", // modified by database
-                          title = title,
-                          userName = "", // modified by database
-                          description = description,
-                          timestamp = LocalDateTime.now())
+                          Announcement(
+                              announcementId = "", // modified by database
+                              userId = "", // modified by database
+                              title = title,
+                              userName = SessionManager.getCurrentUser()!!.name,
+                              description = description,
+                              timestamp = LocalDateTime.now())
+
                   // if successful, call onSuccess(), otherwise onFailure()
                   if (viewModel.addAnnouncement(tripId, announcement)) {
                     onNavigationBack()
