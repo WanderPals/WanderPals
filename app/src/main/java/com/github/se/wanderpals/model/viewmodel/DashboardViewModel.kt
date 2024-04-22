@@ -35,14 +35,13 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
   }
 
   class DashboardViewModelFactory(
-    private val tripsRepository: TripsRepository,
-    private val tripId: String
+      private val tripsRepository: TripsRepository,
+      private val tripId: String
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(DashboardViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST")
-        return DashboardViewModel(tripsRepository, tripId) as T
+        @Suppress("UNCHECKED_CAST") return DashboardViewModel(tripsRepository, tripId) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }

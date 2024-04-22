@@ -29,17 +29,14 @@ open class CreateAnnouncementViewModel(tripsRepository: TripsRepository) : ViewM
     return a
   }
 
-  class CreateAnnouncementViewModelFactory(
-    private val tripsRepository: TripsRepository
-  ) : ViewModelProvider.Factory {
+  class CreateAnnouncementViewModelFactory(private val tripsRepository: TripsRepository) :
+      ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(CreateAnnouncementViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST")
-        return CreateAnnouncementViewModel(tripsRepository) as T
+        @Suppress("UNCHECKED_CAST") return CreateAnnouncementViewModel(tripsRepository) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }
   }
-
 }

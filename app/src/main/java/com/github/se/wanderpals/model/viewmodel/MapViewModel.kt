@@ -43,16 +43,14 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
     }
   }
 
-
   class MapViewModelFactory(
-    private val tripsRepository: TripsRepository,
-    private val tripId: String
+      private val tripsRepository: TripsRepository,
+      private val tripId: String
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(MapViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST")
-        return MapViewModel(tripsRepository, tripId) as T
+        @Suppress("UNCHECKED_CAST") return MapViewModel(tripsRepository, tripId) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }

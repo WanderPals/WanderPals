@@ -23,7 +23,6 @@ class AnnouncementViewModel(private val tripsRepository: TripsRepository) {
     }
   }
 
-
   // TO add once the view model extends the viewModel class and become sa proper view model
   /*
   class AnnouncementViewModelFactory(private val tripsRepository: TripsRepository) : ViewModelProvider.Factory {

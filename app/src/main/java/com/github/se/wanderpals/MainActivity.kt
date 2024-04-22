@@ -171,10 +171,12 @@ class MainActivity : ComponentActivity() {
                       })
                 }
                 composable(Route.OVERVIEW) {
-                    val overviewViewModel:OverviewViewModel = viewModel(factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository), key = "Overview")
+                  val overviewViewModel: OverviewViewModel =
+                      viewModel(
+                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          key = "Overview")
                   Overview(
-                      overviewViewModel = overviewViewModel,
-                      navigationActions = navigationActions)
+                      overviewViewModel = overviewViewModel, navigationActions = navigationActions)
                 }
                 composable(Route.TRIP) {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
@@ -183,7 +185,10 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, tripsRepository, placesClient)
                 }
                 composable(Route.CREATE_TRIP) {
-                    val overviewViewModel:OverviewViewModel = viewModel(factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository), key = "Overview")
+                  val overviewViewModel: OverviewViewModel =
+                      viewModel(
+                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          key = "Overview")
                   CreateTrip(overviewViewModel, navigationActions)
                 }
 
@@ -194,7 +199,12 @@ class MainActivity : ComponentActivity() {
                   Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
                   val onAction: () -> Unit = { navigationActions.goBack() }
 
-                    val createSuggestionViewModel:CreateSuggestionViewModel = viewModel(factory = CreateSuggestionViewModel.CreateSuggestionViewModelFactory(tripsRepository), key = "CreateSuggestion")
+                  val createSuggestionViewModel: CreateSuggestionViewModel =
+                      viewModel(
+                          factory =
+                              CreateSuggestionViewModel.CreateSuggestionViewModelFactory(
+                                  tripsRepository),
+                          key = "CreateSuggestion")
                   CreateSuggestion(
                       tripId = navigationActions.variables.currentTrip,
                       viewModel = createSuggestionViewModel,

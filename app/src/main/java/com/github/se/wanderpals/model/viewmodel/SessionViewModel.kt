@@ -27,14 +27,13 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
       }
     }
   }
-  class SessionViewModelFactory(
-    private val tripsRepository: TripsRepository
-  ) : ViewModelProvider.Factory {
+
+  class SessionViewModelFactory(private val tripsRepository: TripsRepository) :
+      ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(SessionViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST")
-        return SessionViewModel(tripsRepository) as T
+        @Suppress("UNCHECKED_CAST") return SessionViewModel(tripsRepository) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }

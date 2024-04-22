@@ -184,17 +184,16 @@ open class SuggestionsViewModel(
     hideBottomSheet()
   }
 
+  class SuggestionsViewModelFactory(
+      private val tripsRepository: TripsRepository,
+      private val tripId: String
+  ) : ViewModelProvider.Factory {
 
-    class SuggestionsViewModelFactory(
-        private val tripsRepository: TripsRepository,
-        private val tripId: String
-    ) : ViewModelProvider.Factory {
-
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(SuggestionsViewModel::class.java)) {
-                @Suppress("UNCHECKED_CAST") return SuggestionsViewModel(tripsRepository, tripId) as T
-            }
-            throw IllegalArgumentException("Unknown ViewModel class")
-        }
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(SuggestionsViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST") return SuggestionsViewModel(tripsRepository, tripId) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
     }
+  }
 }

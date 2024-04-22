@@ -19,14 +19,12 @@ open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewMod
     return a
   }
 
-  class CreateSuggestionViewModelFactory(
-    private val tripsRepository: TripsRepository
-  ) : ViewModelProvider.Factory {
+  class CreateSuggestionViewModelFactory(private val tripsRepository: TripsRepository) :
+      ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(CreateSuggestionViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST")
-        return CreateSuggestionViewModel(tripsRepository) as T
+        @Suppress("UNCHECKED_CAST") return CreateSuggestionViewModel(tripsRepository) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }

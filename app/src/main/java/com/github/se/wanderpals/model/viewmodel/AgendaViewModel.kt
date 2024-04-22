@@ -137,9 +137,10 @@ open class AgendaViewModel(
       _dailyActivities.value = getDailyActivities(selectedDate)?.toList() ?: emptyList()
     }
   }
+
   class AgendaViewModelFactory(
-    private val tripId: String,
-    private val tripsRepository: TripsRepository
+      private val tripId: String,
+      private val tripsRepository: TripsRepository
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -27,11 +27,6 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-  init {
-    // Fetch all trips when the ViewModel is initialized
-    getAllTrips()
-  }
-
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
     viewModelScope.launch {
@@ -74,14 +69,12 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
     return success
   }
 
-  class OverviewViewModelFactory(
-    private val tripsRepository: TripsRepository
-  ) : ViewModelProvider.Factory {
+  class OverviewViewModelFactory(private val tripsRepository: TripsRepository) :
+      ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(OverviewViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST")
-        return OverviewViewModel(tripsRepository) as T
+        @Suppress("UNCHECKED_CAST") return OverviewViewModel(tripsRepository) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }
