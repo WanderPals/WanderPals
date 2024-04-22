@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -71,5 +72,18 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
       }
     }
     return success
+  }
+
+  class OverviewViewModelFactory(
+    private val tripsRepository: TripsRepository
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(OverviewViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST")
+        return OverviewViewModel(tripsRepository) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
+    }
   }
 }

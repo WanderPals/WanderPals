@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -59,7 +60,7 @@ fun Trip(
 ) {
 
   // update the SessionManagers Users Role, from the User In the Trip Object
-  val sessionViewModel = SessionViewModel(tripsRepository)
+    val sessionViewModel:SessionViewModel = viewModel(factory = SessionViewModel.SessionViewModelFactory(tripsRepository), key = "Session")
   LaunchedEffect(key1 = tripId) { sessionViewModel.updateRoleForCurrentUser(tripId) }
 
   Scaffold(
@@ -76,31 +77,49 @@ fun Trip(
                   startDestination = oldNavActions.tripNavigation.getStartDestination(),
                   route = Route.TRIP) {
                     composable(Route.DASHBOARD) {
-                      Dashboard(tripId, DashboardViewModel(tripsRepository, tripId), oldNavActions)
+                        val dashboardViewModel: DashboardViewModel = viewModel(
+                            factory = DashboardViewModel.DashboardViewModelFactory(
+                                tripsRepository,
+                                tripId
+                            ), key = "Dashboard"
+                        )
+                      Dashboard(tripId, dashboardViewModel, oldNavActions)
                     }
-                    composable(Route.AGENDA) { Agenda(AgendaViewModel(tripId, tripsRepository)) }
+                    composable(Route.AGENDA) {
+                        val agendaViewModel: AgendaViewModel = viewModel (factory = AgendaViewModel.AgendaViewModelFactory(tripId,tripsRepository), key = "Agenda")
+                        Agenda(agendaViewModel)
+                    }
                     composable(Route.SUGGESTION) {
+
+                        val suggestionsViewModel: SuggestionsViewModel =
+                            viewModel(
+                                factory =
+                                SuggestionsViewModel.SuggestionsViewModelFactory(
+                                    tripsRepository, tripId),
+                                key = "SuggestionsViewModel")
                       Suggestion(
                           oldNavActions,
                           tripId,
-                          SuggestionsViewModel(tripsRepository, tripId),
+                          suggestionsViewModel,
                           onSuggestionClick = {
                             oldNavActions.setVariablesLocation(GeoCords(0.0, 0.0), "")
                             oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                           })
                     }
                     composable(Route.MAP) {
+                        val mapViewModel:MapViewModel = viewModel(factory = MapViewModel.MapViewModelFactory(tripsRepository,tripId))
                       if (client != null) {
                         if (oldNavActions.variables.currentAddress == "") {
                           Log.d("NAVIGATION", "Navigating to map with empty address")
-                          Map(oldNavActions, MapViewModel(tripsRepository, tripId), client)
+
+                          Map(oldNavActions, mapViewModel, client)
                         } else {
                           Log.d("NAVIGATION", "Navigating to map with address")
                           val latLong =
                               LatLng(
                                   oldNavActions.variables.currentGeoCords.latitude,
                                   oldNavActions.variables.currentGeoCords.longitude)
-                          Map(oldNavActions, MapViewModel(tripsRepository, tripId), client, latLong)
+                          Map(oldNavActions, mapViewModel, client, latLong)
                         }
                       }
                     }
@@ -112,11 +131,17 @@ fun Trip(
                       Log.d(
                           "SuggestionDetail",
                           "SuggestionDetail: ${oldNavActions.variables.suggestionId}")
+
+                        val suggestionsViewModel: SuggestionsViewModel =
+                            viewModel(
+                                factory =
+                                SuggestionsViewModel.SuggestionsViewModelFactory(
+                                    tripsRepository, oldNavActions.variables.currentTrip),
+                                key = "SuggestionsViewModel")
                       SuggestionDetail(
                           suggestionId = oldNavActions.variables.suggestionId,
                           viewModel =
-                              SuggestionsViewModel(
-                                  tripsRepository, oldNavActions.variables.currentTrip),
+                          suggestionsViewModel,
                           navActions = oldNavActions)
                     }
                   }
@@ -132,7 +157,9 @@ fun Trip(
 @Composable
 fun BottomBar(navActions: NavigationActions) {
   NavigationBar(
-      modifier = Modifier.testTag("bottomNav").height(56.dp),
+      modifier = Modifier
+          .testTag("bottomNav")
+          .height(56.dp),
       containerColor = NavigationBarDefaults.containerColor,
       contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
       tonalElevation = NavigationBarDefaults.Elevation,
@@ -142,7 +169,9 @@ fun BottomBar(navActions: NavigationActions) {
 
     TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
-          modifier = Modifier.testTag(destination.text).size(56.dp),
+          modifier = Modifier
+              .testTag(destination.text)
+              .size(56.dp),
           selected = currentRoute == destination.route,
           onClick = {
             currentRoute = destination.route

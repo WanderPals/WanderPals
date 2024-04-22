@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -27,4 +28,18 @@ open class CreateAnnouncementViewModel(tripsRepository: TripsRepository) : ViewM
     }
     return a
   }
+
+  class CreateAnnouncementViewModelFactory(
+    private val tripsRepository: TripsRepository
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(CreateAnnouncementViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST")
+        return CreateAnnouncementViewModel(tripsRepository) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
+    }
+  }
+
 }

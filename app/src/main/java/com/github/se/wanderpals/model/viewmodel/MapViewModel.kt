@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -39,6 +40,21 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
       val allStopsFromSubscribedTrips =
           _tripsRepository.getAllSuggestionsFromTrip(tripId).map { it.stop }
       stops.value = allStops.toMutableList().apply { addAll(allStopsFromSubscribedTrips) }
+    }
+  }
+
+
+  class MapViewModelFactory(
+    private val tripsRepository: TripsRepository,
+    private val tripId: String
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(MapViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST")
+        return MapViewModel(tripsRepository, tripId) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
     }
   }
 }

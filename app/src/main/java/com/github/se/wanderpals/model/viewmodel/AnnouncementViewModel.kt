@@ -22,4 +22,19 @@ class AnnouncementViewModel(private val tripsRepository: TripsRepository) {
       false
     }
   }
+
+
+  // TO add once the view model extends the viewModel class and become sa proper view model
+  /*
+  class AnnouncementViewModelFactory(private val tripsRepository: TripsRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(AnnouncementViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST")
+        return AnnouncementViewModel(tripsRepository) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
+    }
+  }
+
+   */
 }
