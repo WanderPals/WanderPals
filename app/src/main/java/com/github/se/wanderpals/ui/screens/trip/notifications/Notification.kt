@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
+import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
 /**
@@ -53,7 +55,7 @@ import java.time.format.DateTimeFormatter
  * @param notificationsViewModel The view model containing notifications data.
  */
 @Composable
-fun Notification(notificationsViewModel: NotificationsViewModel) {
+fun Notification(notificationsViewModel: NotificationsViewModel,navigationActions: NavigationActions) {
 
   val notificationsList by notificationsViewModel.notifStateList.collectAsState()
   val announcementList by notificationsViewModel.announcementStateList.collectAsState()
@@ -124,7 +126,7 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
     Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
       if (!notificationSelected) {
         Button(
-            onClick = {},
+            onClick = {navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)},
             modifier =
                 Modifier.padding(horizontal = 20.dp)
                     .height(50.dp)

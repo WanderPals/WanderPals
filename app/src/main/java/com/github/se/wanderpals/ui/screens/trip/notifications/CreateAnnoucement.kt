@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
+import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import java.time.LocalDateTime
 
 /**
@@ -31,9 +32,8 @@ import java.time.LocalDateTime
 @Composable
 fun CreateAnnouncement(
     tripId: String,
-    viewModel: CreateAnnouncementViewModel,
-    onNavigationBack: () -> Unit =
-        {}, // is either onSuccess or onCancel, because the user is navigating back to the previous
+    viewModel: NotificationsViewModel,
+    onNavigationBack: () -> Unit // is either onSuccess or onCancel, because the user is navigating back to the previous
     // screen which is the same screen for both actions
 ) {
 
@@ -121,7 +121,7 @@ fun CreateAnnouncement(
               label = { Text("Trip Announcement Description*") },
               modifier =
                   Modifier.fillMaxWidth()
-                      .height(450.dp) // the height for a the description field area
+                      .height(400.dp) // the height for a the description field area
                       .testTag("inputAnnouncementDescription"),
               isError =
                   descriptionError.isNotEmpty() &&

@@ -2,6 +2,7 @@ package com.github.se.wanderpals.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
@@ -33,4 +34,5 @@ val TRIP_DESTINATIONS =
         Destination(
             route = Route.SUGGESTION_DETAIL,
             icon = Icons.AutoMirrored.Filled.List,
-            text = "Detail Suggestion"))
+            text = "Detail Suggestion"),
+        Destination(route = Route.CREATE_ANNOUNCEMENT, icon = Icons.Default.Create, text = "CreateAnnouncement"))

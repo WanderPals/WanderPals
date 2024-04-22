@@ -38,6 +38,7 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -105,8 +106,11 @@ fun Trip(
                       }
                     }
                     composable(Route.NOTIFICATION) {
-                      Notification(NotificationsViewModel(tripsRepository))
+                      Notification(NotificationsViewModel(tripsRepository),oldNavActions)
                     }
+                    composable(Route.CREATE_ANNOUNCEMENT){
+                      CreateAnnouncement(tripId = tripId, viewModel = NotificationsViewModel(tripsRepository), onNavigationBack = {oldNavActions.goBack()})
+                      }
 
                     composable(Route.SUGGESTION_DETAIL) {
                       Log.d(
@@ -132,7 +136,9 @@ fun Trip(
 @Composable
 fun BottomBar(navActions: NavigationActions) {
   NavigationBar(
-      modifier = Modifier.testTag("bottomNav").height(56.dp),
+      modifier = Modifier
+          .testTag("bottomNav")
+          .height(56.dp),
       containerColor = NavigationBarDefaults.containerColor,
       contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
       tonalElevation = NavigationBarDefaults.Elevation,
@@ -142,7 +148,9 @@ fun BottomBar(navActions: NavigationActions) {
 
     TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
-          modifier = Modifier.testTag(destination.text).size(56.dp),
+          modifier = Modifier
+              .testTag(destination.text)
+              .size(56.dp),
           selected = currentRoute == destination.route,
           onClick = {
             currentRoute = destination.route
