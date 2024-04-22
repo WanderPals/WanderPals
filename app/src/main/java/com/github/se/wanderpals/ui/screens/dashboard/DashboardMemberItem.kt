@@ -28,6 +28,12 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.service.SessionManager
 
+/**
+ * Composable function that represents a single member item in the member list.
+ *
+ * @param member The member object to be displayed.
+ * @param onClick The callback for the member item click.
+ */
 @Composable
 fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
   val cardColors =
@@ -52,7 +58,12 @@ fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
               modifier = Modifier.fillMaxWidth(),
               horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
-                    text = member.name + if (member.userId == currentUser?.userId) " (You)" else "",
+                    text =
+                        member.name +
+                            if (member.userId == currentUser?.userId) " (You)"
+                            else
+                                "", // Displays the name and a marker if the user is the current
+                                    // user
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.testTag("memberName" + member.userId).width(230.dp))
@@ -61,7 +72,7 @@ fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
                       text = member.role.toString(),
                       style = MaterialTheme.typography.bodyMedium,
                       modifier = Modifier.testTag("memberRole" + member.userId))
-                  if (member.role == Role.OWNER) {
+                  if (member.role == Role.OWNER) { // Display a star icon if the user is the owner
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = Icons.Default.Star,

@@ -27,6 +27,12 @@ import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
 
+/**
+ * Composable function that represents a dialog for displaying the details of a member.
+ *
+ * @param member The member object to be displayed.
+ * @param onDismiss The callback to dismiss the dialog.
+ */
 @Composable
 fun DashboardMemberDetail(member: User, onDismiss: () -> Unit) {
   Dialog(onDismissRequest = onDismiss) {
