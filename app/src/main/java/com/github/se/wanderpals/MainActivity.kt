@@ -22,9 +22,9 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.Admin
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
+import com.github.se.wanderpals.ui.screens.Admin
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
@@ -169,9 +169,9 @@ class MainActivity : ComponentActivity() {
                       onSuccess = onAction,
                       onCancel = onAction)
                 }
-              composable(Route.ADMIN_PAGE) {
+                composable(Route.ADMIN_PAGE) {
                   Admin(AdminViewModel(tripsRepository, navigationActions.variables.currentTrip))
-              }
+                }
               }
         }
       }

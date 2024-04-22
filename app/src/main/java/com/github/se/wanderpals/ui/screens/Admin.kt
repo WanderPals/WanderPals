@@ -191,7 +191,8 @@ fun Admin(adminViewModel: AdminViewModel) {
                           RadioButton(
                               modifier = Modifier.testTag("radioButton"),
                               selected = (text == selectedOption),
-                              onClick = null // null recommended for accessibility with ScreenReaders
+                              onClick =
+                                  null // null recommended for accessibility with ScreenReaders
                               )
                           Text(
                               text = text.toString(),
