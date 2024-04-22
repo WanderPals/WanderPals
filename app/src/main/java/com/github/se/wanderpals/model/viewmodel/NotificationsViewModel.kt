@@ -1,5 +1,9 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -50,20 +54,25 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
         )
 
     private val _notifStateList = MutableStateFlow(tempList)
-    open val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
+    val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
 
     private val _announcementStateList = MutableStateFlow(emptyList<Announcement>())
-    open val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
+    val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
 
-    // State flow to track loading state
+
     private val _isLoading = MutableStateFlow(true)
-    open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
 
-    // State flow to track loading state
     private val _isNotifSelected = MutableStateFlow(true)
-    open val isNotifSelected: StateFlow<Boolean> = _isNotifSelected.asStateFlow()
+    val isNotifSelected: StateFlow<Boolean> = _isNotifSelected.asStateFlow()
 
+    private val _announcementItemPressed= MutableStateFlow(false)
+    val announcementItemPressed : StateFlow<Boolean> = _announcementItemPressed.asStateFlow()
+
+
+    private val _selectedAnnouncementId= MutableStateFlow("")
+    val selectedAnnouncementID : StateFlow<String> = _selectedAnnouncementId.asStateFlow()
 
     open fun updateStateLists() {
         viewModelScope.launch {
@@ -78,7 +87,6 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
     /**
      * Adds a Announcement by the administrator to a trip.
      *
-     * @param tripId The ID of the trip to which the Announcement is to be added.
      * @param announcement The Announcement object to be added.
      * @return A boolean representing the success of the operation.
      */
@@ -87,7 +95,24 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
             tripsRepository.addAnnouncementToTrip(tripId,announcement)
         }
     }
+    open fun removeAnnouncement(announcementId : String) {
+        runBlocking {
+            tripsRepository.removeAnnouncementFromTrip(tripId,announcementId)
+            updateStateLists()
+        }
 
+    }
+
+    fun setNotificationSelectionState(value: Boolean) {
+        _isNotifSelected.value = value
+    }
+    fun setAnnouncementItemPressState(value: Boolean) {
+        _announcementItemPressed.value = value
+    }
+
+    fun setSelectedAnnouncementId(announcementId :String){
+        _selectedAnnouncementId.value = announcementId
+    }
 
     class NotificationsViewModelFactory(
         private val tripsRepository: TripsRepository,
@@ -101,7 +126,5 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
-    fun setNotificationSelectionState(value: Boolean) {
-        _isNotifSelected.value = value
-    }
+
 }
