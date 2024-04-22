@@ -133,26 +133,26 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
-          content = {
-            Row {
-              Image(
-                  painterResource(id = R.drawable.logo_nsa),
-                  contentDescription = "NSA",
-                  modifier = Modifier.clip(RoundedCornerShape(16.dp)).size(40.dp))
-              Text(
-                  text = "Admin",
-                  modifier =
-                      Modifier.padding(horizontal = 8.dp, vertical = 8.dp).clickable {
-                        navActions.navigateTo(Route.ADMIN_PAGE)
-                      })
-            }
-          },
-          onClick = {
-            scope.launch {
-              drawerState.close()
-              navActions.navigateTo(Route.ADMIN_PAGE)
-            }
-          })
+        content = {
+          Row {
+            Image(
+                painterResource(id = R.drawable.logo_nsa),
+                contentDescription = "NSA",
+                modifier = Modifier.clip(RoundedCornerShape(16.dp)).size(40.dp))
+            Text(
+                text = "Admin",
+                modifier =
+                    Modifier.padding(horizontal = 8.dp, vertical = 8.dp).clickable {
+                      navActions.navigateTo(Route.ADMIN_PAGE)
+                    })
+          }
+        },
+        onClick = {
+          scope.launch {
+            drawerState.close()
+            navActions.navigateTo(Route.ADMIN_PAGE)
+          }
+        })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
         modifier = Modifier.testTag("MemberListMenu"),
@@ -168,7 +168,6 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
             navActions.navigateTo(Route.MEMBERS)
           }
         })
-
   }
 }
 
