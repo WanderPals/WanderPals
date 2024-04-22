@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -25,11 +26,6 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   // State flow to track loading state
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-  init {
-    // Fetch all trips when the ViewModel is initialized
-    getAllTrips()
-  }
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
@@ -71,5 +67,16 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
       }
     }
     return success
+  }
+
+  class OverviewViewModelFactory(private val tripsRepository: TripsRepository) :
+      ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(OverviewViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST") return OverviewViewModel(tripsRepository) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
+    }
   }
 }

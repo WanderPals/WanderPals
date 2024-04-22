@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -115,22 +117,22 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
       modifier =
           Modifier.testTag("menuNav").requiredWidth(200.dp).requiredHeight(250.dp).padding(8.dp),
   ) {
-    Column {
-      ElevatedButton(
-          modifier = Modifier.testTag("backToOverview"),
-          content = {
-            Row {
-              Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-              Text("Back to overview")
-            }
-          },
-          onClick = {
-            scope.launch {
-              drawerState.close()
-              navActions.navigateTo(Route.OVERVIEW)
-            }
-          })
-      ElevatedButton(
+    ElevatedButton(
+        modifier = Modifier.testTag("backToOverview"),
+        content = {
+          Row {
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            Text("Back to overview")
+          }
+        },
+        onClick = {
+          scope.launch {
+            drawerState.close()
+            navActions.navigateTo(Route.OVERVIEW)
+          }
+        })
+    Spacer(modifier = Modifier.padding(2.dp))
+    ElevatedButton(
           content = {
             Row {
               Image(
@@ -151,7 +153,22 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
               navActions.navigateTo(Route.ADMIN_PAGE)
             }
           })
-    }
+    Spacer(modifier = Modifier.padding(2.dp))
+    ElevatedButton(
+        modifier = Modifier.testTag("MemberListMenu"),
+        content = {
+          Row {
+            Icon(Icons.Default.Person, contentDescription = "Member List")
+            Text("Member List       ")
+          }
+        },
+        onClick = {
+          scope.launch {
+            drawerState.close()
+            navActions.navigateTo(Route.MEMBERS)
+          }
+        })
+
   }
 }
 

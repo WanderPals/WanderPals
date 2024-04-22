@@ -2,6 +2,7 @@ package com.github.se.wanderpals.model.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
@@ -181,5 +182,18 @@ open class SuggestionsViewModel(
     deleteComment(suggestion) // Assuming deleteComment handles all necessary logic
     hideDeleteDialog()
     hideBottomSheet()
+  }
+
+  class SuggestionsViewModelFactory(
+      private val tripsRepository: TripsRepository,
+      private val tripId: String
+  ) : ViewModelProvider.Factory {
+
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+      if (modelClass.isAssignableFrom(SuggestionsViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST") return SuggestionsViewModel(tripsRepository, tripId) as T
+      }
+      throw IllegalArgumentException("Unknown ViewModel class")
+    }
   }
 }

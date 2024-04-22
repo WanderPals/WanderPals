@@ -1,8 +1,10 @@
 package com.github.se.wanderpals.dashboard
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
@@ -10,12 +12,15 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.Dashboard
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
+import io.mockk.verify
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
@@ -338,5 +343,20 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
         .assertIsDisplayed()
     // Check that the time is displayed
     composeTestRule.onNodeWithTag("time", useUnmergedTree = true).assertExists().assertIsDisplayed()
+  }
+
+  @Test
+  fun clickMemberList() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+    composeTestRule.onNodeWithTag("menuButton").performClick()
+    composeTestRule.onNodeWithTag("MemberListMenu").performClick()
+    composeTestRule.onNodeWithTag("menuNav").assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.MEMBERS) }
+    confirmVerified(mockNavActions)
   }
 }
