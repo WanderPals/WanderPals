@@ -34,12 +34,12 @@ import java.time.format.DateTimeFormatter
  * @param notification The notification to display.
  */
 @Composable
-fun NotificationItem(notification: TripNotification) {
+fun NotificationItem(notification: TripNotification,onNotificationItemClick : () -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(80.dp)) {
         Button(
-            onClick = {},
+            onClick = {onNotificationItemClick()},
             shape = RectangleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
             Row(modifier = Modifier
@@ -90,12 +90,12 @@ fun NotificationItem(notification: TripNotification) {
  * @param announcement The announcement to display.
  */
 @Composable
-fun AnnouncementItem(announcement: Announcement,onAnnouncementClickItem : (String) -> Unit) {
+fun AnnouncementItem(announcement: Announcement,onAnnouncementItemClick : (String) -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
         .height(80.dp)) {
         Button(
-            onClick = {onAnnouncementClickItem(announcement.announcementId)},
+            onClick = {onAnnouncementItemClick(announcement.announcementId)},
             shape = RectangleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
             Row(modifier = Modifier

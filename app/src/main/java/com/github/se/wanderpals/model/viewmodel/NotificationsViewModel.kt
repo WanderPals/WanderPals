@@ -41,6 +41,7 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
     private val _selectedAnnouncementId= MutableStateFlow("")
     val selectedAnnouncementID : StateFlow<String> = _selectedAnnouncementId.asStateFlow()
 
+
     open fun updateStateLists() {
         viewModelScope.launch {
             // Set loading state to true before fetching data

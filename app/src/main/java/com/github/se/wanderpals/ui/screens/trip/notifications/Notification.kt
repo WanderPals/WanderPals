@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +49,7 @@ import com.github.se.wanderpals.ui.navigation.Route
  *
  * @param notificationsViewModel The view model containing notifications data.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Notification(
     notificationsViewModel: NotificationsViewModel,
@@ -60,6 +62,7 @@ fun Notification(
         notificationsViewModel.updateStateLists()
     }
 
+
     val notificationsList by notificationsViewModel.notifStateList.collectAsState()
     val announcementList by notificationsViewModel.announcementStateList.collectAsState()
 
@@ -67,6 +70,8 @@ fun Notification(
     val announcementItemPressed by notificationsViewModel.announcementItemPressed.collectAsState()
 
     val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
+
+
 
     Column(modifier = Modifier.testTag("notificationScreen")) {
         if (announcementItemPressed) {
@@ -128,7 +133,7 @@ fun Notification(
                     )
                 ) {
                     Text(
-                        text = "Announcement",
+                        text = "Announcements",
                         style =
                         MaterialTheme.typography.bodyLarge.copy(
                             fontWeight =
@@ -166,19 +171,25 @@ fun Notification(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-
                 items(itemsList) { item ->
                     when (item) {
                         is TripNotification -> {
-                            NotificationItem(notification = item)
+                            NotificationItem(
+                                notification = item,
+                                onNotificationItemClick = {
+                                    if(item.path.isNotEmpty()){
+                                        navigationActions.navigateTo(item.path)
+                                    }
+                                })
                         }
-
                         is Announcement -> {
                             AnnouncementItem(
                                 announcement = item,
-                                onAnnouncementClickItem = { announcementId ->
+                                onAnnouncementItemClick = { announcementId ->
                                     notificationsViewModel.setAnnouncementItemPressState(true)
-                                    notificationsViewModel.setSelectedAnnouncementId(announcementId)
+                                    notificationsViewModel.setSelectedAnnouncementId(
+                                        announcementId
+                                    )
                                 })
                         }
                     }
@@ -190,6 +201,8 @@ fun Notification(
                     )
                 }
             }
+
+
         }
         HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
         Box(
