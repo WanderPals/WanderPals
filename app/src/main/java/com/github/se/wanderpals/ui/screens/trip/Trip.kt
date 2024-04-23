@@ -35,7 +35,7 @@ import com.github.se.wanderpals.model.viewmodel.MembersViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
-import com.github.se.wanderpals.ui.map.MapVariables
+import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
@@ -51,14 +51,14 @@ import com.google.android.gms.maps.model.LatLng
  * @param oldNavActions The navigation actions for the previous screen.
  * @param tripId The trip ID.
  * @param tripsRepository The repository for trips data.
- * @param mapVariables The map variables.
+ * @param mapManager The map variables.
  */
 @Composable
 fun Trip(
     oldNavActions: NavigationActions,
     tripId: String,
     tripsRepository: TripsRepository,
-    mapVariables: MapVariables?,
+    mapManager: MapManager?,
 ) {
 
   // update the SessionManagers Users Role, from the User In the Trip Object
@@ -117,17 +117,17 @@ fun Trip(
                       val mapViewModel: MapViewModel =
                           viewModel(
                               factory = MapViewModel.MapViewModelFactory(tripsRepository, tripId))
-                      if (mapVariables != null) {
+                      if (mapManager != null) {
                         if (oldNavActions.variables.currentAddress == "") {
                           Log.d("NAVIGATION", "Navigating to map with empty address")
                         } else {
                           Log.d("NAVIGATION", "Navigating to map with address")
-                          mapVariables.changeStartingLocation(
+                          mapManager.changeStartingLocation(
                               LatLng(
                                   oldNavActions.variables.currentGeoCords.latitude,
                                   oldNavActions.variables.currentGeoCords.longitude))
                         }
-                        Map(oldNavActions, mapViewModel, mapVariables)
+                        Map(oldNavActions, mapViewModel, mapManager)
                       }
                     }
                     composable(Route.NOTIFICATION) {

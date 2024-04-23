@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.map
+package com.github.se.wanderpals.service
 
 import android.Manifest
 import android.content.Context
@@ -10,7 +10,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 
-class MapVariables(private val context: Context) {
+class MapManager(private val context: Context) {
   private lateinit var fusedLocationClient: FusedLocationProviderClient
   private lateinit var placesClient: PlacesClient
 
@@ -45,8 +45,10 @@ class MapVariables(private val context: Context) {
   }
 
   fun askLocationPermission() {
-    locationPermissionRequest.launch(
+    if (::locationPermissionRequest.isInitialized) {
+      locationPermissionRequest.launch(
         arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+          Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+    }
   }
 }

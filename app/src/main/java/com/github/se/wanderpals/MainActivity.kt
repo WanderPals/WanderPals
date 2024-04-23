@@ -20,8 +20,8 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.SessionManager
-import com.github.se.wanderpals.ui.map.MapVariables
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
 
-  private lateinit var mapVariables: MapVariables
+  private lateinit var mapManager: MapManager
 
   private lateinit var tripsRepository: TripsRepository
 
@@ -129,9 +129,9 @@ class MainActivity : ComponentActivity() {
 
     signInClient = GoogleSignIn.getClient(this, gso)
 
-    mapVariables = MapVariables(this)
-    mapVariables.initClients()
-    mapVariables.setPermissionRequest(locationPermissionRequest)
+    mapManager = MapManager(this)
+    mapManager.initClients()
+    mapManager.setPermissionRequest(locationPermissionRequest)
 
     setContent {
       WanderPalsTheme {
@@ -201,7 +201,7 @@ class MainActivity : ComponentActivity() {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
                   val tripId = navigationActions.variables.currentTrip
                   navigationActions.tripNavigation.setNavController(rememberNavController())
-                  Trip(navigationActions, tripId, tripsRepository, mapVariables)
+                  Trip(navigationActions, tripId, tripsRepository, mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
                   val overviewViewModel: OverviewViewModel =

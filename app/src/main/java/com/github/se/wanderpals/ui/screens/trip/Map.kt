@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
-import com.github.se.wanderpals.ui.map.MapVariables
+import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -81,14 +81,14 @@ const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
  *
  * @param oldNavActions The navigation actions for the previous screen.
  * @param mapViewModel The view model containing the data and logic for the map screen.
- * @param mapVariables The variables needed for the map screen.
+ * @param mapManager The variables needed for the map screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Map(
     oldNavActions: NavigationActions,
     mapViewModel: MapViewModel,
-    mapVariables: MapVariables,
+    mapManager: MapManager,
 ) {
 
   // get the list of stops from the view model
@@ -103,7 +103,7 @@ fun Map(
   var enabled by remember { mutableStateOf(true) }
 
   // location searched by the user
-  var location by remember { mutableStateOf(mapVariables.getStartingLocation()) }
+  var location by remember { mutableStateOf(mapManager.getStartingLocation()) }
 
   // expanded state of the search bar
   var expanded by remember { mutableStateOf(false) }
@@ -115,7 +115,7 @@ fun Map(
         })
   }
   // when the search text is changed, request the location of the address
-  var finalLoc by remember { mutableStateOf(mapVariables.getStartingLocation()) }
+  var finalLoc by remember { mutableStateOf(mapManager.getStartingLocation()) }
   // name of the searched location
   var finalName by remember { mutableStateOf("") }
 
@@ -143,9 +143,9 @@ fun Map(
   val context = LocalContext.current
 
   // get the client from the map variables
-  val client = mapVariables.getPlacesClient()
+  val client = mapManager.getPlacesClient()
 
-  LaunchedEffect(Unit) { mapVariables.askLocationPermission() }
+  LaunchedEffect(Unit) { mapManager.askLocationPermission() }
 
   LaunchedEffect(key1 = searchText) {
     if (searchText.isBlank()) {
@@ -155,7 +155,7 @@ fun Map(
       getAddressPredictions(
           client,
           inputString = searchText,
-          location = mapVariables.getStartingLocation(),
+          location = mapManager.getStartingLocation(),
           onSuccess = { predictions ->
             Log.d("Prediction", "")
             listOfPropositions = predictions
