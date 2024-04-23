@@ -157,7 +157,6 @@ class MapManager(private val context: Context) {
                           LatLng(locationBias.latitude + 0.1, locationBias.longitude + 0.1))
                     })
                 .setOrigin(location)
-                .setCountries("CH")
                 .setSessionToken(sessionToken)
                 .setQuery(inputString)
                 .build()
