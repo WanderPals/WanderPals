@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.trip
 
-import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -87,7 +88,6 @@ const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
  * @param mapViewModel The view model containing the data and logic for the map screen.
  * @param mapManager The variables needed for the map screen.
  */
-@SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Map(
@@ -106,6 +106,9 @@ fun Map(
   var active by remember { mutableStateOf(false) }
   // enable the search bar
   var enabled by remember { mutableStateOf(true) }
+  // see current location
+  var seeCurrentLocation by remember { mutableStateOf(false) }
+  var currentLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
 
   // location searched by the user
   var location by remember { mutableStateOf(mapManager.getStartingLocation()) }
@@ -291,6 +294,21 @@ fun Map(
         uiSettings = uiSettings.copy(zoomControlsEnabled = false),
         cameraPositionState =
             CameraPositionState(position = CameraPosition(finalLoc, 10f, 0f, 0f))) {
+
+          // display current location on the map
+          if (seeCurrentLocation) {
+            val resizedIcon =
+                Bitmap.createScaledBitmap(
+                    BitmapFactory.decodeResource(context.resources, R.drawable.current_location),
+                    150,
+                    150,
+                    false)
+            Marker(
+                state = MarkerState(position = currentLocation),
+                title = "Current Location",
+                icon = BitmapDescriptorFactory.fromBitmap(resizedIcon))
+          }
+
           // display the marker on the map
           listOfMarkers.forEach { markerState ->
             Marker(
@@ -326,18 +344,25 @@ fun Map(
     Button(
         onClick = {
           scope.launch(Dispatchers.IO) {
-            val result = locationClient.lastLocation.await()
-            if (result == null) {
-              Log.d(
-                  "MapActivity", "No last known location. Try fetching the current location first")
+            if (mapManager.checkLocationPermission()) {
+              val result = locationClient.lastLocation.await()
+              if (result == null) {
+                Log.d(
+                    "MapActivity",
+                    "No last known location. Try fetching the current location first")
+              } else {
+                Log.d(
+                    "MapActivity",
+                    "Current location is \n" +
+                        "lat : ${result.latitude}\n" +
+                        "long : ${result.longitude}\n" +
+                        "fetched at ${System.currentTimeMillis()}")
+                currentLocation = LatLng(result.latitude, result.longitude)
+                seeCurrentLocation = true
+                finalLoc = currentLocation
+              }
             } else {
-              Log.d(
-                  "MapActivity",
-                  "Current location is \n" +
-                      "lat : ${result.latitude}\n" +
-                      "long : ${result.longitude}\n" +
-                      "fetched at ${System.currentTimeMillis()}")
-              finalLoc = LatLng(result.latitude, result.longitude)
+              Log.d("MapActivity", "Location permission not granted")
             }
           }
         },
