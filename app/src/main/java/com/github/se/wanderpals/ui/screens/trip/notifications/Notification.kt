@@ -70,11 +70,12 @@ fun Notification(
 
     Column(modifier = Modifier.testTag("notificationScreen")) {
         if (announcementItemPressed) {
-            val selectedAnnouncement= announcementList.find {
-                announcement -> announcement.announcementId == selectedAnnouncementId}!!
+            val selectedAnnouncement =
+                announcementList.find { announcement -> announcement.announcementId == selectedAnnouncementId }!!
             AnnouncementInfoDialog(
                 announcement = selectedAnnouncement,
-                notificationsViewModel = notificationsViewModel)
+                notificationsViewModel = notificationsViewModel
+            )
         }
         Surface(
             modifier =
@@ -140,33 +141,54 @@ fun Notification(
         }
 
         HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-        ) {
-            val itemsList = if (notificationSelected) notificationsList else announcementList
-            items(itemsList) { item ->
-                when (item) {
-                    is TripNotification -> {
-                        NotificationItem(notification = item)
-                    }
 
-                    is Announcement -> {
-                        AnnouncementItem(
-                            announcement = item,
-                            onAnnouncementClickItem = { announcementId ->
-                                notificationsViewModel.setAnnouncementItemPressState(true)
-                                notificationsViewModel.setSelectedAnnouncementId(announcementId)
-                        })
-                    }
-                }
-
-                HorizontalDivider(
-                    color = Color.Gray,
-                    thickness = 1.dp,
-                    modifier = Modifier.fillMaxWidth()
+        val itemsList = if (notificationSelected) notificationsList else announcementList
+        if (itemsList.isEmpty()) {
+            val emptyItemText = if (notificationSelected) "notifications" else "announcements"
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(vertical = 16.dp)
+            ) {
+                Text(
+                    text = "Looks like there is no $emptyItemText.",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 16.dp),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge
                 )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+
+                items(itemsList) { item ->
+                    when (item) {
+                        is TripNotification -> {
+                            NotificationItem(notification = item)
+                        }
+
+                        is Announcement -> {
+                            AnnouncementItem(
+                                announcement = item,
+                                onAnnouncementClickItem = { announcementId ->
+                                    notificationsViewModel.setAnnouncementItemPressState(true)
+                                    notificationsViewModel.setSelectedAnnouncementId(announcementId)
+                                })
+                        }
+                    }
+
+                    HorizontalDivider(
+                        color = Color.Gray,
+                        thickness = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
         HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())

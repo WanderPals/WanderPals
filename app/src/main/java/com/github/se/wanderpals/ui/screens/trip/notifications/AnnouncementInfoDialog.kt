@@ -45,7 +45,7 @@ import java.time.format.DateTimeFormatter
  * Composable function to display a dialog containing information about a stop in a trip agenda.
  *
  * @param announcement The [Announcement] object containing information about the stop.
- * @param closeDialogueAction Callback function to be invoked when the dialog is dismissed.
+ * @param notificationsViewModel view model containing UI states.
  */
 @Composable
 fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: NotificationsViewModel) {
@@ -56,7 +56,7 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = false },
                 title = { Text("Confirm Deletion") },
-                text = { Text("Are you sure you want to delete this comment?") },
+                text = { Text("Are you sure you want to delete this announcement?") },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -134,7 +134,8 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                     },
                     modifier =
                     Modifier
-                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp,vertical = 20.dp)
                         .height(50.dp)
                         .align(Alignment.CenterHorizontally),
 
