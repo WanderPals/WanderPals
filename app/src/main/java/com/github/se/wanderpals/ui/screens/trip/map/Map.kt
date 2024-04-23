@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -125,6 +126,10 @@ fun Map(
   val placeData by remember { mutableStateOf(PlaceData()) }
   // bottom sheet state
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+
+  // Location Permissions alert dialog
+
+  var locationPermissionDialog by remember { mutableStateOf(false) }
 
   // Other
 
@@ -302,6 +307,8 @@ fun Map(
                 currentLocation = it
                 seeCurrentLocation = true
                 finalLocation = currentLocation
+              } else {
+                locationPermissionDialog = true
               }
             }
           }
@@ -314,6 +321,14 @@ fun Map(
               contentDescription = "Location",
               modifier = Modifier.size(24.dp))
         }
+
+    if (locationPermissionDialog) {
+      AlertDialog(
+          onDismissRequest = { locationPermissionDialog = false },
+          title = { Text("Location Permission Required") },
+          text = { Text("Please enable location permission to use this feature in settings") },
+          confirmButton = { Button(onClick = { locationPermissionDialog = false }) { Text("Ok") } })
+    }
 
     MapBottomSheet(
         bottomSheetScaffoldState = bottomSheetScaffoldState,

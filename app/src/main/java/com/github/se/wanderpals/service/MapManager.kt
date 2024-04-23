@@ -51,14 +51,6 @@ class MapManager(private val context: Context) {
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
   }
 
-  fun getFusedLocationClient(): FusedLocationProviderClient {
-    return fusedLocationClient
-  }
-
-  fun getPlacesClient(): PlacesClient {
-    return placesClient
-  }
-
   fun getStartingLocation(): LatLng {
     return startingLocation
   }
