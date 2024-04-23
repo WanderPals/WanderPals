@@ -12,7 +12,7 @@ import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.screens.MapScreen
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.screens.trip.Map
+import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

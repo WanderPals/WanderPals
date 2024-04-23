@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.screens.trip
+package com.github.se.wanderpals.ui.screens.trip.map
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -131,15 +131,7 @@ fun Map(
   var listOfMarkers by remember { mutableStateOf(listOf<MarkerState>()) }
 
   // Bottom sheet info
-  var placeName by remember { mutableStateOf("") }
-  var placeAddress by remember { mutableStateOf("") }
-  var placeRating by remember { mutableStateOf("") }
-  var placeUserRatingsTotal by remember { mutableStateOf("") }
-  var placePhoneNumber by remember { mutableStateOf("") }
-  var placeWebsite by remember { mutableStateOf("") }
-  var placeOpeningHours by remember { mutableStateOf("") }
-  var placeIconUrl by remember { mutableStateOf("") }
-  var placeBusinessStatus by remember { mutableStateOf("") }
+  val placeData by remember { mutableStateOf(PlaceData()) }
 
   // Coroutine scope for the search bar
   val coroutineScope = rememberCoroutineScope()
@@ -257,22 +249,7 @@ fun Map(
                             val request = FetchPlaceRequest.newInstance(placeId, placeFields)
                             client.fetchPlace(request).addOnSuccessListener { response ->
                               val place = response.place
-                              place.name?.let { it1 -> placeName = it1 }
-                              place.iconUrl?.let { it1 -> placeIconUrl = it1 }
-                              place.businessStatus?.let { it1 ->
-                                placeBusinessStatus = it1.toString()
-                              }
-                              place.phoneNumber?.let { it1 -> placePhoneNumber = it1 }
-                              place.address?.let { it1 -> placeAddress = it1 }
-                              place.currentOpeningHours?.weekdayText.let { it1 ->
-                                placeOpeningHours = it1.toString()
-                              }
-                              place.rating?.let { it1 -> placeRating = it1.toString() }
-                              place.userRatingsTotal?.let { it1 ->
-                                placeUserRatingsTotal = it1.toString()
-                              }
-                              place.websiteUri?.let { it1 -> placeWebsite = it1.toString() }
-
+                              placeData.setPlaceData(place)
                               location = place.latLng!!
                             }
                           })
@@ -316,7 +293,7 @@ fun Map(
                 onInfoWindowClick = {
                   oldNavActions.setVariablesLocation(
                       GeoCords(markerState.position.latitude, markerState.position.longitude),
-                      placeAddress)
+                      placeData.placeAddress)
                   oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                 })
           }
@@ -363,70 +340,74 @@ fun Map(
         modifier = Modifier.shadow(15.dp, shape = RoundedCornerShape(40.dp)),
         sheetContent = {
           Column {
-            if (placeName.isNotEmpty()) {
+            if (placeData.placeName.isNotEmpty()) {
               Text(
                   modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp),
-                  text = placeName)
+                  text = placeData.placeName)
             }
-            if (placeBusinessStatus.isNotEmpty()) {
+            if (placeData.placeBusinessStatus.isNotEmpty()) {
               Row(modifier = Modifier.padding(bottom = 8.dp)) {
                 Icon(
                     imageVector = Icons.Default.Info,
                     contentDescription = "Business Status Icon",
                     modifier = Modifier.size(24.dp))
-                Text(text = placeBusinessStatus)
+                Text(text = placeData.placeBusinessStatus)
               }
             }
-            if (placeAddress.isNotEmpty()) {
+            if (placeData.placeAddress.isNotEmpty()) {
               Row(modifier = Modifier.padding(bottom = 8.dp)) {
                 Icon(
                     imageVector = Icons.Default.Place,
                     contentDescription = "Place Icon",
                     modifier = Modifier.size(24.dp))
-                Text(text = placeAddress)
+                Text(text = placeData.placeAddress)
               }
             }
-            if (placeRating.isNotEmpty()) {
+            if (placeData.placeRating.isNotEmpty()) {
 
               Row(modifier = Modifier.padding(bottom = 8.dp)) {
                 Icon(
                     imageVector = Icons.Default.Star,
                     contentDescription = "Rating Icon",
                     modifier = Modifier.size(24.dp))
-                Text(text = "$placeRating/5.0")
+                Text(text = "${placeData.placeRating}/5.0")
               }
             }
-            if (placeUserRatingsTotal.isNotEmpty()) {
+            if (placeData.placeUserRatingsTotal.isNotEmpty()) {
               Row(modifier = Modifier.padding(bottom = 8.dp)) {
                 Icon(
                     imageVector = Icons.Default.Person,
                     contentDescription = "Total Icon",
                     modifier = Modifier.size(24.dp))
-                Text(text = placeUserRatingsTotal)
+                Text(text = placeData.placeUserRatingsTotal)
               }
             }
-            if (placePhoneNumber.isNotEmpty()) {
+            if (placeData.placePhoneNumber.isNotEmpty()) {
               Row(modifier = Modifier.padding(bottom = 8.dp)) {
                 Icon(
                     imageVector = Icons.Default.Phone,
                     contentDescription = "Phone Icon",
                     modifier = Modifier.size(24.dp))
-                Text(text = placePhoneNumber)
+                Text(text = placeData.placePhoneNumber)
               }
             }
-            if (placeWebsite.isNotEmpty()) {
+            if (placeData.placeWebsite.isNotEmpty()) {
               Row(modifier = Modifier.padding(bottom = 8.dp)) {
                 Text(text = "Visit Website: ")
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Phone Icon",
-                    modifier = Modifier.size(24.dp).clickable { uriHandler.openUri(placeWebsite) })
+                    modifier =
+                        Modifier.size(24.dp).clickable {
+                          uriHandler.openUri(placeData.placeWebsite)
+                        })
               }
             }
 
-            if (placeOpeningHours.isNotEmpty()) {
+            if (placeData.placeOpeningHours.isNotEmpty()) {
               Spacer(modifier = Modifier.height(16.dp))
-              val listOfDays = placeOpeningHours.removePrefix("[").removeSuffix("]").split(", ")
+              val listOfDays =
+                  placeData.placeOpeningHours.removePrefix("[").removeSuffix("]").split(", ")
               listOfDays.forEach {
                 if (it != "null") {
                   Text(
