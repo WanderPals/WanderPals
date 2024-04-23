@@ -36,6 +36,7 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
+const val EMPTY_CODE = ""
 /**
  * Composable function that represents the Overview screen, displaying the list of trips of a user.
  * Provides functionalities such as searching trips by their title, creating a new trip, and joining
@@ -110,7 +111,6 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
 @Composable
 fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -> Boolean) {
 
-  val EMPTY_CODE = ""
   // Mutable state to hold the trip code input and error state
   var tripCode by remember { mutableStateOf(EMPTY_CODE) }
   var isError by remember { mutableStateOf(false) }
