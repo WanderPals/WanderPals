@@ -23,6 +23,11 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.tasks.await
 
+/**
+ * Class to manage the map and location services.
+ *
+ * @param context The context of the activity.
+ */
 class MapManager(private val context: Context) {
 
   private val placeFields =
@@ -45,24 +50,41 @@ class MapManager(private val context: Context) {
 
   private var startingLocation: LatLng = LatLng(46.519653, 6.632273)
 
+  /** Function to initialize the Places API and the FusedLocationProviderClient. */
   fun initClients() {
     Places.initialize(context, BuildConfig.MAPS_API_KEY)
     placesClient = Places.createClient(context)
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
   }
 
+  /**
+   * Function to get the starting location of the map.
+   *
+   * @return The starting location of the map.
+   */
   fun getStartingLocation(): LatLng {
     return startingLocation
   }
 
+  /**
+   * Function to change the starting location of the map.
+   *
+   * @param newLocation The new location to set as the starting location.
+   */
   fun changeStartingLocation(newLocation: LatLng) {
     startingLocation = newLocation
   }
 
+  /**
+   * Function to set the permission request for location.
+   *
+   * @param request The permission request for location.
+   */
   fun setPermissionRequest(request: ActivityResultLauncher<Array<String>>) {
     locationPermissionRequest = request
   }
 
+  /** Function to ask for location permission. */
   fun askLocationPermission() {
     if (::locationPermissionRequest.isInitialized) {
       locationPermissionRequest.launch(
@@ -71,13 +93,23 @@ class MapManager(private val context: Context) {
     }
   }
 
-  fun checkLocationPermission(): Boolean {
+  /**
+   * Function to check if the location permission is granted.
+   *
+   * @return True if the location permission is granted, false otherwise.
+   */
+  private fun checkLocationPermission(): Boolean {
     return context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
         PackageManager.PERMISSION_GRANTED ||
         context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
   }
 
+  /**
+   * Function to get the last known location of the device.
+   *
+   * @return The last known location of the device.
+   */
   suspend fun getLastLocation(): LatLng? {
     if (!checkLocationPermission()) {
       Log.d("MapActivity", "Location permission not granted")
@@ -102,7 +134,6 @@ class MapManager(private val context: Context) {
   /**
    * Function to get the address predictions from the Places API.
    *
-   * @param client The PlacesClient used to search for locations.
    * @param sessionToken The session token used for the autocomplete request.
    * @param inputString The input string to search for.
    * @param location The location to bias the search results.
@@ -138,6 +169,12 @@ class MapManager(private val context: Context) {
             .addOnFailureListener { exception: Exception? -> onFailure(exception) }
       }
 
+  /**
+   * Function to fetch a place from the Places API.
+   *
+   * @param placeId The ID of the place to fetch.
+   * @return The response of the fetch place request.
+   */
   fun fetchPlace(placeId: String): Task<FetchPlaceResponse> {
     val request = FetchPlaceRequest.newInstance(placeId, placeFields)
     return placesClient.fetchPlace(request)

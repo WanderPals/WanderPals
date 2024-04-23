@@ -27,6 +27,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.unit.dp
 
+/**
+ * Composable function to display the bottom sheet with the place details.
+ *
+ * @param placeData The data of the place to be displayed.
+ * @param bottomSheetScaffoldState The state of the bottom sheet.
+ * @param uriHandler The handler to open the website.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapBottomSheet(

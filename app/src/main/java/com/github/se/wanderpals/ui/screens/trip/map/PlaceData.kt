@@ -2,6 +2,7 @@ package com.github.se.wanderpals.ui.screens.trip.map
 
 import com.google.android.libraries.places.api.model.Place
 
+/** Data class to store the place details. */
 data class PlaceData(
     var placeName: String = "",
     var placeAddress: String = "",
@@ -13,6 +14,8 @@ data class PlaceData(
     var placeIconUrl: String = "",
     var placeBusinessStatus: String = ""
 ) {
+
+  /** Function to set the place data. */
   fun setPlaceData(place: Place) {
     place.name?.let { it1 -> placeName = it1 }
     place.iconUrl?.let { it1 -> placeIconUrl = it1 }
