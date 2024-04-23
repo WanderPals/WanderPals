@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
+import com.github.se.wanderpals.ui.map.MapVariables
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -73,21 +74,21 @@ import kotlinx.coroutines.launch
 
 const val MAX_PROPOSED_LOCATIONS = 5
 const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
-val CURRENT_LOCATION = LatLng(46.519653, 6.632273)
+
 /**
  * Composable function that represents the Map screen, displaying a map with markers for the stops
  * of a trip and the ability to search for a location.
  *
+ * @param oldNavActions The navigation actions for the previous screen.
  * @param mapViewModel The view model containing the data and logic for the map screen.
- * @param client The PlacesClient for the Google Places API.
+ * @param mapVariables The variables needed for the map screen.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Map(
     oldNavActions: NavigationActions,
     mapViewModel: MapViewModel,
-    client: PlacesClient,
-    startingLocation: LatLng = CURRENT_LOCATION
+    mapVariables: MapVariables,
 ) {
 
   // get the list of stops from the view model
@@ -102,7 +103,7 @@ fun Map(
   var enabled by remember { mutableStateOf(true) }
 
   // location searched by the user
-  var location by remember { mutableStateOf(startingLocation) }
+  var location by remember { mutableStateOf(mapVariables.getStartingLocation()) }
 
   // expanded state of the search bar
   var expanded by remember { mutableStateOf(false) }
@@ -114,7 +115,7 @@ fun Map(
         })
   }
   // when the search text is changed, request the location of the address
-  var finalLoc by remember { mutableStateOf(startingLocation) }
+  var finalLoc by remember { mutableStateOf(mapVariables.getStartingLocation()) }
   // name of the searched location
   var finalName by remember { mutableStateOf("") }
 
@@ -138,9 +139,13 @@ fun Map(
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
   val uriHandler = LocalUriHandler.current
 
+  // stylish of the map
   val context = LocalContext.current
 
-  // stylish of the map
+  // get the client from the map variables
+  val client = mapVariables.getPlacesClient()
+
+  LaunchedEffect(Unit) { mapVariables.askLocationPermission() }
 
   LaunchedEffect(key1 = searchText) {
     if (searchText.isBlank()) {
@@ -150,7 +155,7 @@ fun Map(
       getAddressPredictions(
           client,
           inputString = searchText,
-          location = CURRENT_LOCATION,
+          location = mapVariables.getStartingLocation(),
           onSuccess = { predictions ->
             Log.d("Prediction", "")
             listOfPropositions = predictions
@@ -393,6 +398,7 @@ fun Map(
         scaffoldState = bottomSheetScaffoldState) {}
   }
 }
+
 /**
  * Function to get the address predictions from the Places API.
  *
