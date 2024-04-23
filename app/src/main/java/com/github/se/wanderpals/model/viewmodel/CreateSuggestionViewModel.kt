@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.NotificationsManager
 import kotlinx.coroutines.launch
 
 open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewModel() {
@@ -15,6 +16,7 @@ open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewMod
     var a: Boolean = true
     viewModelScope.launch {
       _tripsRepository.addSuggestionToTrip(tripId, suggestion).also { a = it }
+      NotificationsManager.addCreateSuggestionNotificaiton(tripId)
     }
     return a
   }
