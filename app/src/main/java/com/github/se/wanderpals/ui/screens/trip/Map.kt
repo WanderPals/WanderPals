@@ -75,7 +75,6 @@ import com.google.maps.android.compose.MarkerState
 import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 const val MAX_PROPOSED_LOCATIONS = 5
 const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
@@ -152,8 +151,6 @@ fun Map(
 
   // get the client from the map variables
   val client = mapManager.getPlacesClient()
-  val locationClient = remember { mapManager.getFusedLocationClient() }
-  val scope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) { mapManager.askLocationPermission() }
 
@@ -343,26 +340,13 @@ fun Map(
 
     Button(
         onClick = {
-          scope.launch(Dispatchers.IO) {
-            if (mapManager.checkLocationPermission()) {
-              val result = locationClient.lastLocation.await()
-              if (result == null) {
-                Log.d(
-                    "MapActivity",
-                    "No last known location. Try fetching the current location first")
-              } else {
-                Log.d(
-                    "MapActivity",
-                    "Current location is \n" +
-                        "lat : ${result.latitude}\n" +
-                        "long : ${result.longitude}\n" +
-                        "fetched at ${System.currentTimeMillis()}")
-                currentLocation = LatLng(result.latitude, result.longitude)
+          coroutineScope.launch(Dispatchers.IO) {
+            mapManager.getLastLocation().let {
+              if (it != null) {
+                currentLocation = it
                 seeCurrentLocation = true
                 finalLoc = currentLocation
               }
-            } else {
-              Log.d("MapActivity", "Location permission not granted")
             }
           }
         },

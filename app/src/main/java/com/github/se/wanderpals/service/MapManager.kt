@@ -3,6 +3,7 @@ package com.github.se.wanderpals.service
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import com.github.se.wanderpals.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -10,6 +11,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
+import kotlinx.coroutines.tasks.await
 
 class MapManager(private val context: Context) {
   private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -58,5 +60,26 @@ class MapManager(private val context: Context) {
         PackageManager.PERMISSION_GRANTED ||
         context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) ==
             PackageManager.PERMISSION_GRANTED
+  }
+
+  suspend fun getLastLocation(): LatLng? {
+    if (!checkLocationPermission()) {
+      Log.d("MapActivity", "Location permission not granted")
+      return null
+    } else {
+      val result = fusedLocationClient.lastLocation.await()
+      if (result == null) {
+        Log.d("MapActivity", "No last known location. Try fetching the current location first")
+      } else {
+        Log.d(
+            "MapActivity",
+            "Current location is \n" +
+                "lat : ${result.latitude}\n" +
+                "long : ${result.longitude}\n" +
+                "fetched at ${System.currentTimeMillis()}")
+        return LatLng(result.latitude, result.longitude)
+      }
+    }
+    return null
   }
 }
