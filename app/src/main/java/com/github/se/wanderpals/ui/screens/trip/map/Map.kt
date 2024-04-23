@@ -149,7 +149,7 @@ fun Map(
     } else {
       mapManager.getAddressPredictions(
           inputString = textSearchBar,
-          location = mapManager.getStartingLocation(),
+          location = currentLocation,
           onSuccess = { predictions ->
             Log.d("le", "")
             listOfPropositions = predictions
@@ -175,7 +175,13 @@ fun Map(
                   .shadow(15.dp, shape = RoundedCornerShape(40.dp))
                   .testTag("searchBar"),
           query = textSearchBar,
-          onQueryChange = { newText -> textSearchBar = newText },
+          onQueryChange = { newText ->
+            if (newText.isEmpty()) {
+              activeSearchBar = false
+              expandedSearchBar = false
+            }
+            textSearchBar = newText
+          },
           enabled = true,
           onSearch = {
             finalLocation = searchedLocation
