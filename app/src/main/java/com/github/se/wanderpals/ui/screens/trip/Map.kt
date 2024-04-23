@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.Button
 import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -70,7 +72,9 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 const val MAX_PROPOSED_LOCATIONS = 5
 const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
@@ -83,6 +87,7 @@ const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
  * @param mapViewModel The view model containing the data and logic for the map screen.
  * @param mapManager The variables needed for the map screen.
  */
+@SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Map(
@@ -144,6 +149,8 @@ fun Map(
 
   // get the client from the map variables
   val client = mapManager.getPlacesClient()
+  val locationClient = remember { mapManager.getFusedLocationClient() }
+  val scope = rememberCoroutineScope()
 
   LaunchedEffect(Unit) { mapManager.askLocationPermission() }
 
@@ -315,6 +322,33 @@ fun Map(
                 .padding(horizontal = 16.dp, vertical = 60.dp),
         checked = enabled,
         onCheckedChange = { enabled = !enabled })
+
+    Button(
+        onClick = {
+          scope.launch(Dispatchers.IO) {
+            val result = locationClient.lastLocation.await()
+            if (result == null) {
+              Log.d(
+                  "MapActivity", "No last known location. Try fetching the current location first")
+            } else {
+              Log.d(
+                  "MapActivity",
+                  "Current location is \n" +
+                      "lat : ${result.latitude}\n" +
+                      "long : ${result.longitude}\n" +
+                      "fetched at ${System.currentTimeMillis()}")
+              finalLoc = LatLng(result.latitude, result.longitude)
+            }
+          }
+        },
+        modifier =
+            Modifier.align(AbsoluteAlignment.BottomRight)
+                .padding(horizontal = 16.dp, vertical = 60.dp)) {
+          Icon(
+              imageVector = Icons.Default.Person,
+              contentDescription = "Location",
+              modifier = Modifier.size(24.dp))
+        }
 
     BottomSheetScaffold(
         modifier = Modifier.shadow(15.dp, shape = RoundedCornerShape(40.dp)),
