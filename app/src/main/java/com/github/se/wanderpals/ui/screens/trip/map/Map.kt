@@ -58,13 +58,6 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.libraries.places.api.model.AutocompletePrediction
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.model.RectangularBounds
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
-import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
@@ -72,7 +65,6 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
-import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -95,25 +87,27 @@ fun Map(
     mapManager: MapManager,
 ) {
 
+  // Google Maps  Variables
+
   // get the list of stops from the view model
   val stopList by mapViewModel.stops.collectAsState()
-
+  // ui settings for the map
   val uiSettings = remember { MapUiSettings() }
-  // variable to extract the search text from the search bar
-  var searchText by remember { mutableStateOf("") }
-  // active state of the search bar
-  var active by remember { mutableStateOf(false) }
-  // enable the search bar
-  var enabled by remember { mutableStateOf(true) }
-  // see current location
+  // see current location of the user on the map
   var seeCurrentLocation by remember { mutableStateOf(false) }
+  // current location of the user
   var currentLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
 
-  // location searched by the user
-  var location by remember { mutableStateOf(mapManager.getStartingLocation()) }
+  // Search Bar Variables
 
+  // variable to extract the search text from the search bar
+  var textSearchBar by remember { mutableStateOf("") }
+  // active state of the search bar
+  var activeSearchBar by remember { mutableStateOf(false) }
+  // enable the search bar
+  var enabledSearchBar by remember { mutableStateOf(true) }
   // expanded state of the search bar
-  var expanded by remember { mutableStateOf(false) }
+  var expandedSearchBar by remember { mutableStateOf(false) }
   // proposed location of the searched address List of string of size 5
   var listOfPropositions by remember {
     mutableStateOf(
@@ -121,54 +115,63 @@ fun Map(
           AutocompletePrediction.builder(INIT_PLACE_ID).build()
         })
   }
-  // when the search text is changed, request the location of the address
-  var finalLoc by remember { mutableStateOf(mapManager.getStartingLocation()) }
+  // list of markers on the map from the search bar
+  var listOfMarkers by remember { mutableStateOf(listOf<MarkerState>()) }
+
+  // Location Variables
+
+  // location searched by the user
+  var searchedLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
+  // final location of the searched location, also the camera position
+  var finalLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
   // name of the searched location
   var finalName by remember { mutableStateOf("") }
 
-  var visible by remember { mutableStateOf(false) }
+  // Bottom Sheet Variables
 
-  var listOfMarkers by remember { mutableStateOf(listOf<MarkerState>()) }
-
-  // Bottom sheet info
+  // place data of the searched location
   val placeData by remember { mutableStateOf(PlaceData()) }
-
-  // Coroutine scope for the search bar
-  val coroutineScope = rememberCoroutineScope()
+  // bottom sheet state
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
-  val uriHandler = LocalUriHandler.current
 
-  // stylish of the map
+  // Other
+
+  // uri handler to open the website of the searched location
+  val uriHandler = LocalUriHandler.current
+  // coroutine scope to launch coroutines
+  val coroutineScope = rememberCoroutineScope()
+  // context of the current screen
   val context = LocalContext.current
 
-  // get the client from the map variables
-  val client = mapManager.getPlacesClient()
+  // Launch Effects
 
   LaunchedEffect(Unit) { mapManager.askLocationPermission() }
 
-  LaunchedEffect(key1 = searchText) {
-    if (searchText.isBlank()) {
-      expanded = false
+  LaunchedEffect(key1 = textSearchBar) {
+    if (textSearchBar.isBlank()) {
+      expandedSearchBar = false
       return@LaunchedEffect
     } else {
-      getAddressPredictions(
-          client,
-          inputString = searchText,
+      mapManager.getAddressPredictions(
+          inputString = textSearchBar,
           location = mapManager.getStartingLocation(),
           onSuccess = { predictions ->
-            Log.d("Prediction", "")
+            Log.d("le", "")
             listOfPropositions = predictions
-            expanded = true
+            expandedSearchBar = true
           },
           onFailure = {
             Log.d("Prediction", "Failed")
-            expanded = false
+            expandedSearchBar = false
           })
     }
   }
+
+  // Composable
+
   Box(Modifier.fillMaxSize().testTag("mapScreen")) {
     // search bar for searching a location on the map and pass it to geocoder
-    if (enabled) {
+    if (enabledSearchBar) {
       DockedSearchBar(
           // align the search bar to the top left corner with padding
           modifier =
@@ -176,38 +179,37 @@ fun Map(
                   .padding(top = 8.dp)
                   .shadow(15.dp, shape = RoundedCornerShape(40.dp))
                   .testTag("searchBar"),
-          query = searchText,
-          onQueryChange = { newText -> searchText = newText },
+          query = textSearchBar,
+          onQueryChange = { newText -> textSearchBar = newText },
           enabled = true,
           onSearch = {
-            finalLoc = location
-            finalName = searchText
+            finalLocation = searchedLocation
+            finalName = textSearchBar
 
-            listOfMarkers += (MarkerState(position = finalLoc))
+            listOfMarkers += (MarkerState(position = finalLocation))
             coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() }
-            active = false
-            visible = true
-            // change the camera position to the searched location
+            activeSearchBar = false
           },
-          active = active,
+          active = activeSearchBar,
           onActiveChange = {
-            if (searchText.isEmpty()) {
-              expanded = false
+            if (textSearchBar.isEmpty()) {
+              expandedSearchBar = false
             }
-            active = it
+            activeSearchBar = it
           },
           placeholder = { Text("Search a location") },
           trailingIcon = {
             // if the search text is empty, show the search icon, otherwise show the clear
             // icon
-            if (searchText.isEmpty()) {
+            if (textSearchBar.isEmpty()) {
               Icon(
                   imageVector = Icons.Default.Search,
                   contentDescription = Icons.Default.Search.name,
                   modifier = Modifier.size(24.dp).testTag("searchButtonIcon"))
             } else {
               IconButton(
-                  modifier = Modifier.testTag("clearSearchButton"), onClick = { searchText = "" }) {
+                  modifier = Modifier.testTag("clearSearchButton"),
+                  onClick = { textSearchBar = "" }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
                         contentDescription = Icons.Default.Clear.name,
@@ -223,34 +225,21 @@ fun Map(
           }) {
             // if the search bar is expanded when clicked modify the search text, show the
             // list of suggestions
-            if (expanded) {
+            if (expandedSearchBar) {
               listOfPropositions.forEach {
                 val primaryText = it.getPrimaryText(null).toString()
                 val placeId = it.placeId
 
-                val placeFields =
-                    listOf(
-                        Place.Field.LAT_LNG,
-                        Place.Field.NAME,
-                        Place.Field.ADDRESS,
-                        Place.Field.BUSINESS_STATUS,
-                        Place.Field.PHONE_NUMBER,
-                        Place.Field.RATING,
-                        Place.Field.USER_RATINGS_TOTAL,
-                        Place.Field.WEBSITE_URI,
-                        Place.Field.CURRENT_OPENING_HOURS,
-                        Place.Field.ICON_URL)
                 Row(modifier = Modifier.padding(8.dp)) {
                   Text(
                       text = primaryText,
                       modifier =
                           Modifier.testTag("listOfPropositions").padding(8.dp).clickable {
-                            searchText = primaryText
-                            val request = FetchPlaceRequest.newInstance(placeId, placeFields)
-                            client.fetchPlace(request).addOnSuccessListener { response ->
+                            textSearchBar = primaryText
+                            mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
                               val place = response.place
                               placeData.setPlaceData(place)
-                              location = place.latLng!!
+                              searchedLocation = place.latLng!!
                             }
                           })
                 }
@@ -267,7 +256,7 @@ fun Map(
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)),
         uiSettings = uiSettings.copy(zoomControlsEnabled = false),
         cameraPositionState =
-            CameraPositionState(position = CameraPosition(finalLoc, 10f, 0f, 0f))) {
+            CameraPositionState(position = CameraPosition(finalLocation, 10f, 0f, 0f))) {
 
           // display current location on the map
           if (seeCurrentLocation) {
@@ -289,7 +278,7 @@ fun Map(
                 // Add a marker to the map
                 state = markerState,
                 title = "Click to Create Suggestions",
-                visible = visible,
+                visible = true,
                 onInfoWindowClick = {
                   oldNavActions.setVariablesLocation(
                       GeoCords(markerState.position.latitude, markerState.position.longitude),
@@ -312,8 +301,8 @@ fun Map(
             Modifier.testTag("switchButton")
                 .align(AbsoluteAlignment.BottomLeft)
                 .padding(horizontal = 16.dp, vertical = 60.dp),
-        checked = enabled,
-        onCheckedChange = { enabled = !enabled })
+        checked = enabledSearchBar,
+        onCheckedChange = { enabledSearchBar = !enabledSearchBar })
 
     Button(
         onClick = {
@@ -322,7 +311,7 @@ fun Map(
               if (it != null) {
                 currentLocation = it
                 seeCurrentLocation = true
-                finalLoc = currentLocation
+                finalLocation = currentLocation
               }
             }
           }
@@ -422,43 +411,3 @@ fun Map(
         scaffoldState = bottomSheetScaffoldState) {}
   }
 }
-
-/**
- * Function to get the address predictions from the Places API.
- *
- * @param client The PlacesClient used to search for locations.
- * @param sessionToken The session token used for the autocomplete request.
- * @param inputString The input string to search for.
- * @param location The location to bias the search results.
- * @param onSuccess The function to call when the predictions are successfully retrieved.
- * @param onFailure The function to call when the predictions retrieval fails.
- */
-suspend fun getAddressPredictions(
-    client: PlacesClient,
-    sessionToken: AutocompleteSessionToken = AutocompleteSessionToken.newInstance(),
-    inputString: String,
-    location: LatLng,
-    onSuccess: (List<AutocompletePrediction>) -> Unit = {},
-    onFailure: (Exception?) -> Unit = { throw Exception("Place not found") }
-) =
-    suspendCoroutine<Unit> {
-      val request =
-          FindAutocompletePredictionsRequest.builder()
-              .setLocationBias(
-                  location.let { locationBias ->
-                    RectangularBounds.newInstance(
-                        LatLng(locationBias.latitude - 0.1, locationBias.longitude - 0.1),
-                        LatLng(locationBias.latitude + 0.1, locationBias.longitude + 0.1))
-                  })
-              .setOrigin(location)
-              .setCountries("CH")
-              .setSessionToken(sessionToken)
-              .setQuery(inputString)
-              .build()
-      client
-          .findAutocompletePredictions(request)
-          .addOnSuccessListener { response: FindAutocompletePredictionsResponse ->
-            onSuccess(response.autocompletePredictions)
-          }
-          .addOnFailureListener { exception: Exception? -> onFailure(exception) }
-    }
