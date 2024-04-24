@@ -2,12 +2,7 @@ package com.github.se.wanderpals.notifications
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.Role
-import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
-import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
-import com.github.se.wanderpals.notifications.NotificationsViewModelTest
 import com.github.se.wanderpals.screens.CreateAnnouncementScreen
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -22,8 +17,6 @@ import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
-import java.time.LocalDateTime
-import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

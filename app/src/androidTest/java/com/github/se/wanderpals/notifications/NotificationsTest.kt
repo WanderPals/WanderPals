@@ -7,7 +7,6 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
-import com.github.se.wanderpals.overview.OverviewViewModelTest
 import com.github.se.wanderpals.screens.NotificationScreen
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
