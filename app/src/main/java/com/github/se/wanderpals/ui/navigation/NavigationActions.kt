@@ -1,12 +1,13 @@
 package com.github.se.wanderpals.ui.navigation
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
+import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
  * rememberNavController with a start destination for MultiNavigationAppState.
@@ -65,9 +66,11 @@ class MultiNavigationAppState(
   /** Print the back stack. */
   @SuppressLint("RestrictedApi")
   fun printBackStack() {
-    println("--------------------")
-    navController!!.currentBackStack.value.forEach { println("screen : ${it.destination.route}") }
-    println("--------------------")
+    Log.d("NavigationAction", "--------------------")
+    navController!!.currentBackStack.value.forEach {
+      Log.d("NavigationAction", "screen : ${it.destination.route}")
+    }
+    Log.d("NavigationAction", "--------------------")
   }
 
   /**
@@ -98,11 +101,24 @@ data class NavigationActions(
     var tripNavigation: MultiNavigationAppState = MultiNavigationAppState(),
 ) {
 
+  var currentRoute = MutableStateFlow(tripNavigation.getStartDestination())
+
   private var lastlyUsedController = mainNavigation
+
+  /** Update the current route. */
+  fun updateCurrentRoute() {
+    currentRoute.value =
+        lastlyUsedController.getNavController.currentBackStackEntry?.destination?.route.toString()
+    if (currentRoute.value == Route.TRIP) {
+      currentRoute.value = Route.DASHBOARD
+    }
+    lastlyUsedController.printBackStack()
+  }
 
   /** Go back in the navigation stack. */
   fun goBack() {
     lastlyUsedController.goBack()
+    updateCurrentRoute()
   }
 
   /**
@@ -118,6 +134,7 @@ data class NavigationActions(
       lastlyUsedController = mainNavigation
       mainNavigation.navigateTo(route)
     }
+    updateCurrentRoute()
   }
 
   /**

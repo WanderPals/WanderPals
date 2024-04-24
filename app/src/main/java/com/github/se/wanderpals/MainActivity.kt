@@ -101,6 +101,15 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var placesClient: PlacesClient
 
+  @Suppress("DEPRECATION")
+  @Deprecated("Deprecated in Java")
+  override fun onBackPressed() {
+    super.onBackPressed()
+    if (::navigationActions.isInitialized) {
+      navigationActions.updateCurrentRoute()
+    }
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
