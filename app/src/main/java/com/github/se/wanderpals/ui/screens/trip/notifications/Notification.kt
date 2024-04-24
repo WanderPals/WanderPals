@@ -44,11 +44,15 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
 /**
- * Composable function representing the Notification screen.
+ * Composable function for displaying notifications and announcements.
  *
- * This function displays notifications or announcements based on user selection.
+ * This composablefunction displays a list of notifications and announcements. It allows users to switch between
+ * switch between viewing notifications and viewing announcements.
+ *  Users can click on notifications to navigate to specific destinations within the app.
+ *  Admin/owner users have the ability to create new announcements and delete announcements.
  *
- * @param notificationsViewModel The view model containing notifications data.
+ * @param notificationsViewModel The view model used to manage notifications and announcements.
+ * @param navigationActions Actions for navigating to different destinations within the app.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +67,7 @@ fun Notification(
         notificationsViewModel.updateStateLists()
     }
 
-
+    // UI states
     val notificationsList by notificationsViewModel.notifStateList.collectAsState()
     val announcementList by notificationsViewModel.announcementStateList.collectAsState()
 
@@ -83,6 +87,7 @@ fun Notification(
                 notificationsViewModel = notificationsViewModel
             )
         }
+        // TOP menu
         Surface(
             modifier =
             Modifier
@@ -157,6 +162,7 @@ fun Notification(
                     .weight(1f)
                     .padding(vertical = 16.dp)
             ) {
+                // text if no items found
                 Text(
                     text = "Looks like there is no $emptyItemText.",
                     modifier = Modifier
@@ -179,13 +185,14 @@ fun Notification(
                             NotificationItem(
                                 notification = item,
                                 onNotificationItemClick = {
-                                    if(item.path.isNotEmpty()){
-
-                                        if(item.path.contains("/")){
-                                            val (route,serializedArgs) = item.path.split("/")
-                                            navigationActions.deserializeNavigationVariables(serializedArgs)
+                                    if (item.path.isNotEmpty()) {
+                                        if (item.path.contains("/")) {
+                                            val (route, serializedArgs) = item.path.split("/")
+                                            navigationActions.deserializeNavigationVariables(
+                                                serializedArgs
+                                            )
                                             navigationActions.navigateTo(route)
-                                        }else{
+                                        } else {
                                             navigationActions.navigateTo(item.path)
                                         }
                                     }
@@ -202,7 +209,6 @@ fun Notification(
                                 })
                         }
                     }
-
                     HorizontalDivider(
                         color = Color.Gray,
                         thickness = 1.dp,
@@ -210,52 +216,51 @@ fun Notification(
                     )
                 }
             }
-
-
         }
-        if(!notificationSelected && SessionManager.isAdmin()){
+        // Create announcement Button
+        if (!notificationSelected && SessionManager.isAdmin()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(100.dp)
             ) {
-                    Button(
-                        onClick = {
-                            navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)
-                        },
-                        modifier =
-                        Modifier
-                            .padding(horizontal = 20.dp)
-                            .height(50.dp)
-                            .align(Alignment.Center)
-                            .testTag("createAnnouncementButton"),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
+                Button(
+                    onClick = {
+                        navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)
+                    },
+                    modifier =
+                    Modifier
+                        .padding(horizontal = 20.dp)
+                        .height(50.dp)
+                        .align(Alignment.Center)
+                        .testTag("createAnnouncementButton"),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(
+                            8.dp,
+                            Alignment.CenterHorizontally
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(
-                                8.dp,
-                                Alignment.CenterHorizontally
-                            ),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = Icons.Default.Add.name,
-                                tint = Color(0xFF000000),
-                                modifier = Modifier.size(20.dp)
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = Icons.Default.Add.name,
+                            tint = Color(0xFF000000),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Text(
+                            text = "Make an announcement",
+                            style =
+                            TextStyle(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight(500),
+                                color = Color(0xFF000000),
+                                textAlign = TextAlign.Center,
                             )
-                            Text(
-                                text = "Make an announcement",
-                                style =
-                                TextStyle(
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight(500),
-                                    color = Color(0xFF000000),
-                                    textAlign = TextAlign.Center,
-                                )
-                            )
-                        }
+                        )
                     }
+                }
 
             }
         }
