@@ -24,18 +24,16 @@ import com.github.se.wanderpals.service.SessionManager
 import java.time.LocalDateTime
 
 /**
- * CreateAnnouncement composable responsible for adding a Announcement.
+ * Composable function for creating a new trip announcement.
  *
- * @param tripId the id of the trip for which the Announcement is being created
- * @param viewModel a CreateAnnouncementViewModel that needs to be initialized beforehand
- * @param onNavigationBack code to execute to go back on the previous screen
+ * @param viewModel The [NotificationsViewModel] to handle the announcement creation.
+ * @param onNavigationBack Callback function to navigate back to the previous screen.
  */
 @SuppressLint("SuspiciousIndentation")
 @Composable
 fun CreateAnnouncement(
     viewModel: NotificationsViewModel,
-    onNavigationBack: () -> Unit // is either onSuccess or onCancel, because the user is navigating back to the previous
-    // screen which is the same screen for both actions
+    onNavigationBack: () -> Unit
 ) {
 
   val MAX_ANNOUNCEMENT_TITLE_LENGTH = 55 // limit the trip Announcement title to 55 characters
@@ -155,7 +153,7 @@ fun CreateAnnouncement(
                   val announcement =
                           Announcement(
                               announcementId = "", // modified by database
-                              userId = "", // modified by database
+                              userId = "",
                               title = title,
                               userName = SessionManager.getCurrentUser()!!.name,
                               description = description,
