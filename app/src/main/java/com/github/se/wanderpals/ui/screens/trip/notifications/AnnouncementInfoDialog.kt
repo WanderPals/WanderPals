@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -39,14 +38,13 @@ import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.service.SessionManager
-import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
 /**
- * Composable function to display a dialog containing information about a stop in a trip agenda.
+ * Composable function for displaying an information dialog for an announcement.
  *
- * @param announcement The [Announcement] object containing information about the stop.
- * @param notificationsViewModel view model containing UI states.
+ * @param announcement The [Announcement] to display information about.
+ * @param notificationsViewModel The view model to handle notifications.
  */
 @Composable
 fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: NotificationsViewModel) {
@@ -131,6 +129,8 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                     readOnly = true
                 )
                 if(SessionManager.isAdmin()){
+
+                // Delete announcement button
                 Button(
                     onClick = {
                         showDeleteDialog = true
