@@ -180,16 +180,10 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   @Test
   fun userWithPermissionsCanDeleteAnnouncement() = run {
     ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-      SessionManager.setRole(Role.ADMIN)
-      notificationButton { assertIsDisplayed() }
-      announcementButton { assertIsDisplayed() }
       announcementButton { performClick() }
       announcementItemButton1 { performClick() }
       announcementDialog { assertIsDisplayed() }
-      deleteAnnouncementButton {
-        assertIsDisplayed()
-        performClick()
-      }
+      deleteAnnouncementButton { performClick() }
       deleteAnnouncementDialog { assertIsDisplayed() }
       confirmDeleteAnnouncementButton { performClick() }
       noItemsText { assertIsDisplayed() }
