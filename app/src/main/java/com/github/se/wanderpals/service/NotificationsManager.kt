@@ -2,8 +2,10 @@ package com.github.se.wanderpals.service
 
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.NavigationActionsVariables
 import com.github.se.wanderpals.ui.navigation.Route
-import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 
 object NotificationsManager {
@@ -25,6 +27,7 @@ object NotificationsManager {
     }
 
 
+
     suspend fun addJoinTripNotification(tripId: String) {
         var notifList = tripsRepository.getNotificationList(tripId).toMutableList()
         val newNotif = TripNotification(
@@ -37,15 +40,18 @@ object NotificationsManager {
 
     }
 
-    suspend fun addCreateSuggestionNotificaiton(tripId: String) {
+    suspend fun addCreateSuggestionNotificaiton(tripId: String,suggestionId : String) {
         var notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+        val navActions = navigationActions.copy()
+        navActions.setVariablesSuggestion(suggestionId)
         val newNotif = TripNotification(
             "${SessionManager.getCurrentUser()!!.name} created a new suggestion ",
-            Route.SUGGESTION,
+            Route.SUGGESTION_DETAIL + "/" + navActions.serializeNavigationVariable(),
             LocalDateTime.now()
         )
         addNewNotification(notifList, newNotif)
         tripsRepository.setNotificationList(tripId, notifList.toList())
+
 
     }
 

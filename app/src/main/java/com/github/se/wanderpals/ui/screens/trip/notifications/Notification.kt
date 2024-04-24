@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
+import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -178,7 +179,9 @@ fun Notification(
                                 notification = item,
                                 onNotificationItemClick = {
                                     if(item.path.isNotEmpty()){
-                                        navigationActions.navigateTo(item.path)
+                                        val parts = item.path.split("/")
+                                        navigationActions.deserializeNavigationVariables(parts[1])
+                                        navigationActions.navigateTo(parts[0])
                                     }
                                 })
                         }

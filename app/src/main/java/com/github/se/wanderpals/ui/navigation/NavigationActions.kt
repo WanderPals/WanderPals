@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.navigationActions
 
 /**
  * rememberNavController with a start destination for MultiNavigationAppState.
@@ -147,6 +148,28 @@ data class NavigationActions(
    */
   fun setVariablesSuggestion(suggestionId: String) {
     variables.suggestionId = suggestionId
+  }
+  fun serializeNavigationVariable() : String {
+    return  "currentTrip: ${variables.currentTrip}, " +
+            "latitude: ${variables.currentGeoCords.latitude}, " +
+            "longitude: ${variables.currentGeoCords.longitude}, " +
+            "currentAddress: ${variables.currentAddress}, " +
+            "suggestionId: ${variables.suggestionId}"
+  }
+  fun deserializeNavigationVariables(string: String){
+    val variables = NavigationActionsVariables()
+    val parts = string.split(", ")
+    for (part in parts) {
+      val keyValue = part.split(": ")
+      when (keyValue[0]) {
+        "currentTrip" -> variables.currentTrip = keyValue[1]
+        "latitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(latitude = keyValue[1].toDouble())
+        "longitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(longitude = keyValue[1].toDouble())
+        "currentAddress" -> variables.currentAddress = keyValue[1]
+        "suggestionId" -> variables.suggestionId = keyValue[1]
+      }
+    }
+    this.variables = variables
   }
 }
 

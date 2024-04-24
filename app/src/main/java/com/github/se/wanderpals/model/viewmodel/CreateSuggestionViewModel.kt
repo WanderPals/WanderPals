@@ -16,7 +16,8 @@ open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewMod
     var a: Boolean = true
     viewModelScope.launch {
       _tripsRepository.addSuggestionToTrip(tripId, suggestion).also { a = it }
-      NotificationsManager.addCreateSuggestionNotificaiton(tripId)
+      val newSuggestionId = _tripsRepository.getAllSuggestionsFromTrip(tripId).last().suggestionId
+      NotificationsManager.addCreateSuggestionNotificaiton(tripId,newSuggestionId)
     }
     return a
   }
