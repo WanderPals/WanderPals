@@ -5,6 +5,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
+import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
+import com.github.se.wanderpals.notifications.NotificationsViewModelTest
 import com.github.se.wanderpals.screens.CreateAnnouncementScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -59,10 +61,9 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   @Test
   fun createAnnouncementReturnToAnnouncementBack() = run {
     ComposeScreen.onComposeScreen<CreateAnnouncementScreen>(composeTestRule) {
-      val vm = CreateAnnouncementViewModelTest(TripsRepository("testUser001", Dispatchers.IO))
+      val vm = NotificationsViewModelTest()
       composeTestRule.setContent {
         CreateAnnouncement(
-            "tripId001",
             vm,
             onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
         )
@@ -80,10 +81,9 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   fun createTripAnnouncementReturnToAnnouncementWhenSuccessfulAndWorksWithOnlyMandatoryField() =
       run {
         ComposeScreen.onComposeScreen<CreateAnnouncementScreen>(composeTestRule) {
-          val vm = CreateAnnouncementViewModelTest(TripsRepository("testUser001", Dispatchers.IO))
+          val vm = NotificationsViewModelTest()
           composeTestRule.setContent {
             CreateAnnouncement(
-                "tripId1",
                 vm,
                 onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
             )
@@ -129,10 +129,9 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   @Test
   fun createAnnouncementFailsWithMissingTitleAndDoesNotWorkWithEmptyTitle() = run {
     ComposeScreen.onComposeScreen<CreateAnnouncementScreen>(composeTestRule) {
-      val vm = CreateAnnouncementViewModelTest(TripsRepository("testUser001", Dispatchers.IO))
+      val vm = NotificationsViewModelTest()
       composeTestRule.setContent {
         CreateAnnouncement(
-            "tripId1",
             vm,
             onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
         )
@@ -178,10 +177,9 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   @Test
   fun createAnnouncementFailsWithMissingDescription() = run {
     ComposeScreen.onComposeScreen<CreateAnnouncementScreen>(composeTestRule) {
-      val vm = CreateAnnouncementViewModelTest(TripsRepository("testUser001", Dispatchers.IO))
+      val vm = NotificationsViewModelTest()
       composeTestRule.setContent {
         CreateAnnouncement(
-            "tripId1",
             vm,
             onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
         )

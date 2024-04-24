@@ -161,7 +161,8 @@ fun Notification(
                     text = "Looks like there is no $emptyItemText.",
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .testTag("noItemsText"),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyLarge
                 )

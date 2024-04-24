@@ -21,10 +21,10 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository,val tripI
 
 
     private val _notifStateList = MutableStateFlow(emptyList<TripNotification>())
-    val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
+    open val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
 
     private val _announcementStateList = MutableStateFlow(emptyList<Announcement>())
-    val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
+    open val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
 
 
     private val _isLoading = MutableStateFlow(true)

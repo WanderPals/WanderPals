@@ -51,10 +51,12 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: NotificationsViewModel) {
     var showDeleteDialog by remember { mutableStateOf(false) }
-    Dialog(onDismissRequest = { notificationsViewModel.setAnnouncementItemPressState(false) },
+    Dialog(
+        onDismissRequest = { notificationsViewModel.setAnnouncementItemPressState(false) },
     ) {
         if (showDeleteDialog) {
             AlertDialog(
+                modifier = Modifier.testTag("deleteAnnouncementDialog"),
                 onDismissRequest = { showDeleteDialog = false },
                 title = { Text("Confirm Deletion") },
                 text = { Text("Are you sure you want to delete this announcement?") },
@@ -64,7 +66,7 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                             notificationsViewModel.removeAnnouncement(announcement.announcementId)
                             notificationsViewModel.setAnnouncementItemPressState(false)
                             showDeleteDialog = false},
-                        modifier = Modifier) {
+                        modifier = Modifier.testTag("confirmDeleteAnnouncementButton")) {
                         Text("Confirm")
                     }
                 },
@@ -95,7 +97,7 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                 // Title
                 Text(
                     text = announcement.title,
-                    style = TextStyle(fontSize = 24.sp),
+                    style = TextStyle(fontSize = 22.sp),
                     textAlign = TextAlign.Start,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -124,7 +126,7 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                     value = announcement.description,
                     onValueChange = {},
                     modifier = Modifier
-                        .fillMaxWidth().height(325.dp)
+                        .fillMaxWidth().height(300.dp)
                         .testTag("announcementDescription"),
                     readOnly = true
                 )
@@ -138,7 +140,8 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp,vertical = 20.dp)
                         .height(50.dp)
-                        .align(Alignment.CenterHorizontally),
+                        .align(Alignment.CenterHorizontally)
+                        .testTag("deleteAnnouncementButton"),
 
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
                 ) {

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ fun NotificationItem(notification: TripNotification,onNotificationItemClick : ()
         .fillMaxWidth()
         .height(80.dp)) {
         Button(
+            modifier = Modifier.testTag("notifItemButton"+notification.path),
             onClick = {onNotificationItemClick()},
             shape = RectangleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
@@ -95,6 +97,7 @@ fun AnnouncementItem(announcement: Announcement,onAnnouncementItemClick : (Strin
         .fillMaxWidth()
         .height(80.dp)) {
         Button(
+            modifier = Modifier.testTag("announcementItemButton" + announcement.announcementId),
             onClick = {onAnnouncementItemClick(announcement.announcementId)},
             shape = RectangleShape,
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
