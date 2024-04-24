@@ -179,9 +179,9 @@ fun Notification(
                                 notification = item,
                                 onNotificationItemClick = {
                                     if(item.path.isNotEmpty()){
-                                        val parts = item.path.split("/")
-                                        navigationActions.deserializeNavigationVariables(parts[1])
-                                        navigationActions.navigateTo(parts[0])
+                                        val (route,serializedArgs) = item.path.split("/")
+                                        navigationActions.deserializeNavigationVariables(serializedArgs)
+                                        navigationActions.navigateTo(route)
                                     }
                                 })
                         }

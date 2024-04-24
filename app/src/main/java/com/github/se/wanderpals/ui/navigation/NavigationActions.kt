@@ -160,13 +160,13 @@ data class NavigationActions(
     val variables = NavigationActionsVariables()
     val parts = string.split(", ")
     for (part in parts) {
-      val keyValue = part.split(": ")
-      when (keyValue[0]) {
-        "currentTrip" -> variables.currentTrip = keyValue[1]
-        "latitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(latitude = keyValue[1].toDouble())
-        "longitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(longitude = keyValue[1].toDouble())
-        "currentAddress" -> variables.currentAddress = keyValue[1]
-        "suggestionId" -> variables.suggestionId = keyValue[1]
+      val (argName,argVal) = part.split(": ")
+      when (argName) {
+        "currentTrip" -> variables.currentTrip = argVal
+        "latitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(latitude = argVal.toDouble())
+        "longitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(longitude = argVal.toDouble())
+        "currentAddress" -> variables.currentAddress = argVal
+        "suggestionId" -> variables.suggestionId = argVal
       }
     }
     this.variables = variables
