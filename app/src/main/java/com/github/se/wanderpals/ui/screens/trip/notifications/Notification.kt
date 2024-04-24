@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -211,50 +212,50 @@ fun Notification(
 
 
         }
-        HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-        ) {
-            if (!notificationSelected) {
-                Button(
-                    onClick = {
-                        navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)
-                    },
-                    modifier =
-                    Modifier
-                        .padding(horizontal = 20.dp)
-                        .height(50.dp)
-                        .align(Alignment.Center)
-                        .testTag("createAnnouncementButton"),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(
-                            8.dp,
-                            Alignment.CenterHorizontally
-                        ),
-                        verticalAlignment = Alignment.CenterVertically,
+        if(!notificationSelected && SessionManager.isAdmin()){
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+            ) {
+                    Button(
+                        onClick = {
+                            navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)
+                        },
+                        modifier =
+                        Modifier
+                            .padding(horizontal = 20.dp)
+                            .height(50.dp)
+                            .align(Alignment.Center)
+                            .testTag("createAnnouncementButton"),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = Icons.Default.Add.name,
-                            tint = Color(0xFF000000),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = "Make an announcement",
-                            style =
-                            TextStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight(500),
-                                color = Color(0xFF000000),
-                                textAlign = TextAlign.Center,
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(
+                                8.dp,
+                                Alignment.CenterHorizontally
+                            ),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = Icons.Default.Add.name,
+                                tint = Color(0xFF000000),
+                                modifier = Modifier.size(20.dp)
                             )
-                        )
+                            Text(
+                                text = "Make an announcement",
+                                style =
+                                TextStyle(
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight(500),
+                                    color = Color(0xFF000000),
+                                    textAlign = TextAlign.Center,
+                                )
+                            )
+                        }
                     }
-                }
+
             }
         }
     }

@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
@@ -123,11 +124,11 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                     value = announcement.description,
                     onValueChange = {},
                     modifier = Modifier
-                        .fillMaxWidth().weight(1f).padding(bottom = 75.dp)
-
+                        .fillMaxWidth().height(325.dp)
                         .testTag("announcementDescription"),
                     readOnly = true
                 )
+                if(SessionManager.isAdmin()){
                 Button(
                     onClick = {
                         showDeleteDialog = true
@@ -165,6 +166,7 @@ fun AnnouncementInfoDialog(announcement: Announcement, notificationsViewModel: N
                             )
                         )
                     }
+                }
                 }
             }
         }
