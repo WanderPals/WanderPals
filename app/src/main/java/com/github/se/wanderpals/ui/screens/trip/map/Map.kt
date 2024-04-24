@@ -3,6 +3,7 @@ package com.github.se.wanderpals.ui.screens.trip.map
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -320,28 +322,37 @@ fun Map(
         checked = enabledSearchBar,
         onCheckedChange = { enabledSearchBar = !enabledSearchBar })
 
-    Button(
-        onClick = {
-          coroutineScope.launch(Dispatchers.IO) {
-            mapManager.getLastLocation().let {
-              if (it != null) {
-                currentLocation = it
-                seeCurrentLocation = true
-                finalLocation = currentLocation
-                mapViewModel.updateLastPosition(currentLocation)
-              } else {
-                locationPermissionDialog = true
+    Column(
+        Modifier.align(AbsoluteAlignment.BottomRight)
+            .padding(horizontal = 16.dp, vertical = 60.dp)) {
+          Button(
+              onClick = {
+                coroutineScope.launch(Dispatchers.IO) {
+                  mapManager.getLastLocation().let {
+                    if (it != null) {
+                      currentLocation = it
+                      seeCurrentLocation = true
+                      finalLocation = currentLocation
+                      mapViewModel.updateLastPosition(currentLocation)
+                    } else {
+                      locationPermissionDialog = true
+                    }
+                  }
+                }
+                mapViewModel.refreshData()
+              }) {
+                Icon(
+                    imageVector = Icons.Default.Person,
+                    contentDescription = "Location",
+                    modifier = Modifier.size(24.dp))
               }
-            }
+
+          Button(onClick = { mapViewModel.refreshData() }) {
+            Icon(
+                imageVector = Icons.Default.Refresh,
+                contentDescription = "Refresh",
+                modifier = Modifier.size(24.dp))
           }
-        },
-        modifier =
-            Modifier.align(AbsoluteAlignment.BottomRight)
-                .padding(horizontal = 16.dp, vertical = 60.dp)) {
-          Icon(
-              imageVector = Icons.Default.Person,
-              contentDescription = "Location",
-              modifier = Modifier.size(24.dp))
         }
 
     if (locationPermissionDialog) {

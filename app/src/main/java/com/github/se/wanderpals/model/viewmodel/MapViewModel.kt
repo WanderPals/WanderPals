@@ -36,6 +36,11 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   }
 
   init {
+    refreshData()
+  }
+
+  /** Refresh the data. */
+  open fun refreshData() {
     getAllStops()
     getAllSuggestions()
     getAllUsersPositions()
