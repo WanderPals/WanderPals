@@ -117,7 +117,10 @@ class MapManager(private val context: Context) {
       Log.d("MapActivity", "Location permission not granted")
       return null
     } else {
-      val result = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, CancellationTokenSource().token).await()
+      val result =
+          fusedLocationClient
+              .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, CancellationTokenSource().token)
+              .await()
       if (result == null) {
         Log.d("MapActivity", "No last known location. Try fetching the current location first")
       } else {

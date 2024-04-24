@@ -40,7 +40,7 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   }
 
   /** Refresh the data. */
-  open fun refreshData() {
+  fun refreshData() {
     getAllStops()
     getAllSuggestions()
     getAllUsersPositions()
@@ -75,12 +75,20 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
           allUsersPositions.add(LatLng(user.lastPosition.latitude, user.lastPosition.longitude))
           allUserNames.add(user.name)
         }
+        if (user.userId == SessionManager.getCurrentUser()?.userId) {
+          SessionManager.setGeoCords(user.lastPosition)
+        }
       }
       usersPositions.value = allUsersPositions
       userNames.value = allUserNames
     }
   }
 
+  /**
+   * Update the last position of the user.
+   *
+   * @param latLng The last position of the user.
+   */
   open fun updateLastPosition(latLng: LatLng) {
     viewModelScope.launch {
       val userId = SessionManager.getCurrentUser()?.userId ?: ""

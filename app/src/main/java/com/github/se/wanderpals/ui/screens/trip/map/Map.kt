@@ -44,6 +44,7 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.service.MapManager
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -93,9 +94,9 @@ fun Map(
   // ui settings for the map
   val uiSettings = remember { MapUiSettings() }
   // see current location of the user on the map
-  var seeCurrentLocation by remember { mutableStateOf(false) }
+  var seeCurrentLocation by remember { mutableStateOf(SessionManager.isPositionSet()) }
   // current location of the user
-  var currentLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
+  var currentLocation by remember { mutableStateOf(SessionManager.getPosition()) }
 
   // Search Bar Variables
 
@@ -279,7 +280,6 @@ fun Map(
                 // Add a marker to the map
                 state = markerState,
                 title = "Click to Create Suggestions",
-                visible = true,
                 onInfoWindowClick = {
                   oldNavActions.setVariablesLocation(
                       GeoCords(markerState.position.latitude, markerState.position.longitude),

@@ -21,7 +21,7 @@ class SessionManagerTest {
         name = "John Doe",
         email = "john@example.com",
         role = Role.ADMIN,
-        geoCoords = GeoCords(37.7749, -122.4194))
+        geoCords = GeoCords(37.7749, -122.4194))
 
     assertNotNull(SessionManager.getCurrentUser())
     SessionManager.getCurrentUser()?.apply {
@@ -64,7 +64,7 @@ class SessionManagerTest {
   @Test
   fun testSetGeoCords() {
     val newGeoCords = GeoCords(51.5074, -0.1278)
-    SessionManager.setUserSession(geoCoords = GeoCords(0.0, 0.0))
+    SessionManager.setUserSession(geoCords = GeoCords(0.0, 0.0))
     SessionManager.setGeoCords(newGeoCords)
     assertEquals(newGeoCords, SessionManager.getCurrentUser()?.geoCords)
   }
