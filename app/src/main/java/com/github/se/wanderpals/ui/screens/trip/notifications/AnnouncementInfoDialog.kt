@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.trip.notifications
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -111,42 +112,48 @@ fun AnnouncementInfoDialog(
                     value = announcement.description,
                     onValueChange = {},
                     modifier =
-                        Modifier.fillMaxWidth().height(300.dp).testTag("announcementDescription"),
+                        Modifier.fillMaxWidth().weight(1f).testTag("announcementDescription"),
                     readOnly = true)
-                if (SessionManager.isAdmin()) {
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(bottom = 10.dp)
+                            .height(70.dp)
+                            .align(Alignment.CenterHorizontally)) {
+                      if (SessionManager.isAdmin()) {
 
-                  // Delete announcement button
-                  Button(
-                      onClick = { showDeleteDialog = true },
-                      modifier =
-                          Modifier.fillMaxWidth()
-                              .padding(horizontal = 10.dp, vertical = 20.dp)
-                              .height(50.dp)
-                              .align(Alignment.CenterHorizontally)
-                              .testTag("deleteAnnouncementButton"),
-                      colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
-                        Row(
-                            horizontalArrangement =
-                                Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                          Icon(
-                              imageVector = Icons.Default.Delete,
-                              contentDescription = Icons.Default.Delete.name,
-                              tint = Color(0xFF000000),
-                              modifier = Modifier.size(20.dp))
-                          Text(
-                              text = "Delete announcement",
-                              style =
-                                  TextStyle(
-                                      fontSize = 14.sp,
-                                      fontWeight = FontWeight(500),
-                                      color = Color(0xFF000000),
-                                      textAlign = TextAlign.Center,
-                                  ))
-                        }
+                        // Delete announcement button
+                        Button(
+                            onClick = { showDeleteDialog = true },
+                            modifier =
+                                Modifier.fillMaxSize()
+                                    .padding(horizontal = 10.dp, vertical = 10.dp)
+                                    .testTag("deleteAnnouncementButton"),
+                            colors =
+                                ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+                              Row(
+                                  horizontalArrangement =
+                                      Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                                  verticalAlignment = Alignment.CenterVertically,
+                              ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = Icons.Default.Delete.name,
+                                    tint = Color(0xFF000000),
+                                    modifier = Modifier.size(20.dp))
+                                Text(
+                                    text = "Delete announcement",
+                                    style =
+                                        TextStyle(
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight(500),
+                                            color = Color(0xFF000000),
+                                            textAlign = TextAlign.Center,
+                                        ))
+                              }
+                            }
                       }
-                }
+                    }
               }
         }
   }
