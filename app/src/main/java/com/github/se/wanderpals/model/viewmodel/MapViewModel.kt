@@ -65,7 +65,8 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
       val allUserNames = mutableListOf<String>()
 
       for (user in allUsers) {
-        if (user.lastPosition != GeoCords(0.0, 0.0)) {
+        if (user.lastPosition != GeoCords(0.0, 0.0) &&
+            SessionManager.getCurrentUser()?.userId != user.userId) {
           allUsersPositions.add(LatLng(user.lastPosition.latitude, user.lastPosition.longitude))
           allUserNames.add(user.name)
         }
@@ -81,8 +82,9 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
       if (userId.isNotEmpty()) {
         val user = _tripsRepository.getUserFromTrip(tripId, userId)
         if (user != null) {
-          _tripsRepository.updateUserInTrip(
-              tripId, user = user.copy(lastPosition = GeoCords(latLng.latitude, latLng.longitude)))
+          val geoCords = GeoCords(latLng.latitude, latLng.longitude)
+          _tripsRepository.updateUserInTrip(tripId, user = user.copy(lastPosition = geoCords))
+          SessionManager.setGeoCords(geoCords)
         }
       }
     }
