@@ -77,7 +77,7 @@ class NotificationsViewModelTest :
 
     override fun addAnnouncement(announcement: Announcement) {
         _announcementStateList.value =
-            _announcementStateList.value.toMutableList().apply { add(announcement) }
+            _announcementStateList.value.toMutableList().apply { add(announcement2) }
     }
 
     override fun removeAnnouncement(announcementId: String) {

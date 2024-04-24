@@ -1,13 +1,15 @@
-package com.github.se.wanderpals.announcement
+package com.github.se.wanderpals.notifications
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.notifications.NotificationsViewModelTest
 import com.github.se.wanderpals.screens.CreateAnnouncementScreen
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
@@ -26,28 +28,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-private val testAnnouncement1: Announcement =
-    Announcement("", "", "Title1", "testUser001", "This is Title1.", LocalDateTime.now())
 
-private val testAnnouncement2: Announcement =
-    Announcement(
-        "", "", "Title2", "testUser002", "This is Title2.", LocalDateTime.now().minusDays(2))
-
-open class CreateAnnouncementViewModelTest(tripsRepository: TripsRepository) :
-    CreateAnnouncementViewModel(tripsRepository) {
-  override fun addAnnouncement(tripId: String, announcement: Announcement): Boolean {
-    // Check only relevant fields, i.e. title and description, as the rest are not user inputs of
-    // the create Announcement screen
-    assert(
-        announcement.title == testAnnouncement1.title ||
-            announcement.title == testAnnouncement2.title)
-    assert(
-        announcement.description == testAnnouncement1.description ||
-            announcement.description == testAnnouncement2.description)
-
-    return true
-  }
-}
 
 @RunWith(AndroidJUnit4::class)
 class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
@@ -81,6 +62,8 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   fun createTripAnnouncementReturnToAnnouncementWhenSuccessfulAndWorksWithOnlyMandatoryField() =
       run {
         ComposeScreen.onComposeScreen<CreateAnnouncementScreen>(composeTestRule) {
+          SessionManager.setUserSession()
+          SessionManager.setRole(Role.OWNER)
           val vm = NotificationsViewModelTest()
           composeTestRule.setContent {
             CreateAnnouncement(
