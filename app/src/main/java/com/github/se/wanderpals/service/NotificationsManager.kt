@@ -40,7 +40,7 @@ object NotificationsManager {
 
     }
 
-    suspend fun addCreateSuggestionNotificaiton(tripId: String,suggestionId : String) {
+    suspend fun addCreateSuggestionNotification(tripId: String,suggestionId : String) {
         var notifList = tripsRepository.getNotificationList(tripId).toMutableList()
         val navActions = navigationActions.copy()
         navActions.setVariablesSuggestion(suggestionId)

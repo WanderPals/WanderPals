@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
-import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -181,11 +180,11 @@ fun Notification(
                                     if(item.path.isNotEmpty()){
 
                                         if(item.path.contains("/")){
-                                            navigationActions.navigateTo(item.path)
-                                        }else{
                                             val (route,serializedArgs) = item.path.split("/")
                                             navigationActions.deserializeNavigationVariables(serializedArgs)
                                             navigationActions.navigateTo(route)
+                                        }else{
+                                            navigationActions.navigateTo(item.path)
                                         }
                                     }
                                 })
