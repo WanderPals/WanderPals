@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.model.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope

@@ -63,7 +63,7 @@ fun Notification(
 
   LaunchedEffect(
       Unit) { // This ensures updateStateLists is called once per composition, not on every
-              // recomposition
+        // recomposition
         notificationsViewModel.updateStateLists()
       }
 
