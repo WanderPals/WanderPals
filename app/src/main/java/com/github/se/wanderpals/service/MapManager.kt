@@ -8,7 +8,9 @@ import androidx.activity.result.ActivityResultLauncher
 import com.github.se.wanderpals.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
@@ -115,7 +117,7 @@ class MapManager(private val context: Context) {
       Log.d("MapActivity", "Location permission not granted")
       return null
     } else {
-      val result = fusedLocationClient.lastLocation.await()
+      val result = fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, CancellationTokenSource().token).await()
       if (result == null) {
         Log.d("MapActivity", "No last known location. Try fetching the current location first")
       } else {
