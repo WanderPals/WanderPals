@@ -103,7 +103,6 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
     private val notificationsViewModelTest = NotificationsViewModelTest()
 
-
     @Before
     fun testSetup() {
         SessionManager.setUserSession()
