@@ -28,11 +28,10 @@ import com.github.se.wanderpals.model.data.TripNotification
 import java.time.format.DateTimeFormatter
 
 /**
- * Composable function representing an item in the notification list.
+ * Composable function for displaying a notification item.
  *
- * This function displays a single notification item with its title and timestamp.
- *
- * @param notification The notification to display.
+ * @param notification The [TripNotification] to display.
+ * @param onNotificationItemClick Callback function to handle click events on the notification item.
  */
 @Composable
 fun NotificationItem(notification: TripNotification,onNotificationItemClick : () -> Unit) {
@@ -85,11 +84,10 @@ fun NotificationItem(notification: TripNotification,onNotificationItemClick : ()
 }
 
 /**
- * Composable function representing an item in the announcement list.
+ * Composable function for displaying an announcement item.
  *
- * This function displays a single announcement item with its title, timestamp, and username.
- *
- * @param announcement The announcement to display.
+ * @param announcement The [Announcement] to display.
+ * @param onAnnouncementItemClick Callback function to handle click events on the announcement item.
  */
 @Composable
 fun AnnouncementItem(announcement: Announcement,onAnnouncementItemClick : (String) -> Unit) {
