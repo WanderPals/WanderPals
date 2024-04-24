@@ -1,7 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip.map
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -84,6 +82,12 @@ fun Map(
 
   // get the list of stops from the view model
   val stopList by mapViewModel.stops.collectAsState()
+  // get the list of suggestions from the view model
+  val suggestionList by mapViewModel.suggestions.collectAsState()
+  // get the list of users positions from the view model
+  val usersPositions by mapViewModel.usersPositions.collectAsState()
+  // get the list of user names from the view model
+  val userNames by mapViewModel.userNames.collectAsState()
   // ui settings for the map
   val uiSettings = remember { MapUiSettings() }
   // see current location of the user on the map
@@ -261,16 +265,10 @@ fun Map(
 
           // display current location on the map
           if (seeCurrentLocation) {
-            val resizedIcon =
-                Bitmap.createScaledBitmap(
-                    BitmapFactory.decodeResource(context.resources, R.drawable.current_location),
-                    150,
-                    150,
-                    false)
             Marker(
                 state = MarkerState(position = currentLocation),
                 title = "Current Location",
-                icon = BitmapDescriptorFactory.fromBitmap(resizedIcon))
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.logo_postion))
           }
 
           // display the marker on the map
@@ -296,6 +294,23 @@ fun Map(
                 snippet = it.description,
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
           }
+
+          // display all the suggestions on the map
+          suggestionList.forEach {
+            Marker( // Add a marker to the map
+                state = MarkerState(position = LatLng(it.geoCords.latitude, it.geoCords.longitude)),
+                title = it.title,
+                snippet = it.description,
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+          }
+
+          // display all the users positions on the map
+          usersPositions.forEach {
+            Marker( // Add a marker to the map
+                state = MarkerState(position = it),
+                title = userNames[usersPositions.indexOf(it)],
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.logo_postion_other))
+          }
         }
     Switch(
         modifier =
@@ -313,6 +328,7 @@ fun Map(
                 currentLocation = it
                 seeCurrentLocation = true
                 finalLocation = currentLocation
+                mapViewModel.updateLastPosition(currentLocation)
               } else {
                 locationPermissionDialog = true
               }

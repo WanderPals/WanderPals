@@ -3,8 +3,11 @@ package com.github.se.wanderpals.model.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.SessionManager
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -18,6 +21,9 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
     ViewModel() {
   private val _tripsRepository = tripsRepository
   open var stops = MutableStateFlow(emptyList<Stop>())
+  open var suggestions = MutableStateFlow(emptyList<Stop>())
+  open var usersPositions = MutableStateFlow(emptyList<LatLng>())
+  open var userNames = MutableStateFlow(emptyList<String>())
 
   /**
    * Add a stop to the trip.
@@ -31,15 +37,54 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
 
   init {
     getAllStops()
+    getAllSuggestions()
+    getAllUsersPositions()
   }
 
   /** Get all stops from the trip. */
   open fun getAllStops() {
     viewModelScope.launch {
       val allStops = _tripsRepository.getAllStopsFromTrip(tripId)
-      val allStopsFromSubscribedTrips =
-          _tripsRepository.getAllSuggestionsFromTrip(tripId).map { it.stop }
-      stops.value = allStops.toMutableList().apply { addAll(allStopsFromSubscribedTrips) }
+      stops.value = allStops
+    }
+  }
+
+  /** Get all suggestions from the trip. */
+  open fun getAllSuggestions() {
+    viewModelScope.launch {
+      val allSuggestions = _tripsRepository.getAllSuggestionsFromTrip(tripId).map { it.stop }
+      suggestions.value = allSuggestions
+    }
+  }
+
+  /** Get all users positions from the trip. */
+  open fun getAllUsersPositions() {
+    viewModelScope.launch {
+      val allUsers = _tripsRepository.getAllUsersFromTrip(tripId)
+      val allUsersPositions = mutableListOf<LatLng>()
+      val allUserNames = mutableListOf<String>()
+
+      for (user in allUsers) {
+        if (user.lastPosition != GeoCords(0.0, 0.0)) {
+          allUsersPositions.add(LatLng(user.lastPosition.latitude, user.lastPosition.longitude))
+          allUserNames.add(user.name)
+        }
+      }
+      usersPositions.value = allUsersPositions
+      userNames.value = allUserNames
+    }
+  }
+
+  open fun updateLastPosition(latLng: LatLng) {
+    viewModelScope.launch {
+      val userId = SessionManager.getCurrentUser()?.userId ?: ""
+      if (userId.isNotEmpty()) {
+        val user = _tripsRepository.getUserFromTrip(tripId, userId)
+        if (user != null) {
+          _tripsRepository.updateUserInTrip(
+              tripId, user = user.copy(lastPosition = GeoCords(latLng.latitude, latLng.longitude)))
+        }
+      }
     }
   }
 
