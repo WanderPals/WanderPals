@@ -59,7 +59,11 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   /** Get all suggestions from the trip. */
   open fun getAllSuggestions() {
     viewModelScope.launch {
-      val allSuggestions = _tripsRepository.getAllSuggestionsFromTrip(tripId).map { it.stop }
+      val allSuggestions =
+          _tripsRepository
+              .getAllSuggestionsFromTrip(tripId)
+              .map { it.stop }
+              .filter { it.geoCords != GeoCords(0.0, 0.0) }
       suggestions.value = allSuggestions
     }
   }
