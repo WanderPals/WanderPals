@@ -34,53 +34,44 @@ import java.time.format.DateTimeFormatter
  * @param onNotificationItemClick Callback function to handle click events on the notification item.
  */
 @Composable
-fun NotificationItem(notification: TripNotification,onNotificationItemClick : () -> Unit) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(80.dp)) {
-        Button(
-            modifier = Modifier.testTag("notifItemButton"+notification.path),
-            onClick = {onNotificationItemClick()},
-            shape = RectangleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-            Row(modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.CenterVertically)) {
-                // Title Text
-                Text(
-                    text = notification.title,
-                    style = TextStyle(fontSize = 16.sp),
-                    color = Color.Black,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .align(Alignment.CenterVertically),
-                    textAlign = TextAlign.Start)
+fun NotificationItem(notification: TripNotification, onNotificationItemClick: () -> Unit) {
+  Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+    Button(
+        modifier = Modifier.testTag("notifItemButton" + notification.path),
+        onClick = { onNotificationItemClick() },
+        shape = RectangleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+          Row(modifier = Modifier.fillMaxSize().align(Alignment.CenterVertically)) {
+            // Title Text
+            Text(
+                text = notification.title,
+                style = TextStyle(fontSize = 16.sp),
+                color = Color.Black,
+                modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
+                textAlign = TextAlign.Start)
 
-                // Spacer
-                Spacer(modifier = Modifier.width(16.dp))
+            // Spacer
+            Spacer(modifier = Modifier.width(16.dp))
 
-                // Texts Column
-                Column(
-                    modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.End) {
+            // Texts Column
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.End) {
 
-                    // Date: hour
-                    Text(
-                        text = notification.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
-                        style = TextStyle(fontSize = 14.sp, color = Color.Gray)
-                    )
-                    // Date: day
-                    Text(
-                        text =
-                        notification.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                        style = TextStyle(fontSize = 14.sp, color = Color.Gray)
-                    )
+                  // Date: hour
+                  Text(
+                      text = notification.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
+                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
+                  // Date: day
+                  Text(
+                      text =
+                          notification.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
                 }
-            }
+          }
         }
-    }
+  }
 }
 
 /**
@@ -90,54 +81,47 @@ fun NotificationItem(notification: TripNotification,onNotificationItemClick : ()
  * @param onAnnouncementItemClick Callback function to handle click events on the announcement item.
  */
 @Composable
-fun AnnouncementItem(announcement: Announcement,onAnnouncementItemClick : (String) -> Unit) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(80.dp)) {
-        Button(
-            modifier = Modifier.testTag("announcementItemButton" + announcement.announcementId),
-            onClick = {onAnnouncementItemClick(announcement.announcementId)},
-            shape = RectangleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-            Row(modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.CenterVertically)) {
-                // Title Text
-                Text(
-                    text = announcement.title,
-                    style = TextStyle(fontSize = 16.sp),
-                    color = Color.Black,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .align(Alignment.CenterVertically),
-                    textAlign = TextAlign.Start)
+fun AnnouncementItem(announcement: Announcement, onAnnouncementItemClick: (String) -> Unit) {
+  Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+    Button(
+        modifier = Modifier.testTag("announcementItemButton" + announcement.announcementId),
+        onClick = { onAnnouncementItemClick(announcement.announcementId) },
+        shape = RectangleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+          Row(modifier = Modifier.fillMaxSize().align(Alignment.CenterVertically)) {
+            // Title Text
+            Text(
+                text = announcement.title,
+                style = TextStyle(fontSize = 16.sp),
+                color = Color.Black,
+                modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
+                textAlign = TextAlign.Start)
 
-                // Spacer
-                Spacer(modifier = Modifier.width(16.dp))
+            // Spacer
+            Spacer(modifier = Modifier.width(16.dp))
 
-                // Texts Column
-                Column(
-                    modifier = Modifier.fillMaxHeight(),
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.End) {
+            // Texts Column
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.End) {
 
-                    // Date: hour
-                    Text(
-                        text = announcement.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
-                        style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-                    // Date: day
-                    Text(
-                        text =
-                        announcement.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                        style = TextStyle(fontSize = 14.sp, color = Color.Gray))
+                  // Date: hour
+                  Text(
+                      text = announcement.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
+                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
+                  // Date: day
+                  Text(
+                      text =
+                          announcement.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
 
-                    // Username
-                    Text(
-                        text = announcement.userName,
-                        style = TextStyle(fontSize = 14.sp, color = Color.Gray))
+                  // Username
+                  Text(
+                      text = announcement.userName,
+                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
                 }
-            }
+          }
         }
-    }
+  }
 }

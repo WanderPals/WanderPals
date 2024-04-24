@@ -31,10 +31,7 @@ import java.time.LocalDateTime
  */
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun CreateAnnouncement(
-    viewModel: NotificationsViewModel,
-    onNavigationBack: () -> Unit
-) {
+fun CreateAnnouncement(viewModel: NotificationsViewModel, onNavigationBack: () -> Unit) {
 
   val MAX_ANNOUNCEMENT_TITLE_LENGTH = 55 // limit the trip Announcement title to 55 characters
 
@@ -151,18 +148,17 @@ fun CreateAnnouncement(
                 if (titleError.isEmpty() && descriptionError.isEmpty()) {
                   // Logic to create Announcement
                   val announcement =
-                          Announcement(
-                              announcementId = "", // modified by database
-                              userId = "",
-                              title = title,
-                              userName = SessionManager.getCurrentUser()!!.name,
-                              description = description,
-                              timestamp = LocalDateTime.now())
+                      Announcement(
+                          announcementId = "", // modified by database
+                          userId = "",
+                          title = title,
+                          userName = SessionManager.getCurrentUser()!!.name,
+                          description = description,
+                          timestamp = LocalDateTime.now())
 
                   viewModel.addAnnouncement(announcement)
                   viewModel.setNotificationSelectionState(false)
                   onNavigationBack()
-
                 }
               }) {
                 Text("Announce", fontSize = 24.sp)

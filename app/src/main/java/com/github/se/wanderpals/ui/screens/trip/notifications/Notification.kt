@@ -46,10 +46,10 @@ import com.github.se.wanderpals.ui.navigation.Route
 /**
  * Composable function for displaying notifications and announcements.
  *
- * This composablefunction displays a list of notifications and announcements. It allows users to switch between
- * switch between viewing notifications and viewing announcements.
- *  Users can click on notifications to navigate to specific destinations within the app.
- *  Admin/owner users have the ability to create new announcements and delete announcements.
+ * This composablefunction displays a list of notifications and announcements. It allows users to
+ * switch between switch between viewing notifications and viewing announcements. Users can click on
+ * notifications to navigate to specific destinations within the app. Admin/owner users have the
+ * ability to create new announcements and delete announcements.
  *
  * @param notificationsViewModel The view model used to manage notifications and announcements.
  * @param navigationActions Actions for navigating to different destinations within the app.
@@ -61,212 +61,154 @@ fun Notification(
     navigationActions: NavigationActions
 ) {
 
-    LaunchedEffect(
-        Unit
-    ) { // This ensures updateStateLists is called once per composition, not on every recomposition
+  LaunchedEffect(
+      Unit) { // This ensures updateStateLists is called once per composition, not on every
+              // recomposition
         notificationsViewModel.updateStateLists()
+      }
+
+  // UI states
+  val notificationsList by notificationsViewModel.notifStateList.collectAsState()
+  val announcementList by notificationsViewModel.announcementStateList.collectAsState()
+
+  val notificationSelected by notificationsViewModel.isNotifSelected.collectAsState()
+  val announcementItemPressed by notificationsViewModel.announcementItemPressed.collectAsState()
+
+  val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
+
+  Column(modifier = Modifier.testTag("notificationScreen")) {
+    if (announcementItemPressed) {
+      val selectedAnnouncement =
+          announcementList.find { announcement ->
+            announcement.announcementId == selectedAnnouncementId
+          }!!
+      AnnouncementInfoDialog(
+          announcement = selectedAnnouncement, notificationsViewModel = notificationsViewModel)
     }
-
-    // UI states
-    val notificationsList by notificationsViewModel.notifStateList.collectAsState()
-    val announcementList by notificationsViewModel.announcementStateList.collectAsState()
-
-    val notificationSelected by notificationsViewModel.isNotifSelected.collectAsState()
-    val announcementItemPressed by notificationsViewModel.announcementItemPressed.collectAsState()
-
-    val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
-
-
-
-    Column(modifier = Modifier.testTag("notificationScreen")) {
-        if (announcementItemPressed) {
-            val selectedAnnouncement =
-                announcementList.find { announcement -> announcement.announcementId == selectedAnnouncementId }!!
-            AnnouncementInfoDialog(
-                announcement = selectedAnnouncement,
-                notificationsViewModel = notificationsViewModel
-            )
-        }
-        // TOP menu
-        Surface(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .padding(horizontal = 16.dp, vertical = 22.dp),
-            shape = RoundedCornerShape(70.dp),
-            color = Color(0xFFA5B2C2)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+    // TOP menu
+    Surface(
+        modifier =
+            Modifier.fillMaxWidth().height(100.dp).padding(horizontal = 16.dp, vertical = 22.dp),
+        shape = RoundedCornerShape(70.dp),
+        color = Color(0xFFA5B2C2)) {
+          Row(
+              modifier = Modifier.fillMaxSize(),
+              horizontalArrangement = Arrangement.Center,
+              verticalAlignment = Alignment.CenterVertically) {
                 Button(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .testTag("notificationButton"),
+                    modifier = Modifier.fillMaxHeight().weight(1f).testTag("notificationButton"),
                     onClick = { notificationsViewModel.setNotificationSelectionState(true) },
                     colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor =
-                        if (notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(
-                        text = "Notifications",
-                        style =
-                        MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight =
-                            if (notificationSelected) FontWeight.Bold
-                            else FontWeight.Normal
-                        )
-                    )
-                }
+                        ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
+                            contentColor = Color.White)) {
+                      Text(
+                          text = "Notifications",
+                          style =
+                              MaterialTheme.typography.bodyLarge.copy(
+                                  fontWeight =
+                                      if (notificationSelected) FontWeight.Bold
+                                      else FontWeight.Normal))
+                    }
                 Button(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .testTag("announcementButton"),
+                    modifier = Modifier.fillMaxHeight().weight(1f).testTag("announcementButton"),
                     onClick = { notificationsViewModel.setNotificationSelectionState(false) },
                     colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor =
-                        if (!notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
-                        contentColor = Color.White
-                    )
-                ) {
-                    Text(
-                        text = "Announcements",
-                        style =
-                        MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight =
-                            if (!notificationSelected) FontWeight.Bold
-                            else FontWeight.Normal
-                        )
-                    )
-                }
-            }
-        }
-
-        HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-
-        val itemsList = if (notificationSelected) notificationsList else announcementList
-        if (itemsList.isEmpty()) {
-            val emptyItemText = if (notificationSelected) "notifications" else "announcements"
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(vertical = 16.dp)
-            ) {
-                // text if no items found
-                Text(
-                    text = "Looks like there is no $emptyItemText.",
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 16.dp)
-                        .testTag("noItemsText"),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-            ) {
-                items(itemsList) { item ->
-                    when (item) {
-                        is TripNotification -> {
-                            NotificationItem(
-                                notification = item,
-                                onNotificationItemClick = {
-                                    if (item.path.isNotEmpty()) {
-                                        if (item.path.contains("/")) {
-                                            val (route, serializedArgs) = item.path.split("/")
-                                            navigationActions.deserializeNavigationVariables(
-                                                serializedArgs
-                                            )
-                                            navigationActions.navigateTo(route)
-                                        } else {
-                                            navigationActions.navigateTo(item.path)
-                                        }
-                                    }
-                                })
-                        }
-                        is Announcement -> {
-                            AnnouncementItem(
-                                announcement = item,
-                                onAnnouncementItemClick = { announcementId ->
-                                    notificationsViewModel.setAnnouncementItemPressState(true)
-                                    notificationsViewModel.setSelectedAnnouncementId(
-                                        announcementId
-                                    )
-                                })
-                        }
+                        ButtonDefaults.buttonColors(
+                            containerColor =
+                                if (!notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
+                            contentColor = Color.White)) {
+                      Text(
+                          text = "Announcements",
+                          style =
+                              MaterialTheme.typography.bodyLarge.copy(
+                                  fontWeight =
+                                      if (!notificationSelected) FontWeight.Bold
+                                      else FontWeight.Normal))
                     }
-                    HorizontalDivider(
-                        color = Color.Gray,
-                        thickness = 1.dp,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
+              }
         }
-        // Create announcement Button
-        if (!notificationSelected && SessionManager.isAdmin()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-            ) {
-                Button(
-                    onClick = {
-                        navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT)
-                    },
-                    modifier =
-                    Modifier
-                        .padding(horizontal = 20.dp)
-                        .height(50.dp)
-                        .align(Alignment.Center)
-                        .testTag("createAnnouncementButton"),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(
-                            8.dp,
-                            Alignment.CenterHorizontally
-                        ),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = Icons.Default.Add.name,
-                            tint = Color(0xFF000000),
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Text(
-                            text = "Make an announcement",
-                            style =
-                            TextStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight(500),
-                                color = Color(0xFF000000),
-                                textAlign = TextAlign.Center,
-                            )
-                        )
-                    }
-                }
 
+    HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+
+    val itemsList = if (notificationSelected) notificationsList else announcementList
+    if (itemsList.isEmpty()) {
+      val emptyItemText = if (notificationSelected) "notifications" else "announcements"
+      Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 16.dp)) {
+        // text if no items found
+        Text(
+            text = "Looks like there is no $emptyItemText.",
+            modifier =
+                Modifier.align(Alignment.Center).padding(horizontal = 16.dp).testTag("noItemsText"),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge)
+      }
+    } else {
+      LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+        items(itemsList) { item ->
+          when (item) {
+            is TripNotification -> {
+              NotificationItem(
+                  notification = item,
+                  onNotificationItemClick = {
+                    if (item.path.isNotEmpty()) {
+                      if (item.path.contains("/")) {
+                        val (route, serializedArgs) = item.path.split("/")
+                        navigationActions.deserializeNavigationVariables(serializedArgs)
+                        navigationActions.navigateTo(route)
+                      } else {
+                        navigationActions.navigateTo(item.path)
+                      }
+                    }
+                  })
             }
+            is Announcement -> {
+              AnnouncementItem(
+                  announcement = item,
+                  onAnnouncementItemClick = { announcementId ->
+                    notificationsViewModel.setAnnouncementItemPressState(true)
+                    notificationsViewModel.setSelectedAnnouncementId(announcementId)
+                  })
+            }
+          }
+          HorizontalDivider(
+              color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
         }
+      }
     }
+    // Create announcement Button
+    if (!notificationSelected && SessionManager.isAdmin()) {
+      Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
+        Button(
+            onClick = { navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT) },
+            modifier =
+                Modifier.padding(horizontal = 20.dp)
+                    .height(50.dp)
+                    .align(Alignment.Center)
+                    .testTag("createAnnouncementButton"),
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+              Row(
+                  horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                  verticalAlignment = Alignment.CenterVertically,
+              ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = Icons.Default.Add.name,
+                    tint = Color(0xFF000000),
+                    modifier = Modifier.size(20.dp))
+                Text(
+                    text = "Make an announcement",
+                    style =
+                        TextStyle(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight(500),
+                            color = Color(0xFF000000),
+                            textAlign = TextAlign.Center,
+                        ))
+              }
+            }
+      }
+    }
+  }
 }
-
-
-
-

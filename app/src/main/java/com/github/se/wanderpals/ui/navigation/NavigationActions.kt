@@ -2,12 +2,10 @@ package com.github.se.wanderpals.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
-import com.github.se.wanderpals.navigationActions
 
 /**
  * rememberNavController with a start destination for MultiNavigationAppState.
@@ -149,22 +147,27 @@ data class NavigationActions(
   fun setVariablesSuggestion(suggestionId: String) {
     variables.suggestionId = suggestionId
   }
-  fun serializeNavigationVariable() : String {
-    return  "currentTrip: ${variables.currentTrip}, " +
-            "latitude: ${variables.currentGeoCords.latitude}, " +
-            "longitude: ${variables.currentGeoCords.longitude}, " +
-            "currentAddress: ${variables.currentAddress}, " +
-            "suggestionId: ${variables.suggestionId}"
+
+  fun serializeNavigationVariable(): String {
+    return "currentTrip: ${variables.currentTrip}, " +
+        "latitude: ${variables.currentGeoCords.latitude}, " +
+        "longitude: ${variables.currentGeoCords.longitude}, " +
+        "currentAddress: ${variables.currentAddress}, " +
+        "suggestionId: ${variables.suggestionId}"
   }
-  fun deserializeNavigationVariables(string: String){
+
+  fun deserializeNavigationVariables(string: String) {
     val variables = NavigationActionsVariables()
     val parts = string.split(", ")
     for (part in parts) {
-      val (argName,argVal) = part.split(": ")
+      val (argName, argVal) = part.split(": ")
       when (argName) {
         "currentTrip" -> variables.currentTrip = argVal
-        "latitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(latitude = argVal.toDouble())
-        "longitude" -> variables.currentGeoCords = variables.currentGeoCords.copy(longitude = argVal.toDouble())
+        "latitude" ->
+            variables.currentGeoCords = variables.currentGeoCords.copy(latitude = argVal.toDouble())
+        "longitude" ->
+            variables.currentGeoCords =
+                variables.currentGeoCords.copy(longitude = argVal.toDouble())
         "currentAddress" -> variables.currentAddress = argVal
         "suggestionId" -> variables.suggestionId = argVal
       }

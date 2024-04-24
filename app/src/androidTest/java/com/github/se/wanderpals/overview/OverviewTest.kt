@@ -106,6 +106,7 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
   private val overviewViewModelTest = OverviewViewModelTest()
+
   @Before
   fun testSetup() {
     composeTestRule.setContent {

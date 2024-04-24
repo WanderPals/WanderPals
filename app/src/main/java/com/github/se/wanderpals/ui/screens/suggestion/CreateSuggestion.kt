@@ -34,7 +34,6 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
-import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
 import java.time.Duration
@@ -323,10 +322,9 @@ fun CreateSuggestion(
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
                   if (viewModel.addSuggestion(tripId, suggestion)) {
-                      onSuccess()
-                  }
-                  else {
-                      onFailure()
+                    onSuccess()
+                  } else {
+                    onFailure()
                   }
                 }
               }) {

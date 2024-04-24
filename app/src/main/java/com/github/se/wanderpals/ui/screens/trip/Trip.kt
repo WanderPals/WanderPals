@@ -134,19 +134,24 @@ fun Trip(
                       }
                     }
                     composable(Route.NOTIFICATION) {
-                      val notificationsViewModel : NotificationsViewModel =
-                            viewModel(
-                                factory = NotificationsViewModel.NotificationsViewModelFactory(tripsRepository,tripId),
-                                key = "NotificationsViewModel")
-                      Notification(notificationsViewModel,oldNavActions)
-                    }
-                    composable(Route.CREATE_ANNOUNCEMENT){
-                      val notificationsViewModel : NotificationsViewModel =
+                      val notificationsViewModel: NotificationsViewModel =
                           viewModel(
-                              factory = NotificationsViewModel.NotificationsViewModelFactory(tripsRepository,tripId),
+                              factory =
+                                  NotificationsViewModel.NotificationsViewModelFactory(
+                                      tripsRepository, tripId),
                               key = "NotificationsViewModel")
-                      CreateAnnouncement(notificationsViewModel, onNavigationBack = {oldNavActions.goBack()})
-                      }
+                      Notification(notificationsViewModel, oldNavActions)
+                    }
+                    composable(Route.CREATE_ANNOUNCEMENT) {
+                      val notificationsViewModel: NotificationsViewModel =
+                          viewModel(
+                              factory =
+                                  NotificationsViewModel.NotificationsViewModelFactory(
+                                      tripsRepository, tripId),
+                              key = "NotificationsViewModel")
+                      CreateAnnouncement(
+                          notificationsViewModel, onNavigationBack = { oldNavActions.goBack() })
+                    }
 
                     composable(Route.MEMBERS) {
                       DashboardMemberList(
@@ -183,9 +188,7 @@ fun Trip(
 @Composable
 fun BottomBar(navActions: NavigationActions) {
   NavigationBar(
-      modifier = Modifier
-          .testTag("bottomNav")
-          .height(56.dp),
+      modifier = Modifier.testTag("bottomNav").height(56.dp),
       containerColor = NavigationBarDefaults.containerColor,
       contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
       tonalElevation = NavigationBarDefaults.Elevation,
@@ -195,9 +198,7 @@ fun BottomBar(navActions: NavigationActions) {
 
     TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
-          modifier = Modifier
-              .testTag(destination.text)
-              .size(56.dp),
+          modifier = Modifier.testTag(destination.text).size(56.dp),
           selected = currentRoute == destination.route,
           onClick = {
             currentRoute = destination.route
