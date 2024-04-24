@@ -24,6 +24,8 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   open var suggestions = MutableStateFlow(emptyList<Stop>())
   open var usersPositions = MutableStateFlow(emptyList<LatLng>())
   open var userNames = MutableStateFlow(emptyList<String>())
+  open var userPosition = MutableStateFlow(LatLng(0.0, 0.0))
+  open var seeUserPosition = MutableStateFlow(false)
 
   /**
    * Add a stop to the trip.
@@ -77,6 +79,10 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
         }
         if (user.userId == SessionManager.getCurrentUser()?.userId) {
           SessionManager.setGeoCords(user.lastPosition)
+          userPosition.value = SessionManager.getPosition()
+          if (SessionManager.isPositionSet()) {
+            seeUserPosition.value = true
+          }
         }
       }
       usersPositions.value = allUsersPositions
@@ -98,6 +104,10 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
           val geoCords = GeoCords(latLng.latitude, latLng.longitude)
           _tripsRepository.updateUserInTrip(tripId, user = user.copy(lastPosition = geoCords))
           SessionManager.setGeoCords(geoCords)
+          userPosition.value = latLng
+          if (SessionManager.isPositionSet()) {
+            seeUserPosition.value = true
+          }
         }
       }
     }
