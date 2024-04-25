@@ -4,6 +4,7 @@ import com.google.android.libraries.places.api.model.Place
 
 /** Data class to store the place details. */
 data class PlaceData(
+    var placeId: String = "",
     var placeName: String = "",
     var placeAddress: String = "",
     var placeRating: String = "",
@@ -16,7 +17,8 @@ data class PlaceData(
 ) {
 
   /** Function to set the place data. */
-  fun setPlaceData(place: Place) {
+  fun setPlaceData(place: Place, placeId: String): PlaceData {
+    this.placeId = placeId
     place.name?.let { it1 -> placeName = it1 }
     place.iconUrl?.let { it1 -> placeIconUrl = it1 }
     place.businessStatus?.let { it1 -> placeBusinessStatus = it1.toString() }
@@ -26,5 +28,6 @@ data class PlaceData(
     place.rating?.let { it1 -> placeRating = it1.toString() }
     place.userRatingsTotal?.let { it1 -> placeUserRatingsTotal = it1.toString() }
     place.websiteUri?.let { it1 -> placeWebsite = it1.toString() }
+    return this
   }
 }
