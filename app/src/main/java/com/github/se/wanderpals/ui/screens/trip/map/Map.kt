@@ -126,9 +126,11 @@ fun Map(
   // Bottom Sheet Variables
 
   // place data of the searched location
-  val placeData by remember { mutableStateOf(PlaceData()) }
+  var placeData by remember { mutableStateOf(PlaceData()) }
   // bottom sheet state
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+  // bottom sheet state expanded
+  var bottomSheetExpanded by remember { mutableStateOf(false) }
 
   // Location Permissions alert dialog
 
@@ -142,6 +144,14 @@ fun Map(
 
   LaunchedEffect(Unit) { mapManager.askLocationPermission() }
 
+  LaunchedEffect(key1 = bottomSheetExpanded) {
+    if (bottomSheetExpanded) {
+      bottomSheetScaffoldState.bottomSheetState.expand()
+    } else {
+      bottomSheetScaffoldState.bottomSheetState.partialExpand()
+    }
+  }
+
   LaunchedEffect(key1 = textSearchBar) {
     if (textSearchBar.isBlank()) {
       expandedSearchBar = false
@@ -151,7 +161,7 @@ fun Map(
           inputString = textSearchBar,
           location = currentLocation,
           onSuccess = { predictions ->
-            Log.d("le", "")
+            Log.d("Prediction", "Success")
             listOfPropositions = predictions
             expandedSearchBar = true
           },
@@ -188,7 +198,7 @@ fun Map(
             finalName = textSearchBar
 
             listOfMarkers += (MarkerState(position = finalLocation))
-            mapViewModel.expandBottomSheet(bottomSheetScaffoldState)
+            bottomSheetExpanded = true
             activeSearchBar = false
           },
           active = activeSearchBar,
@@ -239,7 +249,7 @@ fun Map(
                             textSearchBar = primaryText
                             mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
                               val place = response.place
-                              placeData.setPlaceData(place)
+                              placeData = placeData.setPlaceData(place, placeId)
                               searchedLocation = place.latLng!!
                             }
                           })
@@ -274,6 +284,7 @@ fun Map(
                 state = markerState,
                 title = "Click to Create Suggestions",
                 onInfoWindowClick = {
+                  oldNavActions.setVariablesSuggestion(placeData.placeId)
                   oldNavActions.setVariablesLocation(
                       GeoCords(markerState.position.latitude, markerState.position.longitude),
                       placeData.placeAddress)
@@ -282,21 +293,43 @@ fun Map(
           }
 
           // display all the stops on the map
-          stopList.forEach {
+          stopList.forEach { stop ->
             Marker( // Add a marker to the map
-                state = MarkerState(position = LatLng(it.geoCords.latitude, it.geoCords.longitude)),
-                title = it.title,
-                snippet = it.description,
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                state =
+                    MarkerState(position = LatLng(stop.geoCords.latitude, stop.geoCords.longitude)),
+                title = stop.title,
+                snippet = stop.description,
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
+                onInfoWindowClick = {
+                  // check if stop.stopId contains a "/" and if it does, split it and get the first
+                  if (stop.stopId.last() != '/' && stop.stopId.contains('/')) {
+                    val placeId = stop.stopId.split("/")[1]
+                    mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
+                      val place = response.place
+                      placeData = placeData.setPlaceData(place, placeId)
+                      searchedLocation = place.latLng!!
+                      bottomSheetExpanded = true
+                    }
+                  }
+                })
           }
 
           // display all the suggestions on the map
-          suggestionList.forEach {
+          suggestionList.forEach { stop ->
             Marker( // Add a marker to the map
-                state = MarkerState(position = LatLng(it.geoCords.latitude, it.geoCords.longitude)),
-                title = it.title,
-                snippet = it.description,
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                state =
+                    MarkerState(position = LatLng(stop.geoCords.latitude, stop.geoCords.longitude)),
+                title = stop.title,
+                snippet = stop.description,
+                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN),
+                onInfoWindowClick = {
+                  mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
+                    val place = response.place
+                    placeData = placeData.setPlaceData(place, stop.stopId)
+                    searchedLocation = place.latLng!!
+                    bottomSheetExpanded = true
+                  }
+                })
           }
 
           // display all the users positions on the map
