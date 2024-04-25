@@ -77,11 +77,12 @@ class SuggestionsViewModelSheetTest(testSuggestions: List<Suggestion>) :
     _showDeleteDialog.value = false
   }
 
-  override fun confirmDeleteComment(suggestion: Suggestion) {
+  override fun confirmDeleteSuggestion(suggestion: Suggestion) {
     deleteSuggestion(suggestion) // Assuming deleteComment handles all necessary logic
     hideDeleteDialog()
     hideBottomSheet()
   }
+
 
   init {
     loadSuggestion("")
@@ -140,7 +141,7 @@ class SuggestionBottomSheetTest {
   }
 
   @Test
-  fun testBottomSheetDeletes() {
+  fun testSuggestionBottomSheetDeletes() {
     val viewModel = SuggestionsViewModelSheetTest(listOf(mockSuggestion))
 
     // Launch the composable with the view model
@@ -161,6 +162,10 @@ class SuggestionBottomSheetTest {
         .assertExists()
         .assertIsDisplayed()
 
+      viewModel.showSuggestionBottomSheet(mockSuggestion)
+
+      composeTestRule.onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true).assertExists()
+
     composeTestRule
         .onNodeWithTag("deleteSuggestionOption", useUnmergedTree = true)
         .assertExists()
@@ -180,7 +185,7 @@ class SuggestionBottomSheetTest {
   }
 
   @Test
-  fun testBottomSheetCancel() {
+  fun testSuggestionBottomSheetCancel() {
     val viewModel = SuggestionsViewModelSheetTest(listOf(mockSuggestion))
 
     // Launch the composable with the view model
