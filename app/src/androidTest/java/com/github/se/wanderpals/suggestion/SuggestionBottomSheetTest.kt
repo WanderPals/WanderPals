@@ -205,7 +205,9 @@ class SuggestionBottomSheetTest {
         .assertExists()
         .assertIsDisplayed()
 
-    composeTestRule.waitForIdle()
+    viewModel.showSuggestionBottomSheet(mockSuggestion)
+
+    composeTestRule.onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true).assertExists()
 
     composeTestRule
         .onNodeWithTag("deleteSuggestionOption", useUnmergedTree = true)
