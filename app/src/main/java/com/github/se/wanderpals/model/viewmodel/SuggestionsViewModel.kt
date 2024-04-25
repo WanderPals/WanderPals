@@ -1,6 +1,8 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,6 +15,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
+import kotlin.math.floor
 
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,
@@ -45,6 +49,10 @@ open class SuggestionsViewModel(
   // the like status of each suggestion to be held to prevent repeated network calls for the same
   // item:
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
+
+    // This will hold the IDs of suggestions that have been added to stops
+    private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
+    val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
 
   init {
     // Fetch all trips when the ViewModel is initialized
@@ -119,6 +127,9 @@ open class SuggestionsViewModel(
             _state.value
                 .filter { it.userLikes.contains(currentLoggedInUId) }
                 .map { it.suggestionId }
+
+          // Now check if the suggestion should be added to stops
+          checkAndAddSuggestionAsStop(updatedSuggestion)
       }
     }
   }
@@ -183,6 +194,46 @@ open class SuggestionsViewModel(
     hideDeleteDialog()
     hideBottomSheet()
   }
+
+    // Call this function when the like status of a suggestion is toggled
+    open fun checkAndAddSuggestionAsStop(suggestion: Suggestion) {
+        viewModelScope.launch {
+            val allUsers = suggestionRepository?.getAllUsersFromTrip(tripId) ?: emptyList()
+            val threshold = ceil(allUsers.size / 2.0).toInt()
+            val likesCount = suggestion.userLikes.size
+
+            val condition = if (allUsers.size % 2 == 1) {
+                likesCount >= threshold
+            } else {
+                likesCount > threshold
+            }
+
+            if (condition) {
+                val updatedStop = suggestion.stop.copy(
+                    // You might need to add more properties here based on your business logic
+                )
+                val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, updatedStop) ?: false
+                if (wasStopAdded) {
+                    // Update the suggestion to indicate it has been added as a stop
+                    val updatedSuggestion = suggestion.copy(
+                        // Update any necessary properties to reflect the change
+                    )
+                    _state.value = _state.value.map {
+                        if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
+                    }
+
+                    // If the suggestion is added as a stop, update the state flow
+                    _addedSuggestionsToStops.value = _addedSuggestionsToStops.value.plus(suggestion.suggestionId)
+
+                    // Refresh suggestions list to include the new stop
+                    loadSuggestion(tripId)
+                }
+            }
+        }
+    }
+
+
+
 
   class SuggestionsViewModelFactory(
       private val tripsRepository: TripsRepository,

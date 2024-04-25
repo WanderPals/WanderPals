@@ -23,8 +23,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import java.time.format.DateTimeFormatter
+import kotlin.math.ceil
 
 /**
  * Composable function that represents a single suggestion item in the suggestion feed.
@@ -51,7 +54,13 @@ fun SuggestionItem(
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
 
-  // State for the like status of the suggestion
+    val addedToStops = viewModel.addedSuggestionsToStops.collectAsState().value
+
+    val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
+
+
+
+    // State for the like status of the suggestion
   val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
 
   // State for the like count, which depends on the `userLikes` size
@@ -73,8 +82,13 @@ fun SuggestionItem(
               .height(166.dp) // the height of the Card
               .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
               .clickable(
-                  onClick = onClick), // Invoke the onClick lambda when the item is clicked (see
-      // SuggestionFeedContent.kt)
+                  enabled = !isSuggestionAddedToStop, // Disable the click if added to stop
+                  // fixme1: doesn't add even if ceil > half
+                  //fixme2: database Suggestion not become Stop
+                  onClick = onClick)//, // Invoke the onClick lambda when the item is clicked (see // SuggestionFeedContent.kt)
+              .alpha(if (isSuggestionAddedToStop) 0.5f else 1f), // Semi-transparent if added to stop
+
+
       colors = cardColors // Use the cardColors with the white background
       ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
