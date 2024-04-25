@@ -211,6 +211,10 @@ open class SuggestionsViewModel(
     }
   }
 
+  fun editCommentOption() {
+    TODO("Not yet implemented")
+  }
+
   class SuggestionsViewModelFactory(
       private val tripsRepository: TripsRepository,
       private val tripId: String

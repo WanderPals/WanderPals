@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetDefaults
@@ -58,22 +59,41 @@ fun CommentBottomSheet(viewModel: SuggestionsViewModel, suggestion: Suggestion) 
           Column(modifier = Modifier.navigationBarsPadding()) {
             // Only displays the option if the user is Admin or it is his comment
             if (SessionManager.canRemove(selectedComment!!.userId)) {
-              Box(
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .clickable(onClick = { viewModel.showDeleteDialog() })
-                          .padding(16.dp)
-                          .testTag("deleteCommentOption"),
-                  contentAlignment = Alignment.CenterStart) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                      Icon(
-                          imageVector = Icons.Outlined.Delete,
-                          contentDescription = "Delete",
-                          modifier = Modifier.size(24.dp))
-                      Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                      Text("Delete comment", style = MaterialTheme.typography.bodyLarge)
+              Column {
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(onClick = { viewModel.showDeleteDialog() })
+                            .padding(16.dp)
+                            .testTag("deleteCommentOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text("Delete comment", style = MaterialTheme.typography.bodyLarge)
+                      }
                     }
-                  }
+
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(onClick = { viewModel.editCommentOption() })
+                            .padding(16.dp)
+                            .testTag("editCommentOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Create,
+                            contentDescription = "Edit",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text("Edit comment", style = MaterialTheme.typography.bodyLarge)
+                      }
+                    }
+              }
             }
           }
         }
