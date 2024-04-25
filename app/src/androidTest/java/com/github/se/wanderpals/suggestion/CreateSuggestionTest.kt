@@ -936,61 +936,57 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   fun createSuggestionWithSuggestion() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-      composeTestRule.setContent {
-        CreateSuggestion("aaa", vm, suggestion = testSuggestion)
+      composeTestRule.setContent { CreateSuggestion("aaa", vm, suggestion = testSuggestion) }
+
+      inputTitle {
+        assertIsDisplayed()
+
+        assertTextContains("Stop")
       }
 
-        inputTitle {
-            assertIsDisplayed()
+      inputBudget {
+        assertIsDisplayed()
 
-            assertTextContains("Stop")
-        }
+        assertTextContains("20.0")
+      }
 
-        inputBudget {
-            assertIsDisplayed()
+      inputDescription {
+        assertIsDisplayed()
 
-            assertTextContains("20.0")
-        }
+        assertTextContains("This is a Stop")
+      }
 
-        inputDescription {
-            assertIsDisplayed()
+      inputStartDate {
+        assertIsDisplayed()
 
-            assertTextContains("This is a Stop")
-        }
+        assertTextContains("2024-04-16")
+      }
 
-        inputStartDate {
-            assertIsDisplayed()
+      inputEndDate {
+        assertIsDisplayed()
 
-            assertTextContains("2024-04-16")
-        }
+        assertTextContains("2024-04-16")
+      }
 
-        inputEndDate {
-            assertIsDisplayed()
+      inputStartTime {
+        assertIsDisplayed()
 
-            assertTextContains("2024-04-16")
-        }
+        assertTextContains("12:00")
+      }
 
-        inputStartTime {
-            assertIsDisplayed()
+      inputEndTime {
+        assertIsDisplayed()
 
-            assertTextContains("12:00")
-        }
+        assertTextContains("14:00")
+      }
 
-        inputEndTime {
-            assertIsDisplayed()
+      inputAddress { assertIsNotDisplayed() }
 
-            assertTextContains("14:00")
-        }
+      inputWebsite {
+        assertIsDisplayed()
 
-        inputAddress {
-            assertIsNotDisplayed()
-        }
-
-        inputWebsite {
-            assertIsDisplayed()
-
-            assertTextContains("www.example.com")
-        }
+        assertTextContains("www.example.com")
+      }
     }
   }
 
