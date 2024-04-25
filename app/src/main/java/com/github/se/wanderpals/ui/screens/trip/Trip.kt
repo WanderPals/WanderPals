@@ -14,10 +14,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -42,6 +40,7 @@ import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberList
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
 import com.google.android.gms.maps.model.LatLng
@@ -132,7 +131,23 @@ fun Trip(
                       }
                     }
                     composable(Route.NOTIFICATION) {
-                      Notification(NotificationsViewModel(tripsRepository))
+                      val notificationsViewModel: NotificationsViewModel =
+                          viewModel(
+                              factory =
+                                  NotificationsViewModel.NotificationsViewModelFactory(
+                                      tripsRepository, tripId),
+                              key = "NotificationsViewModel")
+                      Notification(notificationsViewModel, oldNavActions)
+                    }
+                    composable(Route.CREATE_ANNOUNCEMENT) {
+                      val notificationsViewModel: NotificationsViewModel =
+                          viewModel(
+                              factory =
+                                  NotificationsViewModel.NotificationsViewModelFactory(
+                                      tripsRepository, tripId),
+                              key = "NotificationsViewModel")
+                      CreateAnnouncement(
+                          notificationsViewModel, onNavigationBack = { oldNavActions.goBack() })
                     }
 
                     composable(Route.MEMBERS) {
@@ -169,6 +184,8 @@ fun Trip(
  */
 @Composable
 fun BottomBar(navActions: NavigationActions) {
+  val currentRoute by navActions.currentRoute.collectAsState()
+
   NavigationBar(
       modifier = Modifier.testTag("bottomNav").height(56.dp),
       containerColor = NavigationBarDefaults.containerColor,
@@ -176,16 +193,11 @@ fun BottomBar(navActions: NavigationActions) {
       tonalElevation = NavigationBarDefaults.Elevation,
       windowInsets = NavigationBarDefaults.windowInsets,
   ) {
-    var currentRoute by remember { mutableStateOf(Route.DASHBOARD) }
-
     TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
           modifier = Modifier.testTag(destination.text).size(56.dp),
           selected = currentRoute == destination.route,
-          onClick = {
-            currentRoute = destination.route
-            navActions.navigateTo(destination.route)
-          },
+          onClick = { navActions.navigateTo(destination.route) },
           icon = { Image(imageVector = destination.icon, contentDescription = null) },
       )
     }
