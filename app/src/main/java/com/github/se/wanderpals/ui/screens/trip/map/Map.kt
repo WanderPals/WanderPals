@@ -30,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
@@ -58,8 +57,6 @@ import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 const val MAX_PROPOSED_LOCATIONS = 5
 const val INIT_PLACE_ID = "ChIJ4zm3ev4wjEcRShTLf2C0UWA"
@@ -137,11 +134,8 @@ fun Map(
 
   var locationPermissionDialog by remember { mutableStateOf(false) }
 
-  // Other
-
-  // coroutine scope to launch coroutines
-  val coroutineScope = rememberCoroutineScope()
   // context of the current screen
+
   val context = LocalContext.current
 
   // Launch Effects
@@ -194,7 +188,7 @@ fun Map(
             finalName = textSearchBar
 
             listOfMarkers += (MarkerState(position = finalLocation))
-            coroutineScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() }
+            mapViewModel.expandBottomSheet(bottomSheetScaffoldState)
             activeSearchBar = false
           },
           active = activeSearchBar,
@@ -326,7 +320,7 @@ fun Map(
             .padding(horizontal = 16.dp, vertical = 60.dp)) {
           Button(
               onClick = {
-                coroutineScope.launch(Dispatchers.IO) {
+                mapViewModel.executeJob {
                   mapManager.getLastLocation().let {
                     if (it != null) {
                       finalLocation = it

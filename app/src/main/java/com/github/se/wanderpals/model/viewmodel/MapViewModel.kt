@@ -1,5 +1,7 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import androidx.compose.material3.BottomSheetScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -26,6 +28,20 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   open var userNames = MutableStateFlow(emptyList<String>())
   open var userPosition = MutableStateFlow(LatLng(0.0, 0.0))
   open var seeUserPosition = MutableStateFlow(false)
+
+  /** Expand the bottom sheet. */
+  @OptIn(ExperimentalMaterial3Api::class)
+  open fun expandBottomSheet(bottomSheetScaffoldState: BottomSheetScaffoldState) {
+    viewModelScope.launch { bottomSheetScaffoldState.bottomSheetState.expand() }
+  }
+
+  /**
+   * Execute a job on the view model scope.
+   *
+   * @param block The block of code to execute.
+   * @return The job.
+   */
+  open fun executeJob(block: suspend () -> Unit) = viewModelScope.launch { block() }
 
   /**
    * Add a stop to the trip.
