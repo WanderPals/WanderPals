@@ -41,6 +41,7 @@ import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberList
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.net.PlacesClient
@@ -133,7 +134,23 @@ fun Trip(
                       }
                     }
                     composable(Route.NOTIFICATION) {
-                      Notification(NotificationsViewModel(tripsRepository))
+                      val notificationsViewModel: NotificationsViewModel =
+                          viewModel(
+                              factory =
+                                  NotificationsViewModel.NotificationsViewModelFactory(
+                                      tripsRepository, tripId),
+                              key = "NotificationsViewModel")
+                      Notification(notificationsViewModel, oldNavActions)
+                    }
+                    composable(Route.CREATE_ANNOUNCEMENT) {
+                      val notificationsViewModel: NotificationsViewModel =
+                          viewModel(
+                              factory =
+                                  NotificationsViewModel.NotificationsViewModelFactory(
+                                      tripsRepository, tripId),
+                              key = "NotificationsViewModel")
+                      CreateAnnouncement(
+                          notificationsViewModel, onNavigationBack = { oldNavActions.goBack() })
                     }
 
                     composable(Route.MEMBERS) {

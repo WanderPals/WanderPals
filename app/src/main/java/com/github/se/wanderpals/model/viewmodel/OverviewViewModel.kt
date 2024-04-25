@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.NotificationsManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -64,6 +65,7 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
         val newTrip = tripsRepository.getTrip(tripId)!!
         newState.add(newTrip)
         _state.value = newState.toList()
+        NotificationsManager.addJoinTripNotification(tripId)
       }
     }
     return success

@@ -321,7 +321,11 @@ fun CreateSuggestion(
                                   website = _website,
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
-                  if (viewModel.addSuggestion(tripId, suggestion)) onSuccess() else onFailure()
+                  if (viewModel.addSuggestion(tripId, suggestion)) {
+                    onSuccess()
+                  } else {
+                    onFailure()
+                  }
                 }
               }) {
                 Text("Create Suggestion", fontSize = 24.sp)
