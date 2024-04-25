@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.UriHandler
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 /**
@@ -42,16 +43,20 @@ fun MapBottomSheet(
     uriHandler: UriHandler
 ) {
   BottomSheetScaffold(
-      modifier = Modifier.shadow(15.dp, shape = RoundedCornerShape(40.dp)),
+      modifier =
+          Modifier.shadow(15.dp, shape = RoundedCornerShape(40.dp)).testTag("mapBottomSheet"),
       sheetContent = {
         Column {
           if (placeData.placeName.isNotEmpty()) {
             Text(
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp),
+                modifier =
+                    Modifier.align(Alignment.CenterHorizontally)
+                        .padding(bottom = 16.dp)
+                        .testTag("placeName"),
                 text = placeData.placeName)
           }
           if (placeData.placeBusinessStatus.isNotEmpty()) {
-            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 8.dp).testTag("placeBusinessStatus")) {
               Icon(
                   imageVector = Icons.Default.Info,
                   contentDescription = "Business Status Icon",
@@ -60,7 +65,7 @@ fun MapBottomSheet(
             }
           }
           if (placeData.placeAddress.isNotEmpty()) {
-            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 8.dp).testTag("placeAddress")) {
               Icon(
                   imageVector = Icons.Default.Place,
                   contentDescription = "Place Icon",
@@ -69,8 +74,7 @@ fun MapBottomSheet(
             }
           }
           if (placeData.placeRating.isNotEmpty()) {
-
-            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 8.dp).testTag("placeRating")) {
               Icon(
                   imageVector = Icons.Default.Star,
                   contentDescription = "Rating Icon",
@@ -79,7 +83,7 @@ fun MapBottomSheet(
             }
           }
           if (placeData.placeUserRatingsTotal.isNotEmpty()) {
-            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 8.dp).testTag("placeUserRatingsTotal")) {
               Icon(
                   imageVector = Icons.Default.Person,
                   contentDescription = "Total Icon",
@@ -88,7 +92,7 @@ fun MapBottomSheet(
             }
           }
           if (placeData.placePhoneNumber.isNotEmpty()) {
-            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 8.dp).testTag("placePhoneNumber")) {
               Icon(
                   imageVector = Icons.Default.Phone,
                   contentDescription = "Phone Icon",
@@ -97,7 +101,7 @@ fun MapBottomSheet(
             }
           }
           if (placeData.placeWebsite.isNotEmpty()) {
-            Row(modifier = Modifier.padding(bottom = 8.dp)) {
+            Row(modifier = Modifier.padding(bottom = 8.dp).testTag("placeWebsite")) {
               Text(text = "Visit Website: ")
               Icon(
                   imageVector = Icons.Default.Search,

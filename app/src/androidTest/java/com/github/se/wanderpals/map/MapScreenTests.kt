@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.trip
+package com.github.se.wanderpals.map
 
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
