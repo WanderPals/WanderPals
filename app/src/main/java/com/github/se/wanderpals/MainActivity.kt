@@ -17,7 +17,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
-import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
@@ -56,7 +55,6 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var context: Context
 
-
   @SuppressLint("SuspiciousIndentation")
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -71,14 +69,6 @@ class MainActivity : ComponentActivity() {
                     if (it.isSuccessful) {
                       Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
                       val uid = it.result?.user?.uid ?: ""
-                        navigationActions.setVariablesUser(it.result?.user?.let { user ->
-                            User(
-                                user.uid,
-                                user.displayName ?: "",
-                                user.email ?: "",
-                                user.photoUrl.toString())
-                        } ?: User()
-                        )
                       Log.d("MainActivity", "Firebase UID: $uid")
                       tripsRepository = TripsRepository(uid, Dispatchers.IO)
                       tripsRepository.initFirestore()
@@ -89,7 +79,8 @@ class MainActivity : ComponentActivity() {
                       SessionManager.setUserSession(
                           userId = uid,
                           name = account.displayName ?: "",
-                          email = account.email ?: "")
+                          email = account.email ?: "",
+                          profilePhoto = it.result.user?.photoUrl.toString())
 
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
@@ -235,8 +226,7 @@ class MainActivity : ComponentActivity() {
                                   AdminViewModel.AdminViewModelFactory(
                                       navigationActions.variables.currentTrip, tripsRepository),
                               key = "AdminPage"),
-                      currentUser = navigationActions.variables.currentUser)
-
+                      currentUser = SessionManager.getCurrentUser())
                 }
               }
         }

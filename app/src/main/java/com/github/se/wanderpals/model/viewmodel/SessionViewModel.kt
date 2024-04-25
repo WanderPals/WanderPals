@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
 
-  fun updateRoleForCurrentUser(tripId: String) {
+  fun updateUserForCurrentUser(tripId: String) {
     val userId = SessionManager.getCurrentUser()?.userId
     if (userId != null) {
       viewModelScope.launch {
@@ -20,6 +20,7 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
             Log.d("SessionViewModel", "Failed to find user with userId $userId , in trip $tripId")
           } else {
             SessionManager.setRole(user.role)
+            SessionManager.setPhoto(user.profilePictureURL)
           }
         } catch (e: Exception) {
           Log.e("SessionViewModel", "Failed to update user role", e)

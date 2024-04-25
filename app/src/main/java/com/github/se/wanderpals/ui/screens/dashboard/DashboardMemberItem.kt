@@ -1,11 +1,8 @@
 package com.github.se.wanderpals.ui.screens.dashboard
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,8 +10,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,20 +34,15 @@ import com.github.se.wanderpals.service.SessionManager
 @Composable
 fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
   val cardColors =
-      CardDefaults.cardColors(
+      ButtonDefaults.buttonColors(
           containerColor = Color.White // This sets the background color of the Card
           )
   val currentUser = SessionManager.getCurrentUser()
 
-  Card(
-      modifier =
-          Modifier.padding(8.dp)
-              .fillMaxWidth()
-              .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
-              .testTag("memberCard" + member.userId)
-              .clickable(
-                  onClick = onClick), // Invoke the onClick lambda when the item is clicked (see
-      // SuggestionFeedContent.kt)
+  Button(
+      modifier = Modifier.padding(5.dp).testTag("memberCard" + member.userId),
+      onClick = onClick,
+      shape = RoundedCornerShape(30),
       colors = cardColors // Use the cardColors with the white background
       ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
@@ -65,14 +57,16 @@ fun DashboardMemberItem(member: User, onClick: () -> Unit = {}) {
                     // user
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
+                    color = Color.Black,
                     modifier = Modifier.testTag("memberName" + member.userId).width(230.dp))
                 Row {
                   Text(
                       text = member.role.toString(),
                       style = MaterialTheme.typography.bodyMedium,
+                      color = Color.Black,
                       modifier = Modifier.testTag("memberRole" + member.userId))
                   if (member.role == Role.OWNER) { // Display a star icon if the user is the owner
-                    Spacer(modifier = Modifier.width(8.dp))
+                    // Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = "ownerIcon",

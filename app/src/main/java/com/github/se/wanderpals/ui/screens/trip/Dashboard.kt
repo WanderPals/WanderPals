@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -133,7 +132,7 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
         content = {
-          Row( verticalAlignment = Alignment.CenterVertically) {
+          Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painterResource(id = R.drawable.logo_nsa),
                 contentDescription = "NSA",
@@ -145,21 +144,6 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
           scope.launch {
             drawerState.close()
             navActions.navigateTo(Route.ADMIN_PAGE)
-          }
-        })
-    Spacer(modifier = Modifier.padding(2.dp))
-    ElevatedButton(
-        modifier = Modifier.testTag("MemberListMenu"),
-        content = {
-          Row {
-            Icon(Icons.Default.Person, contentDescription = "Member List")
-            Text("Member List       ")
-          }
-        },
-        onClick = {
-          scope.launch {
-            drawerState.close()
-            navActions.navigateTo(Route.MEMBERS)
           }
         })
   }

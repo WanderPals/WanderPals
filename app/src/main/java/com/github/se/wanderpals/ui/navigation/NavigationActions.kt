@@ -2,13 +2,11 @@ package com.github.se.wanderpals.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Trip
-import com.github.se.wanderpals.model.data.User
 import java.time.LocalDate
 
 /**
@@ -152,10 +150,6 @@ data class NavigationActions(
     variables.suggestionId = suggestionId
   }
 
-  fun setVariablesUser(user: User) {
-    variables.currentUser = user
-  }
-
   fun setVariablesTripData(trip: Trip) {
     variables.currentTripData = trip
   }
@@ -167,6 +161,5 @@ class NavigationActionsVariables {
   var currentGeoCords: GeoCords = GeoCords(0.0, 0.0)
   var currentAddress: String = ""
   var suggestionId: String = ""
-  var currentUser = User()
   var currentTripData = Trip("", "", LocalDate.MIN, LocalDate.MAX, 0.0, "", "")
 }
