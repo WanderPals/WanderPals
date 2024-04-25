@@ -12,19 +12,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.overview.OverviewViewModelTest
 import com.github.se.wanderpals.screens.CreateTripoScreen
 import com.github.se.wanderpals.screens.OverviewScreen
 import com.github.se.wanderpals.screens.TripScreen
+import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.overview.Overview
 import com.github.se.wanderpals.ui.screens.trip.Trip
-import com.google.android.libraries.places.api.Places
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -54,8 +53,8 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
   fun testSetup() {
 
     val context = ApplicationProvider.getApplicationContext<Context>()
-    Places.initialize(context, MAPS_API_KEY)
-    val placesClient = Places.createClient(context)
+    val mapManager = MapManager(context)
+    mapManager.initClients()
 
     composeTestRule.setContent {
       mockNavController = rememberNavController()
@@ -85,7 +84,7 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
               mockNavActions,
               mockNavActions.variables.currentTrip,
               TripsRepository("-1", Dispatchers.IO),
-              placesClient)
+              mapManager)
         }
       }
     }
