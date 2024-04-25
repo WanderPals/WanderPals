@@ -82,7 +82,7 @@ fun CreateSuggestion(
   var startTime by remember {
     mutableStateOf(
         if (suggestion.stop.startTime == LocalTime.of(0, 0)) "00:00"
-        else suggestion.stop.startTime.format(DateTimeFormatter.ISO_LOCAL_TIME))
+        else suggestion.stop.startTime.format(DateTimeFormatter.ISO_LOCAL_TIME).substring(0, 5))
   }
   val end =
       LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
