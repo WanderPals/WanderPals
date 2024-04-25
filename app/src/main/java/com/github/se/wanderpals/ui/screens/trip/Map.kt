@@ -46,6 +46,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -287,9 +289,16 @@ fun Map(
                 title = "Click to Create Suggestions",
                 visible = visible,
                 onInfoWindowClick = {
-                  oldNavActions.setVariablesLocation(
-                      GeoCords(markerState.position.latitude, markerState.position.longitude),
-                      placeAddress)
+                  oldNavActions.setVariablesSuggestion(
+                      suggestion =
+                          Suggestion(
+                              stop =
+                                  Stop(
+                                      geoCords =
+                                          GeoCords(
+                                              markerState.position.latitude,
+                                              markerState.position.longitude),
+                                      address = placeAddress)))
                   oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                 })
           }

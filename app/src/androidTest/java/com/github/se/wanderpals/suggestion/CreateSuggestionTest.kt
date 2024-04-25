@@ -920,7 +920,9 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   fun createSuggestionWithAddress() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-      composeTestRule.setContent { CreateSuggestion("aaa", vm, addr = "Example address") }
+      composeTestRule.setContent {
+        CreateSuggestion("aaa", vm, Suggestion(stop = Stop(address = "Example address")))
+      }
 
       inputAddress {
         assertIsDisplayed()

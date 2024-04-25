@@ -195,10 +195,9 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(Route.CREATE_SUGGESTION) {
-                  val loc = navigationActions.variables.currentAddress
-                  val cord = navigationActions.variables.currentGeoCords
-                  Log.d("CREATE_SUGGESTION", "Location: $loc")
-                  Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
+                  val suggestion = navigationActions.variables.currentSuggestion
+                  Log.d("CREATE_SUGGESTION", "Location: ${suggestion.stop.address}")
+                  Log.d("CREATE_SUGGESTION", "GeoCords: ${suggestion.stop.geoCords}")
                   val onAction: () -> Unit = { navigationActions.goBack() }
 
                   val createSuggestionViewModel: CreateSuggestionViewModel =
@@ -210,8 +209,7 @@ class MainActivity : ComponentActivity() {
                   CreateSuggestion(
                       tripId = navigationActions.variables.currentTrip,
                       viewModel = createSuggestionViewModel,
-                      addr = loc,
-                      geoCords = cord,
+                      suggestion = suggestion,
                       onSuccess = onAction,
                       onCancel = onAction)
                 }
