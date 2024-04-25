@@ -83,7 +83,6 @@ class SuggestionsViewModelSheetTest(testSuggestions: List<Suggestion>) :
     hideBottomSheet()
   }
 
-
   init {
     loadSuggestion("")
   }
@@ -162,9 +161,9 @@ class SuggestionBottomSheetTest {
         .assertExists()
         .assertIsDisplayed()
 
-      viewModel.showSuggestionBottomSheet(mockSuggestion)
+    viewModel.showSuggestionBottomSheet(mockSuggestion)
 
-      composeTestRule.onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true).assertExists()
 
     composeTestRule
         .onNodeWithTag("deleteSuggestionOption", useUnmergedTree = true)
