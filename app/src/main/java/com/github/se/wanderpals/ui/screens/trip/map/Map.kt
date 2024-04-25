@@ -270,7 +270,7 @@ fun Map(
             Marker(
                 state = MarkerState(position = currentLocation),
                 title = "Current Location",
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.logo_postion))
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.logo_position))
           }
 
           // display the marker on the map
@@ -310,7 +310,7 @@ fun Map(
             Marker( // Add a marker to the map
                 state = MarkerState(position = it),
                 title = userNames[usersPositions.indexOf(it)],
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.logo_postion_other))
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.logo_position_other))
           }
         }
     Switch(
