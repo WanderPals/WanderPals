@@ -110,6 +110,7 @@ fun Trip(
                           suggestionsViewModel,
                           onSuggestionClick = {
                             oldNavActions.setVariablesLocation(GeoCords(0.0, 0.0), "")
+                            oldNavActions.setVariablesSuggestion("")
                             oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                           })
                     }

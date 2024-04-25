@@ -789,7 +789,7 @@ class TripsRepository(
   suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
-          val uniqueID = UUID.randomUUID().toString()
+          val uniqueID = UUID.randomUUID().toString() + "/" + stop.stopId
           val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
           val stopDocument =
               tripsCollection

@@ -60,8 +60,6 @@ class FakeMapViewModel : MapViewModel(TripsRepository("-1", dispatcher = Dispatc
 
   override var stops = MutableStateFlow(listOf(stop1, stop2))
 
-  override fun addStop(tripId: String, stop: Stop) {}
-
   override fun getAllStops() {}
 }
 /** Test class for the Map screen. This class contains the tests for the Map screen. */
