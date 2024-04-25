@@ -18,6 +18,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,7 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
+const val EMPTY_CODE = ""
 /**
  * Composable function that represents the Overview screen, displaying the list of trips of a user.
  * Provides functionalities such as searching trips by their title, creating a new trip, and joining
@@ -45,7 +47,10 @@ import com.github.se.wanderpals.ui.navigation.Route
  */
 @Composable
 fun Overview(overviewViewModel: OverviewViewModel, navigationActions: NavigationActions) {
-
+  LaunchedEffect(
+      Unit) { // This ensures getAllTrips is called once per composition, not on every recomposition
+        overviewViewModel.getAllTrips()
+      }
   // Collecting trips list and loading state from view model
   val tripsList by overviewViewModel.state.collectAsState()
   val isLoading by overviewViewModel.isLoading.collectAsState()
@@ -106,7 +111,6 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
 @Composable
 fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -> Boolean) {
 
-  val EMPTY_CODE = ""
   // Mutable state to hold the trip code input and error state
   var tripCode by remember { mutableStateOf(EMPTY_CODE) }
   var isError by remember { mutableStateOf(false) }

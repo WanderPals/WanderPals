@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -23,6 +25,7 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
+import com.github.se.wanderpals.ui.screens.Admin
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
@@ -170,9 +173,12 @@ class MainActivity : ComponentActivity() {
                       })
                 }
                 composable(Route.OVERVIEW) {
+                  val overviewViewModel: OverviewViewModel =
+                      viewModel(
+                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          key = "Overview")
                   Overview(
-                      overviewViewModel = OverviewViewModel(tripsRepository),
-                      navigationActions = navigationActions)
+                      overviewViewModel = overviewViewModel, navigationActions = navigationActions)
                 }
                 composable(Route.TRIP) {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
@@ -181,7 +187,11 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, tripsRepository, placesClient)
                 }
                 composable(Route.CREATE_TRIP) {
-                  CreateTrip(OverviewViewModel(tripsRepository), navigationActions)
+                  val overviewViewModel: OverviewViewModel =
+                      viewModel(
+                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          key = "Overview")
+                  CreateTrip(overviewViewModel, navigationActions)
                 }
 
                 composable(Route.CREATE_SUGGESTION) {
@@ -190,13 +200,29 @@ class MainActivity : ComponentActivity() {
                   Log.d("CREATE_SUGGESTION", "Location: $loc")
                   Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
                   val onAction: () -> Unit = { navigationActions.goBack() }
+
+                  val createSuggestionViewModel: CreateSuggestionViewModel =
+                      viewModel(
+                          factory =
+                              CreateSuggestionViewModel.CreateSuggestionViewModelFactory(
+                                  tripsRepository),
+                          key = "CreateSuggestion")
                   CreateSuggestion(
                       tripId = navigationActions.variables.currentTrip,
-                      viewModel = CreateSuggestionViewModel(tripsRepository),
+                      viewModel = createSuggestionViewModel,
                       addr = loc,
                       geoCords = cord,
                       onSuccess = onAction,
                       onCancel = onAction)
+                }
+                composable(Route.ADMIN_PAGE) {
+                  Admin(
+                      adminViewModel =
+                          viewModel(
+                              factory =
+                                  AdminViewModel.AdminViewModelFactory(
+                                      navigationActions.variables.currentTrip, tripsRepository),
+                              key = "AdminPage"))
                 }
               }
         }

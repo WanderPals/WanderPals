@@ -1,18 +1,22 @@
 package com.github.se.wanderpals.ui.screens.trip
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -32,9 +36,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -121,6 +128,38 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
           scope.launch {
             drawerState.close()
             navActions.navigateTo(Route.OVERVIEW)
+          }
+        })
+    Spacer(modifier = Modifier.padding(2.dp))
+    ElevatedButton(
+        content = {
+          Row {
+            Image(
+                painterResource(id = R.drawable.logo_nsa),
+                contentDescription = "NSA",
+                modifier = Modifier.clip(RoundedCornerShape(16.dp)).size(40.dp))
+            Text(text = "Admin", modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp))
+          }
+        },
+        onClick = {
+          scope.launch {
+            drawerState.close()
+            navActions.navigateTo(Route.ADMIN_PAGE)
+          }
+        })
+    Spacer(modifier = Modifier.padding(2.dp))
+    ElevatedButton(
+        modifier = Modifier.testTag("MemberListMenu"),
+        content = {
+          Row {
+            Icon(Icons.Default.Person, contentDescription = "Member List")
+            Text("Member List       ")
+          }
+        },
+        onClick = {
+          scope.launch {
+            drawerState.close()
+            navActions.navigateTo(Route.MEMBERS)
           }
         })
   }
