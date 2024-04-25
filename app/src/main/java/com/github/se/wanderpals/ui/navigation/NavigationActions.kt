@@ -7,6 +7,9 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.data.User
+import java.time.LocalDate
 
 /**
  * rememberNavController with a start destination for MultiNavigationAppState.
@@ -148,6 +151,14 @@ data class NavigationActions(
   fun setVariablesSuggestion(suggestionId: String) {
     variables.suggestionId = suggestionId
   }
+
+  fun setVariablesUser(user: User) {
+    variables.currentUser = user
+  }
+
+  fun setVariablesTripData(trip: Trip) {
+    variables.currentTripData = trip
+  }
 }
 
 /** Variables for the navigation actions. */
@@ -156,4 +167,6 @@ class NavigationActionsVariables {
   var currentGeoCords: GeoCords = GeoCords(0.0, 0.0)
   var currentAddress: String = ""
   var suggestionId: String = ""
+  var currentUser = User()
+  var currentTripData = Trip("", "", LocalDate.MIN, LocalDate.MAX, 0.0, "", "")
 }

@@ -92,6 +92,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
     Button(
         onClick = {
           navigationActions.setVariablesTrip(trip.tripId)
+            navigationActions.setVariablesTripData(trip)
           navigationActions.navigateTo(Route.TRIP)
         },
         modifier =
