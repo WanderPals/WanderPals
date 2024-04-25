@@ -52,7 +52,7 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   open fun getAllStops() {
     viewModelScope.launch {
       val allStops = _tripsRepository.getAllStopsFromTrip(tripId)
-      stops.value = allStops
+      stops.value = allStops.filter { it.geoCords != GeoCords(0.0, 0.0) }
     }
   }
 
