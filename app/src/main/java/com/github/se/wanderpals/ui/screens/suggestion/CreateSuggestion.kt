@@ -33,7 +33,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
-import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
 import java.time.Duration
@@ -324,7 +323,7 @@ fun CreateSuggestion(
                           createdAtTime = LocalTime.now(),
                           stop =
                               Stop(
-                                  stopId = navigationActions.variables.suggestionId,
+                                  stopId = suggestion.stop.stopId,
                                   title = suggestionText,
                                   address = address,
                                   date = startDateObj,

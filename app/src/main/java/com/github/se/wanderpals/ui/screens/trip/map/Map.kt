@@ -286,11 +286,17 @@ fun Map(
                 state = markerState,
                 title = "Click to Create Suggestions",
                 onInfoWindowClick = {
+                  oldNavActions.setVariablesSuggestionId(placeData.placeId)
+                  oldNavActions.setVariablesLocation(
+                      geoCords =
+                          GeoCords(markerState.position.latitude, markerState.position.longitude),
+                      address = placeData.placeAddress)
                   oldNavActions.setVariablesSuggestion(
                       suggestion =
                           Suggestion(
                               stop =
                                   Stop(
+                                      stopId = placeData.placeId,
                                       geoCords =
                                           GeoCords(
                                               markerState.position.latitude,
