@@ -171,6 +171,7 @@ data class NavigationActions(
   fun setVariablesTripData(trip: Trip) {
     variables.currentTripData = trip
   }
+
   fun serializeNavigationVariable(): String {
     return "currentTrip: ${variables.currentTrip}, " +
         "latitude: ${variables.currentGeoCords.latitude}, " +

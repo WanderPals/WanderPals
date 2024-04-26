@@ -30,20 +30,18 @@ object SessionManager {
    * @param name The user's full name, optional.
    * @param email The user's email address, optional.
    * @param role The user's role within the application, optional.
-   * @param geoCords The user's geographic coordinates, optional.
+   * @param geoCoords The user's geographic coordinates, optional.
    */
   fun setUserSession(
       userId: String = currentUser?.userId ?: "",
       name: String = currentUser?.name ?: "",
       email: String = currentUser?.email ?: "",
       role: Role = currentUser?.role ?: Role.VIEWER,
-
       geoCoords: GeoCords = currentUser?.geoCords ?: GeoCords(0.0, 0.0),
       profilePhoto: String = currentUser?.profilePhoto ?: "",
       tripName: String = currentUser?.tripName ?: ""
   ) {
     currentUser = SessionUser(userId, name, email, role, geoCoords, profilePhoto, tripName)
-
   }
 
   /**
