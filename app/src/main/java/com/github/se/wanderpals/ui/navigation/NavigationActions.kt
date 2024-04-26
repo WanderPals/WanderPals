@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Suggestion
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -162,8 +163,19 @@ data class NavigationActions(
    *
    * @param suggestionId The suggestion id.
    */
-  fun setVariablesSuggestion(suggestionId: String) {
+  fun setVariablesSuggestionId(suggestionId: String) {
     variables.suggestionId = suggestionId
+  }
+
+  /**
+   * Set the variables for the navigation actions.
+   *
+   * @param suggestion The suggestion.
+   */
+  fun setVariablesSuggestion(suggestion: Suggestion) {
+    variables.suggestionId = suggestion.suggestionId
+    variables.currentGeoCords = suggestion.stop.geoCords
+    variables.currentSuggestion = suggestion
   }
 
   fun serializeNavigationVariable(): String {
@@ -196,6 +208,7 @@ data class NavigationActions(
 
 /** Variables for the navigation actions. */
 class NavigationActionsVariables {
+  var currentSuggestion: Suggestion = Suggestion()
   var currentTrip: String = ""
   var currentGeoCords: GeoCords = GeoCords(0.0, 0.0)
   var currentAddress: String = ""
