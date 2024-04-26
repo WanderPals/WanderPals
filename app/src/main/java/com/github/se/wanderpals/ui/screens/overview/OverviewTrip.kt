@@ -92,7 +92,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
     // Button representing the trip overview
     Button(
         onClick = {
-            SessionManager.setTripName(trip.title)
+          SessionManager.setTripName(trip.title)
           navigationActions.setVariablesTrip(trip.tripId)
           navigationActions.setVariablesTripData(trip)
           navigationActions.navigateTo(Route.TRIP)

@@ -225,9 +225,7 @@ class MainActivity : ComponentActivity() {
                               factory =
                                   AdminViewModel.AdminViewModelFactory(
                                       navigationActions.variables.currentTrip, tripsRepository),
-                              key = "AdminPage")
-                  )
-
+                              key = "AdminPage"))
                 }
               }
         }

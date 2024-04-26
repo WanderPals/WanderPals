@@ -30,7 +30,7 @@ import org.junit.runner.RunWith
 class FakeAdminViewModel :
     AdminViewModel(tripsRepository = TripsRepository("", Dispatchers.IO), "") {
 
-   private val user1: User =
+  private val user1: User =
       User(
           "user1",
           "Kennedy",
@@ -39,15 +39,15 @@ class FakeAdminViewModel :
           Role.ADMIN,
           GeoCords(0.0, 0.0),
       )
-   private val user2: User =
+  private val user2: User =
       User("user2", "Johnson", "Johnson2@epfl.ch", "john", Role.OWNER, GeoCords(0.0, 0.0))
 
   private val user3 =
-    User(
-      userId = "3",
-      name = "Kilo Yankee Sierra",
-      email = "kilosierra@gmail.com",
-      role = Role.MEMBER)
+      User(
+          userId = "3",
+          name = "Kilo Yankee Sierra",
+          email = "kilosierra@gmail.com",
+          role = Role.MEMBER)
 
   // create a fake Admin ViewModel
   override var listOfUsers = MutableStateFlow(listOf(user1, user2, user3))
@@ -58,7 +58,6 @@ class FakeAdminViewModel :
 
   override fun getUsers() {}
 }
-
 
 @RunWith(AndroidJUnit4::class)
 class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
@@ -72,9 +71,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       adminScreenCard { assertIsDisplayed() }
       IconAdminScreen { assertIsDisplayed() }
@@ -88,9 +87,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) { userName { assertIsDisplayed() } }
   }
   // test case 3: check if the edit role button is displayed
@@ -99,9 +98,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { assertIsDisplayed() }
     }
@@ -112,9 +111,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       deleteUserButton { assertIsDisplayed() }
     }
@@ -125,9 +124,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       deleteUserButton { performClick() }
       confirmDeleteUserButton { assertIsDisplayed() }
@@ -139,9 +138,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       deleteUserButton { performClick() }
       cancelDeleteCommentButton { assertIsDisplayed() }
@@ -153,9 +152,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
       changeRoleTitle { assertIsDisplayed() }
@@ -167,9 +166,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
       composeTestRule.onNodeWithText("MEMBER").performClick()
@@ -181,9 +180,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
       composeTestRule.onNodeWithTag("stringRoleMEMBER").isDisplayed()
@@ -198,9 +197,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
       ConfirmRoleChangeButton { assertIsDisplayed() }
@@ -212,9 +211,9 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User1 = FakeAdminViewModel().listOfUsers.value[0]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User1.userId, User1.name, User1.email, User1.role,  profilePhoto =  User1.profilePictureURL
-      )
-      Admin(adminViewModel = FakeAdminViewModel()) }
+          User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel())
+    }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
       ConfirmRoleChangeButton { assertIsEnabled() }
@@ -228,35 +227,38 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User3 = FakeAdminViewModel().listOfUsers.value[2]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User3.userId, User3.name, User3.email, User3.role,  profilePhoto =  User3.profilePictureURL
-      )
-      Admin(FakeAdminViewModel()) }
+          User3.userId, User3.name, User3.email, User3.role, profilePhoto = User3.profilePictureURL)
+      Admin(FakeAdminViewModel())
+    }
 
-    composeTestRule.onNodeWithTag("memberCard" + User1.userId, useUnmergedTree = true).assertExists()
-    composeTestRule.onNodeWithTag("memberCard" + User2.userId , useUnmergedTree = true).assertExists()
+    composeTestRule
+        .onNodeWithTag("memberCard" + User1.userId, useUnmergedTree = true)
+        .assertExists()
+    composeTestRule
+        .onNodeWithTag("memberCard" + User2.userId, useUnmergedTree = true)
+        .assertExists()
 
     composeTestRule.onNodeWithTag("divider" + User1.userId, useUnmergedTree = true).assertExists()
 
     composeTestRule
-      .onNodeWithTag("memberName" + User1.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertTextContains(User1.name)
+        .onNodeWithTag("memberName" + User1.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains(User1.name)
     composeTestRule
-      .onNodeWithTag("memberName" + User2.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertTextContains(User2.name)
-
+        .onNodeWithTag("memberName" + User2.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains(User2.name)
 
     composeTestRule
-      .onNodeWithTag("memberRole" + User1.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertTextContains("${User1.role}")
+        .onNodeWithTag("memberRole" + User1.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("${User1.role}")
     composeTestRule
-      .onNodeWithTag("memberRole" + User2.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertTextContains("${User2.role}")
-
+        .onNodeWithTag("memberRole" + User2.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertTextContains("${User2.role}")
   }
+
   @Test
   fun checkViewsSingle() = run {
     val viewModel = FakeAdminViewModel()
@@ -264,15 +266,21 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     viewModel.listOfUsers.value = listOf(User3)
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        userId = User3.userId, User3.name, User3.email, User3.role,  profilePhoto =  User3.profilePictureURL
-      )
-      Admin(viewModel) }
+          userId = User3.userId,
+          User3.name,
+          User3.email,
+          User3.role,
+          profilePhoto = User3.profilePictureURL)
+      Admin(viewModel)
+    }
 
     composeTestRule
-      .onNodeWithTag("memberCard" + User3.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
-    composeTestRule.onNodeWithTag("divider" + User3.userId, useUnmergedTree = true).assertDoesNotExist()
+        .onNodeWithTag("memberCard" + User3.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("divider" + User3.userId, useUnmergedTree = true)
+        .assertDoesNotExist()
   }
 
   @Test
@@ -281,31 +289,32 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User3 = FakeAdminViewModel().listOfUsers.value[2]
     composeTestRule.setContent {
       SessionManager.setUserSession(
-        User3.userId, User3.name, User3.email, User3.role,  profilePhoto =  User3.profilePictureURL
-      )
+          User3.userId, User3.name, User3.email, User3.role, profilePhoto = User3.profilePictureURL)
       Admin(FakeAdminViewModel())
     }
-    composeTestRule.onNodeWithTag("memberCard" + User1.userId, useUnmergedTree = true).performClick()
+    composeTestRule
+        .onNodeWithTag("memberCard" + User1.userId, useUnmergedTree = true)
+        .performClick()
 
     composeTestRule
-      .onNodeWithTag("memberDetail" + User1.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
+        .onNodeWithTag("memberDetail" + User1.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
     composeTestRule
-      .onNodeWithTag("memberDetailName" + User1.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
-      .assertTextContains(User1.name)
+        .onNodeWithTag("memberDetailName" + User1.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+        .assertTextContains(User1.name)
     composeTestRule
-      .onNodeWithTag("memberDetailRole" + User1.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
-      .assertTextContains("${Role.ADMIN}")
+        .onNodeWithTag("memberDetailRole" + User1.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+        .assertTextContains("${Role.ADMIN}")
     composeTestRule
-      .onNodeWithTag("memberDetailEmail" + User1.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
-      .assertTextContains(User1.email)
+        .onNodeWithTag("memberDetailEmail" + User1.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+        .assertTextContains(User1.email)
   }
 
   @Test
@@ -315,36 +324,35 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     val User3 = membersViewModel.listOfUsers.value[2]
 
     composeTestRule.setContent {
-      SessionManager.setUserSession(
-        User3.userId, User3.name, User3.email, User3.role
-      )
-      Admin(membersViewModel) }
-    composeTestRule.onNodeWithTag("memberCard" + User2.userId, useUnmergedTree = true).performClick()
+      SessionManager.setUserSession(User3.userId, User3.name, User3.email, User3.role)
+      Admin(membersViewModel)
+    }
+    composeTestRule
+        .onNodeWithTag("memberCard" + User2.userId, useUnmergedTree = true)
+        .performClick()
 
     composeTestRule
-      .onNodeWithTag("memberDetail" + User2.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
+        .onNodeWithTag("memberDetail" + User2.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
     composeTestRule
-      .onNodeWithTag("memberDetailName" + User2.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
-      .assertTextContains("Johnson")
+        .onNodeWithTag("memberDetailName" + User2.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+        .assertTextContains("Johnson")
     composeTestRule
-      .onNodeWithTag("memberDetailRole" + User2.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
-      .assertTextContains("OWNER")
+        .onNodeWithTag("memberDetailRole" + User2.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+        .assertTextContains("OWNER")
     composeTestRule
-      .onNodeWithTag("ownerDetailIcon" + User2.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
+        .onNodeWithTag("ownerDetailIcon" + User2.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
     composeTestRule
-      .onNodeWithTag("memberDetailEmail" + User2.userId, useUnmergedTree = true)
-      .assertExists()
-      .assertIsDisplayed()
-      .assertTextContains("Johnson2@epfl.ch")
+        .onNodeWithTag("memberDetailEmail" + User2.userId, useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+        .assertTextContains("Johnson2@epfl.ch")
   }
-
-
 }

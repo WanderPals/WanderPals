@@ -76,10 +76,7 @@ fun Admin(adminViewModel: AdminViewModel) {
   var displayedChoiceBox by remember { mutableStateOf(false) }
   var userToUpdate by remember { mutableStateOf(User()) }
   var selectedImages by remember { mutableStateOf<List<Uri?>>(emptyList()) }
-    var roleChange by remember {
-        mutableStateOf(SessionManager.getCurrentUser()?.role.toString())
-    }
-
+  var roleChange by remember { mutableStateOf(SessionManager.getCurrentUser()?.role.toString()) }
 
   val radioOptions = listOf(Role.OWNER, Role.ADMIN, Role.MEMBER, Role.VIEWER)
   var (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
@@ -124,13 +121,12 @@ fun Admin(adminViewModel: AdminViewModel) {
 
     Card(
         modifier =
-        Modifier
-            .align(alignment = Alignment.CenterHorizontally)
-            .padding(vertical = 10.dp)
-            .size(width = 350.dp, height = 200.dp)
-            .shadow(elevation = 20.dp, shape = RoundedCornerShape(50.dp))
-            .clip(RoundedCornerShape(30.dp))
-            .testTag("adminScreenCard"),
+            Modifier.align(alignment = Alignment.CenterHorizontally)
+                .padding(vertical = 10.dp)
+                .size(width = 350.dp, height = 200.dp)
+                .shadow(elevation = 20.dp, shape = RoundedCornerShape(50.dp))
+                .clip(RoundedCornerShape(30.dp))
+                .testTag("adminScreenCard"),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         // elevation = CardDefaults.cardElevation(defaultElevation = 100.dp)
     ) {
@@ -142,16 +138,15 @@ fun Admin(adminViewModel: AdminViewModel) {
               contentDescription = "Admin Icon",
               contentScale = ContentScale.Crop,
               modifier =
-              Modifier
-                  .padding(top = 40.dp, start = 40.dp, end = 40.dp)
-                  .size(100.dp)
-                  .clip(CircleShape)
-                  .border(3.dp, rainbowColorsBrush, CircleShape)
-                  .clickable {
-                      if (modifierButton)
-                          singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
-                  }
-                  .testTag("IconAdminScreen"))
+                  Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
+                      .size(100.dp)
+                      .clip(CircleShape)
+                      .border(3.dp, rainbowColorsBrush, CircleShape)
+                      .clickable {
+                        if (modifierButton)
+                            singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                      }
+                      .testTag("IconAdminScreen"))
         } else {
           if (SessionManager.getCurrentUser() != null) {
             AsyncImage(
@@ -159,16 +154,15 @@ fun Admin(adminViewModel: AdminViewModel) {
                 contentDescription = "Admin Icon",
                 contentScale = ContentScale.Crop,
                 modifier =
-                Modifier
-                    .padding(top = 40.dp, start = 40.dp, end = 40.dp)
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .border(3.dp, rainbowColorsBrush, CircleShape)
-                    .clickable {
-                        if (modifierButton)
-                            singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
-                    }
-                    .testTag("IconAdminScreen"))
+                    Modifier.padding(top = 40.dp, start = 40.dp, end = 40.dp)
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .border(3.dp, rainbowColorsBrush, CircleShape)
+                        .clickable {
+                          if (modifierButton)
+                              singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                        }
+                        .testTag("IconAdminScreen"))
           }
         }
         Column(
@@ -183,21 +177,17 @@ fun Admin(adminViewModel: AdminViewModel) {
                     modifier = Modifier.testTag("UserName"),
                     fontWeight = FontWeight.Bold)
               }
-              HorizontalDivider(modifier = Modifier
-                  .padding(end = 30.dp)
-                  .testTag("CardDivider"))
+              HorizontalDivider(modifier = Modifier.padding(end = 30.dp).testTag("CardDivider"))
 
-            if (SessionManager.getCurrentUser() != null) {
+              if (SessionManager.getCurrentUser() != null) {
                 Text(
                     text = SessionManager.getCurrentUser()!!.tripName,
                     style = MaterialTheme.typography.displayMedium,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .padding(end = 30.dp, top = 10.dp)
-                        .testTag("UserEmail"))
-            }
+                    modifier = Modifier.padding(end = 30.dp, top = 10.dp).testTag("UserEmail"))
+              }
             }
       }
       Text(
@@ -210,17 +200,14 @@ fun Admin(adminViewModel: AdminViewModel) {
     Text(
         text = "Role Management",
         style = MaterialTheme.typography.displaySmall,
-        modifier = Modifier
-            .padding(start = 30.dp, top = 30.dp)
-            .testTag("AdminTitle"),
+        modifier = Modifier.padding(start = 30.dp, top = 30.dp).testTag("AdminTitle"),
         fontWeight = FontWeight.Bold)
 
-    HorizontalDivider(modifier = Modifier
-        .padding(20.dp)
-        .testTag("AdminDivider"))
-    if (SessionManager.getCurrentUser()?.role == Role.OWNER || SessionManager.getCurrentUser()?.role == Role.ADMIN) {
+    HorizontalDivider(modifier = Modifier.padding(20.dp).testTag("AdminDivider"))
+    if (SessionManager.getCurrentUser()?.role == Role.OWNER ||
+        SessionManager.getCurrentUser()?.role == Role.ADMIN) {
       for (user in userList) {
-        //Log.d("Admin", "User: $user")
+        // Log.d("Admin", "User: $user")
 
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -228,38 +215,39 @@ fun Admin(adminViewModel: AdminViewModel) {
               Text(
                   text = user.name,
                   style = MaterialTheme.typography.titleMedium,
-                  modifier = Modifier
-                      .padding(start = 30.dp)
-                      .testTag("userName"))
+                  modifier = Modifier.padding(start = 30.dp).testTag("userName"))
 
               // to change the role of a user
               IconButton(
                   onClick = {
                     userToUpdate = user
                     selectedOption = user.role
-                    //Log.d("Admin", "User: $selectedOption")
+                    // Log.d("Admin", "User: $selectedOption")
                     // change the onOptionSelected
                     onOptionSelected(selectedOption)
                     displayedChoiceBox = true
                   },
-                  modifier = Modifier.testTag("editRoleButton"))
-              {
+                  modifier = Modifier.testTag("editRoleButton")) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Edit Role",
                         modifier = Modifier.size(20.dp))
                   }
 
-            //Transfer Owner rights
-            if(SessionManager.getCurrentUser()?.role == Role.OWNER){
-                IconButton(onClick = {
-                    roleChange = Role.ADMIN.toString()
-                    SessionManager.setRole(Role.ADMIN)
-                    adminViewModel.modifyUser(user.copy( role = Role.OWNER ))
-                }) {
-                    Icon(Icons.Default.Star, contentDescription = "transferRights", modifier = Modifier.size(20.dp))
-                }
-            }
+              // Transfer Owner rights
+              if (SessionManager.getCurrentUser()?.role == Role.OWNER) {
+                IconButton(
+                    onClick = {
+                      roleChange = Role.ADMIN.toString()
+                      SessionManager.setRole(Role.ADMIN)
+                      adminViewModel.modifyUser(user.copy(role = Role.OWNER))
+                    }) {
+                      Icon(
+                          Icons.Default.Star,
+                          contentDescription = "transferRights",
+                          modifier = Modifier.size(20.dp))
+                    }
+              }
               // to delete a user
               IconButton(
                   onClick = {
@@ -298,9 +286,7 @@ fun Admin(adminViewModel: AdminViewModel) {
 
         Dialog(onDismissRequest = { displayedChoiceBox = false }) {
           Card(
-              modifier = Modifier
-                  .height(380.dp)
-                  .padding(16.dp),
+              modifier = Modifier.height(380.dp).padding(16.dp),
               shape = RoundedCornerShape(16.dp),
               elevation = CardDefaults.cardElevation(3.dp),
               colors = CardDefaults.cardColors(AlertDialogDefaults.containerColor)) {
@@ -309,22 +295,18 @@ fun Admin(adminViewModel: AdminViewModel) {
                       text = "Change Role",
                       style = MaterialTheme.typography.titleMedium,
                       fontWeight = FontWeight.Bold,
-                      modifier = Modifier
-                          .padding(16.dp)
-                          .testTag("changeRoleTitle"))
+                      modifier = Modifier.padding(16.dp).testTag("changeRoleTitle"))
                   HorizontalDivider()
 
                   Column(Modifier.selectableGroup()) {
                     radioOptions.forEach { text ->
                       Row(
-                          Modifier
-                              .fillMaxWidth()
+                          Modifier.fillMaxWidth()
                               .height(56.dp)
                               .selectable(
                                   selected = (text == selectedOption),
                                   onClick = { onOptionSelected(text) },
-                                  role = semanticRole.RadioButton
-                              )
+                                  role = semanticRole.RadioButton)
                               .padding(horizontal = 16.dp),
                           verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(
@@ -336,9 +318,8 @@ fun Admin(adminViewModel: AdminViewModel) {
                             Text(
                                 text = text.toString(),
                                 style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier
-                                    .padding(start = 16.dp)
-                                    .testTag("stringRole$text"))
+                                modifier =
+                                    Modifier.padding(start = 16.dp).testTag("stringRole$text"))
                           }
                     }
                   }
@@ -351,9 +332,7 @@ fun Admin(adminViewModel: AdminViewModel) {
                           adminViewModel.modifyUser(user = userToUpdate)
                           displayedChoiceBox = false
                         },
-                        modifier = Modifier
-                            .padding(10.dp)
-                            .testTag("ConfirmRoleChangeButton")) {
+                        modifier = Modifier.padding(10.dp).testTag("ConfirmRoleChangeButton")) {
                           Text("Update Role")
                         }
                   }
@@ -369,10 +348,9 @@ fun Admin(adminViewModel: AdminViewModel) {
             Spacer(modifier = Modifier.height(4.dp))
             HorizontalDivider(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp)
-                    .testTag("divider" + member.userId))
+                    Modifier.fillMaxWidth()
+                        .padding(horizontal = 32.dp)
+                        .testTag("divider" + member.userId))
             Spacer(modifier = Modifier.height(4.dp))
           }
         }

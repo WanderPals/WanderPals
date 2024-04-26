@@ -91,9 +91,9 @@ object SessionManager {
     currentUser?.profilePhoto = photoUrl
   }
 
-    fun setTripName(tripName: String){
-        currentUser?.tripName = tripName
-    }
+  fun setTripName(tripName: String) {
+    currentUser?.tripName = tripName
+  }
 
   /** Clears the current user session, effectively logging out the user. */
   fun logout() {
