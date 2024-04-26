@@ -84,7 +84,6 @@ fun SuggestionItem(
               .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
               .clickable(
                   enabled = !isSuggestionAddedToStop, // Disable the click if added to stop
-                  // fixme1: doesn't add even if ceil > half
                   //fixme2: database Suggestion not become Stop
                   onClick = onClick)//, // Invoke the onClick lambda when the item is clicked (see // SuggestionFeedContent.kt)
               .alpha(if (isSuggestionAddedToStop) 0.5f else 1f), // Semi-transparent if added to stop

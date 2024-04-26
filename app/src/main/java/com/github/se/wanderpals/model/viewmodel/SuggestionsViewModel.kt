@@ -214,13 +214,13 @@ open class SuggestionsViewModel(
 
             if (condition) {
                 val updatedStop = suggestion.stop.copy(
-                    // You might need to add more properties here based on your business logic
+                    stopId = suggestion.stop.stopId,
                 )
                 val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, updatedStop) ?: false
                 if (wasStopAdded) {
                     // Update the suggestion to indicate it has been added as a stop
                     val updatedSuggestion = suggestion.copy(
-                        // Update any necessary properties to reflect the change
+            stop = updatedStop
                     )
                     _state.value = _state.value.map {
                         if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
