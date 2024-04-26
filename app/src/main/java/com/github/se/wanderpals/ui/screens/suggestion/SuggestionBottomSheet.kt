@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
@@ -36,7 +37,6 @@ import com.github.se.wanderpals.service.SessionManager
  * Composable function to display the bottom sheet with options for a suggestion.
  *
  * @param viewModel The view model to handle the interactions with the suggestions.
- * @param suggestion The suggestion to which the comment belongs.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,7 +111,7 @@ fun SuggestionBottomSheet(viewModel: SuggestionsViewModel) {
           TextButton(
               onClick = { viewModel.confirmDeleteSuggestion(selectedSuggestion!!) },
               modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
-                Text("Confirm")
+                Text("Confirm", color = Color.Red)
               }
         },
         dismissButton = {
