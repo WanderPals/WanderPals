@@ -154,7 +154,7 @@ fun Notification(
                   onNotificationItemClick = {
                     if (item.path.isNotEmpty()) {
                       if (item.path.contains("/")) {
-                        val (route, serializedArgs) = item.path.split("/")
+                        val (route, serializedArgs) = item.path.split("/",limit = 2)
                         navigationActions.deserializeNavigationVariables(serializedArgs)
                         navigationActions.navigateTo(route)
                       } else {

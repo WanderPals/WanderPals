@@ -167,16 +167,20 @@ data class NavigationActions(
   }
 
   fun serializeNavigationVariable(): String {
-    return "currentTrip: ${variables.currentTrip}, " +
-        "latitude: ${variables.currentGeoCords.latitude}, " +
-        "longitude: ${variables.currentGeoCords.longitude}, " +
-        "currentAddress: ${variables.currentAddress}, " +
-        "suggestionId: ${variables.suggestionId}"
+    val navActionsVariablesToString = arrayOf(
+      "currentTrip: ${variables.currentTrip}",
+      "latitude: ${variables.currentGeoCords.latitude}",
+      "longitude: ${variables.currentGeoCords.longitude}",
+      "currentAddress: ${variables.currentAddress}",
+      "suggestionId: ${variables.suggestionId}"
+    )
+
+    return navActionsVariablesToString.joinToString("|")
   }
 
   fun deserializeNavigationVariables(string: String) {
     val variables = NavigationActionsVariables()
-    val parts = string.split(", ")
+    val parts = string.split("|")
     for (part in parts) {
       val (argName, argVal) = part.split(": ")
       when (argName) {
