@@ -14,6 +14,7 @@ import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
 import com.github.se.wanderpals.model.firestoreData.FirestoreTripNotification
 import com.github.se.wanderpals.model.firestoreData.FirestoreUser
+import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
@@ -59,6 +60,7 @@ class TripsRepository(
     firestore = FirebaseFirestore.getInstance(app)
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
+    NotificationsManager.initNotificationsManager(this)
   }
 
   /**
@@ -70,6 +72,7 @@ class TripsRepository(
     firestore = FirebaseFirestore.getInstance()
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
+    NotificationsManager.initNotificationsManager(this)
   }
 
   /**
@@ -786,7 +789,7 @@ class TripsRepository(
   suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
-          val uniqueID = UUID.randomUUID().toString()
+          val uniqueID = UUID.randomUUID().toString() + "/" + stop.stopId
           val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
           val stopDocument =
               tripsCollection
