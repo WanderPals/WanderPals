@@ -42,9 +42,13 @@ class TripsRepositoryTest {
   private lateinit var repository: TripsRepository
   private val testUid = "testUser123"
   private val testTripId = "testTrip123"
-  private val usernames = listOf(// Initialize a trip with details for a summer vacation in Italy.
-      "GrigoryVeryWeirdUsernameWhichNoOneWillEverUseElseThisTestFails123456789", //likely unique usernames
-        "ViktorVeryWeirdUsernameWhichNoOneWillEverUseElseThisTestFails123456789") //likely unique usernames)
+  private val usernames =
+      listOf( // Initialize a trip with details for a summer vacation in Italy.
+          "GrigoryVeryWeirdUsernameWhichNoOneWillEverUseElseThisTestFails123456789", // likely
+          // unique
+          // usernames
+          "ViktorVeryWeirdUsernameWhichNoOneWillEverUseElseThisTestFails123456789") // likely unique
+  // usernames)
 
   @Before
   fun setUp() {
@@ -586,45 +590,38 @@ class TripsRepositoryTest {
     println("Execution time for testTripLifecycleWithNotifications: $elapsedTime ms")
   }
 
-    @Test
-    fun testAddAndGetEmailWithUsername() = runBlocking {
+  @Test
+  fun testAddAndGetEmailWithUsername() = runBlocking {
+    val emails = listOf("gregory1@example.com", "viktor@example.com")
+    // usernames list of string of 2 usernames
+    val elapsedTime = measureTimeMillis {
+      try {
+        withTimeout(10000) {
+          // Add the usernames and emails.
+          assertTrue(repository.addEmailToUsername(usernames[0], emails[0]))
+          assertTrue(repository.addEmailToUsername(usernames[1], emails[1]))
 
-        val emails = listOf("gregory1@example.com", "viktor@example.com")
-        //usernames list of string of 2 usernames
-        val elapsedTime = measureTimeMillis {
-            try {
-                withTimeout(10000) {
-                    // Add the usernames and emails.
-                    assertTrue(repository.addEmailToUsername(usernames[0], emails[0]))
-                    assertTrue(repository.addEmailToUsername(usernames[1], emails[1]))
+          // Retrieve and verify emails.
+          assertEquals(emails[0], repository.getUserEmail(usernames[0]))
+          assertEquals(emails[1], repository.getUserEmail(usernames[1]))
 
-                    // Retrieve and verify emails.
-                    assertEquals(emails[0], repository.getUserEmail(usernames[0]))
-                    assertEquals(emails[1], repository.getUserEmail(usernames[1]))
+          // Attempt to add one of the usernames again.
+          assertFalse(repository.addEmailToUsername(usernames[0], "newemail@example.com"))
 
-                    // Attempt to add one of the usernames again.
-                    assertFalse(repository.addEmailToUsername(usernames[0], "newemail@example.com"))
+          // Delete a non-existent username.
+          assertTrue(repository.deleteEmailByUsername("nonExistentUser"))
 
-                    // Delete a non-existent username.
-                    assertTrue(repository.deleteEmailByUsername("nonExistentUser"))
-
-                    // Delete an existing username.
-                    assertTrue(repository.deleteEmailByUsername(usernames[1]))
-                    assertNull(repository.getUserEmail(usernames[1]))
-                    assertTrue(repository.deleteEmailByUsername(usernames[0]))
-
-
-
-                }
-            } catch (e: TimeoutCancellationException) {
-                fail("The operation timed out after 10 seconds")
-            }
+          // Delete an existing username.
+          assertTrue(repository.deleteEmailByUsername(usernames[1]))
+          assertNull(repository.getUserEmail(usernames[1]))
+          assertTrue(repository.deleteEmailByUsername(usernames[0]))
         }
-        println("Execution time for testAddAndGetEmailWithUsername: $elapsedTime ms")
+      } catch (e: TimeoutCancellationException) {
+        fail("The operation timed out after 10 seconds")
+      }
     }
-
-
-
+    println("Execution time for testAddAndGetEmailWithUsername: $elapsedTime ms")
+  }
 
   @After
   fun tearDown() = runBlocking {
@@ -640,11 +637,9 @@ class TripsRepositoryTest {
           emptyList<String>() // In case of error, fallback to an empty list to avoid null issues
         }
 
-      if(!debug) {
-          usernames.forEach { username ->
-              repository.deleteEmailByUsername(username)
-          }
-      }
+    if (!debug) {
+      usernames.forEach { username -> repository.deleteEmailByUsername(username) }
+    }
 
     // Loop through each trip ID and attempt to remove it for cleanup
     tripIds.forEach { tripId ->
