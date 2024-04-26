@@ -76,7 +76,7 @@ fun Admin(adminViewModel: AdminViewModel) {
   var displayedChoiceBox by remember { mutableStateOf(false) }
   var userToUpdate by remember { mutableStateOf(User()) }
   var selectedImages by remember { mutableStateOf<List<Uri?>>(emptyList()) }
-  var roleChange by remember { mutableStateOf(SessionManager.getCurrentUser()?.role.toString()) }
+  var roleChange by remember { mutableStateOf(SessionManager.getCurrentUser()?.role) }
 
   val radioOptions = listOf(Role.OWNER, Role.ADMIN, Role.MEMBER, Role.VIEWER)
   var (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
@@ -191,7 +191,7 @@ fun Admin(adminViewModel: AdminViewModel) {
             }
       }
       Text(
-          text = roleChange,
+          text = roleChange.toString(),
           modifier = Modifier.padding(start = 60.dp, top = 20.dp),
           fontWeight = FontWeight.Bold,
           fontStyle = FontStyle.Italic)
@@ -235,10 +235,10 @@ fun Admin(adminViewModel: AdminViewModel) {
                   }
 
               // Transfer Owner rights
-              if (SessionManager.getCurrentUser()?.role == Role.OWNER) {
+              if (roleChange == Role.OWNER) {
                 IconButton(
                     onClick = {
-                      roleChange = Role.ADMIN.toString()
+                      roleChange = Role.ADMIN
                       SessionManager.setRole(Role.ADMIN)
                       adminViewModel.modifyUser(user.copy(role = Role.OWNER))
                     }) {
