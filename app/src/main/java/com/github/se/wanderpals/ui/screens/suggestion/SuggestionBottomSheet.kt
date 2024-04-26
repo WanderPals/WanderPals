@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.service.SessionManager
 
@@ -39,7 +40,10 @@ import com.github.se.wanderpals.service.SessionManager
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SuggestionBottomSheet(viewModel: SuggestionsViewModel) {
+fun SuggestionBottomSheet(
+    viewModel: SuggestionsViewModel,
+    onEdit: (Suggestion) -> Unit = { _ -> }
+) {
 
   val bottomSheetVisible by viewModel.bottomSheetVisible.collectAsState()
   val selectedSuggestion by viewModel.selectedSuggestion.collectAsState()
@@ -57,22 +61,45 @@ fun SuggestionBottomSheet(viewModel: SuggestionsViewModel) {
           Column(modifier = Modifier.navigationBarsPadding()) {
             // Only displays the option if the user is Admin or it is his comment
             if (SessionManager.canRemove(selectedSuggestion!!.userId)) {
-              Box(
-                  modifier =
-                      Modifier.fillMaxWidth()
-                          .clickable(onClick = { viewModel.showDeleteDialog() })
-                          .padding(16.dp)
-                          .testTag("deleteSuggestionOption"),
-                  contentAlignment = Alignment.CenterStart) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                      Icon(
-                          imageVector = Icons.Outlined.Delete,
-                          contentDescription = "Delete",
-                          modifier = Modifier.size(24.dp))
-                      Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                      Text("Delete suggestion", style = MaterialTheme.typography.bodyLarge)
+              Column {
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(onClick = { viewModel.showDeleteDialog() })
+                            .padding(16.dp)
+                            .testTag("deleteSuggestionOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text("Delete suggestion", style = MaterialTheme.typography.bodyLarge)
+                      }
                     }
-                  }
+
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(
+                                onClick = {
+                                  onEdit(selectedSuggestion!!)
+                                  viewModel.hideBottomSheet()
+                                })
+                            .padding(16.dp)
+                            .testTag("editSuggestionOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text("Edit suggestion", style = MaterialTheme.typography.bodyLarge)
+                      }
+                    }
+              }
             }
           }
         }

@@ -990,6 +990,21 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     }
   }
 
+  @Test
+  fun editSuggestion() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion("aaa", vm, suggestion = Suggestion(suggestionId = "test"))
+      }
+
+      createButton {
+        assertIsDisplayed()
+        assertTextContains("Edit Suggestion")
+      }
+    }
+  }
+
   /**
    * Test that the navigation to the CreateSuggestion screen is triggered when the button is
    * clicked.

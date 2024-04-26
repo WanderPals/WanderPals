@@ -15,6 +15,7 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomSheet
 import com.github.se.wanderpals.ui.screens.trip.Suggestion
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
@@ -218,5 +219,24 @@ class SuggestionBottomSheetTest {
         .assertExists()
         .performClick()
     composeTestRule.onNodeWithTag("suggestion1", useUnmergedTree = true).assertExists()
+  }
+
+  @Test
+  fun testSuggestionBottomSheetEdit() {
+    val viewModel = SuggestionsViewModelSheetTest(listOf(mockSuggestion))
+
+    // Launch the composable with the view model
+    composeTestRule.setContent { SuggestionBottomSheet(viewModel) }
+
+    viewModel.showSuggestionBottomSheet(mockSuggestion)
+
+    composeTestRule
+        .onNodeWithTag("editSuggestionOption", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .performClick()
+
+    composeTestRule
+        .onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true)
+        .assertDoesNotExist()
   }
 }
