@@ -125,8 +125,7 @@ open class AgendaViewModel(
     val allStops = tripsRepository?.getAllStopsFromTrip(tripId)
     val allStopsFromSubscribedTrips =
         tripsRepository?.getAllSuggestionsFromTrip(tripId)?.map { it.stop }
-    val displayedStops =
-        allStops?.toMutableList()?.apply { addAll(allStopsFromSubscribedTrips ?: emptyList()) }
+    val displayedStops = allStops?.toMutableList()
 
     // Filter stops to include only those that occur on the selected date
     return displayedStops?.filter { stop -> stop.date.isEqual(selectedDate) }
