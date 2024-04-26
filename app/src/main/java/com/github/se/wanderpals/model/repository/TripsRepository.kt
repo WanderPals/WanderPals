@@ -45,6 +45,8 @@ class TripsRepository(
   // Reference to the 'Trips' collection in Firestore
   private lateinit var tripsCollection: CollectionReference
 
+  private lateinit var usernameCollection: CollectionReference
+
   private val notificationsId = "Notifications"
 
   /**
@@ -60,6 +62,7 @@ class TripsRepository(
     firestore = FirebaseFirestore.getInstance(app)
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
+    usernameCollection = firestore.collection(FirebaseCollections.USERNAME_TO_EMAIL_COLLECTION.path)
     NotificationsManager.initNotificationsManager(this)
   }
 
@@ -72,8 +75,58 @@ class TripsRepository(
     firestore = FirebaseFirestore.getInstance()
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
+    usernameCollection = firestore.collection(FirebaseCollections.USERNAME_TO_EMAIL_COLLECTION.path)
     NotificationsManager.initNotificationsManager(this)
   }
+
+
+    suspend fun getUserEmail(username: String): String? = withContext(dispatcher){
+        try {
+            val documentSnapshot =
+                usernameCollection
+                    .document(username)
+                    .get()
+                    .await()
+            // Attempt to retrieve the list using the correct type information
+            documentSnapshot.data?.get("email") as? String
+
+        }catch (e:Exception){
+            Log.e(
+                "TripsRepository",
+                "getUserEmail: Error getting the email for username $username.",
+                e
+            )
+            null
+        }
+    }
+
+
+    suspend fun addEmailToUsername(username: String, email:String): Boolean = withContext(dispatcher){
+        try {
+            val documentRef = usernameCollection.document(username)
+            val snapshot = documentRef.get().await()
+
+            if (snapshot.exists()) {
+                Log.e("TripsRepository", "addEmailToUsername: Username $username already exists.")
+                return@withContext false
+            }
+
+            documentRef.set(mapOf("email" to email)).await()
+            true
+        }catch (e:Exception){
+            Log.e(
+                "TripsRepository",
+                "addEmailToUsername: Error adding email for username $username.",
+                e
+            )
+            false
+        }
+    }
+
+
+
+
+
 
   /**
    * Retrieves a list of notifications for a specific trip from Firestore. This method queries the
