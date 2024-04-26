@@ -42,6 +42,10 @@ open class SuggestionsViewModel(
   private val _selectedComment = MutableStateFlow<Comment?>(null)
   open val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
+  // State flow to remember the comment that is being interacted with
+  private val _selectedSuggestion = MutableStateFlow<Suggestion?>(null)
+  open val selectedSuggestion: StateFlow<Suggestion?> = _selectedSuggestion.asStateFlow()
+
   // State flow to handle the displaying of the delete dialog
   private val _showDeleteDialog = MutableStateFlow(false)
   open val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
@@ -195,6 +199,7 @@ open class SuggestionsViewModel(
     hideBottomSheet()
   }
 
+<<<<<<< HEAD
     // Call this function when the like status of a suggestion is toggled
     open fun checkAndAddSuggestionAsStop(suggestion: Suggestion) {
         viewModelScope.launch {
@@ -234,6 +239,30 @@ open class SuggestionsViewModel(
 
 
 
+=======
+  open fun deleteSuggestion(suggestion: Suggestion) {
+    viewModelScope.launch {
+      val wasDeleteSuccessful =
+          suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+      if (wasDeleteSuccessful) {
+        loadSuggestion(tripId)
+      }
+    }
+  }
+
+  open fun confirmDeleteSuggestion(suggestion: Suggestion) {
+    deleteSuggestion(suggestion) // Assuming deleteComment handles all necessary logic
+    hideDeleteDialog()
+    hideBottomSheet()
+  }
+
+  open fun showSuggestionBottomSheet(suggestion: Suggestion) {
+    viewModelScope.launch {
+      _bottomSheetVisible.value = true
+      _selectedSuggestion.value = suggestion
+    }
+  }
+>>>>>>> origin/main
 
   class SuggestionsViewModelFactory(
       private val tripsRepository: TripsRepository,

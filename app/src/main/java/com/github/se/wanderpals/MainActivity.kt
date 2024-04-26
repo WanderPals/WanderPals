@@ -1,5 +1,6 @@
 package com.github.se.wanderpals
 
+import android.Manifest
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -15,11 +16,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.github.se.wanderpals.BuildConfig.MAPS_API_KEY
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -35,8 +36,6 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -49,6 +48,8 @@ lateinit var navigationActions: NavigationActions
 class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
+
+  private lateinit var mapManager: MapManager
 
   private lateinit var tripsRepository: TripsRepository
 
@@ -99,7 +100,30 @@ class MainActivity : ComponentActivity() {
             }
       }
 
-  private lateinit var placesClient: PlacesClient
+  private val locationPermissionRequest =
+      registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions
+        ->
+        when {
+          permissions.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false) -> {
+            Log.d("MapActivity", "Fine location access granted.")
+          }
+          permissions.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false) -> {
+            Log.d("MapActivity", "Coarse location access granted.")
+          }
+          else -> {
+            Log.d("MapActivity", "Location access denied.")
+          }
+        }
+      }
+
+  @Suppress("DEPRECATION")
+  @Deprecated("Deprecated in Java")
+  override fun onBackPressed() {
+    super.onBackPressed()
+    if (::navigationActions.isInitialized) {
+      navigationActions.updateCurrentRoute()
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -113,8 +137,10 @@ class MainActivity : ComponentActivity() {
             .build()
 
     signInClient = GoogleSignIn.getClient(this, gso)
-    Places.initialize(applicationContext, MAPS_API_KEY)
-    placesClient = Places.createClient(this)
+
+    mapManager = MapManager(this)
+    mapManager.initClients()
+    mapManager.setPermissionRequest(locationPermissionRequest)
 
     setContent {
       WanderPalsTheme {
@@ -184,7 +210,7 @@ class MainActivity : ComponentActivity() {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
                   val tripId = navigationActions.variables.currentTrip
                   navigationActions.tripNavigation.setNavController(rememberNavController())
-                  Trip(navigationActions, tripId, tripsRepository, placesClient)
+                  Trip(navigationActions, tripId, tripsRepository, mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
                   val overviewViewModel: OverviewViewModel =

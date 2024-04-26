@@ -4,14 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,21 +17,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -43,23 +39,53 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
-import java.time.format.DateTimeFormatter
+import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 
 /**
- * Composable function representing the Notification screen.
+ * Composable function for displaying notifications and announcements.
  *
- * This function displays notifications or announcements based on user selection.
+ * This composablefunction displays a list of notifications and announcements. It allows users to
+ * switch between switch between viewing notifications and viewing announcements. Users can click on
+ * notifications to navigate to specific destinations within the app. Admin/owner users have the
+ * ability to create new announcements and delete announcements.
  *
- * @param notificationsViewModel The view model containing notifications data.
+ * @param notificationsViewModel The view model used to manage notifications and announcements.
+ * @param navigationActions Actions for navigating to different destinations within the app.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Notification(notificationsViewModel: NotificationsViewModel) {
+fun Notification(
+    notificationsViewModel: NotificationsViewModel,
+    navigationActions: NavigationActions
+) {
 
+  LaunchedEffect(
+      Unit) { // This ensures updateStateLists is called once per composition, not on every
+        // recomposition
+        notificationsViewModel.updateStateLists()
+      }
+
+  // UI states
   val notificationsList by notificationsViewModel.notifStateList.collectAsState()
   val announcementList by notificationsViewModel.announcementStateList.collectAsState()
-  var notificationSelected by remember { mutableStateOf(true) }
+
+  val notificationSelected by notificationsViewModel.isNotifSelected.collectAsState()
+  val announcementItemPressed by notificationsViewModel.announcementItemPressed.collectAsState()
+
+  val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
+    if (announcementItemPressed) {
+      val selectedAnnouncement =
+          announcementList.find { announcement ->
+            announcement.announcementId == selectedAnnouncementId
+          }!!
+      AnnouncementInfoDialog(
+          announcement = selectedAnnouncement, notificationsViewModel = notificationsViewModel)
+    }
+    // TOP menu
     Surface(
         modifier =
             Modifier.fillMaxWidth().height(100.dp).padding(horizontal = 16.dp, vertical = 22.dp),
@@ -71,7 +97,7 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
               verticalAlignment = Alignment.CenterVertically) {
                 Button(
                     modifier = Modifier.fillMaxHeight().weight(1f).testTag("notificationButton"),
-                    onClick = { notificationSelected = true },
+                    onClick = { notificationsViewModel.setNotificationSelectionState(true) },
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor =
@@ -87,14 +113,14 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
                     }
                 Button(
                     modifier = Modifier.fillMaxHeight().weight(1f).testTag("announcementButton"),
-                    onClick = { notificationSelected = false },
+                    onClick = { notificationsViewModel.setNotificationSelectionState(false) },
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor =
                                 if (!notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
                             contentColor = Color.White)) {
                       Text(
-                          text = "Announcement",
+                          text = "Announcements",
                           style =
                               MaterialTheme.typography.bodyLarge.copy(
                                   fontWeight =
@@ -105,26 +131,57 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
         }
 
     HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-    LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
-      val itemsList = if (notificationSelected) notificationsList else announcementList
-      items(itemsList) { item ->
-        when (item) {
-          is TripNotification -> {
-            NotificationItem(notification = item)
-          }
-          is Announcement -> {
-            AnnouncementItem(announcement = item)
-          }
-        }
 
-        HorizontalDivider(color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+    val itemsList = if (notificationSelected) notificationsList else announcementList
+    if (itemsList.isEmpty()) {
+      val emptyItemText = if (notificationSelected) "notifications" else "announcements"
+      Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 16.dp)) {
+        // text if no items found
+        Text(
+            text = "Looks like there is no $emptyItemText.",
+            modifier =
+                Modifier.align(Alignment.Center).padding(horizontal = 16.dp).testTag("noItemsText"),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge)
+      }
+    } else {
+      LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+        items(itemsList) { item ->
+          when (item) {
+            is TripNotification -> {
+              NotificationItem(
+                  notification = item,
+                  onNotificationItemClick = {
+                    if (item.path.isNotEmpty()) {
+                      if (item.path.contains("/")) {
+                        val (route, serializedArgs) = item.path.split("/")
+                        navigationActions.deserializeNavigationVariables(serializedArgs)
+                        navigationActions.navigateTo(route)
+                      } else {
+                        navigationActions.navigateTo(item.path)
+                      }
+                    }
+                  })
+            }
+            is Announcement -> {
+              AnnouncementItem(
+                  announcement = item,
+                  onAnnouncementItemClick = { announcementId ->
+                    notificationsViewModel.setAnnouncementItemPressState(true)
+                    notificationsViewModel.setSelectedAnnouncementId(announcementId)
+                  })
+            }
+          }
+          HorizontalDivider(
+              color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+        }
       }
     }
-    HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-    Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
-      if (!notificationSelected) {
+    // Create announcement Button
+    if (!notificationSelected && SessionManager.isAdmin()) {
+      Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
         Button(
-            onClick = {},
+            onClick = { navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT) },
             modifier =
                 Modifier.padding(horizontal = 20.dp)
                     .height(50.dp)
@@ -153,104 +210,5 @@ fun Notification(notificationsViewModel: NotificationsViewModel) {
             }
       }
     }
-  }
-}
-
-/**
- * Composable function representing an item in the notification list.
- *
- * This function displays a single notification item with its title and timestamp.
- *
- * @param notification The notification to display.
- */
-@Composable
-fun NotificationItem(notification: TripNotification) {
-  Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
-    Button(
-        onClick = {},
-        shape = RectangleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-          Row(modifier = Modifier.fillMaxSize().align(Alignment.CenterVertically)) {
-            // Title Text
-            Text(
-                text = notification.title,
-                style = TextStyle(fontSize = 16.sp),
-                color = Color.Black,
-                modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
-                textAlign = TextAlign.Start)
-
-            // Spacer
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Texts Column
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.End) {
-
-                  // Date: hour
-                  Text(
-                      text = notification.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
-                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-                  // Date: day
-                  Text(
-                      text =
-                          notification.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-                }
-          }
-        }
-  }
-}
-
-/**
- * Composable function representing an item in the announcement list.
- *
- * This function displays a single announcement item with its title, timestamp, and username.
- *
- * @param notification The announcement to display.
- */
-@Composable
-fun AnnouncementItem(announcement: Announcement) {
-  Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
-    Button(
-        onClick = {},
-        shape = RectangleShape,
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-          Row(modifier = Modifier.fillMaxSize().align(Alignment.CenterVertically)) {
-            // Title Text
-            Text(
-                text = announcement.title,
-                style = TextStyle(fontSize = 16.sp),
-                color = Color.Black,
-                modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
-                textAlign = TextAlign.Start)
-
-            // Spacer
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Texts Column
-            Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.SpaceEvenly,
-                horizontalAlignment = Alignment.End) {
-
-                  // Date: hour
-                  Text(
-                      text = announcement.timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
-                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-                  // Date: day
-                  Text(
-                      text =
-                          announcement.timestamp.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-
-                  // Username
-                  Text(
-                      text = announcement.userName,
-                      style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-                }
-          }
-        }
   }
 }

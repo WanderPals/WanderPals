@@ -142,5 +142,7 @@ fun SuggestionFeedContent(
         }
       }
     }
+
+    SuggestionBottomSheet(viewModel = suggestionsViewModel)
   }
 }
