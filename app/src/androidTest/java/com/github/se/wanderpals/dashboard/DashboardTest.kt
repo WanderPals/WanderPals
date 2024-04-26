@@ -353,10 +353,10 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
       Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
     composeTestRule.onNodeWithTag("menuButton").performClick()
-    composeTestRule.onNodeWithTag("MemberListMenu").performClick()
+    composeTestRule.onNodeWithTag("AdminButtonTest").performClick()
     composeTestRule.onNodeWithTag("menuNav").assertIsNotDisplayed()
 
-    verify { mockNavActions.navigateTo(Route.MEMBERS) }
+    verify { mockNavActions.navigateTo(Route.ADMIN_PAGE) }
     confirmVerified(mockNavActions)
   }
 }

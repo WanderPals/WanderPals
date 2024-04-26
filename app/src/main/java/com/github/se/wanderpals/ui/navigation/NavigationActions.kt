@@ -7,8 +7,6 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
-import com.github.se.wanderpals.model.data.Trip
-import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -168,10 +166,6 @@ data class NavigationActions(
     variables.suggestionId = suggestionId
   }
 
-  fun setVariablesTripData(trip: Trip) {
-    variables.currentTripData = trip
-  }
-
   fun serializeNavigationVariable(): String {
     return "currentTrip: ${variables.currentTrip}, " +
         "latitude: ${variables.currentGeoCords.latitude}, " +
@@ -206,5 +200,4 @@ class NavigationActionsVariables {
   var currentGeoCords: GeoCords = GeoCords(0.0, 0.0)
   var currentAddress: String = ""
   var suggestionId: String = ""
-  var currentTripData = Trip("", "", LocalDate.MIN, LocalDate.MAX, 0.0, "", "")
 }

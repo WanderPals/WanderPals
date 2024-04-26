@@ -1,7 +1,6 @@
 package com.github.se.wanderpals
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -56,7 +55,6 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var context: Context
 
-  @SuppressLint("SuspiciousIndentation")
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)

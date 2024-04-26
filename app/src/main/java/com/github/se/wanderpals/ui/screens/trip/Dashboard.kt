@@ -131,6 +131,7 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
+        modifier = Modifier.testTag("AdminButtonTest"),
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
