@@ -37,11 +37,11 @@ object SessionManager {
       name: String = currentUser?.name ?: "",
       email: String = currentUser?.email ?: "",
       role: Role = currentUser?.role ?: Role.VIEWER,
-      geoCoords: GeoCords = currentUser?.geoCords ?: GeoCords(0.0, 0.0),
+      geoCords: GeoCords = currentUser?.geoCords ?: GeoCords(0.0, 0.0),
       profilePhoto: String = currentUser?.profilePhoto ?: "",
       tripName: String = currentUser?.tripName ?: ""
   ) {
-    currentUser = SessionUser(userId, name, email, role, geoCoords, profilePhoto, tripName)
+    currentUser = SessionUser(userId, name, email, role, geoCords, profilePhoto, tripName)
   }
 
   /**
