@@ -10,7 +10,8 @@ data class SessionUser(
     var email: String = "",
     var role: Role = Role.VIEWER,
     var geoCords: GeoCords = GeoCords(0.0, 0.0),
-    var profilePhoto: String = ""
+    var profilePhoto: String = "",
+    var tripName: String = ""
 )
 
 /**
@@ -36,9 +37,10 @@ object SessionManager {
       email: String = currentUser?.email ?: "",
       role: Role = currentUser?.role ?: Role.VIEWER,
       geoCoords: GeoCords = currentUser?.geoCords ?: GeoCords(0.0, 0.0),
-      profilePhoto: String = currentUser?.profilePhoto ?: ""
+      profilePhoto: String = currentUser?.profilePhoto ?: "",
+      tripName: String = currentUser?.tripName ?: ""
   ) {
-    currentUser = SessionUser(userId, name, email, role, geoCoords, profilePhoto)
+    currentUser = SessionUser(userId, name, email, role, geoCoords, profilePhoto, tripName)
   }
 
   /**
@@ -88,6 +90,10 @@ object SessionManager {
   fun setPhoto(photoUrl: String) {
     currentUser?.profilePhoto = photoUrl
   }
+
+    fun setTripName(tripName: String){
+        currentUser?.tripName = tripName
+    }
 
   /** Clears the current user session, effectively logging out the user. */
   fun logout() {

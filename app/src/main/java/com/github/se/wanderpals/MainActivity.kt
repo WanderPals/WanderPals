@@ -225,8 +225,9 @@ class MainActivity : ComponentActivity() {
                               factory =
                                   AdminViewModel.AdminViewModelFactory(
                                       navigationActions.variables.currentTrip, tripsRepository),
-                              key = "AdminPage"),
-                      currentUser = SessionManager.getCurrentUser())
+                              key = "AdminPage")
+                  )
+
                 }
               }
         }
