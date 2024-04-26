@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.outlined.Clear
+import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
@@ -78,6 +80,8 @@ fun SuggestionDetail(
     var submitComment by remember { mutableStateOf(false) }
 
     var newCommentText by remember { mutableStateOf("") }
+    val editingComment by viewModel.editingComment.collectAsState()
+    val selectedComment by viewModel.selectedComment.collectAsState()
 
     Scaffold(
         topBar = {
@@ -244,7 +248,9 @@ fun SuggestionDetail(
                 OutlinedTextField(
                     value = newCommentText,
                     onValueChange = { newCommentText = it },
-                    placeholder = { Text("Add a comment") },
+                    label = {
+                      if (editingComment) Text("Modify your comment") else Text("Add a comment")
+                    },
                     modifier =
                         Modifier.fillMaxWidth()
                             .padding(vertical = 2.dp)
@@ -254,28 +260,16 @@ fun SuggestionDetail(
                     trailingIcon = {
                       IconButton(
                           onClick = {
-                            if (newCommentText.isNotBlank()) {
-                              viewModel.addComment(
-                                  suggestion,
-                                  Comment(
-                                      "",
-                                      "",
-                                      "tempUsername",
-                                      newCommentText,
-                                      LocalDate.now(),
-                                      LocalTime.now()))
+                            if (editingComment) {
+                              if (newCommentText.isNotBlank()) {
+                                viewModel.updateComment(
+                                    suggestion, selectedComment?.copy(text = newCommentText)!!)
+                              } else {
+                                viewModel.cancelEditComment()
+                              }
                               newCommentText = ""
                               submitComment = true // Set the trigger for side effects
-                            }
-                          },
-                          modifier = Modifier.testTag("SendButton")) {
-                            Icon(Icons.AutoMirrored.Outlined.Send, contentDescription = "Send")
-                          }
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                    keyboardActions =
-                        KeyboardActions(
-                            onDone = {
+                            } else {
                               if (newCommentText.isNotBlank()) {
                                 viewModel.addComment(
                                     suggestion,
@@ -288,6 +282,59 @@ fun SuggestionDetail(
                                         LocalTime.now()))
                                 newCommentText = ""
                                 submitComment = true // Set the trigger for side effects
+                              }
+                            }
+                          },
+                          modifier = Modifier.testTag("SendButton")) {
+                            if (!editingComment) {
+                              Icon(
+                                  Icons.AutoMirrored.Outlined.Send,
+                                  contentDescription =
+                                      "Send") // Change the icon to a send icon if adding a comment
+                            } else {
+                              if (newCommentText.isNotBlank()) {
+                                Icon(
+                                    Icons.Outlined.Create,
+                                    contentDescription =
+                                        "Edit") // Change the icon to an edit icon if editing a
+                                // comment
+                              } else {
+                                Icon(
+                                    Icons.Outlined.Clear,
+                                    contentDescription = "Cancel",
+                                ) // Change the icon to a clear icon if editing a comment and the
+                                // text is empty
+                              }
+                            }
+                          }
+                    },
+                    keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                    keyboardActions =
+                        KeyboardActions(
+                            onDone = {
+                              if (editingComment) {
+                                if (newCommentText.isNotBlank()) {
+                                  viewModel.updateComment(
+                                      suggestion, selectedComment?.copy(text = newCommentText)!!)
+                                } else {
+                                  viewModel.cancelEditComment()
+                                }
+                                newCommentText = ""
+                                submitComment = true // Set the trigger for side effects
+                              } else {
+                                if (newCommentText.isNotBlank()) {
+                                  viewModel.addComment(
+                                      suggestion,
+                                      Comment(
+                                          "",
+                                          "",
+                                          "tempUsername",
+                                          newCommentText,
+                                          LocalDate.now(),
+                                          LocalTime.now()))
+                                  newCommentText = ""
+                                  submitComment = true // Set the trigger for side effects
+                                }
                               }
                             }))
 
@@ -306,7 +353,13 @@ fun SuggestionDetail(
                 }
               }
           // Bottom sheet for comment options
-          CommentBottomSheet(viewModel = viewModel, suggestion = suggestion)
-        }
+          CommentBottomSheet(
+              viewModel = viewModel,
+              suggestion = suggestion,
+              onEdit = {
+                newCommentText = it
+                focusRequester.requestFocus()
+              }) // Pass the edit function to the bottom sheet
+    }
   }
 }

@@ -41,7 +41,11 @@ import com.github.se.wanderpals.service.SessionManager
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CommentBottomSheet(viewModel: SuggestionsViewModel, suggestion: Suggestion) {
+fun CommentBottomSheet(
+    viewModel: SuggestionsViewModel,
+    suggestion: Suggestion,
+    onEdit: (String) -> Unit = {}
+) {
 
   val bottomSheetVisible by viewModel.bottomSheetVisible.collectAsState()
   val selectedComment by viewModel.selectedComment.collectAsState()
@@ -80,7 +84,11 @@ fun CommentBottomSheet(viewModel: SuggestionsViewModel, suggestion: Suggestion) 
                 Box(
                     modifier =
                         Modifier.fillMaxWidth()
-                            .clickable(onClick = { viewModel.editCommentOption() })
+                            .clickable(
+                                onClick = {
+                                  viewModel.editCommentOption()
+                                  onEdit(selectedComment!!.text)
+                                })
                             .padding(16.dp)
                             .testTag("editCommentOption"),
                     contentAlignment = Alignment.CenterStart) {
