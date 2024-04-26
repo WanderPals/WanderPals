@@ -58,49 +58,46 @@ fun SuggestionBottomSheet(viewModel: SuggestionsViewModel) {
           Column(modifier = Modifier.navigationBarsPadding()) {
             // Only displays the option if the user is Admin or it is his comment
             if (SessionManager.canRemove(selectedSuggestion!!.userId)) {
-                Column {
-                    // Display the delete suggestion option
-                    Box(
-                        modifier =
-                        Modifier
-                            .fillMaxWidth()
+              Column {
+                // Display the delete suggestion option
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
                             .clickable(onClick = { viewModel.showDeleteDialog() })
                             .padding(16.dp)
                             .testTag("deleteSuggestionOption"),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = "Delete",
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                            Text("Delete suggestion", style = MaterialTheme.typography.bodyLarge)
-                        }
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Delete",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text("Delete suggestion", style = MaterialTheme.typography.bodyLarge)
+                      }
                     }
 
-                    // Display the edit suggestion option
-                    Box(
-                        modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable(onClick = { viewModel.transformToStop(selectedSuggestion!!) })
+                // Display the transform suggestion option
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(
+                                onClick = { viewModel.transformToStop(selectedSuggestion!!) })
                             .padding(16.dp)
-                            .testTag("editSuggestionOption"),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.Add,
-                                contentDescription = "Edit",
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                            Text("Transform suggestion to a stop", style = MaterialTheme.typography.bodyLarge)
-                        }
+                            .testTag("transformSuggestionOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Add,
+                            contentDescription = "TransformToStop",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text(
+                            "Transform suggestion to a stop",
+                            style = MaterialTheme.typography.bodyLarge)
+                      }
                     }
-                }
+              }
             }
           }
         }
