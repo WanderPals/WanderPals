@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -148,6 +149,16 @@ fun SuggestionItem(
                 Text(
                     text = likesCount,
                     modifier = Modifier.testTag("likeCountTextSuggestionFeedScreen_sugg1"))
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Icon(
+                    imageVector = Icons.Outlined.MoreVert,
+                    contentDescription = "Options",
+                    modifier =
+                        Modifier.clickable { viewModel.showSuggestionBottomSheet(suggestion) }
+                            .testTag("suggestionOptionIcon" + suggestion.suggestionId)
+                            .padding(8.dp))
               }
         }
       }

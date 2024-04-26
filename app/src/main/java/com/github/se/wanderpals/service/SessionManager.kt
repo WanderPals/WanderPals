@@ -2,6 +2,7 @@ package com.github.se.wanderpals.service
 
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
+import com.google.android.gms.maps.model.LatLng
 
 /** Represents a simplified user model within the session management context. */
 data class SessionUser(
@@ -29,18 +30,20 @@ object SessionManager {
    * @param name The user's full name, optional.
    * @param email The user's email address, optional.
    * @param role The user's role within the application, optional.
-   * @param geoCoords The user's geographic coordinates, optional.
+   * @param geoCords The user's geographic coordinates, optional.
    */
   fun setUserSession(
       userId: String = currentUser?.userId ?: "",
       name: String = currentUser?.name ?: "",
       email: String = currentUser?.email ?: "",
       role: Role = currentUser?.role ?: Role.VIEWER,
+
       geoCoords: GeoCords = currentUser?.geoCords ?: GeoCords(0.0, 0.0),
       profilePhoto: String = currentUser?.profilePhoto ?: "",
       tripName: String = currentUser?.tripName ?: ""
   ) {
     currentUser = SessionUser(userId, name, email, role, geoCoords, profilePhoto, tripName)
+
   }
 
   /**
@@ -76,6 +79,16 @@ object SessionManager {
    */
   fun setGeoCords(geoCords: GeoCords) {
     currentUser?.geoCords = geoCords
+  }
+
+  /** Get the position of the current user */
+  fun getPosition(): LatLng {
+    return LatLng(currentUser?.geoCords?.latitude ?: 0.0, currentUser?.geoCords?.longitude ?: 0.0)
+  }
+
+  /** Was the position set */
+  fun isPositionSet(): Boolean {
+    return currentUser?.geoCords?.latitude != 0.0 && currentUser?.geoCords?.longitude != 0.0
   }
 
   /**

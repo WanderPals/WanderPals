@@ -7,11 +7,14 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreAnnouncement
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
+import com.github.se.wanderpals.model.firestoreData.FirestoreTripNotification
 import com.github.se.wanderpals.model.firestoreData.FirestoreUser
+import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
@@ -42,6 +45,8 @@ class TripsRepository(
   // Reference to the 'Trips' collection in Firestore
   private lateinit var tripsCollection: CollectionReference
 
+  private val notificationsId = "Notifications"
+
   /**
    * (Currently used only for unit tests)
    *
@@ -55,6 +60,7 @@ class TripsRepository(
     firestore = FirebaseFirestore.getInstance(app)
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
+    NotificationsManager.initNotificationsManager(this)
   }
 
   /**
@@ -66,8 +72,95 @@ class TripsRepository(
     firestore = FirebaseFirestore.getInstance()
     usersCollection = firestore.collection(FirebaseCollections.USERS_TO_TRIPS_IDS.path)
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
+    NotificationsManager.initNotificationsManager(this)
   }
 
+  /**
+   * Retrieves a list of notifications for a specific trip from Firestore. This method queries the
+   * Firestore subcollection for notifications associated with a given trip document identified by
+   * its unique trip ID. The notifications are stored under a specific document, which is
+   * predefined.
+   *
+   * @param tripId The unique identifier of the trip for which notifications are to be fetched.
+   * @return A list of `TripNotification` objects, representing the notifications for the trip.
+   *   Returns an empty list if the notifications document is not found, if there are no
+   *   notifications in the document, or in case of an error during data retrieval. Errors during
+   *   the operation are logged and an empty list is returned.
+   */
+  suspend fun getNotificationList(tripId: String): List<TripNotification> =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_NOTIFICATIONS_SUBCOLLECTION.path)
+                  .document(notificationsId)
+                  .get()
+                  .await()
+          // Attempt to retrieve the list using the correct type information
+          val data = documentSnapshot.data
+          val notificationsList =
+              data?.get(notificationsId) as? List<Map<String, Any>> ?: emptyList()
+
+          // Convert the list of map to list of FirestoreTripNotification
+          notificationsList.map { map ->
+            FirestoreTripNotification(
+                    title = map["title"] as String,
+                    path = map["path"] as String,
+                    timestamp = map["timestamp"] as String)
+                .toTripNotification()
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "getNotificationList: Error getting the Notification List for Trip $tripId.",
+              e)
+          emptyList()
+        }
+      }
+
+  /**
+   * Sets or updates a list of notifications for a specific trip in Firestore. This method updates
+   * the Firestore subcollection for notifications by setting a list of notifications associated
+   * with a given trip document, identified by its unique trip ID. The notifications are stored
+   * under a specific document predefined by `notificationsId`.
+   *
+   * @param tripId The unique identifier of the trip for which notifications are to be set.
+   * @param notifications The list of `TripNotification` objects to be stored as notifications for
+   *   the trip.
+   * @return A Boolean value indicating the success or failure of the operation. Returns `true` if
+   *   the operation is successful, and `false` if there is an error during the setting operation.
+   *   Errors are logged.
+   */
+  suspend fun setNotificationList(tripId: String, notifications: List<TripNotification>): Boolean =
+      withContext(dispatcher) {
+        try {
+
+          val notificationDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_NOTIFICATIONS_SUBCOLLECTION.path)
+                  .document(notificationsId)
+
+          if (notifications.isEmpty()) {
+            notificationDocument.delete().await()
+            true
+          } else {
+            // Convert all TripNotifications to FirestoreTripNotifications
+            val firestoreNotificationList =
+                notifications.map { FirestoreTripNotification.fromTripNotification(it) }
+            // Set the notifications list in Firestore using the predefined notificationsId key
+            notificationDocument.set(mapOf(notificationsId to firestoreNotificationList)).await()
+            true
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "setNotificationList: Error setting the Notification List for Trip $tripId.",
+              e)
+          false
+        }
+      }
   /**
    * Retrieves a specific trip Announcement from a trip based on the Announcement's unique
    * identifier. This method queries the Firestore subcollection for trip Announcements within a
@@ -696,7 +789,7 @@ class TripsRepository(
   suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
-          val uniqueID = UUID.randomUUID().toString()
+          val uniqueID = UUID.randomUUID().toString() + "/" + stop.stopId
           val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
           val stopDocument =
               tripsCollection

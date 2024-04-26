@@ -1,5 +1,6 @@
-package com.github.se.wanderpals.ui.screens.announcement
+package com.github.se.wanderpals.ui.screens.trip.notifications
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -18,26 +19,19 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
-import com.github.se.wanderpals.model.viewmodel.CreateAnnouncementViewModel
+import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
+import com.github.se.wanderpals.service.SessionManager
 import java.time.LocalDateTime
 
 /**
- * CreateAnnouncement composable responsible for adding a Announcement.
+ * Composable function for creating a new trip announcement.
  *
- * @param tripId the id of the trip for which the Announcement is being created
- * @param viewModel a CreateAnnouncementViewModel that needs to be initialized beforehand
- * @param onSuccess code to execute after the successful creation of the Announcement
- * @param onFailure code to execute if the creation of the Announcement fails
- * @param onCancel code to execute if the user cancels the creation of the Announcement
+ * @param viewModel The [NotificationsViewModel] to handle the announcement creation.
+ * @param onNavigationBack Callback function to navigate back to the previous screen.
  */
+@SuppressLint("SuspiciousIndentation")
 @Composable
-fun CreateAnnouncement(
-    tripId: String,
-    viewModel: CreateAnnouncementViewModel,
-    onNavigationBack: () -> Unit =
-        {}, // is either onSuccess or onCancel, because the user is navigating back to the previous
-    // screen which is the same screen for both actions
-) {
+fun CreateAnnouncement(viewModel: NotificationsViewModel, onNavigationBack: () -> Unit) {
 
   val MAX_ANNOUNCEMENT_TITLE_LENGTH = 55 // limit the trip Announcement title to 55 characters
 
@@ -123,7 +117,7 @@ fun CreateAnnouncement(
               label = { Text("Trip Announcement Description*") },
               modifier =
                   Modifier.fillMaxWidth()
-                      .height(450.dp) // the height for a the description field area
+                      .height(400.dp) // the height for a the description field area
                       .testTag("inputAnnouncementDescription"),
               isError =
                   descriptionError.isNotEmpty() &&
@@ -156,15 +150,15 @@ fun CreateAnnouncement(
                   val announcement =
                       Announcement(
                           announcementId = "", // modified by database
-                          userId = "", // modified by database
+                          userId = "",
                           title = title,
-                          userName = "", // modified by database
+                          userName = SessionManager.getCurrentUser()!!.name,
                           description = description,
                           timestamp = LocalDateTime.now())
-                  // if successful, call onSuccess(), otherwise onFailure()
-                  if (viewModel.addAnnouncement(tripId, announcement)) {
-                    onNavigationBack()
-                  }
+
+                  viewModel.addAnnouncement(announcement)
+                  viewModel.setNotificationSelectionState(false)
+                  onNavigationBack()
                 }
               }) {
                 Text("Announce", fontSize = 24.sp)
