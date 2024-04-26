@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -229,9 +228,15 @@ class SuggestionBottomSheetTest {
     // Launch the composable with the view model
     composeTestRule.setContent { SuggestionBottomSheet(viewModel) }
 
+    viewModel.showSuggestionBottomSheet(mockSuggestion)
+
     composeTestRule
         .onNodeWithTag("transformSuggestionOption", useUnmergedTree = true)
         .assertIsDisplayed()
-        .assertTextContains("Transform suggestion to a stop")
+        .performClick()
+
+    composeTestRule
+        .onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true)
+        .assertDoesNotExist()
   }
 }
