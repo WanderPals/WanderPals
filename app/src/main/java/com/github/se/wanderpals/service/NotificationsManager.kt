@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 object NotificationsManager {
   private lateinit var tripsRepository: TripsRepository
-  private val MAX_NOTIF_SIZE = 20
+  private const val MAX_NOTIF_SIZE = 20
 
   fun initNotificationsManager(repository: TripsRepository) {
     tripsRepository = repository
@@ -18,10 +18,10 @@ object NotificationsManager {
       notifList: MutableList<TripNotification>,
       newNotif: TripNotification
   ): List<TripNotification> {
-    if (notifList.size > MAX_NOTIF_SIZE) {
-      notifList.removeFirst()
+    if (notifList.size >= MAX_NOTIF_SIZE) {
+      notifList.removeLast()
     }
-    notifList.add(newNotif)
+    notifList.add(0,newNotif)
     return notifList.toList()
   }
 
