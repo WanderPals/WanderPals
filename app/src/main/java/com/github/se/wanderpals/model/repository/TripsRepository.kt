@@ -80,6 +80,7 @@ class TripsRepository(
   }
 
 
+    
     suspend fun getUserEmail(username: String): String? = withContext(dispatcher){
         try {
             val documentSnapshot =
@@ -123,12 +124,36 @@ class TripsRepository(
         }
     }
 
+    suspend fun deleteEmailByUsername(username: String): Boolean = withContext(dispatcher) {
+        try {
+            val documentRef = usernameCollection.document(username)
+            val snapshot = documentRef.get().await()
+
+            // Check if the document exists. If it does not, log for information but return true anyway.
+            if (!snapshot.exists()) {
+                Log.i("TripsRepository", "deleteEmailByUsername: Username $username does not exist, no need to delete.")
+                return@withContext true
+            }
+            // Proceed with the deletion if the document exists.
+            documentRef.delete().await()
+            true
+        } catch (e: Exception) {
+            Log.e(
+                "TripsRepository",
+                "deleteEmailByUsername: Error deleting email for username $username.",
+                e
+            )
+            false
+        }
+    }
 
 
 
 
 
-  /**
+
+
+    /**
    * Retrieves a list of notifications for a specific trip from Firestore. This method queries the
    * Firestore subcollection for notifications associated with a given trip document identified by
    * its unique trip ID. The notifications are stored under a specific document, which is
