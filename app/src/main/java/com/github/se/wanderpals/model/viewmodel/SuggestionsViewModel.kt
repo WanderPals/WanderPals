@@ -199,7 +199,6 @@ open class SuggestionsViewModel(
     hideBottomSheet()
   }
 
-<<<<<<< HEAD
     // Call this function when the like status of a suggestion is toggled
     open fun checkAndAddSuggestionAsStop(suggestion: Suggestion) {
         viewModelScope.launch {
@@ -239,7 +238,6 @@ open class SuggestionsViewModel(
 
 
 
-=======
   open fun deleteSuggestion(suggestion: Suggestion) {
     viewModelScope.launch {
       val wasDeleteSuccessful =
@@ -262,7 +260,6 @@ open class SuggestionsViewModel(
       _selectedSuggestion.value = suggestion
     }
   }
->>>>>>> origin/main
 
   class SuggestionsViewModelFactory(
       private val tripsRepository: TripsRepository,
