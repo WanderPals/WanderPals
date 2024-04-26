@@ -57,6 +57,8 @@ open class SuggestionsViewModel(
     // This will hold the IDs of suggestions that have been added to stops
     private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
     val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
+    //fixme: when the suggestion is just created in the suggestion list, the suggestion should not be added immidiately to the stop list
+//maybe toggleLikeSuggestion related? fixme
 
   init {
     // Fetch all trips when the ViewModel is initialized
@@ -220,7 +222,7 @@ open class SuggestionsViewModel(
                 if (wasStopAdded) {
                     // Update the suggestion to indicate it has been added as a stop
                     val updatedSuggestion = suggestion.copy(
-            stop = updatedStop
+//            stop = updatedStop
                     )
                     _state.value = _state.value.map {
                         if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
@@ -229,8 +231,12 @@ open class SuggestionsViewModel(
                     // If the suggestion is added as a stop, update the state flow
                     _addedSuggestionsToStops.value = _addedSuggestionsToStops.value.plus(suggestion.suggestionId)
 
+
+//                    suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
+//                    suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
+
                     // Refresh suggestions list to include the new stop
-                    loadSuggestion(tripId)
+//                    loadSuggestion(tripId)
                 }
             }
         }
