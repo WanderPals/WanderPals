@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -101,7 +102,9 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                 .padding(top = 16.dp)
                 .testTag("buttonTrip" + trip.tripId),
         shape = RoundedCornerShape(size = 15.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEAEEFD))) {
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer)) {
           // Column containing trip information
           Column(modifier = Modifier.width(320.dp)) {
             // Trip title
@@ -113,7 +116,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                         fontSize = 16.sp,
                         lineHeight = 24.sp,
                         fontWeight = FontWeight(500),
-                        color = Color(0xFF000000),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         letterSpacing = 0.5.sp,
                     ))
             Spacer(modifier = Modifier.height(3.dp))
@@ -132,7 +135,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                               fontSize = 12.sp,
                               lineHeight = 24.sp,
                               fontWeight = FontWeight(500),
-                              color = Color(0xFF000000),
+                              color = MaterialTheme.colorScheme.onPrimaryContainer,
                               letterSpacing = 0.5.sp,
                           ))
                   // Share trip code button
@@ -145,7 +148,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = null,
-                            tint = Icons.Default.Share.tintColor,
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier =
                                 Modifier.background(
                                     if (isSelected.value) Color.LightGray else Color.Transparent))
@@ -163,7 +166,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                         fontSize = 12.sp,
                         lineHeight = 24.sp,
                         fontWeight = FontWeight(500),
-                        color = Color(0xFF000000),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         letterSpacing = 0.5.sp,
                     ))
           }
