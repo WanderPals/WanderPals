@@ -15,11 +15,11 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +49,10 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
                   .testTag("joinTripButton"),
-          colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+          colors =
+              ButtonDefaults.buttonColors(
+                  containerColor = MaterialTheme.colorScheme.primaryContainer,
+                  contentColor = MaterialTheme.colorScheme.onPrimaryContainer)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
@@ -57,7 +60,6 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
               Icon(
                   imageVector = Icons.Default.Share,
                   contentDescription = Icons.Default.Share.name,
-                  tint = Color(0xFF000000),
                   modifier = Modifier.size(20.dp))
               Text(
                   text = "Join a trip",
@@ -66,7 +68,6 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                           fontSize = 18.sp,
                           lineHeight = 18.sp,
                           fontWeight = FontWeight(500),
-                          color = Color(0xFF000000),
                           textAlign = TextAlign.Center,
                           letterSpacing = 0.5.sp,
                       ))
@@ -84,7 +85,10 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
                   .testTag("createTripButton"),
-          colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+          colors =
+              ButtonDefaults.buttonColors(
+                  containerColor = MaterialTheme.colorScheme.primaryContainer,
+                  contentColor = MaterialTheme.colorScheme.onPrimaryContainer)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
@@ -92,7 +96,6 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
               Icon(
                   imageVector = Icons.Default.Add,
                   contentDescription = Icons.Default.Add.name,
-                  tint = Color(0xFF000000),
                   modifier = Modifier.size(20.dp))
               Text(
                   text = "Create a new trip",
@@ -101,7 +104,6 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                           fontSize = 18.sp,
                           lineHeight = 20.sp,
                           fontWeight = FontWeight(500),
-                          color = Color(0xFF000000),
                           textAlign = TextAlign.Center,
                           letterSpacing = 0.5.sp,
                       ))

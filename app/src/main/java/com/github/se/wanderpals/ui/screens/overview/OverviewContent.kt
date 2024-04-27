@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,7 +63,7 @@ fun OverviewContent(
                   fontSize = 18.sp,
                   lineHeight = 20.sp,
                   fontWeight = FontWeight(500),
-                  color = Color(0xFF000000),
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
                   textAlign = TextAlign.Center,
                   letterSpacing = 0.5.sp,
               ),
@@ -84,7 +84,7 @@ fun OverviewContent(
                     fontSize = 16.sp,
                     lineHeight = 24.sp,
                     fontWeight = FontWeight(500),
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 0.5.sp,
                 ))
       } else {
@@ -97,7 +97,7 @@ fun OverviewContent(
                     fontSize = 20.sp,
                     lineHeight = 24.sp,
                     fontWeight = FontWeight(500),
-                    color = Color(0xFF5A7BF0),
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     letterSpacing = 0.5.sp,
                 ),
