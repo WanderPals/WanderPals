@@ -252,6 +252,14 @@ open class SuggestionsViewModel(
     _editingComment.value = false
   }
 
+  open fun transformToStop(suggestion: Suggestion) {
+    viewModelScope.launch {
+      suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
+      suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
+    }
+    hideBottomSheet()
+  }
+
   class SuggestionsViewModelFactory(
       private val tripsRepository: TripsRepository,
       private val tripId: String

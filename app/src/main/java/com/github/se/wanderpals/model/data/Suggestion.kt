@@ -27,13 +27,13 @@ import java.time.LocalTime
  *   acceptance among the community.
  */
 data class Suggestion(
-    val suggestionId: String,
-    val userId: String,
-    val userName: String,
-    val text: String,
-    val createdAt: LocalDate,
-    val createdAtTime: LocalTime, // Time of creation
-    val stop: Stop, // Embed the Stop object directly
+    val suggestionId: String = "",
+    val userId: String = "",
+    val userName: String = "",
+    val text: String = "",
+    val createdAt: LocalDate = LocalDate.of(0, 1, 1),
+    val createdAtTime: LocalTime = LocalTime.of(0, 0), // Time of creation
+    val stop: Stop = Stop(), // Embed the Stop object directly
     val comments: List<Comment> = emptyList(),
     val userLikes: List<String> = emptyList()
 )

@@ -102,7 +102,7 @@ fun SuggestionFeedContent(
 
     // When a suggestion is selected, display the detail screen
     selectedSuggestion?.let { suggestion ->
-      navigationActions.setVariablesSuggestion(suggestion.suggestionId)
+      navigationActions.setVariablesSuggestionId(suggestion.suggestionId)
       navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
     }
 

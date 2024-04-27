@@ -24,7 +24,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
-import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
@@ -109,8 +108,8 @@ fun Trip(
                           tripId,
                           suggestionsViewModel,
                           onSuggestionClick = {
-                            oldNavActions.setVariablesLocation(GeoCords(0.0, 0.0), "")
-                            oldNavActions.setVariablesSuggestion("")
+                            oldNavActions.setVariablesSuggestion(
+                                com.github.se.wanderpals.model.data.Suggestion())
                             oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                           })
                     }
