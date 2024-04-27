@@ -17,7 +17,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
@@ -41,7 +40,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.coroutines.Dispatchers
 
 const val EMPTY_CODE = ""
 
@@ -53,19 +51,13 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var mapManager: MapManager
 
-  //private lateinit var tripsRepository: TripsRepository
-
   private lateinit var context: Context
 
-
   private val viewModel: MainViewModel by viewModels {
-      MainViewModel.MainViewModelFactory(
-          application
-      )
+    MainViewModel.MainViewModelFactory(application)
   }
 
-
-    private val launcher =
+  private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         task
@@ -79,7 +71,7 @@ class MainActivity : ComponentActivity() {
                       Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
                       val uid = it.result?.user?.uid ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
-                        viewModel.initRepository(uid)
+                      viewModel.initRepository(uid)
                       Log.d("MainActivity", "Firebase Initialized")
                       Log.d("SignIn", "Login result " + account.displayName)
 
@@ -173,8 +165,6 @@ class MainActivity : ComponentActivity() {
                             .signInAnonymously()
                             .addOnSuccessListener { result ->
                               val uid = result.user?.uid ?: ""
-                              //tripsRepository = TripsRepository(uid, Dispatchers.IO)
-                              //tripsRepository.initFirestore()
                               viewModel.initRepository(uid)
                               SessionManager.setUserSession(
                                   userId = uid, name = "Anonymous User", email = "")
@@ -187,7 +177,7 @@ class MainActivity : ComponentActivity() {
                       onClick3 = { email, password ->
                         val onSucess = { result: AuthResult ->
                           val uid = result.user?.uid ?: ""
-                            viewModel.initRepository(uid)
+                          viewModel.initRepository(uid)
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.displayName ?: "",
@@ -210,7 +200,9 @@ class MainActivity : ComponentActivity() {
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
-                          factory = OverviewViewModel.OverviewViewModelFactory(viewModel.getTripsRepository()),
+                          factory =
+                              OverviewViewModel.OverviewViewModelFactory(
+                                  viewModel.getTripsRepository()),
                           key = "Overview")
                   Overview(
                       overviewViewModel = overviewViewModel, navigationActions = navigationActions)
@@ -224,7 +216,9 @@ class MainActivity : ComponentActivity() {
                 composable(Route.CREATE_TRIP) {
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
-                          factory = OverviewViewModel.OverviewViewModelFactory(viewModel.getTripsRepository()),
+                          factory =
+                              OverviewViewModel.OverviewViewModelFactory(
+                                  viewModel.getTripsRepository()),
                           key = "Overview")
                   CreateTrip(overviewViewModel, navigationActions)
                 }
@@ -254,7 +248,8 @@ class MainActivity : ComponentActivity() {
                           viewModel(
                               factory =
                                   AdminViewModel.AdminViewModelFactory(
-                                      navigationActions.variables.currentTrip, viewModel.getTripsRepository()),
+                                      navigationActions.variables.currentTrip,
+                                      viewModel.getTripsRepository()),
                               key = "AdminPage"))
                 }
               }
