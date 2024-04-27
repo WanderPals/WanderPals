@@ -19,7 +19,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -135,24 +134,21 @@ fun SuggestionFeedContent(
       // (Note: can only have one LazyColumn in a composable function)
       LazyColumn {
         itemsIndexed(displayList) { index, suggestion ->
+            // Only render items that have not been added to stops
             val addedToStops = suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
-
             val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-
-            SuggestionItem(
-              suggestion = suggestion,
-              onClick = {
-//                selectedSuggestion = suggestion
-//              }, // This lambda is passed to the SuggestionItem composable
-              if (!isSuggestionAddedToStop) {
-                  selectedSuggestion = suggestion
-              }
-        }, // Click action disabled if the suggestion is added to stops
-              modifier = Modifier
-                  .alpha(if (isSuggestionAddedToStop) 0.5f else 1f) // Semi-transparent if added to stops
-              .testTag("suggestion${index + 1}"),
-              tripId = tripId,
-              viewModel = suggestionsViewModel)
+            if (!isSuggestionAddedToStop) {
+                SuggestionItem(
+                    suggestion = suggestion,
+                    onClick = {
+                        selectedSuggestion = suggestion
+                    }, // This lambda is passed to the SuggestionItem composable
+                    modifier = Modifier
+                        .testTag("suggestion${index + 1}"),
+                    tripId = tripId,
+                    viewModel = suggestionsViewModel
+                )
+            }
         }
       }
     }

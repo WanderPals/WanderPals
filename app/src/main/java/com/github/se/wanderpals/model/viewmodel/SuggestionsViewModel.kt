@@ -1,8 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -16,7 +14,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
-import kotlin.math.floor
 
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,
@@ -57,8 +54,6 @@ open class SuggestionsViewModel(
     // This will hold the IDs of suggestions that have been added to stops
     private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
     val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
-    //fixme: when the suggestion is just created in the suggestion list, the suggestion should not be added immidiately to the stop list
-//maybe toggleLikeSuggestion related? fixme
 
   init {
     // Fetch all trips when the ViewModel is initialized
@@ -78,12 +73,20 @@ open class SuggestionsViewModel(
     viewModelScope.launch {
       _isLoading.value = true
       // Fetch all trips from the repository
-      _state.value = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
-      Log.d("Fetched Suggestions", _state.value.toString())
+        val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
+        _state.value = suggestions
+        Log.d("Fetched Suggestions", _state.value.toString())
 
       _likedSuggestions.value =
           _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
-      _isLoading.value = false
+
+        // After loading, check if any suggestions have already reached the majority.
+        // If so, add them as stops and remove them from the suggestions list. This is done automatically.
+        suggestions.forEach { suggestion ->
+            checkAndAddSuggestionAsStop(suggestion)
+        }
+
+        _isLoading.value = false
     }
   }
 
@@ -208,35 +211,21 @@ open class SuggestionsViewModel(
             val threshold = ceil(allUsers.size / 2.0).toInt()
             val likesCount = suggestion.userLikes.size
 
-            val condition = if (allUsers.size % 2 == 1) {
-                likesCount >= threshold
+            val isMajority = if (allUsers.size % 2 == 1) {
+                likesCount >= threshold // If the number of users is odd, the threshold of likes is the middle user to ensure majority
             } else {
-                likesCount > threshold
+                likesCount > threshold +1 // If the number of users is even, the threshold of likes is the middle two users (one extra) to ensure majority
             }
 
-            if (condition) {
-                val updatedStop = suggestion.stop.copy(
-                    stopId = suggestion.stop.stopId,
-                )
-                val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, updatedStop) ?: false
+            if (isMajority && !_addedSuggestionsToStops.value.contains(suggestion.suggestionId)) {
+                val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, suggestion.stop) ?: false
                 if (wasStopAdded) {
-                    // Update the suggestion to indicate it has been added as a stop
-                    val updatedSuggestion = suggestion.copy(
-//            stop = updatedStop
-                    )
-                    _state.value = _state.value.map {
-                        if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
-                    }
-
-                    // If the suggestion is added as a stop, update the state flow
+                    // Remove the suggestion from the state
+                    _state.value = _state.value.filterNot { it.suggestionId == suggestion.suggestionId }
+                    // Add the suggestion ID to the list of added stops
                     _addedSuggestionsToStops.value = _addedSuggestionsToStops.value.plus(suggestion.suggestionId)
-
-
-//                    suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
-//                    suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
-
-                    // Refresh suggestions list to include the new stop
-//                    loadSuggestion(tripId)
+                    // Remove the suggestion from the trip's suggestion list
+                 suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
                 }
             }
         }
