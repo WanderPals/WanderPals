@@ -63,7 +63,7 @@ object NotificationsManager {
   suspend fun addCreateSuggestionNotification(tripId: String, suggestionId: String) {
     val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
     val navActions = navigationActions.copy()
-    navActions.setVariablesSuggestion(suggestionId)
+    navActions.setVariablesSuggestionId(suggestionId)
     val newNotif =
         TripNotification(
             "${SessionManager.getCurrentUser()!!.name} created a new suggestion ",
