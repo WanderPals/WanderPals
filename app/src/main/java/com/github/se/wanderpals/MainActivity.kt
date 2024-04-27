@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -16,9 +17,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
+import com.github.se.wanderpals.model.viewmodel.MainViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.SessionManager
@@ -39,7 +40,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.coroutines.Dispatchers
 
 const val EMPTY_CODE = ""
 
@@ -51,9 +51,11 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var mapManager: MapManager
 
-  private lateinit var tripsRepository: TripsRepository
-
   private lateinit var context: Context
+
+  private val viewModel: MainViewModel by viewModels {
+    MainViewModel.MainViewModelFactory(application)
+  }
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -69,8 +71,7 @@ class MainActivity : ComponentActivity() {
                       Log.d("MainActivity", "SignIn: Firebase Login Completed Successfully")
                       val uid = it.result?.user?.uid ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
-                      tripsRepository = TripsRepository(uid, Dispatchers.IO)
-                      tripsRepository.initFirestore()
+                      viewModel.initRepository(uid)
                       Log.d("MainActivity", "Firebase Initialized")
                       Log.d("SignIn", "Login result " + account.displayName)
 
@@ -164,8 +165,7 @@ class MainActivity : ComponentActivity() {
                             .signInAnonymously()
                             .addOnSuccessListener { result ->
                               val uid = result.user?.uid ?: ""
-                              tripsRepository = TripsRepository(uid, Dispatchers.IO)
-                              tripsRepository.initFirestore()
+                              viewModel.initRepository(uid)
                               SessionManager.setUserSession(
                                   userId = uid, name = "Anonymous User", email = "")
                               navigationActions.navigateTo(Route.OVERVIEW)
@@ -177,8 +177,7 @@ class MainActivity : ComponentActivity() {
                       onClick3 = { email, password ->
                         val onSucess = { result: AuthResult ->
                           val uid = result.user?.uid ?: ""
-                          tripsRepository = TripsRepository(uid, Dispatchers.IO)
-                          tripsRepository.initFirestore()
+                          viewModel.initRepository(uid)
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.displayName ?: "",
@@ -201,7 +200,9 @@ class MainActivity : ComponentActivity() {
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
-                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          factory =
+                              OverviewViewModel.OverviewViewModelFactory(
+                                  viewModel.getTripsRepository()),
                           key = "Overview")
                   Overview(
                       overviewViewModel = overviewViewModel, navigationActions = navigationActions)
@@ -210,34 +211,34 @@ class MainActivity : ComponentActivity() {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
                   val tripId = navigationActions.variables.currentTrip
                   navigationActions.tripNavigation.setNavController(rememberNavController())
-                  Trip(navigationActions, tripId, tripsRepository, mapManager)
+                  Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
-                          factory = OverviewViewModel.OverviewViewModelFactory(tripsRepository),
+                          factory =
+                              OverviewViewModel.OverviewViewModelFactory(
+                                  viewModel.getTripsRepository()),
                           key = "Overview")
                   CreateTrip(overviewViewModel, navigationActions)
                 }
 
                 composable(Route.CREATE_SUGGESTION) {
-                  val loc = navigationActions.variables.currentAddress
-                  val cord = navigationActions.variables.currentGeoCords
-                  Log.d("CREATE_SUGGESTION", "Location: $loc")
-                  Log.d("CREATE_SUGGESTION", "GeoCords: $cord")
+                  val suggestion = navigationActions.variables.currentSuggestion
+                  Log.d("CREATE_SUGGESTION", "Location: ${suggestion.stop.address}")
+                  Log.d("CREATE_SUGGESTION", "GeoCords: ${suggestion.stop.geoCords}")
                   val onAction: () -> Unit = { navigationActions.goBack() }
 
                   val createSuggestionViewModel: CreateSuggestionViewModel =
                       viewModel(
                           factory =
                               CreateSuggestionViewModel.CreateSuggestionViewModelFactory(
-                                  tripsRepository),
+                                  viewModel.getTripsRepository()),
                           key = "CreateSuggestion")
                   CreateSuggestion(
                       tripId = navigationActions.variables.currentTrip,
                       viewModel = createSuggestionViewModel,
-                      addr = loc,
-                      geoCords = cord,
+                      suggestion = suggestion,
                       onSuccess = onAction,
                       onCancel = onAction)
                 }
@@ -247,7 +248,8 @@ class MainActivity : ComponentActivity() {
                           viewModel(
                               factory =
                                   AdminViewModel.AdminViewModelFactory(
-                                      navigationActions.variables.currentTrip, tripsRepository),
+                                      navigationActions.variables.currentTrip,
+                                      viewModel.getTripsRepository()),
                               key = "AdminPage"))
                 }
               }

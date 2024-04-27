@@ -24,15 +24,15 @@ import java.time.LocalTime
  * @param imageUrl URL for an image of the stop, optional.
  */
 data class Stop(
-    val stopId: String,
-    val title: String,
-    val address: String,
-    val date: LocalDate,
-    val startTime: LocalTime,
-    val duration: Int,
-    val budget: Double,
-    val description: String,
-    val geoCords: GeoCords,
+    val stopId: String = "",
+    val title: String = "",
+    val address: String = "",
+    val date: LocalDate = LocalDate.of(0, 1, 1),
+    val startTime: LocalTime = LocalTime.of(0, 0),
+    val duration: Int = -1,
+    val budget: Double = 0.0,
+    val description: String = "",
+    val geoCords: GeoCords = GeoCords(),
     val website: String = "",
     val imageUrl: String = "",
 )
