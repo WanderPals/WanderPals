@@ -173,6 +173,8 @@ data class NavigationActions(
    * @param suggestion The suggestion.
    */
   fun setVariablesSuggestion(suggestion: Suggestion) {
+    variables.suggestionId = suggestion.suggestionId
+    variables.currentGeoCords = suggestion.stop.geoCords
     variables.currentSuggestion = suggestion
   }
 

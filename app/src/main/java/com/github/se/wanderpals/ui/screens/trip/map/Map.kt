@@ -291,6 +291,7 @@ fun Map(
                           Suggestion(
                               stop =
                                   Stop(
+                                      stopId = placeData.placeId,
                                       geoCords =
                                           GeoCords(
                                               markerState.position.latitude,

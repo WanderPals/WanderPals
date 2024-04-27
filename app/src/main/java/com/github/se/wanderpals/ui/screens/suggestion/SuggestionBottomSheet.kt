@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AlertDialog
@@ -27,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Suggestion
@@ -37,7 +39,6 @@ import com.github.se.wanderpals.service.SessionManager
  * Composable function to display the bottom sheet with options for a suggestion.
  *
  * @param viewModel The view model to handle the interactions with the suggestions.
- * @param suggestion The suggestion to which the comment belongs.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,6 +64,7 @@ fun SuggestionBottomSheet(
             // Only displays the option if the user is Admin or it is his comment
             if (SessionManager.canRemove(selectedSuggestion!!.userId)) {
               Column {
+                // Display the delete suggestion option
                 Box(
                     modifier =
                         Modifier.fillMaxWidth()
@@ -100,6 +102,27 @@ fun SuggestionBottomSheet(
                         Text("Edit suggestion", style = MaterialTheme.typography.bodyLarge)
                       }
                     }
+
+                // Display the transform suggestion option
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(
+                                onClick = { viewModel.transformToStop(selectedSuggestion!!) })
+                            .padding(16.dp)
+                            .testTag("transformSuggestionOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Add,
+                            contentDescription = "TransformToStop",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text(
+                            "Transform suggestion to a stop",
+                            style = MaterialTheme.typography.bodyLarge)
+                      }
+                    }
               }
             }
           }
@@ -114,7 +137,7 @@ fun SuggestionBottomSheet(
           TextButton(
               onClick = { viewModel.confirmDeleteSuggestion(selectedSuggestion!!) },
               modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
-                Text("Confirm")
+                Text("Confirm", color = Color.Red)
               }
         },
         dismissButton = {
