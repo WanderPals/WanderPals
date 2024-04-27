@@ -222,6 +222,25 @@ class SuggestionBottomSheetTest {
   }
 
   @Test
+  fun testSuggestionBottomSheetEdit() {
+    val viewModel = SuggestionsViewModelSheetTest(listOf(mockSuggestion))
+
+    // Launch the composable with the view model
+    composeTestRule.setContent { SuggestionBottomSheet(viewModel) }
+
+    viewModel.showSuggestionBottomSheet(mockSuggestion)
+
+    composeTestRule
+        .onNodeWithTag("editSuggestionOption", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .performClick()
+
+    composeTestRule
+        .onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true)
+        .assertDoesNotExist()
+  }
+
+  @Test
   fun testSuggestionBottomSheetTransform() {
     val viewModel = SuggestionsViewModelSheetTest(listOf(mockSuggestion))
 

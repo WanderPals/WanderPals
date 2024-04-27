@@ -143,6 +143,11 @@ fun SuggestionFeedContent(
       }
     }
 
-    SuggestionBottomSheet(viewModel = suggestionsViewModel)
+    SuggestionBottomSheet(
+        viewModel = suggestionsViewModel,
+        onEdit = {
+          navigationActions.setVariablesSuggestion(it)
+          navigationActions.navigateTo(Route.CREATE_SUGGESTION)
+        })
   }
 }

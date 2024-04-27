@@ -22,6 +22,14 @@ open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewMod
     return a
   }
 
+  open fun updateSuggestion(tripId: String, suggestion: Suggestion): Boolean {
+    var success: Boolean = true
+    viewModelScope.launch {
+      _tripsRepository.updateSuggestionInTrip(tripId, suggestion).also { success = it }
+    }
+    return success
+  }
+
   class CreateSuggestionViewModelFactory(private val tripsRepository: TripsRepository) :
       ViewModelProvider.Factory {
 

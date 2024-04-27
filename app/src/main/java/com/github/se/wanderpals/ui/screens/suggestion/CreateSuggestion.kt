@@ -313,7 +313,7 @@ fun CreateSuggestion(
 
                   // Calculate duration in minutes
                   val duration = Duration.between(startDateTime, endDateTime)
-                  val suggestion =
+                  val newSuggestion =
                       Suggestion(
                           suggestionId = "", // modified by database
                           userId = "", // modified by database
@@ -335,14 +335,28 @@ fun CreateSuggestion(
                                   website = _website,
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
-                  if (viewModel.addSuggestion(tripId, suggestion)) {
-                    onSuccess()
+                  if (suggestion.suggestionId.isNotEmpty()) {
+                    if (viewModel.updateSuggestion(
+                        tripId,
+                        suggestion.copy(
+                            stop = newSuggestion.stop.copy(stopId = suggestion.stop.stopId)))) {
+                      onSuccess()
+                    } else {
+                      onFailure()
+                    }
                   } else {
-                    onFailure()
+                    if (viewModel.addSuggestion(tripId, newSuggestion)) {
+                      onSuccess()
+                    } else {
+                      onFailure()
+                    }
                   }
                 }
               }) {
-                Text("Create Suggestion", fontSize = 24.sp)
+                Text(
+                    if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
+                    else "Edit Suggestion",
+                    fontSize = 24.sp)
               }
         }
   }
