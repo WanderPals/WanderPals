@@ -44,7 +44,7 @@ object NotificationsManager {
    * @param tripId The ID of the trip for which the notification is added.
    */
   suspend fun addJoinTripNotification(tripId: String) {
-    var notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+    val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
     val newNotif =
         TripNotification(
             "${SessionManager.getCurrentUser()!!.name} joined the trip ",
@@ -61,7 +61,7 @@ object NotificationsManager {
    * @param suggestionId The ID of the newly created suggestion.
    */
   suspend fun addCreateSuggestionNotification(tripId: String, suggestionId: String) {
-    var notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+    val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
     val navActions = navigationActions.copy()
     navActions.setVariablesSuggestion(suggestionId)
     val newNotif =
