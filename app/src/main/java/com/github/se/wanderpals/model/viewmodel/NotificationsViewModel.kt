@@ -29,7 +29,7 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   open val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
 
   private val _isLoading = MutableStateFlow(true)
-  val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+  open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
   private val _isNotifSelected = MutableStateFlow(true)
   val isNotifSelected: StateFlow<Boolean> = _isNotifSelected.asStateFlow()
