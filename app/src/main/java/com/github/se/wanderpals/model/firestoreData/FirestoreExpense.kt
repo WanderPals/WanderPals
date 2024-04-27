@@ -27,46 +27,46 @@ data class FirestoreExpense(
     val userName: String = "",
     val participantsIds: List<String> = emptyList(),
     val names: List<String> = emptyList(),
-    val localDate: String = ""  // LocalDate converted to String for Firestore compatibility
+    val localDate: String = "" // LocalDate converted to String for Firestore compatibility
 ) {
-    companion object {
-        /**
-         * Converts an Expense model to a FirestoreExpense DTO.
-         *
-         * @param expense The Expense object to convert.
-         * @return A Firestore-compatible FirestoreExpense DTO.
-         */
-        fun fromExpense(expense: Expense): FirestoreExpense {
-            return FirestoreExpense(
-                expenseId = expense.expenseId,
-                title = expense.title,
-                amount = expense.amount,
-                category = expense.category.name, // Convert enum to String
-                userId = expense.userId,
-                userName = expense.userName,
-                participantsIds = expense.participantsIds,
-                names = expense.names,
-                localDate = expense.localDate.toString() // Convert LocalDate to String
-            )
-        }
-    }
-
+  companion object {
     /**
-     * Converts this FirestoreExpense DTO back to an Expense model.
+     * Converts an Expense model to a FirestoreExpense DTO.
      *
-     * @return An Expense object with the date and category converted back from String.
+     * @param expense The Expense object to convert.
+     * @return A Firestore-compatible FirestoreExpense DTO.
      */
-    fun toExpense(): Expense {
-        return Expense(
-            expenseId = this.expenseId,
-            title = this.title,
-            amount = this.amount,
-            category = Category.valueOf(this.category), // Convert String back to enum
-            userId = this.userId,
-            userName = this.userName,
-            participantsIds = this.participantsIds,
-            names = this.names,
-            localDate = LocalDate.parse(this.localDate) // Convert String back to LocalDate
-        )
+    fun fromExpense(expense: Expense): FirestoreExpense {
+      return FirestoreExpense(
+          expenseId = expense.expenseId,
+          title = expense.title,
+          amount = expense.amount,
+          category = expense.category.name, // Convert enum to String
+          userId = expense.userId,
+          userName = expense.userName,
+          participantsIds = expense.participantsIds,
+          names = expense.names,
+          localDate = expense.localDate.toString() // Convert LocalDate to String
+          )
     }
+  }
+
+  /**
+   * Converts this FirestoreExpense DTO back to an Expense model.
+   *
+   * @return An Expense object with the date and category converted back from String.
+   */
+  fun toExpense(): Expense {
+    return Expense(
+        expenseId = this.expenseId,
+        title = this.title,
+        amount = this.amount,
+        category = Category.valueOf(this.category), // Convert String back to enum
+        userId = this.userId,
+        userName = this.userName,
+        participantsIds = this.participantsIds,
+        names = this.names,
+        localDate = LocalDate.parse(this.localDate) // Convert String back to LocalDate
+        )
+  }
 }
