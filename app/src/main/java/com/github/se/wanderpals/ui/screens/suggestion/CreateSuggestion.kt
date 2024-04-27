@@ -335,7 +335,7 @@ fun CreateSuggestion(
                                   website = _website,
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
-                  if (suggestion.suggestionId != "") {
+                  if (suggestion.suggestionId.isNotEmpty()) {
                     if (viewModel.updateSuggestion(
                         tripId,
                         suggestion.copy(
@@ -354,7 +354,8 @@ fun CreateSuggestion(
                 }
               }) {
                 Text(
-                    if (suggestion.suggestionId == "") "Create Suggestion" else "Edit Suggestion",
+                    if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
+                    else "Edit Suggestion",
                     fontSize = 24.sp)
               }
         }
