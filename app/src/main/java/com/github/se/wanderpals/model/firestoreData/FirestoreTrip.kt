@@ -31,7 +31,8 @@ data class FirestoreTrip(
     val stops: List<String> = emptyList(),
     val users: List<String> = emptyList(),
     val suggestions: List<String> = emptyList(),
-    val announcements: List<String> = emptyList()
+    val announcements: List<String> = emptyList(),
+    val expenses: List<String> = emptyList()
 ) {
   companion object {
     /**
@@ -53,7 +54,8 @@ data class FirestoreTrip(
           stops = trip.stops,
           users = trip.users,
           suggestions = trip.suggestions,
-          announcements = trip.announcements)
+          announcements = trip.announcements,
+          expenses = trip.expenses)
     }
   }
 
@@ -75,6 +77,7 @@ data class FirestoreTrip(
         stops = stops,
         users = users,
         suggestions = suggestions,
-        announcements = announcements)
+        announcements = announcements,
+        expenses = expenses)
   }
 }

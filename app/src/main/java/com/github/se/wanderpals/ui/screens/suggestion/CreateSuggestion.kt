@@ -30,11 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
-import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
 import java.time.Duration
@@ -63,25 +61,41 @@ import java.time.format.DateTimeFormatter
 fun CreateSuggestion(
     tripId: String,
     viewModel: CreateSuggestionViewModel,
-    desc: String = "",
-    addr: String = "",
-    website: String = "",
-    title: String = "",
-    geoCords: GeoCords = GeoCords(0.0, 0.0),
-    budget: Double = Double.NaN,
+    suggestion: Suggestion = Suggestion(),
     onSuccess: () -> Unit = {},
     onFailure: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
-  var description by remember { mutableStateOf(desc) }
-  var address by remember { mutableStateOf(addr) }
-  var _website by remember { mutableStateOf(website) }
-  var suggestionText by remember { mutableStateOf(title) }
-  var _budget by remember { mutableStateOf(if (budget.isNaN()) "" else budget.toString()) }
-  var startDate by remember { mutableStateOf("") }
-  var startTime by remember { mutableStateOf("00:00") }
-  var endTime by remember { mutableStateOf("00:00") }
-  var endDate by remember { mutableStateOf("") }
+  var description by remember { mutableStateOf(suggestion.stop.description) }
+  var address by remember { mutableStateOf(suggestion.stop.address) }
+  var _website by remember { mutableStateOf(suggestion.stop.website) }
+  var suggestionText by remember { mutableStateOf(suggestion.stop.title) }
+  var _budget by remember {
+    mutableStateOf(if (suggestion.stop.budget.isNaN()) "" else suggestion.stop.budget.toString())
+  }
+  var startDate by remember {
+    mutableStateOf(
+        if (suggestion.stop.date == LocalDate.of(0, 1, 1)) ""
+        else suggestion.stop.date.format(DateTimeFormatter.ISO_LOCAL_DATE))
+  }
+  var startTime by remember {
+    mutableStateOf(
+        if (suggestion.stop.startTime == LocalTime.of(0, 0)) "00:00"
+        else suggestion.stop.startTime.format(DateTimeFormatter.ISO_LOCAL_TIME).substring(0, 5))
+  }
+  val end =
+      LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+          .plusMinutes(suggestion.stop.duration.toLong())
+  var endTime by remember {
+    mutableStateOf(
+        if (suggestion.stop.duration == -1) "00:00"
+        else end.toLocalTime().format(DateTimeFormatter.ISO_LOCAL_TIME).substring(0, 5))
+  }
+  var endDate by remember {
+    mutableStateOf(
+        if (suggestion.stop.duration == -1) ""
+        else end.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+  }
 
   var start_d_err by remember { mutableStateOf(false) }
   var end_d_err by remember { mutableStateOf(false) }
@@ -231,7 +245,7 @@ fun CreateSuggestion(
               singleLine = false,
               placeholder = { Text("Describe the suggestion") })
 
-          if (addr.isNotEmpty()) {
+          if (suggestion.stop.address.isNotEmpty()) {
             Row(modifier = Modifier.fillMaxWidth()) {
               OutlinedTextField(
                   value = address,
@@ -299,7 +313,7 @@ fun CreateSuggestion(
 
                   // Calculate duration in minutes
                   val duration = Duration.between(startDateTime, endDateTime)
-                  val suggestion =
+                  val newSuggestion =
                       Suggestion(
                           suggestionId = "", // modified by database
                           userId = "", // modified by database
@@ -309,7 +323,7 @@ fun CreateSuggestion(
                           createdAtTime = LocalTime.now(),
                           stop =
                               Stop(
-                                  stopId = navigationActions.variables.suggestionId,
+                                  stopId = suggestion.stop.stopId,
                                   title = suggestionText,
                                   address = address,
                                   date = startDateObj,
@@ -317,18 +331,32 @@ fun CreateSuggestion(
                                   duration = duration.toMinutes().toInt(),
                                   budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
                                   description = description,
-                                  geoCords = geoCords,
+                                  geoCords = suggestion.stop.geoCords,
                                   website = _website,
                                   imageUrl = ""))
                   // Pass the created suggestion to the callback function
-                  if (viewModel.addSuggestion(tripId, suggestion)) {
-                    onSuccess()
+                  if (suggestion.suggestionId.isNotEmpty()) {
+                    if (viewModel.updateSuggestion(
+                        tripId,
+                        suggestion.copy(
+                            stop = newSuggestion.stop.copy(stopId = suggestion.stop.stopId)))) {
+                      onSuccess()
+                    } else {
+                      onFailure()
+                    }
                   } else {
-                    onFailure()
+                    if (viewModel.addSuggestion(tripId, newSuggestion)) {
+                      onSuccess()
+                    } else {
+                      onFailure()
+                    }
                   }
                 }
               }) {
-                Text("Create Suggestion", fontSize = 24.sp)
+                Text(
+                    if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
+                    else "Edit Suggestion",
+                    fontSize = 24.sp)
               }
         }
   }

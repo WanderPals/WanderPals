@@ -106,7 +106,7 @@ fun SuggestionFeedContent(
 
     // When a suggestion is selected, display the detail screen
     selectedSuggestion?.let { suggestion ->
-      navigationActions.setVariablesSuggestion(suggestion.suggestionId)
+      navigationActions.setVariablesSuggestionId(suggestion.suggestionId)
       navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
     }
 
@@ -157,6 +157,11 @@ fun SuggestionFeedContent(
       }
     }
 
-    SuggestionBottomSheet(viewModel = suggestionsViewModel)
+    SuggestionBottomSheet(
+        viewModel = suggestionsViewModel,
+        onEdit = {
+          navigationActions.setVariablesSuggestion(it)
+          navigationActions.navigateTo(Route.CREATE_SUGGESTION)
+        })
   }
 }

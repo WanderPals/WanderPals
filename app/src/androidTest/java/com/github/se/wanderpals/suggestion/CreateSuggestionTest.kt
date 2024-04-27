@@ -920,12 +920,87 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   fun createSuggestionWithAddress() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-      composeTestRule.setContent { CreateSuggestion("aaa", vm, addr = "Example address") }
+      composeTestRule.setContent {
+        CreateSuggestion("aaa", vm, Suggestion(stop = Stop(address = "Example address")))
+      }
 
       inputAddress {
         assertIsDisplayed()
 
         assertTextContains("Example address")
+      }
+    }
+  }
+
+  @Test
+  fun createSuggestionWithSuggestion() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent { CreateSuggestion("aaa", vm, suggestion = testSuggestion) }
+
+      inputTitle {
+        assertIsDisplayed()
+
+        assertTextContains("Stop")
+      }
+
+      inputBudget {
+        assertIsDisplayed()
+
+        assertTextContains("20.0")
+      }
+
+      inputDescription {
+        assertIsDisplayed()
+
+        assertTextContains("This is a Stop")
+      }
+
+      inputStartDate {
+        assertIsDisplayed()
+
+        assertTextContains("2024-04-16")
+      }
+
+      inputEndDate {
+        assertIsDisplayed()
+
+        assertTextContains("2024-04-16")
+      }
+
+      inputStartTime {
+        assertIsDisplayed()
+
+        assertTextContains("12:00")
+      }
+
+      inputEndTime {
+        assertIsDisplayed()
+
+        assertTextContains("14:00")
+      }
+
+      inputAddress { assertIsNotDisplayed() }
+
+      inputWebsite {
+        assertIsDisplayed()
+
+        assertTextContains("www.example.com")
+      }
+    }
+  }
+
+  @Test
+  fun editSuggestion() = run {
+    ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
+      val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent {
+        CreateSuggestion("aaa", vm, suggestion = Suggestion(suggestionId = "test"))
+      }
+
+      createButton {
+        assertIsDisplayed()
+        assertTextContains("Edit Suggestion")
       }
     }
   }

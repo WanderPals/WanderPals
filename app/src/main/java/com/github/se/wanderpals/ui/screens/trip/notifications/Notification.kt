@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -46,7 +47,7 @@ import com.github.se.wanderpals.ui.navigation.Route
 /**
  * Composable function for displaying notifications and announcements.
  *
- * This composablefunction displays a list of notifications and announcements. It allows users to
+ * This composable-function displays a list of notifications and announcements. It allows users to
  * switch between switch between viewing notifications and viewing announcements. Users can click on
  * notifications to navigate to specific destinations within the app. Admin/owner users have the
  * ability to create new announcements and delete announcements.
@@ -75,6 +76,8 @@ fun Notification(
   val announcementItemPressed by notificationsViewModel.announcementItemPressed.collectAsState()
 
   val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
+
+  val isLoading by notificationsViewModel.isLoading.collectAsState()
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
     if (announcementItemPressed) {
@@ -133,50 +136,60 @@ fun Notification(
     HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
 
     val itemsList = if (notificationSelected) notificationsList else announcementList
-    if (itemsList.isEmpty()) {
-      val emptyItemText = if (notificationSelected) "notifications" else "announcements"
-      Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 16.dp)) {
-        // text if no items found
-        Text(
-            text = "Looks like there is no $emptyItemText.",
-            modifier =
-                Modifier.align(Alignment.Center).padding(horizontal = 16.dp).testTag("noItemsText"),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge)
+
+    if (isLoading) {
+      Box(modifier = Modifier.fillMaxSize()) {
+        CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
       }
     } else {
-      LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
-        items(itemsList) { item ->
-          when (item) {
-            is TripNotification -> {
-              NotificationItem(
-                  notification = item,
-                  onNotificationItemClick = {
-                    if (item.path.isNotEmpty()) {
-                      if (item.path.contains("/")) {
-                        val (route, serializedArgs) = item.path.split("/")
-                        navigationActions.deserializeNavigationVariables(serializedArgs)
-                        navigationActions.navigateTo(route)
-                      } else {
-                        navigationActions.navigateTo(item.path)
+      if (itemsList.isEmpty()) {
+        val emptyItemText = if (notificationSelected) "notifications" else "announcements"
+        Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 16.dp)) {
+          // text if no items found
+          Text(
+              text = "Looks like there is no $emptyItemText.",
+              modifier =
+                  Modifier.align(Alignment.Center)
+                      .padding(horizontal = 16.dp)
+                      .testTag("noItemsText"),
+              textAlign = TextAlign.Center,
+              style = MaterialTheme.typography.bodyLarge)
+        }
+      } else {
+        LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+          items(itemsList) { item ->
+            when (item) {
+              is TripNotification -> {
+                NotificationItem(
+                    notification = item,
+                    onNotificationItemClick = {
+                      if (item.path.isNotEmpty()) {
+                        if (item.path.contains("/")) {
+                          val (route, serializedArgs) = item.path.split("/", limit = 2)
+                          navigationActions.deserializeNavigationVariables(serializedArgs)
+                          navigationActions.navigateTo(route)
+                        } else {
+                          navigationActions.navigateTo(item.path)
+                        }
                       }
-                    }
-                  })
+                    })
+              }
+              is Announcement -> {
+                AnnouncementItem(
+                    announcement = item,
+                    onAnnouncementItemClick = { announcementId ->
+                      notificationsViewModel.setAnnouncementItemPressState(true)
+                      notificationsViewModel.setSelectedAnnouncementId(announcementId)
+                    })
+              }
             }
-            is Announcement -> {
-              AnnouncementItem(
-                  announcement = item,
-                  onAnnouncementItemClick = { announcementId ->
-                    notificationsViewModel.setAnnouncementItemPressState(true)
-                    notificationsViewModel.setSelectedAnnouncementId(announcementId)
-                  })
-            }
+            HorizontalDivider(
+                color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
           }
-          HorizontalDivider(
-              color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
         }
       }
     }
+
     // Create announcement Button
     if (!notificationSelected && SessionManager.isAdmin()) {
       Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {

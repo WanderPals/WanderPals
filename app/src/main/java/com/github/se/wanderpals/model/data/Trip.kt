@@ -38,5 +38,6 @@ data class Trip(
     val stops: List<String> = emptyList(),
     val users: List<String> = emptyList(),
     val suggestions: List<String> = emptyList(),
-    val announcements: List<String> = emptyList()
+    val announcements: List<String> = emptyList(),
+    val expenses: List<String> = emptyList()
 )

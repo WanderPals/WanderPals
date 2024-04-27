@@ -7,6 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Suggestion
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
@@ -162,21 +163,46 @@ data class NavigationActions(
    *
    * @param suggestionId The suggestion id.
    */
-  fun setVariablesSuggestion(suggestionId: String) {
+  fun setVariablesSuggestionId(suggestionId: String) {
     variables.suggestionId = suggestionId
   }
 
-  fun serializeNavigationVariable(): String {
-    return "currentTrip: ${variables.currentTrip}, " +
-        "latitude: ${variables.currentGeoCords.latitude}, " +
-        "longitude: ${variables.currentGeoCords.longitude}, " +
-        "currentAddress: ${variables.currentAddress}, " +
-        "suggestionId: ${variables.suggestionId}"
+  /**
+   * Set the variables for the navigation actions.
+   *
+   * @param suggestion The suggestion.
+   */
+  fun setVariablesSuggestion(suggestion: Suggestion) {
+    variables.suggestionId = suggestion.suggestionId
+    variables.currentGeoCords = suggestion.stop.geoCords
+    variables.currentSuggestion = suggestion
   }
 
+  /**
+   * Serializes the navigation variables into a string format.
+   *
+   * @return The serialized string containing navigation variables.
+   */
+  fun serializeNavigationVariable(): String {
+    val navActionsVariablesToString =
+        arrayOf(
+            "currentTrip: ${variables.currentTrip}",
+            "latitude: ${variables.currentGeoCords.latitude}",
+            "longitude: ${variables.currentGeoCords.longitude}",
+            "currentAddress: ${variables.currentAddress}",
+            "suggestionId: ${variables.suggestionId}")
+
+    return navActionsVariablesToString.joinToString("|")
+  }
+
+  /**
+   * Deserializes the given string into navigation variables.
+   *
+   * @param string The serialized string containing navigation variables.
+   */
   fun deserializeNavigationVariables(string: String) {
     val variables = NavigationActionsVariables()
-    val parts = string.split(", ")
+    val parts = string.split("|")
     for (part in parts) {
       val (argName, argVal) = part.split(": ")
       when (argName) {
@@ -196,6 +222,7 @@ data class NavigationActions(
 
 /** Variables for the navigation actions. */
 class NavigationActionsVariables {
+  var currentSuggestion: Suggestion = Suggestion()
   var currentTrip: String = ""
   var currentGeoCords: GeoCords = GeoCords(0.0, 0.0)
   var currentAddress: String = ""

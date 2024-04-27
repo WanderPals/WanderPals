@@ -24,6 +24,7 @@ import java.time.LocalDateTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -65,6 +66,9 @@ class NotificationsViewModelTest :
 
   private val _announcementStateList = MutableStateFlow(listOf(announcement1))
   override val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
+
+  private val _isLoading = MutableStateFlow(false)
+  override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
   override fun updateStateLists() {
     _notifStateList.value = listOf(notification1, notification2)
