@@ -25,7 +25,7 @@ class NotificationScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   }
   val deleteAnnouncementButton: KNode = onNode { hasTestTag("deleteAnnouncementButton") }
 
-  val notifItemButtonWithPath: KNode = onNode { hasTestTag("notifItemButton" + Route.MEMBERS) }
+  val notifItemButtonWithPath: KNode = onNode { hasTestTag("notifItemButton" + Route.ADMIN_PAGE) }
 
   val notifItemButtonWithoutPath: KNode = onNode { hasTestTag("notifItemButton") }
 

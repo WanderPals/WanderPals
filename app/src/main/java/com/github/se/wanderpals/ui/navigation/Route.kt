@@ -15,6 +15,5 @@ object Route {
   const val CREATE_TRIP = "createTrip"
   const val CREATE_SUGGESTION = "createSuggestion"
   const val ADMIN_PAGE = "adminPage"
-  const val MEMBERS = "members"
   const val CREATE_ANNOUNCEMENT = "createAnnouncement"
 }

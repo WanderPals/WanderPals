@@ -59,7 +59,9 @@ import coil.compose.AsyncImage
 import com.github.se.wanderpals.model.data.Role as Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
+import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberDetail
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberItem
 
@@ -267,7 +269,11 @@ fun Admin(adminViewModel: AdminViewModel) {
             onDismissRequest = { displayed = false },
             confirmButton = {
               TextButton(
-                  onClick = { adminViewModel.deleteUser(userToDelete) },
+                  onClick = {
+                    adminViewModel.deleteUser(userToDelete)
+                    if (userToDelete == SessionManager.getCurrentUser()?.userId)
+                        navigationActions.navigateTo(Route.OVERVIEW)
+                  },
                   modifier = Modifier.testTag("confirmDeleteUserButton")) {
                     Text("Confirm")
                   }

@@ -31,7 +31,9 @@ import org.junit.runner.RunWith
 
 val notification1 =
     TripNotification(
-        title = "Username1 joined the trip", path = Route.MEMBERS, timestamp = LocalDateTime.now())
+        title = "Username1 joined the trip",
+        path = Route.ADMIN_PAGE,
+        timestamp = LocalDateTime.now())
 
 val notification2 =
     TripNotification(
@@ -112,7 +114,7 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
         assertIsDisplayed()
         performClick()
       }
-      verify { mockNavActions.navigateTo(Route.MEMBERS) }
+      verify { mockNavActions.navigateTo(Route.ADMIN_PAGE) }
       confirmVerified(mockNavActions)
     }
   }
