@@ -12,9 +12,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
+/**
+ * ViewModel responsible for managing notifications and announcements for a specific trip.
+ *
+ * @param tripsRepository The repository used to access trip data.
+ * @param tripId The ID of the trip for which notifications and announcements are managed.
+ */
 open class NotificationsViewModel(val tripsRepository: TripsRepository, val tripId: String) :
     ViewModel() {
 
+  /* States */
   private val _notifStateList = MutableStateFlow(emptyList<TripNotification>())
   open val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
 
@@ -22,7 +29,7 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   open val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
 
   private val _isLoading = MutableStateFlow(true)
-  val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+  open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
   private val _isNotifSelected = MutableStateFlow(true)
   val isNotifSelected: StateFlow<Boolean> = _isNotifSelected.asStateFlow()
@@ -33,17 +40,22 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   private val _selectedAnnouncementId = MutableStateFlow("")
   val selectedAnnouncementID: StateFlow<String> = _selectedAnnouncementId.asStateFlow()
 
+  /**
+   * Updates the state lists of notifications and announcements by launching a coroutine within the
+   * viewModel scope.
+   */
   open fun updateStateLists() {
     viewModelScope.launch {
       // Set loading state to true before fetching data
       _isLoading.value = true
       // Fetch all trips from the repository
-      _announcementStateList.value = tripsRepository.getAllAnnouncementsFromTrip(tripId)
+      _announcementStateList.value = tripsRepository.getAllAnnouncementsFromTrip(tripId).reversed()
       _notifStateList.value = tripsRepository.getNotificationList(tripId)
       // Set loading state to false after data is fetched
       _isLoading.value = false
     }
   }
+
   /**
    * Adds a Announcement by the administrator to a trip.
    *
@@ -54,6 +66,11 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     runBlocking { tripsRepository.addAnnouncementToTrip(tripId, announcement) }
   }
 
+  /**
+   * Removes a specific announcement from a trip.
+   *
+   * @param announcementId The ID of the announcement to remove.
+   */
   open fun removeAnnouncement(announcementId: String) {
     runBlocking {
       tripsRepository.removeAnnouncementFromTrip(tripId, announcementId)
@@ -61,6 +78,7 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     }
   }
 
+  /* Setter functions */
   fun setNotificationSelectionState(value: Boolean) {
     _isNotifSelected.value = value
   }
