@@ -124,13 +124,15 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTime" + stop.stopId))
-                  Text(
-                      text = stop.address,
-                      style = MaterialTheme.typography.bodyLarge,
-                      color = Color.Black,
-                      modifier =
-                          Modifier.wrapContentWidth(Alignment.Start)
-                              .testTag("ActivityAddress" + stop.stopId))
+                if(stopHasLocation){
+                    Text(
+                        text = stop.address,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Black,
+                        modifier =
+                        Modifier.wrapContentWidth(Alignment.Start)
+                            .testTag("ActivityAddress" + stop.stopId))
+                }
                 }
 
             // Icon Button at the far right, centered vertically
