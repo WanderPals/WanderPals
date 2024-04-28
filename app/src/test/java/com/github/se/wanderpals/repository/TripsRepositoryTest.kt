@@ -3,7 +3,9 @@ package com.github.se.wanderpals.repository
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Comment
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
@@ -533,6 +535,92 @@ class TripsRepositoryTest {
   }
 
   @Test
+  fun testTripLifecycleWithExpenses() = runBlocking {
+    // Initialize a trip with details for a summer vacation in Italy.
+    val trip =
+        Trip(
+            tripId = "trip123",
+            title = "Summer Vacation",
+            startDate = LocalDate.of(2024, 5, 20),
+            endDate = LocalDate.of(2024, 6, 10),
+            totalBudget = 2000.0,
+            description = "Our summer vacation trip to Italy.",
+            imageUrl = "https://example.com/image.png",
+            stops = emptyList(),
+            users = emptyList(),
+            suggestions = emptyList(),
+            announcements = emptyList())
+
+    // Define a trip Announcement object.
+    val expense =
+        Expense(
+            expenseId = "exp123",
+            title = "Lunch Meeting",
+            amount = 45.50,
+            category = Category.FOOD,
+            userId = "user123",
+            userName = "Alice Smith",
+            participantsIds = listOf("user124", "user125"),
+            names = listOf("Bob Johnson", "Carol White"),
+            localDate = LocalDate.of(2024, 1, 15))
+
+    val elapsedTime = measureTimeMillis {
+      try {
+        withTimeout(10000) {
+          // Add the trip and validate the addition.
+          assertTrue(repository.addTrip(trip))
+
+          var fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
+
+          val expenseId = repository.addExpenseToTrip(tripId = fetchedTrip.tripId, expense)
+          assertTrue(expenseId.isNotEmpty()) // Ensure expense ID is returned and not empty
+
+          // Fetch and validate the added trip Expense.
+          val expenses = repository.getAllExpensesFromTrip(fetchedTrip.tripId)
+          assertTrue(expenses.isNotEmpty())
+
+          val fetchedExpense = expenses.first()
+          assertNotNull(fetchedExpense)
+          assertEquals(expense.title, fetchedExpense.title)
+
+          // Fetch and validate the added Expense.
+          fetchedTrip = repository.getTrip(repository.getTripsIds().first())!!
+
+          val fetchedTripExpense =
+              repository.getExpenseFromTrip(fetchedTrip.tripId, fetchedTrip.expenses.first())
+          assertNotNull(fetchedTripExpense)
+          if (fetchedTripExpense != null) {
+            assertEquals(expense.title, fetchedTripExpense.title)
+          }
+
+          // Update the trip Expense and validate the update.
+          val updatedExpense = fetchedTripExpense?.copy(title = "New Title")!!
+          assertTrue(repository.updateExpenseInTrip(fetchedTrip.tripId, updatedExpense))
+
+          // Validate the update was successful.
+          val updatedFetchedExpense =
+              repository.getExpenseFromTrip(fetchedTrip.tripId, updatedExpense.expenseId)
+          assertNotNull(updatedFetchedExpense)
+          assertEquals("New Title", updatedFetchedExpense?.title)
+
+          // Remove the Expense from the trip and validate its removal.
+          assertTrue(
+              repository.removeExpenseFromTrip(fetchedTrip.tripId, fetchedTrip.expenses.first()))
+
+          // Validate the Expense list is empty after deletion.
+          assertTrue(repository.getAllExpensesFromTrip(fetchedTrip.tripId).isEmpty())
+
+          // Cleanup: Delete the trip.
+          assertTrue(repository.deleteTrip(fetchedTrip.tripId))
+        }
+      } catch (e: TimeoutCancellationException) {
+        fail("The operation timed out after 10 seconds")
+      }
+    }
+    println("Execution time for testTripLifecycleWithExpenses: $elapsedTime ms")
+  }
+
+  @Test
   fun testTripLifecycleWithNotifications() = runBlocking {
     // Initialize a trip with details for a summer vacation in Italy.
     val trip =
@@ -667,6 +755,9 @@ class TripsRepositoryTest {
           announcementIds.forEach { announcementId ->
             repository.removeAnnouncementFromTrip(tripId, announcementId)
           }
+
+          val expensesIds = trip.expenses
+          expensesIds.forEach { expensesId -> repository.removeExpenseFromTrip(tripId, expensesId) }
 
           repository.deleteTrip(tripId)
           repository.removeTripId(tripId)
