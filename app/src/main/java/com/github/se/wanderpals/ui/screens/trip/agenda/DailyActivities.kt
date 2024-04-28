@@ -124,42 +124,42 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTime" + stop.stopId))
-                if(stopHasLocation){
+                  if (stopHasLocation) {
                     Text(
                         text = stop.address,
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Black,
                         modifier =
-                        Modifier.wrapContentWidth(Alignment.Start)
-                            .testTag("ActivityAddress" + stop.stopId))
-                }
+                            Modifier.wrapContentWidth(Alignment.Start)
+                                .testTag("ActivityAddress" + stop.stopId))
+                  }
                 }
 
             // Icon Button at the far right, centered vertically
             IconButton(
                 onClick = {
-                         if(stopHasLocation){
-                             navigationActions.setVariablesLocation(
-                                 stop.geoCords,
-                                 stop.address
-                             )
-                             navigationActions.navigateTo(Route.MAP)
-                         }
+                  if (stopHasLocation) {
+                    navigationActions.setVariablesLocation(stop.geoCords, stop.address)
+                    navigationActions.navigateTo(Route.MAP)
+                  }
                 },
                 modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
-                            .align(Alignment.CenterVertically)
-                            .testTag("navigationToMapButton"+stop.stopId), // Center the IconButton vertically within the
+                        .align(Alignment.CenterVertically)
+                        .testTag(
+                            "navigationToMapButton" +
+                                stop.stopId), // Center the IconButton vertically within the
                 enabled = stopHasLocation
                 // Row
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
-                      tint = if (stopHasLocation) MaterialTheme.colorScheme.primary else Color.LightGray,
+                      tint =
+                          if (stopHasLocation) MaterialTheme.colorScheme.primary
+                          else Color.LightGray,
                       contentDescription = null // Provide an appropriate content description
                       )
                 }
-
           }
         }
   }

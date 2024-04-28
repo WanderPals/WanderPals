@@ -70,8 +70,7 @@ class DailyActivitiesTest {
               0,
               0.0,
               "Description 4",
-              GeoCords(0.0, 0.0))
-      )
+              GeoCords(0.0, 0.0)))
   private val testViewModel = FakeAgendaViewModel(YearMonth.now(), testActivities)
   private val emptyTestViewModel = FakeAgendaViewModel(YearMonth.now(), emptyList())
 
@@ -93,7 +92,6 @@ class DailyActivitiesTest {
     composeTestRule.onNodeWithTag(testActivities[1].stopId).assertIsDisplayed()
 
     composeTestRule.onNodeWithTag(testActivities[2].stopId).assertIsDisplayed()
-
 
     composeTestRule.onNodeWithTag(testActivities[3].stopId).assertIsDisplayed()
   }
@@ -127,15 +125,15 @@ class DailyActivitiesTest {
 
       val hasLocation = testStop.geoCords.latitude != 0.0 || testStop.geoCords.longitude != 0.0
       // Assert that the address is displayed correctly
-      if(hasLocation){
-          composeTestRule
-              .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
-              .assertIsDisplayed()
-              .assertTextEquals(testStop.address)
-      }else{
-          composeTestRule
-              .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
-              .assertIsNotDisplayed()
+      if (hasLocation) {
+        composeTestRule
+            .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .assertTextEquals(testStop.address)
+      } else {
+        composeTestRule
+            .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
+            .assertIsNotDisplayed()
       }
     }
   }
@@ -191,25 +189,21 @@ class DailyActivitiesTest {
       composeTestRule.onNodeWithTag("activitySchedule").assertIsDisplayed()
       composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityAddress").assertIsDisplayed()
-      if(testStop.address.isNotEmpty()){
-          composeTestRule
-              .onNodeWithTag("activityAddress")
-              .assertTextEquals("Location " + testStop.stopId)
-          composeTestRule.onNodeWithTag("navigationToMapButton"+testStop.stopId)
-              .assertIsDisplayed()
-
-      }else{
-          composeTestRule
-              .onNodeWithTag("activityAddress")
-              .assertTextEquals("No address provided")
-          composeTestRule.onNodeWithTag("navigationToMapButton"+testStop.stopId)
-              .assertIsDisplayed()
-              .assertIsNotEnabled()
+      if (testStop.address.isNotEmpty()) {
+        composeTestRule
+            .onNodeWithTag("activityAddress")
+            .assertTextEquals("Location " + testStop.stopId)
+        composeTestRule.onNodeWithTag("navigationToMapButton" + testStop.stopId).assertIsDisplayed()
+      } else {
+        composeTestRule.onNodeWithTag("activityAddress").assertTextEquals("No address provided")
+        composeTestRule
+            .onNodeWithTag("navigationToMapButton" + testStop.stopId)
+            .assertIsDisplayed()
+            .assertIsNotEnabled()
       }
       composeTestRule.onNodeWithTag("titleBudget").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityBudget").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityBudget").assertTextEquals("0.0")
-
     }
   }
 }
