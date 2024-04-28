@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
+import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import kotlinx.coroutines.Dispatchers
 
@@ -132,7 +134,13 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
 
             // Icon Button at the far right, centered vertically
             IconButton(
-                onClick = { /*TODO : implement this in the future*/},
+                onClick = {
+                          navigationActions.setVariablesLocation(
+                              stop.geoCords,
+                              stop.address
+                          )
+                          navigationActions.navigateTo(Route.MAP)
+                },
                 modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
                         .align(
