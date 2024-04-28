@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
+import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import kotlinx.coroutines.Dispatchers
 
@@ -90,6 +92,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (Stri
  */
 @Composable
 fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
+  val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
   Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
     Button(
         onClick = { onActivityClick(stop.stopId) },
@@ -121,28 +124,39 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTime" + stop.stopId))
-                  Text(
-                      text = stop.address,
-                      style = MaterialTheme.typography.bodyLarge,
-                      color = Color.Black,
-                      modifier =
-                          Modifier.wrapContentWidth(Alignment.Start)
-                              .testTag("ActivityAddress" + stop.stopId))
+                  if (stopHasLocation) {
+                    Text(
+                        text = stop.address,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.Black,
+                        modifier =
+                            Modifier.wrapContentWidth(Alignment.Start)
+                                .testTag("ActivityAddress" + stop.stopId))
+                  }
                 }
 
             // Icon Button at the far right, centered vertically
             IconButton(
-                onClick = { /*TODO : implement this in the future*/},
+                onClick = {
+                  if (stopHasLocation) {
+                    navigationActions.setVariablesLocation(stop.geoCords, stop.address)
+                    navigationActions.navigateTo(Route.MAP)
+                  }
+                },
                 modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
-                        .align(
-                            Alignment
-                                .CenterVertically) // Center the IconButton vertically within the
+                        .align(Alignment.CenterVertically)
+                        .testTag(
+                            "navigationToMapButton" +
+                                stop.stopId), // Center the IconButton vertically within the
+                enabled = stopHasLocation
                 // Row
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
-                      tint = MaterialTheme.colorScheme.primary,
+                      tint =
+                          if (stopHasLocation) MaterialTheme.colorScheme.primary
+                          else Color.LightGray,
                       contentDescription = null // Provide an appropriate content description
                       )
                 }

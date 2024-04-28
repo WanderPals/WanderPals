@@ -6,6 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -38,7 +40,7 @@ class DailyActivitiesTest {
               0,
               0.0,
               "Description 1",
-              GeoCords(0.0, 0.0)),
+              GeoCords(1.0, 0.0)),
           Stop(
               "2",
               "Title 2",
@@ -48,7 +50,7 @@ class DailyActivitiesTest {
               0,
               0.0,
               "Description 2",
-              GeoCords(0.0, 0.0)),
+              GeoCords(0.0, 1.0)),
           Stop(
               "3",
               "Title 3",
@@ -58,6 +60,16 @@ class DailyActivitiesTest {
               0,
               0.0,
               "Description 3",
+              GeoCords(1.0, 1.0)),
+          Stop(
+              "4",
+              "Title 4",
+              "",
+              LocalDate.now(),
+              LocalTime.now(),
+              0,
+              0.0,
+              "Description 4",
               GeoCords(0.0, 0.0)))
   private val testViewModel = FakeAgendaViewModel(YearMonth.now(), testActivities)
   private val emptyTestViewModel = FakeAgendaViewModel(YearMonth.now(), emptyList())
@@ -80,6 +92,8 @@ class DailyActivitiesTest {
     composeTestRule.onNodeWithTag(testActivities[1].stopId).assertIsDisplayed()
 
     composeTestRule.onNodeWithTag(testActivities[2].stopId).assertIsDisplayed()
+
+    composeTestRule.onNodeWithTag(testActivities[3].stopId).assertIsDisplayed()
   }
 
   // Check that the content of the activity items is displayed correctly
@@ -109,11 +123,18 @@ class DailyActivitiesTest {
           .assertIsDisplayed()
           .assertTextEquals(expectedTime)
 
+      val hasLocation = testStop.geoCords.latitude != 0.0 || testStop.geoCords.longitude != 0.0
       // Assert that the address is displayed correctly
-      composeTestRule
-          .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextEquals(testStop.address)
+      if (hasLocation) {
+        composeTestRule
+            .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
+            .assertIsDisplayed()
+            .assertTextEquals(testStop.address)
+      } else {
+        composeTestRule
+            .onNodeWithTag("ActivityAddress${testStop.stopId}", useUnmergedTree = true)
+            .assertIsNotDisplayed()
+      }
     }
   }
 
@@ -168,9 +189,18 @@ class DailyActivitiesTest {
       composeTestRule.onNodeWithTag("activitySchedule").assertIsDisplayed()
       composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityAddress").assertIsDisplayed()
-      composeTestRule
-          .onNodeWithTag("activityAddress")
-          .assertTextEquals("Location " + testStop.stopId)
+      if (testStop.address.isNotEmpty()) {
+        composeTestRule
+            .onNodeWithTag("activityAddress")
+            .assertTextEquals("Location " + testStop.stopId)
+        composeTestRule.onNodeWithTag("navigationToMapButton" + testStop.stopId).assertIsDisplayed()
+      } else {
+        composeTestRule.onNodeWithTag("activityAddress").assertTextEquals("No address provided")
+        composeTestRule
+            .onNodeWithTag("navigationToMapButton" + testStop.stopId)
+            .assertIsDisplayed()
+            .assertIsNotEnabled()
+      }
       composeTestRule.onNodeWithTag("titleBudget").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityBudget").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityBudget").assertTextEquals("0.0")

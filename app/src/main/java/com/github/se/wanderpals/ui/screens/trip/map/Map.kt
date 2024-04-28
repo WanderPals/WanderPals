@@ -310,9 +310,9 @@ fun Map(
                 snippet = stop.description,
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
                 onInfoWindowClick = {
-                  // check if stop.stopId contains a "/" and if it does, split it and get the first
-                  if (stop.stopId.last() != '/' && stop.stopId.contains('/')) {
-                    val placeId = stop.stopId.split("/")[1]
+                  // check if stop.stopId contains a "," and if it does, split it and get the first
+                  if (stop.stopId.last() != ',' && stop.stopId.contains(',')) {
+                    val placeId = stop.stopId.split(",")[1]
                     mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
                       val place = response.place
                       placeData = placeData.setPlaceData(place, placeId)
