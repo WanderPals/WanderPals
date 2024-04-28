@@ -101,7 +101,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                     modifier = Modifier.testTag("titleAddress"))
 
                 Text(
-                    text = stop.address,
+                    text = stop.address.ifEmpty { "No address provided" },
                     style = TextStyle(fontSize = 16.sp),
                     textAlign = TextAlign.Center,
                     modifier =
