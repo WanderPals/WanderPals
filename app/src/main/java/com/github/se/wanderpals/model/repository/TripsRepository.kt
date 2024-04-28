@@ -260,6 +260,15 @@ class TripsRepository(
         }
       }
 
+    /**
+     * Retrieves a specific expense from a trip using the expense's unique identifier. This method queries
+     * the Firestore subcollection for trip expenses within a specific trip document.
+     *
+     * @param tripId The unique identifier of the trip.
+     * @param expenseId The unique identifier of the expense to be retrieved.
+     * @return An `Expense` object if found, or `null` if the expense is not found or if an error occurs.
+     *         The method logs an error and returns `null` in case of failure.
+     */
     suspend fun getExpenseFromTrip(tripId: String, expenseId: String): Expense? =
         withContext(dispatcher) {
             try {
@@ -289,6 +298,14 @@ class TripsRepository(
         }
 
 
+    /**
+     * Fetches all expenses associated with a specific trip. This method retrieves an array of expenses
+     * by leveraging the `getExpenseFromTrip` method for each expense ID found in the trip document.
+     *
+     * @param tripId The unique identifier of the trip for which expenses are being retrieved.
+     * @return A list of `Expense` objects. Returns an empty list if the trip is not found or if an error occurs
+     *         during fetching. Errors are logged and an empty list is returned in these cases.
+     */
     suspend fun getAllExpensesFromTrip(tripId: String): List<Expense> =
         withContext(dispatcher) {
             try {
@@ -314,6 +331,15 @@ class TripsRepository(
         }
 
 
+    /**
+     * Adds a new expense to a specified trip. This method generates a unique identifier for the new expense,
+     * stores it in the Firestore, and updates the trip document to include this new expense ID.
+     *
+     * @param tripId The unique identifier of the trip to which the expense is being added.
+     * @param expense The `Expense` object to be added.
+     * @return The unique identifier of the newly added expense if the operation is successful, or an empty
+     *         string if it fails. The method logs the outcome of the operation.
+     */
     suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
         withContext(dispatcher) {
             try {
@@ -361,6 +387,15 @@ class TripsRepository(
         }
 
 
+    /**
+     * Removes a specific expense from a trip. This method deletes the expense document from Firestore
+     * and updates the trip's expense list to exclude the removed expense ID.
+     *
+     * @param tripId The unique identifier of the trip.
+     * @param expenseId The unique identifier of the expense to be removed.
+     * @return `true` if the expense is successfully removed and the trip is updated; `false` if the trip
+     *         is not found or if any error occurs during the operation. Errors are logged.
+     */
     suspend fun removeExpenseFromTrip(tripId: String, expenseId: String): Boolean =
         withContext(dispatcher) {
             try {
@@ -397,6 +432,15 @@ class TripsRepository(
         }
 
 
+    /**
+     * Updates an existing expense within a trip. This method replaces the current expense document in Firestore
+     * with the updated expense data provided.
+     *
+     * @param tripId The unique identifier of the trip containing the expense.
+     * @param expense The updated `Expense` object.
+     * @return `true` if the expense is successfully updated; `false` if the trip is not found or an error occurs.
+     *         Errors are logged and the method returns `false` in these cases.
+     */
     suspend fun updateExpenseInTrip(tripId: String, expense: Expense): Boolean =
         withContext(dispatcher) {
             try {
