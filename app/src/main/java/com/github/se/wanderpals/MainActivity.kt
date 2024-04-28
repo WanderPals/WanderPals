@@ -79,7 +79,8 @@ class MainActivity : ComponentActivity() {
                       SessionManager.setUserSession(
                           userId = uid,
                           name = account.displayName ?: "",
-                          email = account.email ?: "")
+                          email = account.email ?: "",
+                          profilePhoto = it.result.user?.photoUrl.toString())
 
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {

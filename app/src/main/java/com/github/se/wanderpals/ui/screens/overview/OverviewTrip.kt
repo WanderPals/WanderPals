@@ -36,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
@@ -92,6 +93,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
     // Button representing the trip overview
     Button(
         onClick = {
+          SessionManager.setTripName(trip.title)
           navigationActions.setVariablesTrip(trip.tripId)
           navigationActions.navigateTo(Route.TRIP)
         },

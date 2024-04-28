@@ -48,7 +48,7 @@ object NotificationsManager {
     val newNotif =
         TripNotification(
             "${SessionManager.getCurrentUser()!!.name} joined the trip ",
-            Route.MEMBERS,
+            Route.ADMIN_PAGE,
             LocalDateTime.now())
     addNewNotification(notifList, newNotif)
     tripsRepository.setNotificationList(tripId, notifList.toList())

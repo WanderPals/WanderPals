@@ -28,7 +28,6 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
-import com.github.se.wanderpals.model.viewmodel.MembersViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
@@ -36,7 +35,6 @@ import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
-import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberList
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.github.se.wanderpals.ui.screens.trip.map.Map
@@ -64,7 +62,7 @@ fun Trip(
   val sessionViewModel: SessionViewModel =
       viewModel(
           factory = SessionViewModel.SessionViewModelFactory(tripsRepository), key = "Session")
-  LaunchedEffect(key1 = tripId) { sessionViewModel.updateRoleForCurrentUser(tripId) }
+  LaunchedEffect(key1 = tripId) { sessionViewModel.updateUserForCurrentUser(tripId) }
 
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),
@@ -148,12 +146,6 @@ fun Trip(
                               key = "NotificationsViewModel")
                       CreateAnnouncement(
                           notificationsViewModel, onNavigationBack = { oldNavActions.goBack() })
-                    }
-
-                    composable(Route.MEMBERS) {
-                      DashboardMemberList(
-                          MembersViewModel(tripsRepository, oldNavActions.variables.currentTrip),
-                          oldNavActions)
                     }
 
                     composable(Route.SUGGESTION_DETAIL) {

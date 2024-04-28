@@ -22,7 +22,8 @@ open class AdminViewModel(
   open var listOfUsers = MutableStateFlow(emptyList<User>())
   // delete a user from the database
   open fun deleteUser(userId: String) {
-    viewModelScope.launch { tripsRepository.removeUserFromTrip(userId, tripId) }
+    viewModelScope.launch { tripsRepository.removeUserFromTrip(tripId, userId) }
+    listOfUsers.value = listOfUsers.value.filter { it.userId != userId }
   }
 
   init {
