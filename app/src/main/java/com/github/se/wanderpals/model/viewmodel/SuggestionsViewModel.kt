@@ -218,12 +218,12 @@ open class SuggestionsViewModel(
           if (allUsers.size % 2 == 1) {
             likesCount >=
                 threshold // If the number of users is odd, the threshold of likes is the middle
-                          // user to ensure majority
+            // user to ensure majority
           } else {
             likesCount >
                 threshold +
                     1 // If the number of users is even, the threshold of likes is the middle two
-                      // users (one extra) to ensure majority
+            // users (one extra) to ensure majority
           }
 
       if (isMajority && !_addedSuggestionsToStops.value.contains(suggestion.suggestionId)) {

@@ -88,7 +88,7 @@ class SuggestionToStopWithConditionTest {
     composeTestRule
         .onNodeWithTag("suggestion2")
         .assertExists() // The suggestion with 1 like should be visible (i.e. suggestion1 should be
-                        // transformed)
+    // transformed)
   }
 
   /**
@@ -129,7 +129,7 @@ class SuggestionToStopWithConditionTest {
     composeTestRule
         .onNodeWithTag("suggestion1")
         .assertDoesNotExist() // The suggestion with 4 likes (i.e. suggestion1) should have been
-                              // transformed
+    // transformed
     composeTestRule
         .onNodeWithTag("suggestion2")
         .assertExists() // The other suggestions should be visible
@@ -138,6 +138,6 @@ class SuggestionToStopWithConditionTest {
     composeTestRule
         .onNodeWithTag("suggestion5")
         .assertDoesNotExist() // The suggestion with 5 likes (i.e. suggestion5) should have been
-                              // transformed
+    // transformed
   }
 }
