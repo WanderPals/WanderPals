@@ -161,7 +161,7 @@ class SuggestionToStopWithConditionTest {
     } returns Suggestion(suggestionId = "s2", userLikes = listOf("user1"))
 
     // Assume there are 4 users in the trip. Threshold for transformation is 3 likes.
-    var suggestions =
+    val suggestions =
         listOf(
             Suggestion(
                 suggestionId = "s1",
