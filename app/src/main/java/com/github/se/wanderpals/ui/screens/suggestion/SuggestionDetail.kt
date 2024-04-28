@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Comment
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import java.time.LocalDate
@@ -260,30 +261,16 @@ fun SuggestionDetail(
                     trailingIcon = {
                       IconButton(
                           onClick = {
-                            if (editingComment) {
-                              if (newCommentText.isNotBlank()) {
-                                viewModel.updateComment(
-                                    suggestion, selectedComment?.copy(text = newCommentText)!!)
-                              } else {
-                                viewModel.cancelEditComment()
-                              }
-                              newCommentText = ""
-                              submitComment = true // Set the trigger for side effects
-                            } else {
-                              if (newCommentText.isNotBlank()) {
-                                viewModel.addComment(
-                                    suggestion,
-                                    Comment(
-                                        "",
-                                        "",
-                                        "tempUsername",
-                                        newCommentText,
-                                        LocalDate.now(),
-                                        LocalTime.now()))
-                                newCommentText = ""
-                                submitComment = true // Set the trigger for side effects
-                              }
-                            }
+                            onDone(
+                                cond = editingComment,
+                                string = newCommentText,
+                                viewModel = viewModel,
+                                suggestion = suggestion,
+                                selectedComment = selectedComment!!,
+                                exec = {
+                                  newCommentText = ""
+                                  submitComment = true
+                                })
                           },
                           modifier = Modifier.testTag("SendButton")) {
                             if (!editingComment) {
@@ -312,30 +299,16 @@ fun SuggestionDetail(
                     keyboardActions =
                         KeyboardActions(
                             onDone = {
-                              if (editingComment) {
-                                if (newCommentText.isNotBlank()) {
-                                  viewModel.updateComment(
-                                      suggestion, selectedComment?.copy(text = newCommentText)!!)
-                                } else {
-                                  viewModel.cancelEditComment()
-                                }
-                                newCommentText = ""
-                                submitComment = true // Set the trigger for side effects
-                              } else {
-                                if (newCommentText.isNotBlank()) {
-                                  viewModel.addComment(
-                                      suggestion,
-                                      Comment(
-                                          "",
-                                          "",
-                                          "tempUsername",
-                                          newCommentText,
-                                          LocalDate.now(),
-                                          LocalTime.now()))
-                                  newCommentText = ""
-                                  submitComment = true // Set the trigger for side effects
-                                }
-                              }
+                              onDone(
+                                  cond = editingComment,
+                                  string = newCommentText,
+                                  viewModel = viewModel,
+                                  suggestion = suggestion,
+                                  selectedComment = selectedComment!!,
+                                  exec = {
+                                    newCommentText = ""
+                                    submitComment = true
+                                  })
                             }))
 
                 // Display the comments
@@ -360,6 +333,31 @@ fun SuggestionDetail(
                 newCommentText = it
                 focusRequester.requestFocus()
               }) // Pass the edit function to the bottom sheet
+    }
+  }
+}
+
+// Function to handle remove duplication of code for adding and editing comments
+private fun onDone(
+    cond: Boolean,
+    string: String,
+    viewModel: SuggestionsViewModel,
+    suggestion: Suggestion,
+    selectedComment: Comment,
+    exec: () -> Unit
+) {
+  if (cond) {
+    if (string.isNotBlank()) {
+      viewModel.updateComment(suggestion, selectedComment.copy(text = string))
+    } else {
+      viewModel.cancelEditComment()
+    }
+    exec()
+  } else {
+    if (string.isNotBlank()) {
+      viewModel.addComment(
+          suggestion, Comment("", "", "tempUsername", string, LocalDate.now(), LocalTime.now()))
+      exec()
     }
   }
 }
