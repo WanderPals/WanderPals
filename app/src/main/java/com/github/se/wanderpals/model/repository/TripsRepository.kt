@@ -173,31 +173,54 @@ class TripsRepository(
         }
       }
 
+  /**
+   * Retrieves the balance map for a specific trip from Firestore. This method queries the Firestore
+   * subcollection for balances associated with a given trip document identified by its unique trip
+   * ID. The balances are stored under a specific document, which is predefined by `balancesId`.
+   *
+   * @param tripId The unique identifier of the trip for which balances are to be fetched.
+   * @return A map of String to Double representing the balances for the trip. Returns an empty map
+   *   if the balances document is not found, if there are no balances in the document, or in case
+   *   of an error during data retrieval. Errors during the operation are logged and an empty map is
+   *   returned.
+   */
   suspend fun getBalances(tripId: String): Map<String, Double> =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
               tripsCollection
                   .document(tripId)
-                  .collection(FirebaseCollections.TRIP_NOTIFICATIONS_SUBCOLLECTION.path)
+                  .collection(FirebaseCollections.TRIP_BALANCES_SUBCOLLECTION.path)
                   .document(balancesId)
                   .get()
                   .await()
-            @Suppress("UNCHECKED_CAST")
-            (documentSnapshot.data as? Map<String, Double>) ?: emptyMap()
+          @Suppress("UNCHECKED_CAST")
+          (documentSnapshot.data as? Map<String, Double>) ?: emptyMap()
         } catch (e: Exception) {
           Log.e("TripsRepository", "getBalances: Error getting balance map for trip $tripId", e)
           emptyMap()
         }
       }
 
+  /**
+   * Sets or updates the balance map for a specific trip in Firestore. This method updates the
+   * Firestore subcollection for balances by setting a map of String to Double associated with a
+   * given trip document, identified by its unique trip ID. The balances are stored under a specific
+   * document predefined by `balancesId`.
+   *
+   * @param tripId The unique identifier of the trip for which balances are to be set.
+   * @param balancesMap The map of String to Double to be stored as balances for the trip.
+   * @return A Boolean value indicating the success or failure of the operation. Returns `true` if
+   *   the operation is successful, and `false` if there is an error during the setting operation.
+   *   Errors are logged.
+   */
   suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
       withContext(dispatcher) {
         try {
           val balanceDocument =
               tripsCollection
                   .document(tripId)
-                  .collection(FirebaseCollections.TRIP_NOTIFICATIONS_SUBCOLLECTION.path)
+                  .collection(FirebaseCollections.TRIP_BALANCES_SUBCOLLECTION.path)
                   .document(balancesId)
 
           if (balancesMap.isEmpty()) {
@@ -205,7 +228,7 @@ class TripsRepository(
           } else {
             balanceDocument.set(balancesMap).await()
           }
-            true
+          true
         } catch (e: Exception) {
           Log.e("TripsRepository", "setBalances: Error setting balance map for trip $tripId", e)
           false

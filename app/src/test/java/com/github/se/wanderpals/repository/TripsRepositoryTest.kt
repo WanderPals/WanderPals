@@ -679,6 +679,59 @@ class TripsRepositoryTest {
   }
 
   @Test
+  fun testTripLifecycleWithBalances() = runBlocking {
+    // Initialize a trip with details for a summer vacation in Italy.
+    val trip =
+        Trip(
+            tripId = "trip123",
+            title = "Summer Vacation",
+            startDate = LocalDate.of(2024, 5, 20),
+            endDate = LocalDate.of(2024, 6, 10),
+            totalBudget = 2000.0,
+            description = "Our summer vacation trip to Italy.",
+            imageUrl = "https://example.com/image.png",
+            stops = emptyList(),
+            users = emptyList(),
+            suggestions = emptyList(),
+            announcements = emptyList())
+
+    // Define a balance map for the trip.
+    val balances = mapOf("Alice" to 150.0, "Bob" to -50.0)
+
+    val elapsedTime = measureTimeMillis {
+      try {
+        withTimeout(10000) {
+          // Add the trip and validate the addition.
+          assertTrue(repository.addTrip(trip))
+
+          val fetchedTripId = repository.getTripsIds().first()
+          assertNotNull(fetchedTripId)
+
+          // Set balances for the trip and validate that they are set.
+          assertTrue(repository.setBalances(fetchedTripId, balances))
+
+          // Retrieve and validate balances.
+          val retrievedBalances = repository.getBalances(fetchedTripId)
+          assertEquals(balances.size, retrievedBalances.size)
+          assertTrue(retrievedBalances.all { balances[it.key] == it.value })
+
+          // Clear the balances and validate clearance.
+          assertTrue(repository.setBalances(fetchedTripId, emptyMap()))
+
+          val retrievedBalancesAfterClearance = repository.getBalances(fetchedTripId)
+          assertTrue(retrievedBalancesAfterClearance.isEmpty())
+
+          // Cleanup: Delete the trip.
+          assertTrue(repository.deleteTrip(fetchedTripId))
+        }
+      } catch (e: TimeoutCancellationException) {
+        fail("The operation timed out after 10 seconds")
+      }
+    }
+    println("Execution time for testTripLifecycleWithNotifications: $elapsedTime ms")
+  }
+
+  @Test
   fun testAddAndGetEmailWithUsername() = runBlocking {
     val emails = listOf("gregory1@example.com", "viktor@example.com")
     // usernames list of string of 2 usernames
@@ -758,6 +811,8 @@ class TripsRepositoryTest {
 
           val expensesIds = trip.expenses
           expensesIds.forEach { expensesId -> repository.removeExpenseFromTrip(tripId, expensesId) }
+
+          repository.setBalances(tripId, emptyMap())
 
           repository.deleteTrip(tripId)
           repository.removeTripId(tripId)
