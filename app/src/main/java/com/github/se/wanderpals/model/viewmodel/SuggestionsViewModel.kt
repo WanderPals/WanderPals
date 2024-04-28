@@ -9,11 +9,11 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import java.time.LocalTime
 import java.util.UUID
+import kotlin.math.ceil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,
@@ -51,9 +51,9 @@ open class SuggestionsViewModel(
   // item:
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
 
-    // This will hold the IDs of suggestions that have been added to stops
-    private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
-    val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
+  // This will hold the IDs of suggestions that have been added to stops
+  private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
+  open val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
 
   init {
     // Fetch all trips when the ViewModel is initialized
@@ -73,20 +73,19 @@ open class SuggestionsViewModel(
     viewModelScope.launch {
       _isLoading.value = true
       // Fetch all trips from the repository
-        val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
-        _state.value = suggestions
-        Log.d("Fetched Suggestions", _state.value.toString())
+      val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
+      _state.value = suggestions
+      Log.d("Fetched Suggestions", _state.value.toString())
 
       _likedSuggestions.value =
           _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
 
-        // After loading, check if any suggestions have already reached the majority.
-        // If so, add them as stops and remove them from the suggestions list. This is done automatically.
-        suggestions.forEach { suggestion ->
-            checkAndAddSuggestionAsStop(suggestion)
-        }
+      // After loading, check if any suggestions have already reached the majority.
+      // If so, add them as stops and remove them from the suggestions list. This is done
+      // automatically.
+      suggestions.forEach { suggestion -> checkAndAddSuggestionAsStop(suggestion) }
 
-        _isLoading.value = false
+      _isLoading.value = false
     }
   }
 
@@ -137,8 +136,8 @@ open class SuggestionsViewModel(
                 .filter { it.userLikes.contains(currentLoggedInUId) }
                 .map { it.suggestionId }
 
-          // Now check if the suggestion should be added to stops
-          checkAndAddSuggestionAsStop(updatedSuggestion)
+        // Now check if the suggestion should be added to stops
+        checkAndAddSuggestionAsStop(updatedSuggestion)
       }
     }
   }
@@ -204,34 +203,42 @@ open class SuggestionsViewModel(
     hideBottomSheet()
   }
 
-    // Call this function when the like status of a suggestion is toggled
-    open fun checkAndAddSuggestionAsStop(suggestion: Suggestion) {
-        viewModelScope.launch {
-            val allUsers = suggestionRepository?.getAllUsersFromTrip(tripId) ?: emptyList()
-            val threshold = ceil(allUsers.size / 2.0).toInt()
-            val likesCount = suggestion.userLikes.size
+  /**
+   * Checks if a suggestion of a trip has reached the majority of likes and adds it as a stop if so.
+   *
+   * @param suggestion The suggestion of a trip to check and add as a stop.
+   */
+  open fun checkAndAddSuggestionAsStop(suggestion: Suggestion) {
+    viewModelScope.launch {
+      val allUsers = suggestionRepository?.getAllUsersFromTrip(tripId) ?: emptyList()
+      val threshold = ceil(allUsers.size / 2.0).toInt()
+      val likesCount = suggestion.userLikes.size
 
-            val isMajority = if (allUsers.size % 2 == 1) {
-                likesCount >= threshold // If the number of users is odd, the threshold of likes is the middle user to ensure majority
-            } else {
-                likesCount > threshold +1 // If the number of users is even, the threshold of likes is the middle two users (one extra) to ensure majority
-            }
+      val isMajority =
+          if (allUsers.size % 2 == 1) {
+            likesCount >=
+                threshold // If the number of users is odd, the threshold of likes is the middle
+                          // user to ensure majority
+          } else {
+            likesCount >
+                threshold +
+                    1 // If the number of users is even, the threshold of likes is the middle two
+                      // users (one extra) to ensure majority
+          }
 
-            if (isMajority && !_addedSuggestionsToStops.value.contains(suggestion.suggestionId)) {
-                val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, suggestion.stop) ?: false
-                if (wasStopAdded) {
-                    // Remove the suggestion from the state
-                    _state.value = _state.value.filterNot { it.suggestionId == suggestion.suggestionId }
-                    // Add the suggestion ID to the list of added stops
-                    _addedSuggestionsToStops.value = _addedSuggestionsToStops.value.plus(suggestion.suggestionId)
-                    // Remove the suggestion from the trip's suggestion list
-                 suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
-                }
-            }
+      if (isMajority && !_addedSuggestionsToStops.value.contains(suggestion.suggestionId)) {
+        val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, suggestion.stop) ?: false
+        if (wasStopAdded) {
+          // Remove the suggestion from the state
+          _state.value = _state.value.filterNot { it.suggestionId == suggestion.suggestionId }
+          // Add the suggestion ID to the list of added stops
+          _addedSuggestionsToStops.value += suggestion.suggestionId
+          // Remove the suggestion from the trip's suggestion list
+          suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
         }
+      }
     }
-
-
+  }
 
   open fun deleteSuggestion(suggestion: Suggestion) {
     viewModelScope.launch {

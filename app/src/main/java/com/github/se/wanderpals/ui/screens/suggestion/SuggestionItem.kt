@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,14 +51,7 @@ fun SuggestionItem(
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
-
-    val addedToStops = viewModel.addedSuggestionsToStops.collectAsState().value
-
-    val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-
-
-
-    // State for the like status of the suggestion
+  // State for the like status of the suggestion
   val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
 
   // State for the like count, which depends on the `userLikes` size
@@ -80,7 +72,10 @@ fun SuggestionItem(
               .width(380.dp) // the width of the Card
               .height(166.dp) // the height of the Card
               .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
-              .clickable(onClick = onClick),// Invoke the onClick lambda when the item is clicked (see SuggestionFeedContent.kt)
+              .clickable(
+                  onClick =
+                      onClick), // Invoke the onClick lambda when the item is clicked (see
+                                // SuggestionFeedContent.kt)
       colors = cardColors // Use the cardColors with the white background
       ) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
@@ -147,7 +142,7 @@ fun SuggestionItem(
                     modifier =
                         Modifier.size(18.dp)
                             .clickable { viewModel.toggleLikeSuggestion(suggestion) }
-                            .testTag("likeIconSuggestionFeedScreen_sugg1"))
+                            .testTag("likeIconSuggestionFeedScreen_${suggestion.suggestionId}"))
 
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
 

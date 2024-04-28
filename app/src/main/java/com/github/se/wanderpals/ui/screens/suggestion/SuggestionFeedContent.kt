@@ -77,9 +77,7 @@ fun SuggestionFeedContent(
         }
       }
 
-  Column(modifier = Modifier
-      .fillMaxWidth()
-      .padding(innerPadding)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
 
     // Title for the list of suggestions
     Text(
@@ -132,23 +130,21 @@ fun SuggestionFeedContent(
     } else {
       // LazyColumn to display the list of suggestions with sorting and search filtering
       // (Note: can only have one LazyColumn in a composable function)
-      LazyColumn {
+      LazyColumn(modifier = Modifier.testTag("suggestionFeedContentList")) {
         itemsIndexed(displayList) { index, suggestion ->
-            // Only render items that have not been added to stops
-            val addedToStops = suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
-            val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-            if (!isSuggestionAddedToStop) {
-                SuggestionItem(
-                    suggestion = suggestion,
-                    onClick = {
-                        selectedSuggestion = suggestion
-                    }, // This lambda is passed to the SuggestionItem composable
-                    modifier = Modifier
-                        .testTag("suggestion${index + 1}"),
-                    tripId = tripId,
-                    viewModel = suggestionsViewModel
-                )
-            }
+          // Only render items that have not been added to stops
+          val addedToStops = suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
+          val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
+          if (!isSuggestionAddedToStop) {
+            SuggestionItem(
+                suggestion = suggestion,
+                onClick = {
+                  selectedSuggestion = suggestion
+                }, // This lambda is passed to the SuggestionItem composable
+                modifier = Modifier.testTag("suggestion${index + 1}"),
+                tripId = tripId,
+                viewModel = suggestionsViewModel)
+          }
         }
       }
     }
