@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import java.time.LocalTime
 import java.util.UUID
@@ -14,6 +15,23 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+
+/**
+ * Fetches all users from a trip and calculates the threshold for majority based on the number of
+ * users.
+ *
+ * @param suggestionRepository The repository to fetch data from.
+ * @param tripId The ID of the trip to fetch users from.
+ * @return A pair of the list of users and the threshold for majority.
+ */
+private suspend fun fetchUsersAndThreshold(
+    suggestionRepository: TripsRepository,
+    tripId: String
+): Pair<List<User>, Int> {
+  val allUsers = suggestionRepository.getAllUsersFromTrip(tripId)
+  val threshold = ceil(allUsers.size / 2.0).toInt()
+  return Pair(allUsers, threshold)
+}
 
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,
@@ -80,10 +98,15 @@ open class SuggestionsViewModel(
       _likedSuggestions.value =
           _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
 
+      // Fetch all users from the trip once, before the loop
+      val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
+
       // After loading, check if any suggestions have already reached the majority.
       // If so, add them as stops and remove them from the suggestions list. This is done
       // automatically.
-      suggestions.forEach { suggestion -> checkAndAddSuggestionAsStop(suggestion) }
+      suggestions.forEach { suggestion ->
+        checkAndAddSuggestionAsStop(suggestion, allUsers, threshold)
+      }
 
       _isLoading.value = false
     }
@@ -125,6 +148,10 @@ open class SuggestionsViewModel(
             currentSuggestion.userLikes + currentLoggedInUId
           }
       val updatedSuggestion = currentSuggestion.copy(userLikes = newUserLike)
+
+      // Fetch all users from the trip:
+      val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
+
       // Call the repository function to update the suggestion
       val wasUpdateSuccessful =
           suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
@@ -137,7 +164,7 @@ open class SuggestionsViewModel(
                 .map { it.suggestionId }
 
         // Now check if the suggestion should be added to stops
-        checkAndAddSuggestionAsStop(updatedSuggestion)
+        checkAndAddSuggestionAsStop(updatedSuggestion, allUsers, threshold)
       }
     }
   }
@@ -208,10 +235,12 @@ open class SuggestionsViewModel(
    *
    * @param suggestion The suggestion of a trip to check and add as a stop.
    */
-  open fun checkAndAddSuggestionAsStop(suggestion: Suggestion) {
+  open fun checkAndAddSuggestionAsStop(
+      suggestion: Suggestion,
+      allUsers: List<User>,
+      threshold: Int
+  ) {
     viewModelScope.launch {
-      val allUsers = suggestionRepository?.getAllUsersFromTrip(tripId) ?: emptyList()
-      val threshold = ceil(allUsers.size / 2.0).toInt()
       val likesCount = suggestion.userLikes.size
 
       val isMajority =
