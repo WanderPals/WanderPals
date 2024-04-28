@@ -92,6 +92,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (Stri
  */
 @Composable
 fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
+  val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
   Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
     Button(
         onClick = { onActivityClick(stop.stopId) },
@@ -135,25 +136,29 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
             // Icon Button at the far right, centered vertically
             IconButton(
                 onClick = {
-                          navigationActions.setVariablesLocation(
-                              stop.geoCords,
-                              stop.address
-                          )
-                          navigationActions.navigateTo(Route.MAP)
+                         if(stopHasLocation){
+                             navigationActions.setVariablesLocation(
+                                 stop.geoCords,
+                                 stop.address
+                             )
+                             navigationActions.navigateTo(Route.MAP)
+                         }
                 },
                 modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
                         .align(
                             Alignment
-                                .CenterVertically) // Center the IconButton vertically within the
+                                .CenterVertically), // Center the IconButton vertically within the
+                enabled = stopHasLocation
                 // Row
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
-                      tint = MaterialTheme.colorScheme.primary,
+                      tint = if (stopHasLocation) MaterialTheme.colorScheme.primary else Color.LightGray,
                       contentDescription = null // Provide an appropriate content description
                       )
                 }
+
           }
         }
   }
