@@ -266,7 +266,7 @@ fun SuggestionDetail(
                                 string = newCommentText,
                                 viewModel = viewModel,
                                 suggestion = suggestion,
-                                selectedComment = selectedComment!!,
+                                selectedComment = selectedComment,
                                 exec = {
                                   newCommentText = ""
                                   submitComment = true
@@ -304,7 +304,7 @@ fun SuggestionDetail(
                                   string = newCommentText,
                                   viewModel = viewModel,
                                   suggestion = suggestion,
-                                  selectedComment = selectedComment!!,
+                                  selectedComment = selectedComment,
                                   exec = {
                                     newCommentText = ""
                                     submitComment = true
@@ -343,12 +343,12 @@ private fun onDone(
     string: String,
     viewModel: SuggestionsViewModel,
     suggestion: Suggestion,
-    selectedComment: Comment,
+    selectedComment: Comment?,
     exec: () -> Unit
 ) {
   if (cond) {
     if (string.isNotBlank()) {
-      viewModel.updateComment(suggestion, selectedComment.copy(text = string))
+      viewModel.updateComment(suggestion, selectedComment!!.copy(text = string))
     } else {
       viewModel.cancelEditComment()
     }
