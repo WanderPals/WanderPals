@@ -1059,7 +1059,7 @@ class TripsRepository(
 
   /**
    * Removes a user from a trip. This method deletes a user's document from the Users subcollection
-   * within a trip.
+   * within a trip. And the TripId from his accessible trips
    *
    * @param tripId The unique identifier of the trip.
    * @param userId The unique identifier of the user to be removed.
@@ -1081,6 +1081,7 @@ class TripsRepository(
             val updatedUsersList = trip.users.filterNot { it == userId }
             val updatedTrip = trip.copy(users = updatedUsersList)
             updateTrip(updatedTrip)
+            removeTripId(tripId, userId) // remove the Trip from the the deleted user
             Log.d(
                 "TripsRepository",
                 "removeUserFromTrip: User $userId deleted and trip updated successfully.")
@@ -1510,18 +1511,20 @@ class TripsRepository(
       }
 
   /**
-   * remove a trip ID from the current user's list of trip IDs in their document within the 'Users'
+   * Remove a trip ID from a user's list of trip IDs in their document within the 'Users'
    * collection. This operation is performed within a Firestore transaction to ensure atomicity and
-   * consistency.
+   * consistency. The user ID can be specified; if not, the current user's ID is used by default.
    *
-   * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
+   * @param tripId The unique identifier of the trip to remove from the user's list of trip IDs.
+   * @param userId Optional; the unique identifier of the user from whose document the trip ID will
+   *   be removed. If not provided, the ID of the current user is used as the default.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun removeTripId(tripId: String): Boolean =
+  suspend fun removeTripId(tripId: String, userId: String = uid): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "removeTripId: Removing tripId from user")
 
-        val userDocumentRef = usersCollection.document(uid)
+        val userDocumentRef = usersCollection.document(userId)
 
         try {
           val transactionResult =
