@@ -50,6 +50,7 @@ class TripsRepository(
   private lateinit var usernameCollection: CollectionReference
 
   private val notificationsId = "Notifications"
+  private val balancesId = "Balances"
 
   /**
    * (Currently used only for unit tests)
@@ -172,6 +173,45 @@ class TripsRepository(
         }
       }
 
+  suspend fun getBalances(tripId: String): Map<String, Double> =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_NOTIFICATIONS_SUBCOLLECTION.path)
+                  .document(balancesId)
+                  .get()
+                  .await()
+            @Suppress("UNCHECKED_CAST")
+            (documentSnapshot.data as? Map<String, Double>) ?: emptyMap()
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "getBalances: Error getting balance map for trip $tripId", e)
+          emptyMap()
+        }
+      }
+
+  suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
+      withContext(dispatcher) {
+        try {
+          val balanceDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_NOTIFICATIONS_SUBCOLLECTION.path)
+                  .document(balancesId)
+
+          if (balancesMap.isEmpty()) {
+            balanceDocument.delete().await()
+          } else {
+            balanceDocument.set(balancesMap).await()
+          }
+            true
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "setBalances: Error setting balance map for trip $tripId", e)
+          false
+        }
+      }
+
   /**
    * Retrieves a list of notifications for a specific trip from Firestore. This method queries the
    * Firestore subcollection for notifications associated with a given trip document identified by
@@ -196,6 +236,7 @@ class TripsRepository(
                   .await()
           // Attempt to retrieve the list using the correct type information
           val data = documentSnapshot.data
+          @Suppress("UNCHECKED_CAST")
           val notificationsList =
               data?.get(notificationsId) as? List<Map<String, Any>> ?: emptyList()
 
