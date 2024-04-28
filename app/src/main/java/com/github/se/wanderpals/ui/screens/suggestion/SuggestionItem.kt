@@ -51,7 +51,6 @@ fun SuggestionItem(
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier // Add this line to accept a Modifier
 ) {
-
   // State for the like status of the suggestion
   val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
 
@@ -142,7 +141,7 @@ fun SuggestionItem(
                     modifier =
                         Modifier.size(18.dp)
                             .clickable { viewModel.toggleLikeSuggestion(suggestion) }
-                            .testTag("likeIconSuggestionFeedScreen_sugg1"))
+                            .testTag("likeIconSuggestionFeedScreen_${suggestion.suggestionId}"))
 
                 Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
 

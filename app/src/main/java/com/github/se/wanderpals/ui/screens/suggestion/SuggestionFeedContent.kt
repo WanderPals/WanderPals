@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -129,16 +130,21 @@ fun SuggestionFeedContent(
     } else {
       // LazyColumn to display the list of suggestions with sorting and search filtering
       // (Note: can only have one LazyColumn in a composable function)
-      LazyColumn {
+      LazyColumn(modifier = Modifier.testTag("suggestionFeedContentList")) {
         itemsIndexed(displayList) { index, suggestion ->
-          SuggestionItem(
-              suggestion = suggestion,
-              onClick = {
-                selectedSuggestion = suggestion
-              }, // This lambda is passed to the SuggestionItem composable
-              modifier = Modifier.testTag("suggestion${index + 1}"),
-              tripId = tripId,
-              viewModel = suggestionsViewModel)
+          // Only render items that have not been added to stops
+          val addedToStops = suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
+          val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
+          if (!isSuggestionAddedToStop) {
+            SuggestionItem(
+                suggestion = suggestion,
+                onClick = {
+                  selectedSuggestion = suggestion
+                }, // This lambda is passed to the SuggestionItem composable
+                modifier = Modifier.testTag("suggestion${index + 1}"),
+                tripId = tripId,
+                viewModel = suggestionsViewModel)
+          }
         }
       }
     }
