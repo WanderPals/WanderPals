@@ -3,6 +3,7 @@ package com.github.se.wanderpals.model.repository
 import FirestoreTrip
 import android.util.Log
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
@@ -10,6 +11,7 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreAnnouncement
+import com.github.se.wanderpals.model.firestoreData.FirestoreExpense
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
 import com.github.se.wanderpals.model.firestoreData.FirestoreTripNotification
@@ -24,6 +26,7 @@ import java.util.UUID
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlin.math.exp
 
 /**
  * Provides an interface for accessing and manipulating trip data stored in Firestore. Utilizes
@@ -256,6 +259,171 @@ class TripsRepository(
           false
         }
       }
+
+    suspend fun getExpenseFromTrip(tripId: String, expenseId: String): Expense? =
+        withContext(dispatcher) {
+            try {
+                val documentSnapshot =
+                    tripsCollection
+                        .document(tripId)
+                        .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+                        .document(expenseId)
+                        .get()
+                        .await()
+                val firestoreExpense = documentSnapshot.toObject<FirestoreExpense>()
+                if (firestoreExpense != null) {
+                    firestoreExpense.toExpense()
+                } else {
+                    Log.e(
+                        "TripsRepository",
+                        "getExpenseFromTrip: Not found Expense $expenseId from trip $tripId.")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e(
+                    "TripsRepository",
+                    "getExpenseFromTrip: Error getting Expense $expenseId from trip $tripId.",
+                    e)
+                null // error
+            }
+        }
+
+
+    suspend fun getAllExpensesFromTrip(tripId: String): List<Expense> =
+        withContext(dispatcher) {
+            try {
+                val trip = getTrip(tripId)
+
+                if (trip != null) {
+                    val expenseIds = trip.expenses
+                    expenseIds.mapNotNull { expenseId ->
+                        getExpenseFromTrip(tripId, expenseId)
+                    }
+                } else {
+                    Log.e("TripsRepository", "getAllExpensesFromTrip: Trip not found with ID $tripId.")
+                    emptyList()
+                }
+            } catch (e: Exception) {
+
+                Log.e(
+                    "TripsRepository",
+                    "getAllExpensesFromTrip: Error fetching Expenses to trip $tripId.",
+                    e)
+                emptyList()
+            }
+        }
+
+
+    suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
+        withContext(dispatcher) {
+            try {
+                val uniqueID = UUID.randomUUID().toString()
+                val firebaseExpense =
+                    FirestoreExpense.fromExpense(
+                        expense.copy(
+                            expenseId = uniqueID,
+                            userId = uid)) // we already know who creates the Expense
+                val expenseDocument =
+                    tripsCollection
+                        .document(tripId)
+                        .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+                        .document(uniqueID)
+                expenseDocument.set(firebaseExpense).await()
+                Log.d(
+                    "TripsRepository",
+                    "addExpenseToTrip: Expense added successfully to trip $tripId.")
+
+                val trip = getTrip(tripId)
+                if (trip != null) {
+                    // Add the new ExpenseId to the trip's Expense list and update the
+                    // trip
+                    val updatedExpensesList = trip.expenses + uniqueID
+                    val updatedTrip = trip.copy(expenses = updatedExpensesList)
+                    updateTrip(updatedTrip)
+                    Log.d(
+                        "TripsRepository",
+                        "addExpenseToTrip: Expense ID added to trip successfully.")
+
+                    uniqueID //this function will return the new object ID if its successful
+                } else {
+
+                    Log.e("TripsRepository", "addExpenseToTrip: Trip not found with ID $tripId.")
+
+                    ""//And will return an empty string in case of failure
+                }
+            } catch (e: Exception) {
+                Log.e(
+                    "TripsRepository",
+                    "addExpenseToTrip: Error adding Expense to trip $tripId.",
+                    e)
+                ""
+            }
+        }
+
+
+    suspend fun removeExpenseFromTrip(tripId: String, expenseId: String): Boolean =
+        withContext(dispatcher) {
+            try {
+                Log.d(
+                    "TripsRepository",
+                    "removeExpenseFromTrip: removing Expense $expenseId from trip $tripId")
+                tripsCollection
+                    .document(tripId)
+                    .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+                    .document(expenseId)
+                    .delete()
+                    .await()
+
+                val trip = getTrip(tripId)
+                if (trip != null) {
+                    val updatedExpensesList = trip.expenses.filterNot { it == expenseId }
+                    val updatedTrip = trip.copy(expenses = updatedExpensesList)
+                    updateTrip(updatedTrip)
+                    Log.d(
+                        "TripsRepository",
+                        "removeExpenseFromTrip: Expense $expenseId remove and trip updated successfully.")
+                    true
+                } else {
+                    Log.e("TripsRepository", "removeExpenseFromTrip: Trip not found with ID $tripId.")
+                    false
+                }
+            } catch (e: Exception) {
+                Log.e(
+                    "TripsRepository",
+                    "removeExpenseFromTrip: Error removing Expense $expenseId from trip $tripId.",
+                    e)
+                false
+            }
+        }
+
+
+    suspend fun updateExpenseInTrip(tripId: String, expense: Expense): Boolean =
+        withContext(dispatcher) {
+            try {
+                Log.d(
+                    "TripsRepository",
+                    "updateExpenseInTrip: Updating a Expense in trip $tripId")
+                val firestoreExpense = FirestoreExpense.fromExpense(expense)
+                tripsCollection
+                    .document(tripId)
+                    .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+                    .document(firestoreExpense.expenseId)
+                    .set(firestoreExpense)
+                    .await()
+                Log.d(
+                    "TripsRepository",
+                    "updateExpenseInTrip: Trip's Expense updated successfully for ID $tripId.")
+                true
+            } catch (e: Exception) {
+                Log.e(
+                    "TripsRepository",
+                    "updateExpenseInTrip: Error updating Expense with ID ${expense.expenseId} in trip with ID $tripId",
+                    e)
+                false
+            }
+        }
+
+
   /**
    * Retrieves a specific trip Announcement from a trip based on the Announcement's unique
    * identifier. This method queries the Firestore subcollection for trip Announcements within a
