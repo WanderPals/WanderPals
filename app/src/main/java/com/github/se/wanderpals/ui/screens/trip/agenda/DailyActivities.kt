@@ -148,9 +148,8 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 },
                 modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
-                        .align(
-                            Alignment
-                                .CenterVertically), // Center the IconButton vertically within the
+                            .align(Alignment.CenterVertically)
+                            .testTag("navigationToMapButton"+stop.stopId), // Center the IconButton vertically within the
                 enabled = stopHasLocation
                 // Row
                 ) {
