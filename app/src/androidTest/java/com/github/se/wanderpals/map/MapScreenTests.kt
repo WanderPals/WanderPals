@@ -13,6 +13,7 @@ import com.github.se.wanderpals.screens.MapScreen
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.trip.map.Map
+import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.MarkerState
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
@@ -33,7 +34,7 @@ import org.junit.Test
  * Fake MapViewModel for testing the Map screen. This class is used to create a fake MapViewModel
  * for testing the Map screen.
  */
-class FakeMapViewModel : MapViewModel(TripsRepository("-1", dispatcher = Dispatchers.IO), "id") {
+object FakeMapViewModel : MapViewModel(TripsRepository("-1", dispatcher = Dispatchers.IO), "id") {
 
   // create 2 fake stops
   private val stop1 =
@@ -61,6 +62,8 @@ class FakeMapViewModel : MapViewModel(TripsRepository("-1", dispatcher = Dispatc
 
   override var stops = MutableStateFlow(listOf(stop1, stop2))
 
+  override var listOfTempMarkerStates = MutableStateFlow(emptyList<MarkerState>())
+
   override fun getAllSuggestions() {}
 
   override fun getAllStops() {}
@@ -85,9 +88,7 @@ class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val mapManager = MapManager(context)
     mapManager.initClients()
-    composeTestRule.setContent {
-      Map(mockNavActions, mapViewModel = FakeMapViewModel(), mapManager)
-    }
+    composeTestRule.setContent { Map(mockNavActions, mapViewModel = FakeMapViewModel, mapManager) }
   }
 
   // test case 1: switch button is displayed
@@ -156,6 +157,23 @@ class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
       composeTestRule.onNodeWithText("Search a location").performTextInput("Pari")
       listOfPropositions { assertIsDisplayed() }
       composeTestRule.onNodeWithText("ParisZurich Traiteur").isDisplayed()
+    }
+  }
+
+  // test 10: when we have an empty list of listOfTempMarkerStates the button clear is not displayed
+  @Test
+  fun clearMarkersButtonIsNotDisplayedWhenEmpty() {
+    ComposeScreen.onComposeScreen<MapScreen>(composeTestRule) {
+      clearMarkersButton { assertIsNotDisplayed() }
+    }
+  }
+
+  // test 11: when we have a list of listOfTempMarkerStates the button clear is displayed
+  @Test
+  fun clearMarkersButtonIsDisplayedWhenNotEmpty() {
+    ComposeScreen.onComposeScreen<MapScreen>(composeTestRule) {
+      FakeMapViewModel.listOfTempMarkerStates.value = listOf(MarkerState(LatLng(48.8566, 2.3522)))
+      clearMarkersButton { assertIsDisplayed() }
     }
   }
 }

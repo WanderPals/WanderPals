@@ -361,12 +361,14 @@ fun Map(
         Modifier.align(AbsoluteAlignment.BottomRight)
             .padding(horizontal = 16.dp, vertical = 60.dp)) {
           if (listOfMarkers.isNotEmpty()) {
-            Button(onClick = { mapViewModel.clearAllSharedPreferences() }) {
-              Icon(
-                  imageVector = Icons.Default.Clear,
-                  contentDescription = "Clear",
-                  modifier = Modifier.size(24.dp))
-            }
+            Button(
+                onClick = { mapViewModel.clearAllSharedPreferences() },
+                modifier = Modifier.testTag("clearMarkersButton")) {
+                  Icon(
+                      imageVector = Icons.Default.Clear,
+                      contentDescription = "Clear",
+                      modifier = Modifier.size(24.dp))
+                }
           }
 
           Button(
