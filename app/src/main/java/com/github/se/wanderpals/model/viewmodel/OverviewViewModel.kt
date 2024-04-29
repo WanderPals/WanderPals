@@ -45,7 +45,10 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
    * @param trip The trip to add in the repository.
    */
   open fun createTrip(trip: Trip) {
-    runBlocking { tripsRepository.addTrip(trip) }
+    runBlocking {
+      tripsRepository.addTrip(trip)
+      val newTripId = tripsRepository.getAllTrips().last().tripId
+      NotificationsManager.addJoinTripNotification(newTripId)}
   }
 
   /**
