@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.NotificationsManager
 import java.time.LocalTime
 import java.util.UUID
 import kotlin.math.ceil
@@ -274,6 +275,7 @@ open class SuggestionsViewModel(
       val wasDeleteSuccessful =
           suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)!!
       if (wasDeleteSuccessful) {
+        NotificationsManager.removeNotifPath(tripId,suggestion.suggestionId)
         loadSuggestion(tripId)
       }
     }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -79,6 +81,8 @@ fun Notification(
 
   val isLoading by notificationsViewModel.isLoading.collectAsState()
 
+  val pathEmptyAlertDisplayed by notificationsViewModel.pathEmptyAlertDisplayed.collectAsState()
+
   Column(modifier = Modifier.testTag("notificationScreen")) {
     if (announcementItemPressed) {
       val selectedAnnouncement =
@@ -91,7 +95,10 @@ fun Notification(
     // TOP menu
     Surface(
         modifier =
-            Modifier.fillMaxWidth().height(100.dp).padding(horizontal = 16.dp, vertical = 22.dp),
+        Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .padding(horizontal = 16.dp, vertical = 22.dp),
         shape = RoundedCornerShape(70.dp),
         color = Color(0xFFA5B2C2)) {
           Row(
@@ -99,7 +106,10 @@ fun Notification(
               horizontalArrangement = Arrangement.Center,
               verticalAlignment = Alignment.CenterVertically) {
                 Button(
-                    modifier = Modifier.fillMaxHeight().weight(1f).testTag("notificationButton"),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .testTag("notificationButton"),
                     onClick = { notificationsViewModel.setNotificationSelectionState(true) },
                     colors =
                         ButtonDefaults.buttonColors(
@@ -115,7 +125,10 @@ fun Notification(
                                       else FontWeight.Normal))
                     }
                 Button(
-                    modifier = Modifier.fillMaxHeight().weight(1f).testTag("announcementButton"),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .testTag("announcementButton"),
                     onClick = { notificationsViewModel.setNotificationSelectionState(false) },
                     colors =
                         ButtonDefaults.buttonColors(
@@ -139,24 +152,32 @@ fun Notification(
 
     if (isLoading) {
       Box(modifier = Modifier.fillMaxSize()) {
-        CircularProgressIndicator(modifier = Modifier.size(50.dp).align(Alignment.Center))
+        CircularProgressIndicator(modifier = Modifier
+            .size(50.dp)
+            .align(Alignment.Center))
       }
     } else {
       if (itemsList.isEmpty()) {
         val emptyItemText = if (notificationSelected) "notifications" else "announcements"
-        Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 16.dp)) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+            .padding(vertical = 16.dp)) {
           // text if no items found
           Text(
               text = "Looks like there is no $emptyItemText.",
               modifier =
-                  Modifier.align(Alignment.Center)
-                      .padding(horizontal = 16.dp)
-                      .testTag("noItemsText"),
+              Modifier
+                  .align(Alignment.Center)
+                  .padding(horizontal = 16.dp)
+                  .testTag("noItemsText"),
               textAlign = TextAlign.Center,
               style = MaterialTheme.typography.bodyLarge)
         }
       } else {
-        LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+        LazyColumn(modifier = Modifier
+            .fillMaxSize()
+            .weight(1f)) {
           items(itemsList) { item ->
             when (item) {
               is TripNotification -> {
@@ -171,6 +192,8 @@ fun Notification(
                         } else {
                           navigationActions.navigateTo(item.path)
                         }
+                      }else{
+                          notificationsViewModel.setPathEmptyAlertDisplayed(true)
                       }
                     })
               }
@@ -187,19 +210,43 @@ fun Notification(
                 color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
           }
         }
+        if (pathEmptyAlertDisplayed) {
+              AlertDialog(
+                  modifier = Modifier.fillMaxWidth(),
+                  shape = RectangleShape,
+                  onDismissRequest = { notificationsViewModel.setPathEmptyAlertDisplayed(false)},
+                  title = { Text("Not available") },
+                  text = { Text("This content doesn't exist anymore.") },
+                  confirmButton = {
+                      Button(
+                          modifier = Modifier.height(35.dp),
+                          onClick = { notificationsViewModel.setPathEmptyAlertDisplayed(false) },
+                          colors = ButtonDefaults.buttonColors(
+                              containerColor = MaterialTheme.colorScheme.primary
+                          ),
+                          shape = RectangleShape
+                      ) {
+                          Text("OK")
+                      }
+                  }
+              )
+          }
       }
     }
 
     // Create announcement Button
     if (!notificationSelected && SessionManager.isAdmin()) {
-      Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
+      Box(modifier = Modifier
+          .fillMaxWidth()
+          .height(100.dp)) {
         Button(
             onClick = { navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT) },
             modifier =
-                Modifier.padding(horizontal = 20.dp)
-                    .height(50.dp)
-                    .align(Alignment.Center)
-                    .testTag("createAnnouncementButton"),
+            Modifier
+                .padding(horizontal = 20.dp)
+                .height(50.dp)
+                .align(Alignment.Center)
+                .testTag("createAnnouncementButton"),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
               Row(
                   horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
