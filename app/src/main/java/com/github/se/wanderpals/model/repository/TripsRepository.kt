@@ -1010,7 +1010,12 @@ class TripsRepository(
           if (trip != null) {
             // Add the new userID to the trip's user list and update the trip
             val updatedStopsList = trip.users + user.userId
-            val updatedTrip = trip.copy(users = updatedStopsList)
+
+            var updatedTokensList = trip.tokenIds
+            if (!SessionManager.getNotificationToken().isEmpty()) {
+              updatedTokensList = updatedStopsList + SessionManager.getNotificationToken()
+            }
+            val updatedTrip = trip.copy(users = updatedStopsList, tokenIds = updatedTokensList)
             updateTrip(updatedTrip)
             Log.d("TripsRepository", "addUserToTrip: Stop ID added to trip successfully.")
             true
@@ -1079,7 +1084,12 @@ class TripsRepository(
           val trip = getTrip(tripId)
           if (trip != null) {
             val updatedUsersList = trip.users.filterNot { it == userId }
-            val updatedTrip = trip.copy(users = updatedUsersList)
+            var updatedTokensList = trip.tokenIds
+            if (trip.tokenIds.contains(SessionManager.getNotificationToken())) {
+              updatedTokensList = updatedTokensList - SessionManager.getNotificationToken()
+            }
+            val updatedTrip = trip.copy(users = updatedUsersList, tokenIds = updatedTokensList)
+
             updateTrip(updatedTrip)
             removeTripId(tripId, userId) // remove the Trip from the the deleted user
             Log.d(
@@ -1430,7 +1440,14 @@ class TripsRepository(
   private suspend fun manageUserTripRole(tripId: String, isOwner: Boolean) {
     val currentUser = SessionManager.getCurrentUser()!!
     val role = if (isOwner) Role.OWNER else Role.MEMBER
-    val user = User(uid, currentUser.name, currentUser.email, currentUser.name, role)
+    val user =
+        User(
+            userId = uid,
+            name = currentUser.name,
+            email = currentUser.email,
+            nickname = currentUser.name,
+            role = role,
+            notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
   }
 
