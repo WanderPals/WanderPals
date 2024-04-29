@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,11 +44,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Category
+import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.ExpenseViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateExpense() {
+fun CreateExpense(viewModel: ExpenseViewModel) {
 
     val context = LocalContext.current
     var expandedMenu1 by remember { mutableStateOf(false) }
@@ -55,6 +59,8 @@ fun CreateExpense() {
     var selectedMenu1 by remember { mutableStateOf("") }
     var selectedMenu2 by remember { mutableStateOf("") }
     var expenseTitle by remember { mutableStateOf("") }
+
+    val users by viewModel.users.collectAsState()
 
     Scaffold(
         topBar = {
@@ -139,7 +145,7 @@ fun CreateExpense() {
                     onValueChange = {},
                     label = { Text("Paid by") },
                     modifier = Modifier
-                        .testTag("expenseTitle")
+                        .testTag("paidBy")
                         .fillMaxWidth()
                         .menuAnchor(),
                     readOnly = true)
@@ -147,7 +153,7 @@ fun CreateExpense() {
                     expanded = expandedMenu1,
                     onDismissRequest = { expandedMenu1 = false },
                 ) {
-                    Category.values().forEach { item ->
+                    users.forEach { item ->
                         DropdownMenuItem(
                             text = { Text(text = item.name) },
                             onClick = {
@@ -208,10 +214,10 @@ fun CreateExpense() {
                 LazyColumn(modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)) {
-                    items(10) {
+                    items(users.size) {
                         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(24.dp, 8.dp)) {
                             Checkbox(checked = false, onCheckedChange = {})
-                            Text(text = "User $it", color = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Text(text = users[it].name, color = MaterialTheme.colorScheme.onPrimaryContainer)
                         }
                     }
 
@@ -235,5 +241,5 @@ fun CreateExpense() {
 @Preview(showBackground = true)
 @Composable
 fun CreateExpensePreview() {
-    CreateExpense()
+    CreateExpense(ExpenseViewModel(TripsRepository("", Dispatchers.IO), ""))
 }
