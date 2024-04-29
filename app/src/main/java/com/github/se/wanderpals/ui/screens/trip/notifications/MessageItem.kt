@@ -46,7 +46,7 @@ fun NotificationItem(notification: TripNotification, onNotificationItemClick: ()
             Text(
                 text = notification.title,
                 style = TextStyle(fontSize = 16.sp),
-                color = Color.Black,
+                color = if (notification.path != "/") Color.Black else Color.Gray,
                 modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
                 textAlign = TextAlign.Start)
 

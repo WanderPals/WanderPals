@@ -184,17 +184,13 @@ fun Notification(
                 NotificationItem(
                     notification = item,
                     onNotificationItemClick = {
-                      if (item.path.isNotEmpty()) {
-                        if (item.path.contains("/")) {
-                          val (route, serializedArgs) = item.path.split("/", limit = 2)
-                          navigationActions.deserializeNavigationVariables(serializedArgs)
-                          navigationActions.navigateTo(route)
-                        } else {
-                          navigationActions.navigateTo(item.path)
-                        }
-                      }else{
-                          notificationsViewModel.setPathEmptyAlertDisplayed(true)
-                      }
+                              val (route, serializedArgs) = item.path.split("/", limit = 2)
+                              if(route.isNotEmpty()){
+                                  if(serializedArgs.isNotEmpty()){
+                                      navigationActions.deserializeNavigationVariables(serializedArgs)
+                                  }
+                                  navigationActions.navigateTo(route)
+                              }
                     })
               }
               is Announcement -> {
@@ -212,7 +208,7 @@ fun Notification(
         }
         if (pathEmptyAlertDisplayed) {
               AlertDialog(
-                  modifier = Modifier.fillMaxWidth(),
+                  modifier = Modifier.fillMaxWidth().testTag("emptyPathDialog"),
                   shape = RectangleShape,
                   onDismissRequest = { notificationsViewModel.setPathEmptyAlertDisplayed(false)},
                   title = { Text("Not available") },
