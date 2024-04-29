@@ -114,21 +114,21 @@ fun Map(
         })
   }
   // list of markers on the map from the search bar
-  val listOfMarkers by mapViewModel.listOfTempMarkerStates.collectAsState()
+  val listOfTempPlaceData by mapViewModel.listOfTempPlaceData.collectAsState()
 
   // Location Variables
 
-  // location searched by the user
-  var searchedLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
   // final location of the searched location, also the camera position
   var finalLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
   // name of the searched location
   var finalName by remember { mutableStateOf("") }
+  // clicked place in proposition list
+  var clickedPlace by remember { mutableStateOf("") }
 
   // Bottom Sheet Variables
 
   // place data of the searched location
-  val placeData by remember { mutableStateOf(PlaceData()) }
+  var placeData by remember { mutableStateOf(PlaceData()) }
   // bottom sheet state
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
   // bottom sheet state expanded
@@ -196,10 +196,15 @@ fun Map(
           },
           enabled = true,
           onSearch = {
-            finalLocation = searchedLocation
             finalName = textSearchBar
 
-            mapViewModel.saveMarkerState(MarkerState(position = finalLocation))
+            mapManager.fetchPlace(clickedPlace).addOnSuccessListener { response ->
+              val place = response.place
+              placeData.setPlaceData(place, clickedPlace, place.latLng!!)
+              finalLocation = place.latLng!!
+              mapViewModel.savePlaceDataState(placeData)
+            }
+
             bottomSheetExpanded = true
             activeSearchBar = false
           },
@@ -249,11 +254,7 @@ fun Map(
                       modifier =
                           Modifier.testTag("listOfPropositions").padding(8.dp).clickable {
                             textSearchBar = primaryText
-                            mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
-                              val place = response.place
-                              placeData.setPlaceData(place, placeId, place.latLng!!)
-                              searchedLocation = place.latLng!!
-                            }
+                            clickedPlace = placeId
                           })
                 }
               }
@@ -280,10 +281,10 @@ fun Map(
           }
 
           // display the marker on the map
-          listOfMarkers.forEach { markerState ->
+          listOfTempPlaceData.forEach { place ->
             Marker(
                 // Add a marker to the map
-                state = markerState,
+                state = MarkerState(position = place.placeCoordinates),
                 title = "Click to Create Suggestions",
                 onInfoWindowClick = {
                   bottomSheetExpanded = false
@@ -292,13 +293,20 @@ fun Map(
                           Suggestion(
                               stop =
                                   Stop(
-                                      stopId = placeData.placeId,
+                                      stopId = place.placeId,
                                       geoCords =
                                           GeoCords(
-                                              markerState.position.latitude,
-                                              markerState.position.longitude),
-                                      address = placeData.placeAddress)))
+                                              place.placeCoordinates.latitude,
+                                              place.placeCoordinates.longitude),
+                                      address = place.placeAddress)))
                   oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
+                },
+                onClick = {
+                  bottomSheetExpanded = false
+                  finalLocation = place.placeCoordinates
+                  placeData = place
+                  bottomSheetExpanded = true
+                  false
                 })
           }
 
@@ -310,7 +318,7 @@ fun Map(
                 title = stop.title,
                 snippet = stop.description,
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
-                onInfoWindowClick = {
+                onClick = {
                   bottomSheetExpanded = false
                   finalLocation = latLng
 
@@ -320,10 +328,10 @@ fun Map(
                     mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
                       val place = response.place
                       placeData.setPlaceData(place, placeId, place.latLng!!)
-                      searchedLocation = place.latLng!!
                       bottomSheetExpanded = true
                     }
                   }
+                  false
                 })
           }
 
@@ -335,16 +343,16 @@ fun Map(
                 title = stop.title,
                 snippet = stop.description,
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN),
-                onInfoWindowClick = {
+                onClick = {
                   bottomSheetExpanded = false
                   finalLocation = latLng
 
                   mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
                     val place = response.place
                     placeData.setPlaceData(place, stop.stopId, place.latLng!!)
-                    searchedLocation = place.latLng!!
                     bottomSheetExpanded = true
                   }
+                  false
                 })
           }
 
@@ -367,7 +375,7 @@ fun Map(
     Column(
         Modifier.align(AbsoluteAlignment.BottomRight)
             .padding(horizontal = 16.dp, vertical = 60.dp)) {
-          if (listOfMarkers.isNotEmpty()) {
+          if (listOfTempPlaceData.isNotEmpty()) {
             Button(
                 onClick = { mapViewModel.clearAllSharedPreferences() },
                 modifier = Modifier.testTag("clearMarkersButton")) {
