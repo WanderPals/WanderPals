@@ -297,6 +297,7 @@ open class SuggestionsViewModel(
   open fun transformToStop(suggestion: Suggestion) {
     viewModelScope.launch {
       suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
+      NotificationsManager.addStopNotification(tripId,suggestion.stop)
       suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
     }
     hideBottomSheet()

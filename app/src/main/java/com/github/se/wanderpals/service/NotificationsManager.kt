@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.service
 
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.navigationActions
@@ -47,7 +48,6 @@ object NotificationsManager {
     suspend fun removeNotifPath(tripId: String, suggestionId: String) {
         val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
 
-
         notifList.replaceAll {
             if (it.path.contains("suggestionId: $suggestionId")) {
                 it.copy(path = "")
@@ -89,6 +89,31 @@ object NotificationsManager {
             TripNotification(
                 "${SessionManager.getCurrentUser()!!.name} created a new suggestion ",
                 Route.SUGGESTION_DETAIL + "/" + navActions.serializeNavigationVariable(),
+                LocalDateTime.now()
+            )
+        addNewNotification(notifList, newNotif)
+        tripsRepository.setNotificationList(tripId, notifList.toList())
+    }
+
+    /**
+     * Adds a notification indicating that a new suggestion has been created for a trip.
+     * if the stop has no address, the notification will not contain any path
+     *
+     * @param tripId The ID of the trip for which the notification is added.
+     * @param stop The stop of the trip for which the notification is added.
+     */
+    suspend fun addStopNotification(tripId: String, stop: Stop) {
+        val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+        val navActions = navigationActions.copy()
+        var path = "/" // represents an empty path
+        if (stop.address.isNotEmpty()){
+            navActions.setVariablesLocation(stop.geoCords,stop.address)
+            path = Route.MAP + "/" + navActions.serializeNavigationVariable()
+        }
+        val newNotif =
+            TripNotification(
+                "A new stop has been added",
+                path,
                 LocalDateTime.now()
             )
         addNewNotification(notifList, newNotif)
