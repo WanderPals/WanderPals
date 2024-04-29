@@ -3,10 +3,9 @@ package com.github.se.wanderpals.service
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.google.android.gms.maps.model.LatLng
+import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.google.maps.android.compose.MarkerState
 import java.lang.reflect.Type
 
 /** Class to manage the shared preferences. */
@@ -26,32 +25,32 @@ object SharedPreferencesManager {
   }
 
   /**
-   * Save the marker state.
+   * Save the place data as a json string in the shared preferences.
    *
-   * @param markerState The marker state to save.
-   * @return The list of marker states.
+   * @param placeData The place data to save.
+   * @return The list of place data with the new place data added
    */
-  fun saveMarkerState(markerState: MarkerState): MutableList<MarkerState> {
-    val tempMarkers = getAllTempMarkers().toMutableList()
-    tempMarkers.add(markerState)
-    val json = Gson().toJson(tempMarkers.map { it.position })
+  fun savePlaceData(placeData: PlaceData): MutableList<PlaceData> {
+    val listPlaceData = getAllPlaceData().toMutableList()
+    listPlaceData.add(placeData)
+    val json = Gson().toJson(listPlaceData)
     sharedPreferencesMap.edit().putString(LIST_OF_TEMP_MARKERS, json).apply()
-    return tempMarkers
+    return listPlaceData
   }
 
   /**
-   * Get all the temporary markers.
+   * Get all the place data from the shared preferences.
    *
-   * @return The list of marker states.
+   * @return The list of place data
    */
-  fun getAllTempMarkers(): MutableList<MarkerState> {
-    var arrayItems: List<LatLng> = emptyList()
+  fun getAllPlaceData(): MutableList<PlaceData> {
+    var arrayItems: List<PlaceData> = emptyList()
     val serializedObject: String? = sharedPreferencesMap.getString(LIST_OF_TEMP_MARKERS, null)
     Log.d("SharedPreferencesManager", "serializedObject: $serializedObject")
     if (serializedObject != null) {
-      val type: Type = object : TypeToken<List<LatLng>>() {}.type
+      val type: Type = object : TypeToken<List<PlaceData>>() {}.type
       arrayItems = Gson().fromJson(serializedObject, type)
     }
-    return arrayItems.map { MarkerState(it) }.toMutableList()
+    return arrayItems.toMutableList()
   }
 }
