@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.SessionManager
 import java.time.LocalTime
 import java.util.UUID
 import kotlin.math.ceil
@@ -57,7 +58,11 @@ open class SuggestionsViewModel(
   private val _selectedComment = MutableStateFlow<Comment?>(null)
   open val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
-  // State flow to remember the comment that is being interacted with
+  // State flow to handle the editing of a comment
+  private val _editingComment = MutableStateFlow<Boolean>(false)
+  open val editingComment: StateFlow<Boolean> = _editingComment.asStateFlow()
+
+  // State flow to remember the suggestion that is being interacted with
   private val _selectedSuggestion = MutableStateFlow<Suggestion?>(null)
   open val selectedSuggestion: StateFlow<Suggestion?> = _selectedSuggestion.asStateFlow()
 
@@ -169,6 +174,12 @@ open class SuggestionsViewModel(
     }
   }
 
+  /**
+   * Adds a comment to the suggestion and updates the backend and local state accordingly.
+   *
+   * @param suggestion The suggestion to which the comment belongs.
+   * @param comment The new comment to be added.
+   */
   open fun addComment(suggestion: Suggestion, comment: Comment) {
     val updatedSuggestion =
         suggestion.copy(
@@ -177,7 +188,7 @@ open class SuggestionsViewModel(
                     Comment(
                         commentId = UUID.randomUUID().toString(),
                         userId = currentLoggedInUId,
-                        userName = comment.userName,
+                        userName = SessionManager.getCurrentUser()?.name!!,
                         text = comment.text,
                         createdAt = comment.createdAt,
                         createdAtTime = LocalTime.now()))
@@ -188,6 +199,27 @@ open class SuggestionsViewModel(
         loadSuggestion(tripId)
       }
     }
+  }
+
+  /**
+   * Updates the comment in the suggestion and updates the backend and local state accordingly.
+   *
+   * @param suggestion The suggestion to which the comment belongs.
+   * @param comment The updated comment.
+   */
+  open fun updateComment(suggestion: Suggestion, comment: Comment) {
+    val updatedSuggestion =
+        suggestion.copy(
+            comments = suggestion.comments.filter { it.commentId != comment.commentId } + comment)
+    viewModelScope.launch {
+      val wasUpdateSuccessful =
+          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+      if (wasUpdateSuccessful) {
+        loadSuggestion(tripId)
+      }
+    }
+
+    _editingComment.value = false
   }
 
   open fun showBottomSheet(comment: Comment) {
@@ -290,6 +322,15 @@ open class SuggestionsViewModel(
       _bottomSheetVisible.value = true
       _selectedSuggestion.value = suggestion
     }
+  }
+
+  open fun editCommentOption() {
+    _editingComment.value = true
+    hideBottomSheet()
+  }
+
+  open fun cancelEditComment() {
+    _editingComment.value = false
   }
 
   open fun transformToStop(suggestion: Suggestion) {
