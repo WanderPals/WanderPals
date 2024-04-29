@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -81,7 +79,6 @@ fun Notification(
 
   val isLoading by notificationsViewModel.isLoading.collectAsState()
 
-  val pathEmptyAlertDisplayed by notificationsViewModel.pathEmptyAlertDisplayed.collectAsState()
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
     if (announcementItemPressed) {
@@ -206,27 +203,7 @@ fun Notification(
                 color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
           }
         }
-        if (pathEmptyAlertDisplayed) {
-              AlertDialog(
-                  modifier = Modifier.fillMaxWidth().testTag("emptyPathDialog"),
-                  shape = RectangleShape,
-                  onDismissRequest = { notificationsViewModel.setPathEmptyAlertDisplayed(false)},
-                  title = { Text("Not available") },
-                  text = { Text("This content doesn't exist anymore.") },
-                  confirmButton = {
-                      Button(
-                          modifier = Modifier.height(35.dp),
-                          onClick = { notificationsViewModel.setPathEmptyAlertDisplayed(false) },
-                          colors = ButtonDefaults.buttonColors(
-                              containerColor = MaterialTheme.colorScheme.primary
-                          ),
-                          shape = RectangleShape
-                      ) {
-                          Text("OK")
-                      }
-                  }
-              )
-          }
+
       }
     }
 
