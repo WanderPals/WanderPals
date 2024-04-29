@@ -48,10 +48,9 @@ object NotificationsManager {
     suspend fun removeSuggestionPath(tripId: String,suggestionId: String) {
         val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
 
-
         notifList.replaceAll {
-            if(it.path.contains("suggestionId: $suggestionId")){
-                it.copy(path = "/")
+            if(it.navActionVariables.contains("suggestionId: $suggestionId")){
+                it.copy(route = "",navActionVariables = "")
             }else{
                 it
             }
@@ -69,8 +68,9 @@ object NotificationsManager {
         val newNotif =
             TripNotification(
                 "${SessionManager.getCurrentUser()!!.name} joined the trip ",
-                Route.ADMIN_PAGE + "/",
-                LocalDateTime.now()
+                Route.ADMIN_PAGE,
+                LocalDateTime.now(),
+                ""
             )
         addNewNotification(notifList, newNotif)
         tripsRepository.setNotificationList(tripId, notifList.toList())
@@ -89,8 +89,9 @@ object NotificationsManager {
         val newNotif =
             TripNotification(
                 "${SessionManager.getCurrentUser()!!.name} created a new suggestion ",
-                Route.SUGGESTION_DETAIL + "/" + navActions.serializeNavigationVariable(),
-                LocalDateTime.now()
+                Route.SUGGESTION_DETAIL,
+                LocalDateTime.now(),
+                navActions.serializeNavigationVariable()
             )
         addNewNotification(notifList, newNotif)
         tripsRepository.setNotificationList(tripId, notifList.toList())
@@ -105,17 +106,20 @@ object NotificationsManager {
     suspend fun addStopNotification(tripId: String, stop: Stop) {
         val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
         val navActions = navigationActions.copy()
-        var path = "/"
+        var route = ""
+        var navActionVariables = ""
         if(stop.address.isNotEmpty()){
             navActions.setVariablesLocation(
                 geoCords = stop.geoCords,address = stop.address)
-            path = Route.MAP + "/" + navActions.serializeNavigationVariable()
+            route = Route.MAP
+            navActionVariables = navActions.serializeNavigationVariable()
         }
         val newNotif =
             TripNotification(
                 "A new stop has been added ",
-                path,
-                LocalDateTime.now()
+                route,
+                LocalDateTime.now(),
+                navActionVariables
             )
         addNewNotification(notifList, newNotif)
         tripsRepository.setNotificationList(tripId, notifList.toList())

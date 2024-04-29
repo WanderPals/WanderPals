@@ -37,7 +37,7 @@ import java.time.format.DateTimeFormatter
 fun NotificationItem(notification: TripNotification, onNotificationItemClick: () -> Unit) {
   Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
     Button(
-        modifier = Modifier.testTag("notifItemButton" + notification.path),
+        modifier = Modifier.testTag("notifItemButton" + notification.route),
         onClick = { onNotificationItemClick() },
         shape = RectangleShape,
         colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
@@ -46,7 +46,7 @@ fun NotificationItem(notification: TripNotification, onNotificationItemClick: ()
             Text(
                 text = notification.title,
                 style = TextStyle(fontSize = 16.sp),
-                color = if (notification.path != "/") Color.Black else Color.Gray,
+                color = if (notification.route.isNotEmpty()) Color.Black else Color.Gray,
                 modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
                 textAlign = TextAlign.Start)
 
