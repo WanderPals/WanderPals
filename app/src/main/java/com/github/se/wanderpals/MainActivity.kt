@@ -23,6 +23,7 @@ import com.github.se.wanderpals.model.viewmodel.MainViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -122,6 +123,8 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
 
     context = this
+
+    SharedPreferencesManager.init(context)
 
     val gso: GoogleSignInOptions =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
