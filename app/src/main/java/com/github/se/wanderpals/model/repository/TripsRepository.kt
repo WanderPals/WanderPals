@@ -1084,7 +1084,12 @@ class TripsRepository(
           val trip = getTrip(tripId)
           if (trip != null) {
             val updatedUsersList = trip.users.filterNot { it == userId }
-            val updatedTrip = trip.copy(users = updatedUsersList)
+            var updatedTokensList = trip.tokenIds
+            if (trip.tokenIds.contains(SessionManager.getNotificationToken())) {
+              updatedTokensList = updatedTokensList - SessionManager.getNotificationToken()
+            }
+            val updatedTrip = trip.copy(users = updatedUsersList, tokenIds = updatedTokensList)
+
             updateTrip(updatedTrip)
             removeTripId(tripId, userId) // remove the Trip from the the deleted user
             Log.d(
