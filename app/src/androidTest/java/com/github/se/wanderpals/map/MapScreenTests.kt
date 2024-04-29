@@ -13,6 +13,7 @@ import com.github.se.wanderpals.screens.MapScreen
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.trip.map.Map
+import com.google.maps.android.compose.MarkerState
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -60,7 +61,15 @@ class FakeMapViewModel : MapViewModel(TripsRepository("-1", dispatcher = Dispatc
 
   override var stops = MutableStateFlow(listOf(stop1, stop2))
 
+  override fun getAllSuggestions() {}
+
   override fun getAllStops() {}
+
+  override fun getAllUsersPositions() {}
+
+  override fun getAllTempMarkers() {}
+
+  override fun saveMarkerState(markerState: MarkerState) {}
 }
 /** Test class for the Map screen. This class contains the tests for the Map screen. */
 class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
