@@ -16,7 +16,7 @@ class ExpenseViewModel (private val tripsRepository: TripsRepository, tripId: St
 
     init {
         //loadMembers(tripId)
-        _users.value = listOf(User("1", "John Doe"), User("2", "Jane Doe"))
+        _users.value = listOf(User("1", "John Doe"), User("2", "Jane Doe"), User("3", "A1"), User("4", "A2"))
     }
 
     /**
