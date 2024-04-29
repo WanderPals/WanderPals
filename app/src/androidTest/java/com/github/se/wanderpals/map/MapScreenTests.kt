@@ -13,8 +13,7 @@ import com.github.se.wanderpals.screens.MapScreen
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.trip.map.Map
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.MarkerState
+import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -62,7 +61,7 @@ object FakeMapViewModel : MapViewModel(TripsRepository("-1", dispatcher = Dispat
 
   override var stops = MutableStateFlow(listOf(stop1, stop2))
 
-  override var listOfTempMarkerStates = MutableStateFlow(emptyList<MarkerState>())
+  override var listOfTempPlaceData = MutableStateFlow(emptyList<PlaceData>())
 
   override fun getAllSuggestions() {}
 
@@ -70,9 +69,11 @@ object FakeMapViewModel : MapViewModel(TripsRepository("-1", dispatcher = Dispat
 
   override fun getAllUsersPositions() {}
 
-  override fun getAllTempMarkers() {}
+  override fun getAllPlaceData() {}
 
-  override fun saveMarkerState(markerState: MarkerState) {}
+  override fun savePlaceDataState(placeData: PlaceData) {}
+
+  override fun clearAllSharedPreferences() {}
 }
 /** Test class for the Map screen. This class contains the tests for the Map screen. */
 class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
@@ -172,7 +173,7 @@ class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   @Test
   fun clearMarkersButtonIsDisplayedWhenNotEmpty() {
     ComposeScreen.onComposeScreen<MapScreen>(composeTestRule) {
-      FakeMapViewModel.listOfTempMarkerStates.value = listOf(MarkerState(LatLng(48.8566, 2.3522)))
+      FakeMapViewModel.listOfTempPlaceData.value = listOf(PlaceData(placeName = "Paris"))
       clearMarkersButton { assertIsDisplayed() }
     }
   }
