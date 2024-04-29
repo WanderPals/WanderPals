@@ -18,9 +18,10 @@ import java.time.format.DateTimeFormatter
 data class FirestoreTripNotification(
     val title: String = "",
     val path: String = "",
+    val navActionVariables:String = "",
     val timestamp: String =
-        "", // LocalDateTime is converted to String to ensure Firestore compatibility
-    val navActionVariables:String = ""
+        "" // LocalDateTime is converted to String to ensure Firestore compatibility
+
 ) {
   companion object {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -52,7 +53,8 @@ data class FirestoreTripNotification(
         title = this.title,
         path = this.path,
         timestamp =
-            LocalDateTime.parse(this.timestamp, formatter) // Convert String back to LocalDateTime
+            LocalDateTime.parse(this.timestamp, formatter), // Convert String back to LocalDateTime
+        navActionVariables = this.navActionVariables
         )
   }
 }
