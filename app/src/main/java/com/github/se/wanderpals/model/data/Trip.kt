@@ -20,6 +20,7 @@ import java.time.LocalDate
  *   destinations or points of interest planned for the trip.
  * @param users A list of user IDs indicating the participants of the trip. These IDs link to the
  *   users collection to provide details about the trip's attendees.
+ * @param tokenIds Tokens for push notifications
  * @param suggestions A list of document IDs referencing the suggestions sub-collection. These
  *   suggestions are potential stops or activities proposed by users for consideration to be
  *   included in the trip itinerary.
@@ -37,6 +38,7 @@ data class Trip(
     // These are IDs of the documents in their respective sub-collections
     val stops: List<String> = emptyList(),
     val users: List<String> = emptyList(),
+    val tokenIds: List<String> = emptyList(),
     val suggestions: List<String> = emptyList(),
     val announcements: List<String> = emptyList(),
     val expenses: List<String> = emptyList()

@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter
  * @property imageUrl Optional URL of an image representing the trip.
  * @property stops List of IDs for the trip's stops.
  * @property users List of participant user IDs.
+ * @param tokenIds Tokens for push notifications.
  * @property suggestions List of IDs for suggested activities or stops.
  * @property announcements List of IDs for trip announcements.
  */
@@ -30,6 +31,7 @@ data class FirestoreTrip(
     val imageUrl: String = "",
     val stops: List<String> = emptyList(),
     val users: List<String> = emptyList(),
+    val tokenIds: List<String> = emptyList(),
     val suggestions: List<String> = emptyList(),
     val announcements: List<String> = emptyList(),
     val expenses: List<String> = emptyList()
@@ -53,6 +55,7 @@ data class FirestoreTrip(
           imageUrl = trip.imageUrl,
           stops = trip.stops,
           users = trip.users,
+          tokenIds = trip.tokenIds,
           suggestions = trip.suggestions,
           announcements = trip.announcements,
           expenses = trip.expenses)
@@ -76,6 +79,7 @@ data class FirestoreTrip(
         imageUrl = imageUrl,
         stops = stops,
         users = users,
+        tokenIds = tokenIds,
         suggestions = suggestions,
         announcements = announcements,
         expenses = expenses)
