@@ -102,24 +102,21 @@ data class NavigationActions(
     var tripNavigation: MultiNavigationAppState = MultiNavigationAppState(),
 ) {
 
-  var currentRoute = MutableStateFlow(tripNavigation.getStartDestination())
+  var currentRouteTrip = MutableStateFlow(tripNavigation.getStartDestination())
 
   private var lastlyUsedController = mainNavigation
 
   /** Update the current route. */
-  fun updateCurrentRoute() {
-    currentRoute.value =
-        lastlyUsedController.getNavController.currentBackStackEntry?.destination?.route.toString()
-    if (currentRoute.value == Route.TRIP) {
-      currentRoute.value = Route.DASHBOARD
-    }
-    lastlyUsedController.printBackStack()
+  fun updateCurrentRouteOfTrip(route: String) {
+    currentRouteTrip.value = route
   }
 
   /** Go back in the navigation stack. */
   fun goBack() {
+    Log.d("NavigationAction", "goBack before")
+    lastlyUsedController.printBackStack()
     lastlyUsedController.goBack()
-    updateCurrentRoute()
+    Log.d("NavigationAction", "goBack after")
   }
 
   /**
@@ -128,14 +125,15 @@ data class NavigationActions(
    * @param route The route to navigate to.
    */
   fun navigateTo(route: String) {
+    Log.d("NavigationAction", "navigateTo before")
     if (TRIP_DESTINATIONS.any { it.route == route }) {
       lastlyUsedController = tripNavigation
       tripNavigation.navigateTo(route)
-    } else {
+    } else if (MAIN_ROUTES.any { it == route }) {
       lastlyUsedController = mainNavigation
       mainNavigation.navigateTo(route)
     }
-    updateCurrentRoute()
+    Log.d("NavigationAction", "navigateTo after")
   }
 
   /**
