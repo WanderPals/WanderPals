@@ -128,7 +128,7 @@ fun Map(
   // Bottom Sheet Variables
 
   // place data of the searched location
-  var placeData by remember { mutableStateOf(PlaceData()) }
+  val placeData by remember { mutableStateOf(PlaceData()) }
   // bottom sheet state
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
   // bottom sheet state expanded
@@ -251,7 +251,7 @@ fun Map(
                             textSearchBar = primaryText
                             mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
                               val place = response.place
-                              placeData = placeData.setPlaceData(place, placeId)
+                              placeData.setPlaceData(place, placeId, place.latLng!!)
                               searchedLocation = place.latLng!!
                             }
                           })
@@ -286,6 +286,7 @@ fun Map(
                 state = markerState,
                 title = "Click to Create Suggestions",
                 onInfoWindowClick = {
+                  bottomSheetExpanded = false
                   oldNavActions.setVariablesSuggestion(
                       suggestion =
                           Suggestion(
@@ -303,19 +304,22 @@ fun Map(
 
           // display all the stops on the map
           stopList.forEach { stop ->
+            val latLng = LatLng(stop.geoCords.latitude, stop.geoCords.longitude)
             Marker( // Add a marker to the map
-                state =
-                    MarkerState(position = LatLng(stop.geoCords.latitude, stop.geoCords.longitude)),
+                state = MarkerState(position = latLng),
                 title = stop.title,
                 snippet = stop.description,
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
                 onInfoWindowClick = {
+                  bottomSheetExpanded = false
+                  finalLocation = latLng
+
                   // check if stop.stopId contains a "," and if it does, split it and get the first
                   if (stop.stopId.last() != ',' && stop.stopId.contains(',')) {
                     val placeId = stop.stopId.split(",")[1]
                     mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
                       val place = response.place
-                      placeData = placeData.setPlaceData(place, placeId)
+                      placeData.setPlaceData(place, placeId, place.latLng!!)
                       searchedLocation = place.latLng!!
                       bottomSheetExpanded = true
                     }
@@ -325,16 +329,19 @@ fun Map(
 
           // display all the suggestions on the map
           suggestionList.forEach { stop ->
+            val latLng = LatLng(stop.geoCords.latitude, stop.geoCords.longitude)
             Marker( // Add a marker to the map
-                state =
-                    MarkerState(position = LatLng(stop.geoCords.latitude, stop.geoCords.longitude)),
+                state = MarkerState(position = latLng),
                 title = stop.title,
                 snippet = stop.description,
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN),
                 onInfoWindowClick = {
+                  bottomSheetExpanded = false
+                  finalLocation = latLng
+
                   mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
                     val place = response.place
-                    placeData = placeData.setPlaceData(place, stop.stopId)
+                    placeData.setPlaceData(place, stop.stopId, place.latLng!!)
                     searchedLocation = place.latLng!!
                     bottomSheetExpanded = true
                   }
