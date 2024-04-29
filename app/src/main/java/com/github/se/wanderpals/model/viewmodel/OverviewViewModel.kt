@@ -48,7 +48,8 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
     runBlocking {
       tripsRepository.addTrip(trip)
       val newTripId = tripsRepository.getAllTrips().last().tripId
-      NotificationsManager.addJoinTripNotification(newTripId)}
+      NotificationsManager.addJoinTripNotification(newTripId)
+    }
   }
 
   /**

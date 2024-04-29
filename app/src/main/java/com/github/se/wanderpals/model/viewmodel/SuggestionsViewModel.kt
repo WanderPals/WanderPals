@@ -304,7 +304,7 @@ open class SuggestionsViewModel(
 
   open fun deleteSuggestion(suggestion: Suggestion) {
     viewModelScope.launch {
-      NotificationsManager.removeSuggestionPath(tripId,suggestion.suggestionId)
+      NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
       val wasDeleteSuccessful =
           suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)!!
       if (wasDeleteSuccessful) {
@@ -338,8 +338,8 @@ open class SuggestionsViewModel(
   open fun transformToStop(suggestion: Suggestion) {
     viewModelScope.launch {
       suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
-      NotificationsManager.removeSuggestionPath(tripId,suggestion.suggestionId)
-      NotificationsManager.addStopNotification(tripId,suggestion.stop)
+      NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
+      NotificationsManager.addStopNotification(tripId, suggestion.stop)
       suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
     }
     hideBottomSheet()

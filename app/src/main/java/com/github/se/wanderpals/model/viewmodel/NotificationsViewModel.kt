@@ -40,7 +40,6 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   private val _selectedAnnouncementId = MutableStateFlow("")
   val selectedAnnouncementID: StateFlow<String> = _selectedAnnouncementId.asStateFlow()
 
-
   /**
    * Updates the state lists of notifications and announcements by launching a coroutine within the
    * viewModel scope.
@@ -88,11 +87,9 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     _announcementItemPressed.value = value
   }
 
-
   fun setSelectedAnnouncementId(announcementId: String) {
     _selectedAnnouncementId.value = announcementId
   }
-
 
   class NotificationsViewModelFactory(
       private val tripsRepository: TripsRepository,
