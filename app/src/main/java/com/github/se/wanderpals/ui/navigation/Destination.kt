@@ -18,6 +18,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
  */
 data class Destination(val route: String, val icon: ImageVector, val text: String)
 
+val MAIN_ROUTES =
+    listOf(
+        Route.SIGN_IN,
+        Route.OVERVIEW,
+        Route.TRIP,
+        Route.CREATE_TRIP,
+        Route.CREATE_SUGGESTION,
+        Route.ADMIN_PAGE)
+
 val TRIP_BOTTOM_BAR by lazy { TRIP_DESTINATIONS.subList(0, 5) }
 
 /** List of destinations in the trip screen. */
