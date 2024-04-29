@@ -114,7 +114,7 @@ fun Map(
         })
   }
   // list of markers on the map from the search bar
-  var listOfMarkers by remember { mutableStateOf(listOf<MarkerState>()) }
+  val listOfMarkers by mapViewModel.listOfTempMarkerStates.collectAsState()
 
   // Location Variables
 
@@ -199,7 +199,7 @@ fun Map(
             finalLocation = searchedLocation
             finalName = textSearchBar
 
-            listOfMarkers += (MarkerState(position = finalLocation))
+            mapViewModel.saveMarkerState(MarkerState(position = finalLocation))
             bottomSheetExpanded = true
             activeSearchBar = false
           },
@@ -360,6 +360,15 @@ fun Map(
     Column(
         Modifier.align(AbsoluteAlignment.BottomRight)
             .padding(horizontal = 16.dp, vertical = 60.dp)) {
+          if (listOfMarkers.isNotEmpty()) {
+            Button(onClick = { mapViewModel.clearAllSharedPreferences() }) {
+              Icon(
+                  imageVector = Icons.Default.Clear,
+                  contentDescription = "Clear",
+                  modifier = Modifier.size(24.dp))
+            }
+          }
+
           Button(
               onClick = {
                 mapViewModel.executeJob {

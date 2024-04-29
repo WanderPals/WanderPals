@@ -7,7 +7,9 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.MarkerState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,7 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   open var userNames = MutableStateFlow(emptyList<String>())
   open var userPosition = MutableStateFlow(LatLng(0.0, 0.0))
   open var seeUserPosition = MutableStateFlow(false)
+  open var listOfTempMarkerStates = MutableStateFlow(emptyList<MarkerState>())
 
   /**
    * Execute a job on the view model scope.
@@ -44,6 +47,27 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
     getAllStops()
     getAllSuggestions()
     getAllUsersPositions()
+    getAllTempMarkers()
+  }
+
+  /** Clear all the shared preferences. */
+  open fun clearAllSharedPreferences() {
+    SharedPreferencesManager.clearAll()
+    listOfTempMarkerStates.value = emptyList()
+  }
+
+  /**
+   * Save the marker state.
+   *
+   * @param markerState The marker state to save.
+   */
+  open fun saveMarkerState(markerState: MarkerState) {
+    listOfTempMarkerStates.value = SharedPreferencesManager.saveMarkerState(markerState)
+  }
+
+  /** Get all temporary markers. */
+  open fun getAllTempMarkers() {
+    listOfTempMarkerStates.value = SharedPreferencesManager.getAllTempMarkers()
   }
 
   /** Get all stops from the trip. */
