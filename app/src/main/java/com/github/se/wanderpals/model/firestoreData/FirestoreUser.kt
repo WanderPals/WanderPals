@@ -15,6 +15,7 @@ import com.github.se.wanderpals.model.data.User
  * @param role String representation of user's role within the application.
  * @param lastPosition GeoCords representation of geographic coordinates.
  * @param profilePictureURL URL to the user's profile picture.
+ * @param notificationTokenId Token ID used for managing notifications specific to the user.
  */
 data class FirestoreUser(
     val userId: String = "",
@@ -24,7 +25,8 @@ data class FirestoreUser(
     val role: String = "",
     val lastPosition: GeoCords =
         GeoCords(0.0, 0.0), // or consider a different representation if more suitable
-    val profilePictureURL: String = ""
+    val profilePictureURL: String = "",
+    val notificationTokenId: String = ""
 ) {
   companion object {
     /**
@@ -36,6 +38,7 @@ data class FirestoreUser(
     fun fromUser(user: User): FirestoreUser {
       return FirestoreUser(
           userId = user.userId,
+          notificationTokenId = user.notificationTokenId,
           name = user.name,
           email = user.email,
           nickname = user.nickname,
@@ -53,6 +56,7 @@ data class FirestoreUser(
   fun toUser(): User {
     return User(
         userId = this.userId,
+        notificationTokenId = this.notificationTokenId,
         name = this.name,
         email = this.email,
         nickname = this.nickname,

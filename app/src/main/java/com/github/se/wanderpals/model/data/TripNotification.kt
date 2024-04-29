@@ -10,4 +10,9 @@ import java.time.LocalDateTime
  * @param path A string path that could represent the itinerary path or related resource.
  * @param timestamp The exact date and time when the TripNotification was created.
  */
-data class TripNotification(val title: String, val path: String,val navActionVariables:String = "", val timestamp: LocalDateTime)
+data class TripNotification(
+    val title: String,
+    val path: String,
+    val timestamp: LocalDateTime,
+    val navActionVariables: String = ""
+)

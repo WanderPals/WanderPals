@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.model.firestoreData
 
 import com.github.se.wanderpals.model.data.TripNotification
-import com.github.se.wanderpals.navigationActions
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -18,10 +17,9 @@ import java.time.format.DateTimeFormatter
 data class FirestoreTripNotification(
     val title: String = "",
     val path: String = "",
-    val navActionVariables:String = "",
     val timestamp: String =
-        "" // LocalDateTime is converted to String to ensure Firestore compatibility
-
+        "", // LocalDateTime is converted to String to ensure Firestore compatibility
+    val navActionVariables: String = ""
 ) {
   companion object {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -38,8 +36,7 @@ data class FirestoreTripNotification(
           path = tripNotification.path,
           timestamp =
               tripNotification.timestamp.format(formatter), // Convert LocalDateTime to String
-          navActionVariables = tripNotification.navActionVariables
-          )
+          navActionVariables = tripNotification.navActionVariables)
     }
   }
 
@@ -54,7 +51,6 @@ data class FirestoreTripNotification(
         path = this.path,
         timestamp =
             LocalDateTime.parse(this.timestamp, formatter), // Convert String back to LocalDateTime
-        navActionVariables = this.navActionVariables
-        )
+        navActionVariables = this.navActionVariables)
   }
 }
