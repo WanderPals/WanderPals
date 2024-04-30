@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,6 +65,11 @@ fun Dashboard(
     dashboardViewModel: DashboardViewModel,
     navActions: NavigationActions
 ) {
+  LaunchedEffect(Unit) {
+    // Fetch the suggestions for the trip every time the screen is displayed
+    dashboardViewModel.loadSuggestion(tripId)
+  }
+
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val isLoading by dashboardViewModel.isLoading.collectAsState()
