@@ -52,24 +52,23 @@ fun Suggestion(
   // State for managing the loading state
   val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
-  if (isLoading) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      CircularProgressIndicator(
-          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
-    }
-  } else {
-    Scaffold(
-        modifier = Modifier.testTag("suggestionFeedScreen"),
-        topBar = {
-          // Top bar with search functionality based on the title of the trips
-          SuggestionTopBar(
-              searchSuggestionText = searchSuggestionText,
-              onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-                searchSuggestionText = newSearchSuggestionText
-              })
-        },
-        bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding
-          ->
+  Scaffold(
+      modifier = Modifier.testTag("suggestionFeedScreen"),
+      topBar = {
+        // Top bar with search functionality based on the title of the trips
+        SuggestionTopBar(
+            searchSuggestionText = searchSuggestionText,
+            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+              searchSuggestionText = newSearchSuggestionText
+            })
+      },
+      bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding ->
+        if (isLoading) {
+          Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+          }
+        } else {
           SuggestionFeedContent(
               innerPadding = innerPadding,
               suggestionList = suggestionList,
@@ -78,5 +77,5 @@ fun Suggestion(
               suggestionsViewModel = suggestionsViewModel,
               navigationActions = oldNavActions)
         }
-  }
+      }
 }
