@@ -12,6 +12,7 @@ import com.github.se.wanderpals.service.SessionManager
 import java.time.LocalTime
 import java.util.UUID
 import kotlin.math.ceil
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -78,11 +79,6 @@ open class SuggestionsViewModel(
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
   open val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
 
-  init {
-    // Fetch all trips when the ViewModel is initialized
-    loadSuggestion(tripId)
-  }
-
   open fun getIsLiked(suggestionId: String): Boolean {
     return _likedSuggestions.value.contains(suggestionId)
   }
@@ -92,10 +88,11 @@ open class SuggestionsViewModel(
   }
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
-  private fun loadSuggestion(tripId: String) {
+  fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
       _isLoading.value = true
       // Fetch all trips from the repository
+      delay(1000)
       val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
       _state.value = suggestions
       Log.d("Fetched Suggestions", _state.value.toString())

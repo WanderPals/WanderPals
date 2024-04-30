@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +37,11 @@ fun Suggestion(
     suggestionsViewModel: SuggestionsViewModel,
     onSuggestionClick: () -> Unit
 ) {
+
+  LaunchedEffect(Unit) {
+    // Fetch all suggestions for the trip
+    suggestionsViewModel.loadSuggestion(tripId)
+  }
 
   // get the suggestion list from the firebase database
   val suggestionList by suggestionsViewModel.state.collectAsState()

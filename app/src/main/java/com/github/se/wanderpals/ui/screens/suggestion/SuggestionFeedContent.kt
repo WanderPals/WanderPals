@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -28,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -126,27 +131,37 @@ fun SuggestionFeedContent(
                     textAlign = TextAlign.Center,
                     color = Color(0xFF000000)),
         )
+        IconButton(
+            onClick = { suggestionsViewModel.loadSuggestion(tripId) },
+            modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+            content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestions") })
       }
     } else {
       // LazyColumn to display the list of suggestions with sorting and search filtering
       // (Note: can only have one LazyColumn in a composable function)
-      LazyColumn(modifier = Modifier.testTag("suggestionFeedContentList")) {
-        itemsIndexed(displayList) { index, suggestion ->
-          // Only render items that have not been added to stops
-          val addedToStops = suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
-          val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-          if (!isSuggestionAddedToStop) {
-            SuggestionItem(
-                suggestion = suggestion,
-                onClick = {
-                  selectedSuggestion = suggestion
-                }, // This lambda is passed to the SuggestionItem composable
-                modifier = Modifier.testTag("suggestion${index + 1}"),
-                tripId = tripId,
-                viewModel = suggestionsViewModel)
+      val lazyColumn =
+          @Composable {
+            LazyColumn(modifier = Modifier.testTag("suggestionFeedContentList")) {
+              itemsIndexed(displayList) { index, suggestion ->
+                // Only render items that have not been added to stops
+                val addedToStops =
+                    suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
+                val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
+                if (!isSuggestionAddedToStop) {
+                  SuggestionItem(
+                      suggestion = suggestion,
+                      onClick = {
+                        selectedSuggestion = suggestion
+                      }, // This lambda is passed to the SuggestionItem composable
+                      modifier = Modifier.testTag("suggestion${index + 1}"),
+                      tripId = tripId,
+                      viewModel = suggestionsViewModel)
+                }
+              }
+            }
           }
-        }
-      }
+      PullToRefreshLazyColumn(
+          inputLazyColumn = lazyColumn, onRefresh = { suggestionsViewModel.loadSuggestion(tripId) })
     }
 
     SuggestionBottomSheet(
