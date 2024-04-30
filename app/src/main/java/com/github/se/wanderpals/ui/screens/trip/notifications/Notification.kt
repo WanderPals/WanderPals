@@ -158,7 +158,9 @@ fun Notification(
           IconButton(
               onClick = { notificationsViewModel.updateStateLists() },
               modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
-              content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh notification") })
+              content = {
+                Icon(Icons.Default.Refresh, contentDescription = "Refresh notification")
+              })
         }
       } else {
         val lazyColumn =
