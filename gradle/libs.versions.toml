@@ -1,6 +1,7 @@
 [versions]
 activityKtx = "1.9.0"
-agp = "8.3.2"
+agp = "8.4.0"
+androidxCoreKtxVersion = "2.2.0"
 coilCompose = "2.6.0"
 coreKtxVersion = "1.8.1"
 firebaseAuth = "22.3.1"
@@ -33,11 +34,14 @@ playServicesAuth = "21.0.0"
 navigationRuntimeKtx = "2.7.7"
 places = "3.4.0"
 androidxCoreKtx = "1.5.0"
+firebaseMessagingKtx = "23.4.1"
+uiDesktop = "1.6.6"
 
 
 [libraries]
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-ktx-v220 = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtxVersion" }
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoCore" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
@@ -79,6 +83,8 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
+androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version.ref = "uiDesktop" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

@@ -134,6 +134,8 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 
 dependencies {
     implementation(libs.test.core.ktx)
+    implementation(libs.firebase.messaging.ktx)
+    implementation(libs.androidx.ui.desktop)
     val composeBom = platform(libs.compose.bom)
 
     implementation(libs.androidx.navigation.runtime.ktx)
@@ -145,6 +147,7 @@ dependencies {
 
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.ktx.v220)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.lifecycle.runtime.ktx)

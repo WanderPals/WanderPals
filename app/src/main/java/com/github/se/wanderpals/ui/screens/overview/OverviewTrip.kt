@@ -2,6 +2,8 @@ package com.github.se.wanderpals.ui.screens.overview
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,6 +41,8 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.messaging
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -174,4 +178,17 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
           }
         }
   }
+}
+
+fun FirebaseSuscribeForGroupNotifications(tripName: String, baseContext: Context) {
+    Firebase.messaging.subscribeToTopic("Trip_$tripName")
+        .addOnCompleteListener {task ->
+            var msg = "Subscribed to Trip_$tripName"
+            if (!task.isSuccessful) {
+                msg = "Failed to subscribe to Trip_$tripName"
+            }
+            Log.d("Firebase", msg)
+            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+
+        }
 }
