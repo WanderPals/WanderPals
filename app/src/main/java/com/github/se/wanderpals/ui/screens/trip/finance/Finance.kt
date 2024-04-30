@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.screens.trip
+package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -8,5 +8,7 @@ import androidx.compose.ui.platform.testTag
 /** The Finance screen. */
 @Composable
 fun Finance() {
-  Text(modifier = Modifier.testTag("financeScreen"), text = "Finance")
+    Text(modifier = Modifier.testTag("financeScreen"), text = "Finance")
 }
+
+

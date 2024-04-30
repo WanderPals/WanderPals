@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -46,4 +47,8 @@ val TRIP_DESTINATIONS =
         Destination(
             route = Route.CREATE_ANNOUNCEMENT,
             icon = Icons.Default.Create,
-            text = "CreateAnnouncement"))
+            text = "CreateAnnouncement"),
+        Destination(
+            route = Route.FINANCE,
+            icon = Icons.Default.Menu,
+            text = "finance"))

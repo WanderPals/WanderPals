@@ -131,14 +131,14 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
-        modifier = Modifier.testTag("AdminButtonTest"),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("AdminButtonTest"),
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painterResource(id = R.drawable.logo_nsa),
                 contentDescription = "NSA",
                 modifier = Modifier.clip(CircleShape).size(30.dp))
-            Text(text = "Admin", modifier = Modifier.padding(horizontal = 29.dp))
+            Text(text = "Admin", modifier = Modifier.padding(horizontal = 20.dp))
           }
         },
         onClick = {
@@ -147,6 +147,25 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
             navActions.navigateTo(Route.ADMIN_PAGE)
           }
         })
+      Spacer(modifier = Modifier.padding(2.dp))
+      ElevatedButton(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("FinanceButtonTest"),
+          content = {
+              Row(
+                  verticalAlignment = Alignment.CenterVertically) {
+                  Image(
+                      painterResource(id = R.drawable.finance_logo ),
+                      contentDescription = "financeLogo",
+                      modifier = Modifier.clip(CircleShape).size(25.dp))
+                  Text(text = "Finance", modifier = Modifier.padding(horizontal = 20.dp))
+              }
+          },
+          onClick = {
+              scope.launch {
+                  drawerState.close()
+                  navActions.navigateTo(Route.FINANCE)
+              }
+          })
   }
 }
 

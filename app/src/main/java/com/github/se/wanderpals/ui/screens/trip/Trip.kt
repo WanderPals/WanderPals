@@ -37,6 +37,7 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.finance.Finance
 import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
@@ -171,6 +172,10 @@ fun Trip(
                           viewModel = suggestionsViewModel,
                           navActions = oldNavActions)
                     }
+                  composable(Route.FINANCE){
+                      oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
+                      Finance()
+                  }
                   }
             }
       }
