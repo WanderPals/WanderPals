@@ -89,10 +89,10 @@ class SuggestionsViewModelSheetTest(testSuggestions: List<Suggestion>) :
   }
 
   init {
-    loadSuggestion("")
+    _isLoading.value = false
   }
 
-  private fun loadSuggestion(tripId: String) {
+  override fun loadSuggestion(tripId: String) {
     _isLoading.value = false
   }
 }

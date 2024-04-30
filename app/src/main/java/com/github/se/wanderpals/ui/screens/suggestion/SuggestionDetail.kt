@@ -52,9 +52,12 @@ import java.time.format.DateTimeFormatter
 fun SuggestionDetail(
     suggestionId: String,
     viewModel: SuggestionsViewModel,
-    navActions: NavigationActions,
-    suggestion: Suggestion? = null
+    navActions: NavigationActions
 ) {
+
+  val suggestionFromViewModel by viewModel.selectedSuggestion.collectAsState()
+  val suggestion = suggestionFromViewModel
+
   if (suggestion != null) {
     // Get the number of likes and if the user has liked the suggestion
     val isLiked = viewModel.getIsLiked(suggestion.suggestionId)

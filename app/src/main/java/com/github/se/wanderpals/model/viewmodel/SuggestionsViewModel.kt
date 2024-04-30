@@ -89,7 +89,7 @@ open class SuggestionsViewModel(
   }
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
-  fun loadSuggestion(tripId: String) {
+  open fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
       _isLoading.value = true
       // Fetch all trips from the repository
@@ -109,10 +109,17 @@ open class SuggestionsViewModel(
       // automatically.
       suggestions.forEach { suggestion ->
         checkAndAddSuggestionAsStop(suggestion, allUsers, threshold)
+        if (selectedSuggestion.value?.suggestionId == suggestion.suggestionId) {
+          _selectedSuggestion.value = suggestion
+        }
       }
 
       _isLoading.value = false
     }
+  }
+
+  open fun setSelectedSuggestion(suggestion: Suggestion) {
+    _selectedSuggestion.value = suggestion
   }
 
   /**

@@ -166,11 +166,12 @@ fun Trip(
                                   SuggestionsViewModel.SuggestionsViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "SuggestionsViewModel")
+                      suggestionsViewModel.setSelectedSuggestion(
+                          oldNavActions.variables.currentSuggestion)
                       SuggestionDetail(
                           suggestionId = oldNavActions.variables.suggestionId,
                           viewModel = suggestionsViewModel,
-                          navActions = oldNavActions,
-                          suggestion = oldNavActions.variables.currentSuggestion)
+                          navActions = oldNavActions)
                     }
                   }
             }
