@@ -38,10 +38,6 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
    */
   open fun executeJob(block: suspend () -> Unit) = viewModelScope.launch { block() }
 
-  init {
-    refreshData()
-  }
-
   /** Refresh the data. */
   fun refreshData() {
     getAllStops()

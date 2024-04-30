@@ -144,7 +144,10 @@ fun Map(
 
   // Launch Effects
 
-  LaunchedEffect(Unit) { mapManager.askLocationPermission() }
+  LaunchedEffect(Unit) {
+    mapManager.askLocationPermission()
+    mapViewModel.refreshData()
+  }
 
   LaunchedEffect(key1 = bottomSheetExpanded) {
     if (bottomSheetExpanded) {
