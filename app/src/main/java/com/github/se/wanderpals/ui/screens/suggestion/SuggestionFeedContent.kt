@@ -55,8 +55,6 @@ fun SuggestionFeedContent(
     suggestionsViewModel: SuggestionsViewModel,
     navigationActions: NavigationActions
 ) {
-  // State to track the currently selected suggestion item
-  var selectedSuggestion by remember { mutableStateOf<Suggestion?>(null) }
 
   // State to track the selected filter criteria
   var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
@@ -106,12 +104,6 @@ fun SuggestionFeedContent(
 
     SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
-    // When a suggestion is selected, display the detail screen
-    selectedSuggestion?.let { suggestion ->
-      navigationActions.setVariablesSuggestionId(suggestion.suggestionId)
-      navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
-    }
-
     // If suggestion list is empty, display a message
     if (suggestionList.isEmpty()) {
       Box(modifier = Modifier.fillMaxSize()) {
@@ -151,7 +143,8 @@ fun SuggestionFeedContent(
                   SuggestionItem(
                       suggestion = suggestion,
                       onClick = {
-                        selectedSuggestion = suggestion
+                        navigationActions.setVariablesSuggestion(suggestion)
+                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
                       }, // This lambda is passed to the SuggestionItem composable
                       modifier = Modifier.testTag("suggestion${index + 1}"),
                       tripId = tripId,

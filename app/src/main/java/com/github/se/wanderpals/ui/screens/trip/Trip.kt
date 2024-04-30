@@ -169,7 +169,8 @@ fun Trip(
                       SuggestionDetail(
                           suggestionId = oldNavActions.variables.suggestionId,
                           viewModel = suggestionsViewModel,
-                          navActions = oldNavActions)
+                          navActions = oldNavActions,
+                          suggestion = oldNavActions.variables.currentSuggestion)
                     }
                   }
             }
