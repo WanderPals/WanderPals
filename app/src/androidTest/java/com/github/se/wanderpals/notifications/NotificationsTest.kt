@@ -33,13 +33,13 @@ import org.junit.runner.RunWith
 val notification1 =
     TripNotification(
         title = "Username1 joined the trip",
-        path = Route.ADMIN_PAGE,
+        route = Route.ADMIN_PAGE,
         timestamp = LocalDateTime.now())
 
 val notification2 =
     TripNotification(
         title = "Username1 joined the trip",
-        path = "",
+        route = "",
         timestamp = LocalDateTime.now().minusDays(1))
 val announcement1 =
     Announcement(

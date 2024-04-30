@@ -267,8 +267,9 @@ class TripsRepository(
           notificationsList.map { map ->
             FirestoreTripNotification(
                     title = map["title"] as String,
-                    path = map["path"] as String,
-                    timestamp = map["timestamp"] as String)
+                    route = map["route"] as String,
+                    timestamp = map["timestamp"] as String,
+                    navActionVariables = map["navActionVariables"] as String)
                 .toTripNotification()
           }
         } catch (e: Exception) {

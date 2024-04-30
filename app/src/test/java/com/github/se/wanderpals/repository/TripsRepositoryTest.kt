@@ -641,10 +641,10 @@ class TripsRepositoryTest {
     val notifications =
         listOf(
             TripNotification(
-                title = "Flight Booking", path = "/flights", timestamp = LocalDateTime.now()),
+                title = "Flight Booking", route = "/flights", timestamp = LocalDateTime.now()),
             TripNotification(
                 title = "Hotel Reservation",
-                path = "/hotels",
+                route = "/hotels",
                 timestamp = LocalDateTime.now().plusDays(1)))
 
     val elapsedTime = measureTimeMillis {

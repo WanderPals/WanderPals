@@ -84,6 +84,10 @@ class SuggestionsViewModelSheetTest(testSuggestions: List<Suggestion>) :
     hideBottomSheet()
   }
 
+  override fun transformToStop(suggestion: Suggestion) {
+    hideBottomSheet()
+  }
+
   init {
     loadSuggestion("")
   }
