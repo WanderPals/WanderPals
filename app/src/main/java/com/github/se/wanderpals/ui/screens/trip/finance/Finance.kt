@@ -1,11 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
-
-
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -14,22 +9,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@Preview
-@Composable
-fun FinancePreview() {
-    Finance()
-}
+import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
+import com.github.se.wanderpals.ui.navigation.NavigationActions
 
-enum class FinanceOption(val optionName: String) {
+
+enum class FinanceOption(private val optionName: String) {
     EXPENSES("Expenses"),
     CATEGORIES("Categories"),
     DEBTS("Debts");
@@ -42,8 +36,12 @@ enum class FinanceOption(val optionName: String) {
 
 /** The Finance screen. */
 @Composable
-fun Finance() {
+fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationActions) {
+
     var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
+
+    val expenseList by financeViewModel.expenseStateList.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -74,14 +72,15 @@ fun Finance() {
         }
 
     ) { innerPadding ->
+        LaunchedEffect(Unit) {
+            financeViewModel.updateStateLists()
+        }
         when (currentSelectedOption) {
             FinanceOption.EXPENSES -> {
-                LazyColumn(modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxHeight()) {
-
-                }
-                // Contenu pour l'option Expenses
+                ExpensesContent(
+                    innerPadding = innerPadding,
+                    expenseList = expenseList
+                )
             }
 
             FinanceOption.CATEGORIES -> {
