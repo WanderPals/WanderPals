@@ -339,6 +339,7 @@ open class SuggestionsViewModel(
       NotificationsManager.addStopNotification(tripId, suggestion.stop)
       suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
     }
+    loadSuggestion(tripId)
     hideBottomSheet()
   }
 
