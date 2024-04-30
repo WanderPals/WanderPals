@@ -26,9 +26,6 @@ open class AdminViewModel(
     listOfUsers.value = listOfUsers.value.filter { it.userId != userId }
   }
 
-  init {
-    getUsers()
-  }
   // get all the users from the trip
   open fun getUsers() {
     viewModelScope.launch { listOfUsers.value += tripsRepository.getAllUsersFromTrip(tripId) }

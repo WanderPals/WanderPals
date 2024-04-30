@@ -35,6 +35,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -104,6 +105,8 @@ fun Admin(adminViewModel: AdminViewModel) {
             Color(0xFF4DD0E1),
             Color(0xFF9575CD)))
   }
+
+  LaunchedEffect(Unit) { adminViewModel.getUsers() }
 
   // Details of the users:
 
