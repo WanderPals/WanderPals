@@ -179,16 +179,3 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
         }
   }
 }
-
-fun FirebaseSuscribeForGroupNotifications(tripName: String, baseContext: Context) {
-    Firebase.messaging.subscribeToTopic("Trip_$tripName")
-        .addOnCompleteListener {task ->
-            var msg = "Subscribed to Trip_$tripName"
-            if (!task.isSuccessful) {
-                msg = "Failed to subscribe to Trip_$tripName"
-            }
-            Log.d("Firebase", msg)
-            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-
-        }
-}

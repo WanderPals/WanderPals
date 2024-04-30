@@ -37,7 +37,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-class MessageFireNoti: FirebaseMessagingService(){
+class NotificationDevice: FirebaseMessagingService(){
     override fun onNewToken(token: String) {
         //send to the token to the server
     }
@@ -159,7 +159,7 @@ class MessageFireNoti: FirebaseMessagingService(){
 
 
 //function to subscribe to a topic
-fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Context) {
+/*fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Context) {
     Firebase.messaging.subscribeToTopic("Trip_$tripName")
         .addOnCompleteListener {task ->
             var msg = "Subscribed to Trip_$tripName"
@@ -170,7 +170,7 @@ fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Contex
             Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
 
         }
-}
+}*/
 
 //function to send message to a topic from a client app
 

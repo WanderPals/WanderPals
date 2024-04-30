@@ -158,9 +158,7 @@ class MainActivity : ComponentActivity() {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            NotificationPermission(context = context)
-
-            var token = ""
+            //NotificationPermission(context = context)
 
             /*FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {

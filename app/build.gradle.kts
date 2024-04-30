@@ -138,6 +138,8 @@ dependencies {
     implementation(libs.androidx.ui.desktop)
     val composeBom = platform(libs.compose.bom)
 
+    implementation(platform(libs.kotlin.bom))
+
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.play.services.auth)
     implementation(libs.androidx.navigation.compose)
@@ -147,7 +149,7 @@ dependencies {
 
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.core.ktx.v220)
+    //implementation(libs.androidx.core.ktx.v220)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -186,6 +188,9 @@ dependencies {
 
     // Firebase Authentication
     implementation(libs.firebase.auth)
+
+    implementation(libs.google.firebase.messaging.ktx)
+
 
     // Google Sign-In
     implementation(libs.play.services.auth)
