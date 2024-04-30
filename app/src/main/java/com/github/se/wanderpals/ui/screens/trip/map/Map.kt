@@ -291,6 +291,7 @@ fun Map(
                 title = "Click to Create Suggestions",
                 onInfoWindowClick = {
                   bottomSheetExpanded = false
+                  mapViewModel.deletePlaceDataState(place)
                   oldNavActions.setVariablesSuggestion(
                       suggestion =
                           Suggestion(

@@ -61,6 +61,15 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
     listOfTempPlaceData.value = SharedPreferencesManager.savePlaceData(placeData)
   }
 
+  /**
+   * Delete the place data.
+   *
+   * @param placeData The place data to delete.
+   */
+  open fun deletePlaceDataState(placeData: PlaceData) {
+    listOfTempPlaceData.value = SharedPreferencesManager.deletePlaceData(placeData)
+  }
+
   /** Get all temporary markers. */
   open fun getAllPlaceData() {
     listOfTempPlaceData.value = SharedPreferencesManager.getAllPlaceData()
