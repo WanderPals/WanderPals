@@ -15,13 +15,13 @@ class TripNotificationTest {
     val tripNotification =
         TripNotification(
             title = "Upcoming Journey",
-            path = "/user/trips/upcoming/journey",
+            route = "/user/trips/upcoming/journey",
             timestamp = LocalDateTime.parse("2024-04-01T12:30:00", formatter))
 
     val firestoreTripNotification = FirestoreTripNotification.fromTripNotification(tripNotification)
 
     assertEquals(tripNotification.title, firestoreTripNotification.title)
-    assertEquals(tripNotification.path, firestoreTripNotification.path)
+    assertEquals(tripNotification.route, firestoreTripNotification.route)
     assertEquals(tripNotification.timestamp.format(formatter), firestoreTripNotification.timestamp)
   }
 
@@ -30,13 +30,13 @@ class TripNotificationTest {
     val firestoreTripNotification =
         FirestoreTripNotification(
             title = "Upcoming Journey",
-            path = "/user/trips/upcoming/journey",
+            route = "/user/trips/upcoming/journey",
             timestamp = "2024-04-01T12:30:00")
 
     val tripNotification = firestoreTripNotification.toTripNotification()
 
     assertEquals(firestoreTripNotification.title, tripNotification.title)
-    assertEquals(firestoreTripNotification.path, tripNotification.path)
+    assertEquals(firestoreTripNotification.route, tripNotification.route)
     assertEquals(
         LocalDateTime.parse(firestoreTripNotification.timestamp, formatter),
         tripNotification.timestamp)

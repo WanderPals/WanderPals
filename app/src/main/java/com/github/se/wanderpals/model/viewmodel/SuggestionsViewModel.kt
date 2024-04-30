@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import java.time.LocalTime
 import java.util.UUID
@@ -303,6 +304,7 @@ open class SuggestionsViewModel(
 
   open fun deleteSuggestion(suggestion: Suggestion) {
     viewModelScope.launch {
+      NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
       val wasDeleteSuccessful =
           suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)!!
       if (wasDeleteSuccessful) {
@@ -336,6 +338,8 @@ open class SuggestionsViewModel(
   open fun transformToStop(suggestion: Suggestion) {
     viewModelScope.launch {
       suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
+      NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
+      NotificationsManager.addStopNotification(tripId, suggestion.stop)
       suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
     }
     hideBottomSheet()
