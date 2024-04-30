@@ -173,6 +173,10 @@ open class SuggestionsViewModel(
                 .filter { it.userLikes.contains(currentLoggedInUId) }
                 .map { it.suggestionId }
 
+        if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
+          _selectedSuggestion.value = updatedSuggestion
+        }
+
         // Now check if the suggestion should be added to stops
         checkAndAddSuggestionAsStop(updatedSuggestion, allUsers, threshold)
       }
@@ -301,6 +305,10 @@ open class SuggestionsViewModel(
           _addedSuggestionsToStops.value += suggestion.suggestionId
           // Remove the suggestion from the trip's suggestion list
           suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
+
+          if (selectedSuggestion.value?.suggestionId == suggestion.suggestionId) {
+            _selectedSuggestion.value = null
+          }
         }
       }
     }
