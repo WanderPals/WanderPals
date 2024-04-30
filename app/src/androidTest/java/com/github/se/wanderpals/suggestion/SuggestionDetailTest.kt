@@ -190,13 +190,11 @@ class SuggestionDetailTest {
   fun testNoCommentsMessageIsDisplayedWhenNoCommentsPresent() {
     // Prepare a mock suggestion with no comments
     val mockSuggestionNoComments = mockSuggestion.copy(comments = emptyList())
-    val fakeViewModelDetails = FakeViewModelDetails(listOf(mockSuggestionNoComments))
-    fakeViewModelDetails.setSelectedSuggestion(mockSuggestionNoComments)
 
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestionNoComments.suggestionId,
-          viewModel = fakeViewModelDetails,
+          viewModel = FakeViewModelDetails(listOf(mockSuggestionNoComments)),
           navActions = mockNavActions)
     }
 
