@@ -76,7 +76,7 @@ fun OverviewContent(
               ),
       )
       IconButton(
-          onClick = { overviewViewModel.onRefresh() },
+          onClick = { overviewViewModel.getAllTrips() },
           modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
           content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
     }
@@ -124,7 +124,7 @@ fun OverviewContent(
               }
             }
         PullToRefreshLazyColumn(
-            inputLazyColumn = lazyColumn, onRefresh = { overviewViewModel.onRefresh() })
+            inputLazyColumn = lazyColumn, onRefresh = { overviewViewModel.getAllTrips() })
       }
     }
   }
