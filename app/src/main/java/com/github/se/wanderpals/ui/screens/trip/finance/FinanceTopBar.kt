@@ -123,7 +123,7 @@ fun NavigationButton(
             modifier = Modifier
                 .width(100.dp)
                 .height(4.dp)
-                .background(if (isSelected) Color.Blue else Color.Transparent),
+                .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
 
             ) {}
     }
