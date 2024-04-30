@@ -28,7 +28,7 @@ open class AdminViewModel(
 
   // get all the users from the trip
   open fun getUsers() {
-    viewModelScope.launch { listOfUsers.value += tripsRepository.getAllUsersFromTrip(tripId) }
+    viewModelScope.launch { listOfUsers.value = tripsRepository.getAllUsersFromTrip(tripId) }
   }
   // Push a modified user to the database
   open fun modifyUser(user: User) {

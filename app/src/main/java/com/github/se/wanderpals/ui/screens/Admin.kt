@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
@@ -62,6 +65,7 @@ import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberDetail
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberItem
@@ -211,62 +215,67 @@ fun Admin(adminViewModel: AdminViewModel) {
     HorizontalDivider(modifier = Modifier.padding(20.dp).testTag("AdminDivider"))
     if (SessionManager.getCurrentUser()?.role == Role.OWNER ||
         SessionManager.getCurrentUser()?.role == Role.ADMIN) {
-      for (user in userList) {
-        // Log.d("Admin", "User: $user")
+      val lazyColumn =
+          @Composable {
+            LazyColumn(Modifier.fillMaxSize()) {
+              items(userList) { user ->
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically) {
+                      Text(
+                          text = user.name,
+                          style = MaterialTheme.typography.titleMedium,
+                          modifier = Modifier.padding(start = 30.dp).testTag("userName"))
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically) {
-              Text(
-                  text = user.name,
-                  style = MaterialTheme.typography.titleMedium,
-                  modifier = Modifier.padding(start = 30.dp).testTag("userName"))
+                      // to change the role of a user
+                      IconButton(
+                          onClick = {
+                            userToUpdate = user
+                            selectedOption = user.role
+                            // Log.d("Admin", "User: $selectedOption")
+                            // change the onOptionSelected
+                            onOptionSelected(selectedOption)
+                            displayedChoiceBox = true
+                          },
+                          modifier = Modifier.testTag("editRoleButton")) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Edit Role",
+                                modifier = Modifier.size(20.dp))
+                          }
 
-              // to change the role of a user
-              IconButton(
-                  onClick = {
-                    userToUpdate = user
-                    selectedOption = user.role
-                    // Log.d("Admin", "User: $selectedOption")
-                    // change the onOptionSelected
-                    onOptionSelected(selectedOption)
-                    displayedChoiceBox = true
-                  },
-                  modifier = Modifier.testTag("editRoleButton")) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Edit Role",
-                        modifier = Modifier.size(20.dp))
-                  }
-
-              // Transfer Owner rights
-              if (roleChange == Role.OWNER) {
-                IconButton(
-                    onClick = {
-                      roleChange = Role.ADMIN
-                      SessionManager.setRole(Role.ADMIN)
-                      adminViewModel.modifyUser(user.copy(role = Role.OWNER))
-                    }) {
-                      Icon(
-                          Icons.Default.Star,
-                          contentDescription = "transferRights",
-                          modifier = Modifier.size(20.dp))
+                      // Transfer Owner rights
+                      if (roleChange == Role.OWNER) {
+                        IconButton(
+                            onClick = {
+                              roleChange = Role.ADMIN
+                              SessionManager.setRole(Role.ADMIN)
+                              adminViewModel.modifyUser(user.copy(role = Role.OWNER))
+                            }) {
+                              Icon(
+                                  Icons.Default.Star,
+                                  contentDescription = "transferRights",
+                                  modifier = Modifier.size(20.dp))
+                            }
+                      }
+                      // to delete a user
+                      IconButton(
+                          onClick = {
+                            displayed = true
+                            userToDelete = user.userId
+                          },
+                          modifier = Modifier.testTag("deleteUserButton")) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Delete User",
+                                modifier = Modifier.size(20.dp))
+                          }
                     }
               }
-              // to delete a user
-              IconButton(
-                  onClick = {
-                    displayed = true
-                    userToDelete = user.userId
-                  },
-                  modifier = Modifier.testTag("deleteUserButton")) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Delete User",
-                        modifier = Modifier.size(20.dp))
-                  }
             }
-      }
+          }
+      PullToRefreshLazyColumn(
+          inputLazyColumn = lazyColumn, onRefresh = { adminViewModel.getUsers() })
       if (displayed) {
         AlertDialog(
             onDismissRequest = { displayed = false },
@@ -351,18 +360,25 @@ fun Admin(adminViewModel: AdminViewModel) {
       }
     } else {
       Column(modifier = Modifier.padding(5.dp)) {
-        for (member in userList) { // Display each member in the list
-          DashboardMemberItem(member = member, onClick = { selectedMember = member })
-          if (member != userList.last()) { // Add a divider between the members
-            Spacer(modifier = Modifier.height(4.dp))
-            HorizontalDivider(
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                        .testTag("divider" + member.userId))
-            Spacer(modifier = Modifier.height(4.dp))
-          }
-        }
+        val lazyColumn =
+            @Composable {
+              LazyColumn(Modifier.fillMaxSize()) {
+                items(userList) { member ->
+                  DashboardMemberItem(member = member, onClick = { selectedMember = member })
+                  if (member != userList.last()) { // Add a divider between the members
+                    Spacer(modifier = Modifier.height(4.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .padding(horizontal = 32.dp)
+                                .testTag("divider" + member.userId))
+                    Spacer(modifier = Modifier.height(4.dp))
+                  }
+                }
+              }
+            }
+        PullToRefreshLazyColumn(
+            inputLazyColumn = lazyColumn, onRefresh = { adminViewModel.getUsers() })
       }
     }
   }
