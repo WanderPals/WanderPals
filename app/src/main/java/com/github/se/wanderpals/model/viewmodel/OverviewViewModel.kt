@@ -28,6 +28,11 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  /** Refreshes the list of trips by fetching all trips from the repository. */
+  open fun onRefresh() {
+    viewModelScope.launch { _state.value = tripsRepository.getAllTrips() }
+  }
+
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
     viewModelScope.launch {
