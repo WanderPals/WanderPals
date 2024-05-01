@@ -37,132 +37,115 @@ import com.github.se.wanderpals.model.data.Expense
 import java.time.format.DateTimeFormatter
 
 /**
- * Composable function for displaying the list of expenses of the trip.
- * It displays the following informations : the title,amount,date, and category of the expense and
- * also which user paid it.
+ * Composable function for displaying the list of expenses of the trip. It displays the following
+ * informations : the title,amount,date, and category of the expense and also which user paid it.
  *
  * @param innerPadding Padding values for the inner content.
  * @param expenseList List of expenses to display.
  */
 @Composable
-fun ExpensesContent(innerPadding : PaddingValues,expenseList : List<Expense>){
-    if(expenseList.isEmpty()){
-        Box(modifier = Modifier.fillMaxSize()) {
-            Text(
-                modifier =
-                Modifier.align(Alignment.Center)
-                    .testTag("noExpensesTripText"),
-                text = "Looks like you have no expenses. ",
-                style =
-                TextStyle(
-                    fontSize = 18.sp,
-                    lineHeight = 20.sp,
-                    fontWeight = FontWeight(500),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                ),
-            )
-        }
-    }else{
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxHeight()
-                .testTag("expensesContent")
-        ) {
-            items(expenseList) { expense ->
-                ExpenseItem(expense = expense) {
-                }
-            }
-        }
+fun ExpensesContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
+  if (expenseList.isEmpty()) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      Text(
+          modifier = Modifier.align(Alignment.Center).testTag("noExpensesTripText"),
+          text = "Looks like you have no expenses. ",
+          style =
+              TextStyle(
+                  fontSize = 18.sp,
+                  lineHeight = 20.sp,
+                  fontWeight = FontWeight(500),
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  textAlign = TextAlign.Center,
+              ),
+      )
     }
+  } else {
+    LazyColumn(
+        modifier = Modifier.padding(innerPadding).fillMaxHeight().testTag("expensesContent")) {
+          items(expenseList) { expense -> ExpenseItem(expense = expense) {} }
+        }
+  }
 }
 
 /**
  * Composable function for displaying an individual expense item.
+ *
  * @param expense The expense to display.
  * @param onExpenseItemClick Callback function for when an expense item is clicked.
  */
 @Composable
 fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(90.dp)) {
-        Button(
-            onClick = { },
-            shape = RectangleShape,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent),
-            enabled = false // not implemented for this sprint
+  Box(modifier = Modifier.fillMaxWidth().height(90.dp)) {
+    Button(
+        onClick = {},
+        shape = RectangleShape,
+        colors =
+            ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent, disabledContainerColor = Color.Transparent),
+        enabled = false // not implemented for this sprint
         ) {
-            Row(modifier = Modifier
-                .fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically) {
+          Row(
+              modifier = Modifier.fillMaxSize(),
+              horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically) {
                 Column(
                     modifier = Modifier.fillMaxHeight().weight(1f),
                     verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.Start
-                )
-                {
-                    // Expense Title
-                    Text(
-                        text = expense.title,
-                        style = TextStyle(fontSize = 18.sp),
-                        color = Color.Black,
-                        textAlign = TextAlign.Start,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
+                    horizontalAlignment = Alignment.Start) {
+                      // Expense Title
+                      Text(
+                          text = expense.title,
+                          style = TextStyle(fontSize = 18.sp),
+                          color = Color.Black,
+                          textAlign = TextAlign.Start,
+                          overflow = TextOverflow.Ellipsis,
+                          maxLines = 1)
 
-                    // User that paid the expense
-                    Text(
-                        text =buildAnnotatedString {
-                            append("Payed by ")
-                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                append(expense.userName)
-                            }
-                        },
-                        style = TextStyle(
-                            fontSize = 14.sp, color = Color.Gray,
-                            textAlign = TextAlign.Start
-                        ),
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 1
-                    )
-                    // Expense category
-                    Text(
-                        text = expense.category.name,
-                        style = TextStyle(
-                            fontSize = 14.sp, color = Color.Gray,
-                            textAlign = TextAlign.Start
-                        )
-                    )
-
-                }
+                      // User that paid the expense
+                      Text(
+                          text =
+                              buildAnnotatedString {
+                                append("Payed by ")
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                  append(expense.userName)
+                                }
+                              },
+                          style =
+                              TextStyle(
+                                  fontSize = 14.sp,
+                                  color = Color.Gray,
+                                  textAlign = TextAlign.Start),
+                          overflow = TextOverflow.Ellipsis,
+                          maxLines = 1)
+                      // Expense category
+                      Text(
+                          text = expense.category.name,
+                          style =
+                              TextStyle(
+                                  fontSize = 14.sp,
+                                  color = Color.Gray,
+                                  textAlign = TextAlign.Start))
+                    }
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(
                     modifier = Modifier.fillMaxHeight(),
                     verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.End
-                ) {
-                    // Expense amount
-                    Text(
-                        text = "%.2f CHF".format(expense.amount),
-                        style = TextStyle(fontSize = 14.sp, color = Color.Gray)
-                    )
+                    horizontalAlignment = Alignment.End) {
+                      // Expense amount
+                      Text(
+                          text = "%.2f CHF".format(expense.amount),
+                          style = TextStyle(fontSize = 14.sp, color = Color.Gray))
 
-                    // Expense date
-                    Text(
-                        text = expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                        style = TextStyle(fontSize = 14.sp, color = Color.Gray)
-                    )
-
-                }
-            }
+                      // Expense date
+                      Text(
+                          text =
+                              expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                          style = TextStyle(fontSize = 14.sp, color = Color.Gray))
+                    }
+              }
         }
-    }
+  }
 }

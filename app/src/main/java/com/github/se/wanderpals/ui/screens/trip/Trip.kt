@@ -174,7 +174,7 @@ fun Trip(
                           viewModel = suggestionsViewModel,
                           navActions = oldNavActions)
                     }
-                  composable(Route.FINANCE){
+                    composable(Route.FINANCE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
                       /*
                       uncomment this when expense creation will be available
@@ -185,10 +185,9 @@ fun Trip(
                           key = "FinanceViewModel")*/
                       Finance(
                           financeViewModel =
-                          FinanceViewModel(
-                              TripsRepository("-1",Dispatchers.IO),"-1"),
+                              FinanceViewModel(TripsRepository("-1", Dispatchers.IO), "-1"),
                           navigationActions = oldNavActions)
-                  }
+                    }
                   }
             }
       }

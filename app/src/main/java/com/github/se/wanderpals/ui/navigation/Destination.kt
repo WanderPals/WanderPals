@@ -48,7 +48,4 @@ val TRIP_DESTINATIONS =
             route = Route.CREATE_ANNOUNCEMENT,
             icon = Icons.Default.Create,
             text = "CreateAnnouncement"),
-        Destination(
-            route = Route.FINANCE,
-            icon = Icons.Default.Menu,
-            text = "finance"))
+        Destination(route = Route.FINANCE, icon = Icons.Default.Menu, text = "finance"))

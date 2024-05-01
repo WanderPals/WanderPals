@@ -17,52 +17,42 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
 /**
- * Composable function for displaying the bottom bar in the Finance screen.
- * Provides information about total expenses for the user and total expenses for the trip.
+ * Composable function for displaying the bottom bar in the Finance screen. Provides information
+ * about total expenses for the user and total expenses for the trip.
  */
 @Composable
-fun FinanceBottomBar(){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(MaterialTheme.colorScheme.primary)
-            .testTag("financeBottomBar"),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+fun FinanceBottomBar() {
+  Row(
+      modifier =
+          Modifier.fillMaxWidth()
+              .height(60.dp)
+              .background(MaterialTheme.colorScheme.primary)
+              .testTag("financeBottomBar"),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically) {
         Column(
             verticalArrangement = Arrangement.spacedBy(3.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(start = 18.dp)
-        ) {
-            Text(
-                text = "My total expenses",
-                color = Color.White,
-                modifier = Modifier.align(Alignment.Start)
-            )
-            Text(
-                text = "400 CHF",
-                color = Color.White,
-                modifier = Modifier.align(Alignment.Start),
-
-                )
-        }
+            modifier = Modifier.padding(start = 18.dp)) {
+              Text(
+                  text = "My total expenses",
+                  color = Color.White,
+                  modifier = Modifier.align(Alignment.Start))
+              Text(
+                  text = "400 CHF",
+                  color = Color.White,
+                  modifier = Modifier.align(Alignment.Start),
+              )
+            }
         Column(
             verticalArrangement = Arrangement.spacedBy(3.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(end = 18.dp)
-        ) {
-            Text(
-                text = "Total trip expenses",
-                color = Color.White,
-                modifier = Modifier.align(Alignment.End)
-            )
-            Text(
-                text = "5000 CHF",
-                color = Color.White,
-                modifier = Modifier.align(Alignment.End)
-            )
-        }
-    }
+            modifier = Modifier.padding(end = 18.dp)) {
+              Text(
+                  text = "Total trip expenses",
+                  color = Color.White,
+                  modifier = Modifier.align(Alignment.End))
+              Text(text = "5000 CHF", color = Color.White, modifier = Modifier.align(Alignment.End))
+            }
+      }
 }
