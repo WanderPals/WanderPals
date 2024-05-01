@@ -275,6 +275,7 @@ open class SuggestionsViewModel(
 
   open fun confirmDeleteComment(suggestion: Suggestion) {
     deleteComment(suggestion) // Assuming deleteComment handles all necessary logic
+    cancelEditComment()
     hideDeleteDialog()
     hideBottomSheet()
   }

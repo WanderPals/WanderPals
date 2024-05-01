@@ -344,7 +344,7 @@ private fun onDone(
   } else {
     if (string.isNotBlank()) {
       viewModel.addComment(
-          suggestion, Comment("", "", "tempUsername", string, LocalDate.now(), LocalTime.now()))
+          suggestion, Comment("", "", "", string, LocalDate.now(), LocalTime.now()))
       exec()
     }
   }

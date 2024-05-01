@@ -227,24 +227,26 @@ fun Admin(adminViewModel: AdminViewModel) {
                           modifier = Modifier.padding(start = 30.dp).testTag("userName"))
 
                       // to change the role of a user
-                      IconButton(
-                          onClick = {
-                            userToUpdate = user
-                            selectedOption = user.role
-                            // Log.d("Admin", "User: $selectedOption")
-                            // change the onOptionSelected
-                            onOptionSelected(selectedOption)
-                            displayedChoiceBox = true
-                          },
-                          modifier = Modifier.testTag("editRoleButton")) {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = "Edit Role",
-                                modifier = Modifier.size(20.dp))
-                          }
+                      if (currentUser!!.role != Role.OWNER) {
+                        IconButton(
+                            onClick = {
+                              userToUpdate = user
+                              selectedOption = user.role
+                              // Log.d("Admin", "User: $selectedOption")
+                              // change the onOptionSelected
+                              onOptionSelected(selectedOption)
+                              displayedChoiceBox = true
+                            },
+                            modifier = Modifier.testTag("editRoleButton")) {
+                              Icon(
+                                  imageVector = Icons.Default.Person,
+                                  contentDescription = "Edit Role",
+                                  modifier = Modifier.size(20.dp))
+                            }
+                      }
 
                       // Transfer Owner rights
-                      if (currentUser!!.role == Role.OWNER) {
+                      if (currentUser!!.role == Role.OWNER && currentUser!!.userId != user.userId) {
                         IconButton(
                             onClick = {
                               adminViewModel.modifyUser(user.copy(role = Role.OWNER))
@@ -257,17 +259,21 @@ fun Admin(adminViewModel: AdminViewModel) {
                             }
                       }
                       // to delete a user
-                      IconButton(
-                          onClick = {
-                            displayed = true
-                            userToDelete = user.userId
-                          },
-                          modifier = Modifier.testTag("deleteUserButton")) {
-                            Icon(
-                                imageVector = Icons.Default.Close,
-                                contentDescription = "Delete User",
-                                modifier = Modifier.size(20.dp))
-                          }
+                      if ((currentUser!!.userId == user.userId ||
+                          currentUser!!.role.ordinal < user.role.ordinal) &&
+                          currentUser!!.role != Role.OWNER) {
+                        IconButton(
+                            onClick = {
+                              displayed = true
+                              userToDelete = user.userId
+                            },
+                            modifier = Modifier.testTag("deleteUserButton")) {
+                              Icon(
+                                  imageVector = Icons.Default.Close,
+                                  contentDescription = "Delete User",
+                                  modifier = Modifier.size(20.dp))
+                            }
+                      }
                     }
               }
             }
@@ -335,7 +341,10 @@ fun Admin(adminViewModel: AdminViewModel) {
                                 text = text.toString(),
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier =
-                                    Modifier.padding(start = 16.dp).testTag("stringRole$text"))
+                                    Modifier.padding(start = 16.dp).testTag("stringRole$text"),
+                                color =
+                                    if (currentUser!!.role.ordinal <= text.ordinal) Color.Black
+                                    else Color.Gray)
                           }
                     }
                   }
@@ -345,10 +354,13 @@ fun Admin(adminViewModel: AdminViewModel) {
                     TextButton(
                         onClick = {
                           userToUpdate = userToUpdate.copy(role = selectedOption)
-                          if (!(currentUser?.userId == userToUpdate.userId &&
-                              selectedOption == Role.OWNER &&
-                              currentUser?.role == Role.ADMIN)) {
+                          if (currentUser?.userId != userToUpdate.userId &&
+                              userToUpdate.role.ordinal > currentUser?.role!!.ordinal) {
                             adminViewModel.modifyUser(userToUpdate)
+                          } else if (currentUser?.userId == userToUpdate.userId &&
+                              userToUpdate.role.ordinal > currentUser?.role!!.ordinal &&
+                              currentUser?.role != Role.OWNER) {
+                            adminViewModel.modifyCurrentUserRole(selectedOption)
                           }
                           displayedChoiceBox = false
                         },
