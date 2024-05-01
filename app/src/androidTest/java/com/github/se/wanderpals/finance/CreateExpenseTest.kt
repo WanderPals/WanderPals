@@ -440,10 +440,10 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
     composeTestRule.waitForIdle()
 
     ComposeScreen.onComposeScreen<ExpenseScreen>(composeTestRule) {
-      userRow1 { assertIsDisplayed() }
-      userRow2 { assertIsDisplayed() }
-      userRow3 { assertIsDisplayed() }
-      userRow4 { assertIsDisplayed() }
+      userRow1 { assertExists() }
+      userRow2 { assertExists() }
+      userRow3 { assertExists() }
+      userRow4 { assertExists() }
     }
 
     val users = viewModel.users.value

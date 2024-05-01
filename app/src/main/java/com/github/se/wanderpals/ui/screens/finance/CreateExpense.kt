@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Checkbox
@@ -104,7 +106,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
           )
         }) { paddingValues ->
           Box(modifier = Modifier.padding(paddingValues).fillMaxSize().background(Color.White)) {
-            Box {
+            Box(modifier = Modifier.verticalScroll(rememberScrollState(), true)) {
               Column(modifier = Modifier.testTag("createExpenseContent").background(Color.White)) {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
