@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +45,7 @@ fun FinanceTopBar(
     onSelectOption: (FinanceOption) -> Unit
 ){
     Column(
+        modifier = Modifier.testTag("financeTopBar"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -55,6 +57,7 @@ fun FinanceTopBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             OutlinedButton(
+                modifier = Modifier.testTag("financeBackButton"),
                 onClick = { navigationActions.navigateTo(Route.DASHBOARD) },
             ) {
                 Icon(
@@ -115,7 +118,7 @@ fun NavigationButton(
 ) {
 
     Column(
-        modifier = Modifier.clickable(onClick = onClick),
+        modifier = Modifier.clickable(onClick = onClick).testTag(text+"Button"),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 

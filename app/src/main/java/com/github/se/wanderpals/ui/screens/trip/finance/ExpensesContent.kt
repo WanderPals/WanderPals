@@ -16,12 +16,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -44,13 +46,33 @@ import java.time.format.DateTimeFormatter
  */
 @Composable
 fun ExpensesContent(innerPadding : PaddingValues,expenseList : List<Expense>){
-    LazyColumn(
-        modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxHeight()
-    ) {
-        items(expenseList) { expense ->
-            ExpenseItem(expense = expense) {
+    if(expenseList.isEmpty()){
+        Box(modifier = Modifier.fillMaxSize()) {
+            Text(
+                modifier =
+                Modifier.align(Alignment.Center)
+                    .testTag("noExpensesTripText"),
+                text = "Looks like you have no expenses. ",
+                style =
+                TextStyle(
+                    fontSize = 18.sp,
+                    lineHeight = 20.sp,
+                    fontWeight = FontWeight(500),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                ),
+            )
+        }
+    }else{
+        LazyColumn(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxHeight()
+                .testTag("expensesContent")
+        ) {
+            items(expenseList) { expense ->
+                ExpenseItem(expense = expense) {
+                }
             }
         }
     }

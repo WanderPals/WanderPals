@@ -17,9 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.model.data.Role
 
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
 /**
@@ -53,6 +56,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
     val expenseList by financeViewModel.expenseStateList.collectAsState()
 
     Scaffold(
+        modifier = Modifier.testTag("financeScreen"),
         topBar = {
             FinanceTopBar(
                 currentSelectedOption = currentSelectedOption,
@@ -64,8 +68,11 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             }
         },
         floatingActionButton = {
-            if (currentSelectedOption == FinanceOption.EXPENSES) {
+            if (
+                currentSelectedOption == FinanceOption.EXPENSES &&
+                SessionManager.getCurrentUser()!!.role != Role.VIEWER) {
                 FloatingActionButton(
+                    modifier = Modifier.testTag("financeFloatingActionButton"),
                     onClick = { /* TODO navigate to create expense screen*/ },
                     containerColor = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(50.dp)
@@ -95,11 +102,11 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             }
 
             FinanceOption.CATEGORIES -> {
-                // to be implemented
+                // to be implemented in next sprints
             }
 
             FinanceOption.DEBTS -> {
-                // to be implemented
+                // to be implemented in next sprints
             }
         }
     }

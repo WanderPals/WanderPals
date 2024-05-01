@@ -13,8 +13,8 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 /**Finance View model, not doing anything with database for the moment*/
-class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String): ViewModel() {
-    val expense1 = Expense(
+open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String): ViewModel() {
+    private val expense1 = Expense(
         expenseId = "exp001",
         title = "Groceries",
         amount = 50.0,
@@ -26,7 +26,7 @@ class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String)
         localDate = LocalDate.of(2024, 4, 30)
     )
 
-    val expense2 = Expense(
+    private val expense2 = Expense(
         expenseId = "exp002",
         title = "Movie Night",
         amount = 25.0,
@@ -38,7 +38,7 @@ class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String)
         localDate = LocalDate.of(2024, 4, 29)
     )
 
-    val expense3 = Expense(
+    private val expense3 = Expense(
         expenseId = "exp003",
         title = "Dinner",
         amount = 100.0,
