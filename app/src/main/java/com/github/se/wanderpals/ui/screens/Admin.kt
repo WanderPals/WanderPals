@@ -64,7 +64,6 @@ import com.github.se.wanderpals.model.data.Role as Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.navigationActions
-import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberDetail
@@ -78,12 +77,13 @@ import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberItem
 @Composable
 fun Admin(adminViewModel: AdminViewModel) {
   val userList by adminViewModel.listOfUsers.collectAsState()
+  val currentUser by adminViewModel.currentUser.collectAsState()
+
   var displayed by remember { mutableStateOf(false) }
   var userToDelete by remember { mutableStateOf("") }
   var displayedChoiceBox by remember { mutableStateOf(false) }
   var userToUpdate by remember { mutableStateOf(User()) }
   var selectedImages by remember { mutableStateOf<List<Uri?>>(emptyList()) }
-  var roleChange by remember { mutableStateOf(SessionManager.getCurrentUser()?.role) }
 
   val radioOptions = listOf(Role.OWNER, Role.ADMIN, Role.MEMBER, Role.VIEWER)
   var (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
@@ -141,7 +141,7 @@ fun Admin(adminViewModel: AdminViewModel) {
     ) {
       Row(verticalAlignment = BiasAlignment.Vertical(-0.6f)) {
         if (selectedImages.isNotEmpty()) {
-          SessionManager.setPhoto(selectedImages[0].toString())
+          adminViewModel.modifyCurrentUserProfilePhoto(selectedImages[0].toString())
           AsyncImage( // Icon for the admin screen
               model = selectedImages[0],
               contentDescription = "Admin Icon",
@@ -157,9 +157,9 @@ fun Admin(adminViewModel: AdminViewModel) {
                       }
                       .testTag("IconAdminScreen"))
         } else {
-          if (SessionManager.getCurrentUser() != null) {
+          if (currentUser != null) {
             AsyncImage(
-                model = SessionManager.getCurrentUser()?.profilePhoto,
+                model = currentUser!!.profilePhoto,
                 contentDescription = "Admin Icon",
                 contentScale = ContentScale.Crop,
                 modifier =
@@ -177,9 +177,9 @@ fun Admin(adminViewModel: AdminViewModel) {
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(start = 10.dp, top = 30.dp)) {
-              if (SessionManager.getCurrentUser() != null) {
+              if (currentUser != null) {
                 Text(
-                    text = SessionManager.getCurrentUser()!!.name,
+                    text = currentUser!!.name,
                     style = MaterialTheme.typography.displaySmall,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -188,9 +188,9 @@ fun Admin(adminViewModel: AdminViewModel) {
               }
               HorizontalDivider(modifier = Modifier.padding(end = 30.dp).testTag("CardDivider"))
 
-              if (SessionManager.getCurrentUser() != null) {
+              if (currentUser != null) {
                 Text(
-                    text = SessionManager.getCurrentUser()!!.tripName,
+                    text = currentUser!!.tripName,
                     style = MaterialTheme.typography.displayMedium,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -200,7 +200,7 @@ fun Admin(adminViewModel: AdminViewModel) {
             }
       }
       Text(
-          text = roleChange.toString(),
+          text = currentUser?.role.toString(),
           modifier = Modifier.padding(start = 60.dp, top = 20.dp),
           fontWeight = FontWeight.Bold,
           fontStyle = FontStyle.Italic)
@@ -213,8 +213,7 @@ fun Admin(adminViewModel: AdminViewModel) {
         fontWeight = FontWeight.Bold)
 
     HorizontalDivider(modifier = Modifier.padding(20.dp).testTag("AdminDivider"))
-    if (SessionManager.getCurrentUser()?.role == Role.OWNER ||
-        SessionManager.getCurrentUser()?.role == Role.ADMIN) {
+    if (currentUser?.role == Role.OWNER || currentUser?.role == Role.ADMIN) {
       val lazyColumn =
           @Composable {
             LazyColumn(Modifier.fillMaxSize()) {
@@ -245,12 +244,11 @@ fun Admin(adminViewModel: AdminViewModel) {
                           }
 
                       // Transfer Owner rights
-                      if (roleChange == Role.OWNER) {
+                      if (currentUser!!.role == Role.OWNER) {
                         IconButton(
                             onClick = {
-                              roleChange = Role.ADMIN
-                              SessionManager.setRole(Role.ADMIN)
                               adminViewModel.modifyUser(user.copy(role = Role.OWNER))
+                              adminViewModel.modifyCurrentUserRole(Role.ADMIN)
                             }) {
                               Icon(
                                   Icons.Default.Star,
@@ -283,7 +281,7 @@ fun Admin(adminViewModel: AdminViewModel) {
               TextButton(
                   onClick = {
                     adminViewModel.deleteUser(userToDelete)
-                    if (userToDelete == SessionManager.getCurrentUser()?.userId)
+                    if (userToDelete == currentUser?.userId)
                         navigationActions.navigateTo(Route.OVERVIEW)
                   },
                   modifier = Modifier.testTag("confirmDeleteUserButton")) {
@@ -347,7 +345,11 @@ fun Admin(adminViewModel: AdminViewModel) {
                     TextButton(
                         onClick = {
                           userToUpdate = userToUpdate.copy(role = selectedOption)
-                          adminViewModel.modifyUser(user = userToUpdate)
+                          if (!(currentUser?.userId == userToUpdate.userId &&
+                              selectedOption == Role.OWNER &&
+                              currentUser?.role == Role.ADMIN)) {
+                            adminViewModel.modifyUser(userToUpdate)
+                          }
                           displayedChoiceBox = false
                         },
                         modifier = Modifier.padding(10.dp).testTag("ConfirmRoleChangeButton")) {
