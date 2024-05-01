@@ -15,6 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * Composable function for displaying the bottom bar in the Finance screen.
+ * Provides information about total expenses for the user and total expenses for the trip.
+ */
 @Composable
 fun FinanceBottomBar(){
     Row(
