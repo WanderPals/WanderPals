@@ -27,6 +27,7 @@ import androidx.navigation.navigation
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
@@ -37,10 +38,12 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.finance.Finance
 import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.Dispatchers
 
 /**
  * Trip screen composable that displays the trip screen with the bottom navigation bar.
@@ -172,6 +175,20 @@ fun Trip(
                           suggestionId = oldNavActions.variables.suggestionId,
                           viewModel = suggestionsViewModel,
                           navActions = oldNavActions)
+                    }
+                    composable(Route.FINANCE) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
+                      /*
+                      uncomment this when expense creation will be available
+                      viewModel(
+                          factory =
+                          FinanceViewModel.FinanceViewModelFactory(
+                              tripsRepository, oldNavActions.variables.currentTrip),
+                          key = "FinanceViewModel")*/
+                      Finance(
+                          financeViewModel =
+                              FinanceViewModel(TripsRepository("-1", Dispatchers.IO), "-1"),
+                          navigationActions = oldNavActions)
                     }
                   }
             }
