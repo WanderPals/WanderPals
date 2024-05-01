@@ -305,7 +305,8 @@ open class SuggestionsViewModel(
           _addedSuggestionsToStops.value += suggestion.suggestionId
           // Remove the suggestion from the trip's suggestion list
           suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
-
+          NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
+          NotificationsManager.addStopNotification(tripId, suggestion.stop)
           if (selectedSuggestion.value?.suggestionId == suggestion.suggestionId) {
             _selectedSuggestion.value = null
           }
