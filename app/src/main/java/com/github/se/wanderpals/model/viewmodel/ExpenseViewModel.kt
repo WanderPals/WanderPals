@@ -11,7 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ExpenseViewModel(private val tripsRepository: TripsRepository, tripId: String) : ViewModel() {
+open class ExpenseViewModel(private val tripsRepository: TripsRepository, tripId: String) :
+    ViewModel() {
 
   private val _users = MutableStateFlow(emptyList<User>())
   open val users: StateFlow<List<User>> = _users.asStateFlow()

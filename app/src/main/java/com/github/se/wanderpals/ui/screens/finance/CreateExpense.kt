@@ -64,7 +64,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
   var selectedMenu1: User? by remember { mutableStateOf(null) }
   var selectedMenu2 by remember { mutableStateOf("") }
   var expenseTitle by remember { mutableStateOf("") }
-  var expenseBudget by remember { mutableStateOf("") }
+  var expenseAmount by remember { mutableStateOf("") }
   var expenseDate by remember { mutableStateOf("") }
   var showDatePicker: Boolean by remember { mutableStateOf(false) }
 
@@ -130,8 +130,8 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                 )
 
                 OutlinedTextField(
-                    value = expenseBudget,
-                    onValueChange = { if (it.length <= 20) expenseBudget = it else {} },
+                    value = expenseAmount,
+                    onValueChange = { if (it.length <= 20) expenseAmount = it else {} },
                     label = { Text("Amount") },
                     placeholder = { Text("") },
                     modifier =
@@ -141,7 +141,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     suffix = {
                       Text(
-                          text = "CHF | ${expenseBudget.length}/20",
+                          text = "CHF | ${expenseAmount.length}/20",
                           style = MaterialTheme.typography.bodyMedium)
                     },
                     singleLine = true, // add the currency
@@ -155,11 +155,11 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                     label = { Text("Date") },
                     placeholder = { Text(" -- / -- / ---- ") },
                     modifier =
-                        Modifier.testTag("expenseTitle")
+                        Modifier.testTag("expenseDate")
                             .padding(horizontal = 24.dp, vertical = 8.dp)
                             .fillMaxWidth()
                             .clickable { showDatePicker = true },
-                    readOnly = true,
+                    // readOnly = true,
                     singleLine = true,
                     interactionSource = DateInteractionSource { showDatePicker = true },
                     isError = errorText.isNotEmpty())
@@ -173,7 +173,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                     expanded = expandedMenu1,
                     onExpandedChange = { expandedMenu1 = !expandedMenu1 },
                     modifier =
-                        Modifier.testTag("dropdownMenu").padding(24.dp, 8.dp).fillMaxWidth()) {
+                        Modifier.testTag("dropdownMenuPaid").padding(24.dp, 8.dp).fillMaxWidth()) {
                       OutlinedTextField(
                           value = selectedMenu1?.name ?: "",
                           onValueChange = {},
@@ -192,7 +192,10 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                                 selectedMenu1 = item
                                 expandedMenu1 = false
                               },
-                              modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth())
+                              modifier =
+                                  Modifier.padding(horizontal = 24.dp)
+                                      .fillMaxWidth()
+                                      .testTag(item.userId))
                         }
                       }
                     }
@@ -201,14 +204,14 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                     expanded = expandedMenu2,
                     onExpandedChange = { expandedMenu2 = !expandedMenu2 },
                     modifier =
-                        Modifier.testTag("dropdownMenu")
+                        Modifier.testTag("dropdownMenuCategory")
                             .padding(24.dp, top = 8.dp, bottom = 16.dp, end = 24.dp)
                             .fillMaxWidth()) {
                       OutlinedTextField(
                           value = selectedMenu2,
                           onValueChange = {},
                           label = { Text("Category") },
-                          modifier = Modifier.testTag("expenseTitle").fillMaxWidth().menuAnchor(),
+                          modifier = Modifier.fillMaxWidth().menuAnchor().testTag("category"),
                           readOnly = true,
                           isError = errorText.isNotEmpty())
                       ExposedDropdownMenu(
@@ -222,7 +225,10 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                                 selectedMenu2 = item.name
                                 expandedMenu2 = false
                               },
-                              modifier = Modifier.padding(horizontal = 24.dp).fillMaxWidth())
+                              modifier =
+                                  Modifier.padding(horizontal = 24.dp)
+                                      .fillMaxWidth()
+                                      .testTag(item.name))
                         }
                       }
                     }
@@ -235,7 +241,8 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                           onCheckedChange = {
                             if (checkboxes.all { it }) checkboxes.replaceAll { false }
                             else checkboxes.replaceAll { true }
-                          })
+                          },
+                          modifier = Modifier.testTag("checkboxAll"))
                       Text(
                           text = "FOR WHOM",
                           color = Color.Black,
@@ -250,7 +257,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                         Text(
                             text = "No users found, this should not happen.",
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.padding(16.dp))
+                            modifier = Modifier.padding(16.dp).testTag("noUsersFound"))
                       }
                     } else {
                       items(users.size) { index ->
@@ -262,10 +269,12 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                                             MaterialTheme.colorScheme.primaryContainer
                                         else Color.White)
                                     .fillMaxWidth()
-                                    .padding(16.dp, 8.dp)) {
+                                    .padding(16.dp, 8.dp)
+                                    .testTag("userRow$index")) {
                               Checkbox(
                                   checked = checkboxes[index],
-                                  onCheckedChange = { checkboxes[index] = !checkboxes[index] })
+                                  onCheckedChange = { checkboxes[index] = !checkboxes[index] },
+                                  modifier = Modifier.testTag("checkbox$index"))
                               Text(
                                   text = users[index].name,
                                   color = MaterialTheme.colorScheme.onPrimaryContainer)
@@ -289,7 +298,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                               if (selectedMenu1 == null ||
                                   selectedMenu2.isEmpty() ||
                                   expenseTitle.isEmpty() ||
-                                  expenseBudget.toDoubleOrNull() == null ||
+                                  expenseAmount.toDoubleOrNull() == null ||
                                   expenseDate.isEmpty() ||
                                   checkboxes.all { !it }) {
                                 errorText =
@@ -301,7 +310,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                                     Expense(
                                         expenseId = "",
                                         title = expenseTitle,
-                                        amount = expenseBudget.toDouble(),
+                                        amount = expenseAmount.toDouble(),
                                         localDate =
                                             LocalDate.parse(
                                                 expenseDate,
@@ -318,7 +327,8 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                             },
                             modifier =
                                 Modifier.fillMaxWidth(0.5f)
-                                    .padding(bottom = if (errorText.isNotEmpty()) 4.dp else 10.dp),
+                                    .padding(bottom = if (errorText.isNotEmpty()) 4.dp else 10.dp)
+                                    .testTag("saveButton"),
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             elevation = FloatingActionButtonDefaults.elevation(2.dp, 1.dp)) {
                               Text(
@@ -330,7 +340,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                               text = errorText,
                               color = Color.Red,
                               style = MaterialTheme.typography.bodyMedium,
-                              modifier = Modifier.padding(bottom = 10.dp))
+                              modifier = Modifier.padding(bottom = 10.dp).testTag("errorText"))
                         }
                       }
                 }
