@@ -1,7 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +34,14 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
 import java.time.format.DateTimeFormatter
 
+/**
+ * Composable function for displaying the list of expenses of the trip.
+ * It displays the following informations : the title,amount,date, and category of the expense and
+ * also which user paid it.
+ *
+ * @param innerPadding Padding values for the inner content.
+ * @param expenseList List of expenses to display.
+ */
 @Composable
 fun ExpensesContent(innerPadding : PaddingValues,expenseList : List<Expense>){
     LazyColumn(
@@ -50,6 +56,11 @@ fun ExpensesContent(innerPadding : PaddingValues,expenseList : List<Expense>){
     }
 }
 
+/**
+ * Composable function for displaying an individual expense item.
+ * @param expense The expense to display.
+ * @param onExpenseItemClick Callback function for when an expense item is clicked.
+ */
 @Composable
 fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
     Box(modifier = Modifier
@@ -73,7 +84,7 @@ fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
                     horizontalAlignment = Alignment.Start
                 )
                 {
-
+                    // Expense Title
                     Text(
                         text = expense.title,
                         style = TextStyle(fontSize = 18.sp),
@@ -83,6 +94,7 @@ fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
                         maxLines = 1
                     )
 
+                    // User that paid the expense
                     Text(
                         text =buildAnnotatedString {
                             append("Payed by ")
@@ -97,6 +109,7 @@ fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1
                     )
+                    // Expense category
                     Text(
                         text = expense.category.name,
                         style = TextStyle(
@@ -114,12 +127,13 @@ fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.End
                 ) {
-
+                    // Expense amount
                     Text(
                         text = "%.2f CHF".format(expense.amount),
                         style = TextStyle(fontSize = 14.sp, color = Color.Gray)
                     )
 
+                    // Expense date
                     Text(
                         text = expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                         style = TextStyle(fontSize = 14.sp, color = Color.Gray)
