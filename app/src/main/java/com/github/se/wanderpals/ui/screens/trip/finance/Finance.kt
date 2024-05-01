@@ -22,7 +22,10 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
-
+/**
+ * Enum class representing different finance options available in the Finance screen.
+ * @param optionName The name of the finance option.
+ */
 enum class FinanceOption(private val optionName: String) {
     EXPENSES("Expenses"),
     CATEGORIES("Categories"),
@@ -33,15 +36,21 @@ enum class FinanceOption(private val optionName: String) {
     }
 }
 
-
-/** The Finance screen. */
+/**
+ * Composable function representing the Finance screen.
+ * The screen contains the following view for the user :
+ * -    Expenses view which is an history of the expenses during the trip
+ * -    Categories view allows the user to watch the categories of expense during the trip
+ * -    Debts view display the balances between each member of the trip
+ * @param financeViewModel The ViewModel for finance-related data.
+ * @param navigationActions The navigation actions for the Finance screen.
+ */
 @Composable
 fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationActions) {
 
     var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
 
     val expenseList by financeViewModel.expenseStateList.collectAsState()
-
 
     Scaffold(
         topBar = {
@@ -71,7 +80,9 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             }
         }
 
-    ) { innerPadding ->
+    ) {
+        // Content
+        innerPadding ->
         LaunchedEffect(Unit) {
             financeViewModel.updateStateLists()
         }
