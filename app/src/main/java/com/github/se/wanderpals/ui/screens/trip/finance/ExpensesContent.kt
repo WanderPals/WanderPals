@@ -77,7 +77,7 @@ fun ExpensesContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
  */
 @Composable
 fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
-    HorizontalDivider(color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+  HorizontalDivider(color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
   Box(modifier = Modifier.fillMaxWidth().height(90.dp)) {
     Button(
         onClick = {},
