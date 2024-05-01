@@ -8,7 +8,7 @@ import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.ExpenseViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.screens.finance.CreateExpense
+import com.github.se.wanderpals.ui.screens.trip.finance.CreateExpense
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase

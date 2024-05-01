@@ -11,6 +11,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Expense
+ *
+ * @param tripsRepository Repository to fetch data from
+ * @param tripId Id of the trip
+ */
 open class ExpenseViewModel(private val tripsRepository: TripsRepository, tripId: String) :
     ViewModel() {
 

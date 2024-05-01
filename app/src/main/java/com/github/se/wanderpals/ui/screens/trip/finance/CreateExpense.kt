@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.screens.finance
+package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,6 +57,13 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * Composable function to create an expense.
+ *
+ * @param tripId The id of the trip.
+ * @param viewModel The [ExpenseViewModel] to handle the expense creation.
+ * @param navActions The navigation actions to navigate back.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: NavigationActions) {
