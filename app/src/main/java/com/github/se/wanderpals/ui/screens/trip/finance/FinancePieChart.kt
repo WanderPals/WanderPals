@@ -15,6 +15,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Expense
 
+/**
+ * A pie chart that displays the expenses in a trip.
+ *
+ * @param expenses The list of expenses to display in the pie chart.
+ * @param radiusOuter The outer radius of the pie chart.
+ * @param chartBandWidth The width of the pie chart bands.
+ */
 @Composable
 fun FinancePieChart(
     expenses: List<Expense>,
@@ -45,7 +52,7 @@ fun FinancePieChart(
 
   Box(
       modifier =
-          Modifier.size(radiusOuter * 2f + chartBandWidth * 2)
+          Modifier.size(radiusOuter * 2f + chartBandWidth)
               .testTag("FinancePieChart")
               .background(Color.DarkGray),
       contentAlignment = Alignment.Center) {
