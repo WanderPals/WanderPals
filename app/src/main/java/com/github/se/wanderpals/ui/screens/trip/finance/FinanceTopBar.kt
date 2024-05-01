@@ -32,6 +32,12 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
+/**
+ * Composable function for displaying the top bar in the Finance screen.
+ * Provides navigation options and a back button.
+ * @param currentSelectedOption The currently selected finance option.
+ * @param onSelectOption Callback function for selecting a finance option.
+ */
 @Composable
 fun FinanceTopBar(
     currentSelectedOption: FinanceOption,
@@ -92,6 +98,14 @@ fun FinanceTopBar(
 
     }
 }
+
+/**
+ * Composable function for displaying a navigation button.
+ * @param text The text to display on the button.
+ * @param imageId The resource ID of the image for the button.
+ * @param isSelected Whether the button is currently selected.
+ * @param onClick Callback function for when the button is clicked.
+ */
 @Composable
 fun NavigationButton(
     text: String,
@@ -124,7 +138,6 @@ fun NavigationButton(
                 .width(100.dp)
                 .height(4.dp)
                 .background(if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
-
             ) {}
     }
 }
