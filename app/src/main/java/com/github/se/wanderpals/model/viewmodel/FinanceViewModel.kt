@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+/**Finance View model, not doing anything with database for the moment*/
 class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String): ViewModel() {
     val expense1 = Expense(
         expenseId = "exp001",
