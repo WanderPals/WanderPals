@@ -14,8 +14,10 @@ import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.github.kakaocup.compose.node.element.KNode
+import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
+import io.mockk.verify
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,9 +36,13 @@ private class FakeExpenseViewModel : ExpenseViewModel(TripsRepository("", Dispat
   override fun loadMembers(tripId: String) {
     // Do nothing
   }
+
+  fun setMembers(users: List<User>) {
+    _users.value = users
+  }
 }
 
-private class FakeTripRepository : TripsRepository("", Dispatchers.IO) {
+private class FakeExpenseTripRepository : TripsRepository("", Dispatchers.IO) {
   override suspend fun addExpenseToTrip(tripId: String, expense: Expense): String {
     assert(expense.copy(expenseId = "expense0") == mockExpense)
     return ""
@@ -427,7 +433,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   fun viewModelTest() // This test might pose problem later, concurrency issues. If this breaks,
     // remove it.
   {
-    val viewModel = ExpenseViewModel(FakeTripRepository(), "")
+    val viewModel = ExpenseViewModel(FakeExpenseTripRepository(), "")
     viewModel.loadMembers("")
     viewModel.addExpense("", mockExpense)
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
@@ -442,5 +448,18 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
     val users = viewModel.users.value
     assert(users == listOf(mockUser1, mockUser2, mockUser3, mockUser4))
+  }
+
+  @Test
+  fun goBackButton() {
+    val viewModel = FakeExpenseViewModel()
+
+    composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
+
+    ComposeScreen.onComposeScreen<ExpenseScreen>(composeTestRule) {
+      backButton { performClick() }
+      verify { mockNavActions.goBack() }
+      confirmVerified(mockNavActions)
+    }
   }
 }
