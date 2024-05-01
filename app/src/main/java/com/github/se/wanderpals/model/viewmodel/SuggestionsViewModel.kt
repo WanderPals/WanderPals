@@ -52,6 +52,8 @@ open class SuggestionsViewModel(
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  private val _isLikeChanging = MutableStateFlow(false)
+
   // State flow to handle the displaying of the bottom sheet
   private val _bottomSheetVisible = MutableStateFlow(false)
   open val bottomSheetVisible: StateFlow<Boolean> = _bottomSheetVisible.asStateFlow()
@@ -130,55 +132,61 @@ open class SuggestionsViewModel(
    */
   open fun toggleLikeSuggestion(suggestion: Suggestion) {
 
-    // Update the backend by calling the TripsRepository function
-    viewModelScope.launch {
-      val currentSuggestion =
-          suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+    if (!_isLikeChanging.value) {
 
-      Log.d("Liked Suggestions", _likedSuggestions.value.toString())
-      Log.d("Suggestions Liked Users", currentSuggestion.userLikes.toString())
-      Log.d("Suggestion Is Liked", getIsLiked(currentSuggestion.suggestionId).toString())
+      _isLikeChanging.value = true
+      // Update the backend by calling the TripsRepository function
+      viewModelScope.launch {
+        val currentSuggestion =
+            suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
 
-      val liked = getIsLiked(currentSuggestion.suggestionId)
+        Log.d("Liked Suggestions", _likedSuggestions.value.toString())
+        Log.d("Suggestions Liked Users", currentSuggestion.userLikes.toString())
+        Log.d("Suggestion Is Liked", getIsLiked(currentSuggestion.suggestionId).toString())
 
-      // Toggle the like status in the local state
-      _likedSuggestions.value =
-          if (liked) {
-            _likedSuggestions.value - currentSuggestion.suggestionId
-          } else {
-            _likedSuggestions.value + currentSuggestion.suggestionId
-          }
+        val liked = getIsLiked(currentSuggestion.suggestionId)
 
-      // Prepare the updated suggestion for backend update
-      val newUserLike =
-          if (liked) { // if the suggestion is already liked, remove the current user's ID
-            currentSuggestion.userLikes -
-                currentLoggedInUId // Remove the current user's ID from the list
-          } else {
-            currentSuggestion.userLikes + currentLoggedInUId
-          }
-      val updatedSuggestion = currentSuggestion.copy(userLikes = newUserLike)
-
-      // Fetch all users from the trip:
-      val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
-
-      // Call the repository function to update the suggestion
-      val wasUpdateSuccessful =
-          suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
-      if (wasUpdateSuccessful) { // If the backend update is successful,
-        _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
-
+        // Toggle the like status in the local state
         _likedSuggestions.value =
-            _state.value
-                .filter { it.userLikes.contains(currentLoggedInUId) }
-                .map { it.suggestionId }
+            if (liked) {
+              _likedSuggestions.value - currentSuggestion.suggestionId
+            } else {
+              _likedSuggestions.value + currentSuggestion.suggestionId
+            }
 
-        if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
-          _selectedSuggestion.value = updatedSuggestion
+        // Prepare the updated suggestion for backend update
+        val newUserLike =
+            if (liked) { // if the suggestion is already liked, remove the current user's ID
+              currentSuggestion.userLikes -
+                  currentLoggedInUId // Remove the current user's ID from the list
+            } else {
+              currentSuggestion.userLikes + currentLoggedInUId
+            }
+        val updatedSuggestion = currentSuggestion.copy(userLikes = newUserLike)
+
+        // Fetch all users from the trip:
+        val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
+
+        // Call the repository function to update the suggestion
+        val wasUpdateSuccessful =
+            suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+        if (wasUpdateSuccessful) { // If the backend update is successful,
+          _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
+
+          _likedSuggestions.value =
+              _state.value
+                  .filter { it.userLikes.contains(currentLoggedInUId) }
+                  .map { it.suggestionId }
+
+          if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
+            _selectedSuggestion.value = updatedSuggestion
+          }
+
+          // Now check if the suggestion should be added to stops
+          checkAndAddSuggestionAsStop(updatedSuggestion, allUsers, threshold)
+
+          _isLikeChanging.value = false
         }
-
-        // Now check if the suggestion should be added to stops
-        checkAndAddSuggestionAsStop(updatedSuggestion, allUsers, threshold)
       }
     }
   }
