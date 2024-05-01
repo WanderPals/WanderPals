@@ -55,6 +55,8 @@ class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
   private val _showDeleteDialog = MutableStateFlow(false)
   override val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
 
+  override val selectedSuggestion = MutableStateFlow(testSuggestions.first())
+
   private fun updateSuggestionList(suggestions: List<Suggestion>) {
     _state.value = suggestions
     _isLoading.value = false
@@ -90,6 +92,9 @@ class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
     updateSuggestionList(
         _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
     _selectedComment.value = null
+    if (selectedSuggestion.value.suggestionId == suggestion.suggestionId) {
+      selectedSuggestion.value = newSuggestion
+    }
     hideBottomSheet()
   }
 

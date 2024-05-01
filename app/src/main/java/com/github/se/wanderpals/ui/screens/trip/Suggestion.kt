@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,11 @@ fun Suggestion(
     onSuggestionClick: () -> Unit
 ) {
 
+  LaunchedEffect(Unit) {
+    // Fetch all suggestions for the trip
+    suggestionsViewModel.loadSuggestion(tripId)
+  }
+
   // get the suggestion list from the firebase database
   val suggestionList by suggestionsViewModel.state.collectAsState()
 
@@ -46,24 +52,23 @@ fun Suggestion(
   // State for managing the loading state
   val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
-  if (isLoading) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      CircularProgressIndicator(
-          modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
-    }
-  } else {
-    Scaffold(
-        modifier = Modifier.testTag("suggestionFeedScreen"),
-        topBar = {
-          // Top bar with search functionality based on the title of the trips
-          SuggestionTopBar(
-              searchSuggestionText = searchSuggestionText,
-              onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-                searchSuggestionText = newSearchSuggestionText
-              })
-        },
-        bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding
-          ->
+  Scaffold(
+      modifier = Modifier.testTag("suggestionFeedScreen"),
+      topBar = {
+        // Top bar with search functionality based on the title of the trips
+        SuggestionTopBar(
+            searchSuggestionText = searchSuggestionText,
+            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+              searchSuggestionText = newSearchSuggestionText
+            })
+      },
+      bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding ->
+        if (isLoading) {
+          Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+          }
+        } else {
           SuggestionFeedContent(
               innerPadding = innerPadding,
               suggestionList = suggestionList,
@@ -72,5 +77,5 @@ fun Suggestion(
               suggestionsViewModel = suggestionsViewModel,
               navigationActions = oldNavActions)
         }
-  }
+      }
 }

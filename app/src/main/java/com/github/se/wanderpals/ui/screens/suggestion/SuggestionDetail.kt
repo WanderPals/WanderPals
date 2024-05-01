@@ -52,24 +52,12 @@ import java.time.format.DateTimeFormatter
 fun SuggestionDetail(
     suggestionId: String,
     viewModel: SuggestionsViewModel,
-    navActions: NavigationActions,
+    navActions: NavigationActions
 ) {
-  val suggestions = viewModel.state.collectAsState()
-  val suggestion = suggestions.value.find { it.suggestionId == suggestionId }
-  // SnackbarHostState for showing notifications
-  val snackbarHostState = remember { SnackbarHostState() }
 
-  // Handle navigation and feedback as side effects
-  LaunchedEffect(suggestion) {
-    if (suggestion == null) {
-      snackbarHostState.showSnackbar(
-          message = "Suggestion not found. Returning to previous screen.",
-          duration = SnackbarDuration.Short)
-      // Delay to allow user to read the message
-      kotlinx.coroutines.delay(2000)
-      navActions.goBack()
-    }
-  }
+  val suggestionFromViewModel by viewModel.selectedSuggestion.collectAsState()
+  val suggestion = suggestionFromViewModel
+
   if (suggestion != null) {
     // Get the number of likes and if the user has liked the suggestion
     val isLiked = viewModel.getIsLiked(suggestion.suggestionId)

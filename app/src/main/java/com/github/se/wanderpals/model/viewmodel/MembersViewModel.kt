@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-open class MembersViewModel(private val tripsRepository: TripsRepository, tripId: String) :
+open class MembersViewModel(private val tripsRepository: TripsRepository, val tripId: String) :
     ViewModel() {
 
   private val _members = MutableStateFlow(emptyList<User>())
@@ -18,12 +18,8 @@ open class MembersViewModel(private val tripsRepository: TripsRepository, tripId
   private val _isLoading = MutableStateFlow(false)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-  init {
-    loadMembers(tripId)
-  }
-
   /** Fetches all trips from the repository and updates the state flow accordingly. */
-  open fun loadMembers(tripId: String) {
+  open fun loadMembers() {
     viewModelScope.launch {
       _isLoading.value = true
       // Fetch all trips from the repository

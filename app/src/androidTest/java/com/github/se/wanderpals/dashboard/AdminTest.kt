@@ -51,6 +51,7 @@ class FakeAdminViewModel :
 
   // create a fake Admin ViewModel
   override var listOfUsers = MutableStateFlow(listOf(user1, user2, user3))
+  override var currentUser = MutableStateFlow(SessionManager.getCurrentUser())
 
   override fun deleteUser(userId: String) {}
 
@@ -263,7 +264,14 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
   fun checkViewsSingle() = run {
     val viewModel = FakeAdminViewModel()
     val User3 = viewModel.listOfUsers.value[2]
+    SessionManager.setUserSession(
+        userId = User3.userId,
+        User3.name,
+        User3.email,
+        User3.role,
+        profilePhoto = User3.profilePictureURL)
     viewModel.listOfUsers.value = listOf(User3)
+    viewModel.currentUser.value = SessionManager.getCurrentUser()
     composeTestRule.setContent {
       SessionManager.setUserSession(
           userId = User3.userId,

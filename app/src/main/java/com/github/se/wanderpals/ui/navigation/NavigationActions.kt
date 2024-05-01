@@ -174,6 +174,7 @@ data class NavigationActions(
     variables.suggestionId = suggestion.suggestionId
     variables.currentGeoCords = suggestion.stop.geoCords
     variables.currentSuggestion = suggestion
+    variables.currentAddress = suggestion.stop.address
   }
 
   /**

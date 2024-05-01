@@ -39,6 +39,20 @@ object SharedPreferencesManager {
   }
 
   /**
+   * Delete the place data from the shared preferences.
+   *
+   * @param placeData The place data to delete.
+   * @return The list of place data
+   */
+  fun deletePlaceData(placeData: PlaceData): MutableList<PlaceData> {
+    val listPlaceData = getAllPlaceData().toMutableList()
+    listPlaceData.remove(placeData)
+    val json = Gson().toJson(listPlaceData)
+    sharedPreferencesMap.edit().putString(LIST_OF_TEMP_MARKERS, json).apply()
+    return listPlaceData
+  }
+
+  /**
    * Get all the place data from the shared preferences.
    *
    * @return The list of place data

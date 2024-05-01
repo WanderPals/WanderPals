@@ -38,10 +38,6 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
    */
   open fun executeJob(block: suspend () -> Unit) = viewModelScope.launch { block() }
 
-  init {
-    refreshData()
-  }
-
   /** Refresh the data. */
   fun refreshData() {
     getAllStops()
@@ -63,6 +59,15 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
    */
   open fun savePlaceDataState(placeData: PlaceData) {
     listOfTempPlaceData.value = SharedPreferencesManager.savePlaceData(placeData)
+  }
+
+  /**
+   * Delete the place data.
+   *
+   * @param placeData The place data to delete.
+   */
+  open fun deletePlaceDataState(placeData: PlaceData) {
+    listOfTempPlaceData.value = SharedPreferencesManager.deletePlaceData(placeData)
   }
 
   /** Get all temporary markers. */
