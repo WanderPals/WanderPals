@@ -425,7 +425,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun viewModelTest() // This test might pose problem later, concurrency issues. If this breaks,
-                      // remove it.
+    // remove it.
   {
     val viewModel = ExpenseViewModel(FakeTripRepository(), "")
     viewModel.loadMembers("")
