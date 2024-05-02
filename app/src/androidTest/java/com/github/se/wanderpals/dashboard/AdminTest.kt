@@ -363,4 +363,34 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
         .assertIsDisplayed()
         .assertTextContains("Johnson2@epfl.ch")
   }
+
+  @Test
+  fun OwnerCanModifyRoles() {
+    val viewModel = FakeAdminViewModel()
+    val User2 = viewModel.listOfUsers.value[1]
+    val User1 = viewModel.listOfUsers.value[0]
+    SessionManager.setUserSession(
+        userId = User2.userId,
+        User2.name,
+        User2.email,
+        User2.role,
+        profilePhoto = User2.profilePictureURL)
+    viewModel.listOfUsers.value = listOf(User2, User1)
+    viewModel.currentUser.value = SessionManager.getCurrentUser()
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          userId = User2.userId,
+          User2.name,
+          User2.email,
+          User2.role,
+          profilePhoto = User2.profilePictureURL)
+      Admin(viewModel)
+    }
+
+    ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
+      editRoleButton { performClick() }
+      composeTestRule.onNodeWithText("MEMBER").performClick()
+      ConfirmRoleChangeButton { performClick() }
+    }
+  }
 }
