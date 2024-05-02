@@ -172,9 +172,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     // Check that the top bar is displayed
     composeTestRule.onNodeWithTag("dashboardTopBar", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget is displayed
-    composeTestRule
-        .onNodeWithTag("dashboardSuggestions", useUnmergedTree = true)
-        .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("suggestionCard", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget title is displayed
     composeTestRule.onNodeWithTag("suggestionTitle", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget is displayed
@@ -194,12 +192,9 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the first suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion1", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 doesn't exist
-    composeTestRule.onNodeWithTag("divider0", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -215,22 +210,14 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the first suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion1", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the second suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion2", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem2", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider0", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider1 doesn't exist
-    composeTestRule.onNodeWithTag("divider1", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -246,32 +233,19 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the first suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion1", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the second suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion2", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem2", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the third suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion3", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem3", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider0", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider1 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider1", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider2 doesn't exist
-    composeTestRule.onNodeWithTag("divider2", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -287,35 +261,22 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("noSuggestions", useUnmergedTree = true).assertDoesNotExist()
 
     // Check that the first suggestion doesn't exist
-    composeTestRule.onNodeWithTag("suggestion1", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("suggestionItem1", useUnmergedTree = true).assertDoesNotExist()
     // Check that the second suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion2", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem2", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the third suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion3", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem3", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the fourth suggestion doesn't exist
     composeTestRule
-        .onNodeWithTag("suggestion4", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem4", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider0", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider1 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider1", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider2 doesn't exist
-    composeTestRule.onNodeWithTag("divider2", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -328,21 +289,24 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the stop title is displayed
     composeTestRule
-        .onNodeWithTag("stopTitle", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the created at date is displayed
-    composeTestRule
-        .onNodeWithTag("createdAt", useUnmergedTree = true)
+        .onNodeWithTag("suggestionTitle1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the user name is displayed
     composeTestRule
-        .onNodeWithTag("userName", useUnmergedTree = true)
+        .onNodeWithTag("suggestionUser1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-    // Check that the time is displayed
-    composeTestRule.onNodeWithTag("time", useUnmergedTree = true).assertExists().assertIsDisplayed()
+    // Check that the start time is displayed
+    composeTestRule
+        .onNodeWithTag("suggestionStart1", useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+    // Check that the end time is displayed
+    composeTestRule
+        .onNodeWithTag("suggestionEnd1", useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
   }
 
   @Test
