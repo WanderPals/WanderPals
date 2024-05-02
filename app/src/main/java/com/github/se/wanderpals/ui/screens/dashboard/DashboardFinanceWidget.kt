@@ -40,135 +40,193 @@ import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
-import kotlinx.coroutines.Dispatchers
 import java.time.LocalDate
+import kotlinx.coroutines.Dispatchers
 
+/**
+ * Composable function for displaying the finance widget in the Dashboard screen. The finance widget
+ * displays the total amount of expenses and the latest two expenses. The widget also displays a pie
+ * chart of the expenses. The user can click on the widget to navigate to the Finance screen.
+ *
+ * @param viewModel The ViewModel for the Dashboard screen.
+ * @param onClick The callback function for when the widget is clicked.
+ */
 @Composable
 fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
-    val expenses by viewModel.expenses.collectAsState()
-    val sortedExpenses = expenses.sortedByDescending { it.localDate }
+  val expenses by viewModel.expenses.collectAsState()
+  val sortedExpenses = expenses.sortedByDescending { it.localDate }
 
-    Card(
-        modifier =
-        Modifier
-            .padding(16.dp)
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .testTag("financeCard"),
-        colors =
-        CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant // This sets the background color of the Card
-        ),
-        shape = RoundedCornerShape(6.dp)) {
-        Row(modifier = Modifier
-            .height(IntrinsicSize.Max)
-            .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Column(modifier = Modifier
-                .padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
-                .width(IntrinsicSize.Max)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start, modifier =
-                        Modifier.clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(horizontal = 8.dp, vertical = 4.dp)) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Finance Icon", modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                        Text(
-                            text = "Finance",
-                            modifier = Modifier
-                                .testTag("financeTitle"),
-                            style = TextStyle(color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.Bold)
-                        )
-                    }
+  Card(
+      modifier =
+          Modifier.padding(16.dp)
+              .fillMaxWidth()
+              .clickable(onClick = onClick)
+              .testTag("financeCard"),
+      colors =
+          CardDefaults.cardColors(
+              containerColor =
+                  MaterialTheme.colorScheme
+                      .surfaceVariant // This sets the background color of the Card
+              ),
+      shape = RoundedCornerShape(6.dp)) {
+        // Finance Widget
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween) {
+              // Finance Details, Left part of the widget
+              Column(
+                  modifier =
+                      Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
+                          .width(IntrinsicSize.Max)) {
+                    // Top part of the texts
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()) {
+                          Row(
+                              verticalAlignment = Alignment.CenterVertically,
+                              horizontalArrangement = Arrangement.Start,
+                              modifier =
+                                  Modifier.clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.primaryContainer)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                                Icon(
+                                    Icons.Default.ShoppingCart,
+                                    contentDescription = "Finance Icon",
+                                    modifier = Modifier.size(16.dp).testTag("financeIcon"),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Text(
+                                    text = "Finance",
+                                    modifier = Modifier.testTag("financeTitle"),
+                                    style =
+                                        TextStyle(
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            fontWeight = FontWeight.Bold))
+                              }
+
+                          Spacer(modifier = Modifier.padding(4.dp))
+
+                          Text(
+                              text =
+                                  "Total: ${String.format("%.02f", expenses.sumOf { it.amount })} CHF",
+                              modifier =
+                                  Modifier.testTag("totalAmount")
+                                      .clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.surface)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp),
+                              style =
+                                  TextStyle(
+                                      color = MaterialTheme.colorScheme.primary,
+                                      fontWeight = FontWeight.Bold))
+                        }
 
                     Spacer(modifier = Modifier.padding(4.dp))
 
-                    Text(
-                        text = "Total: ${String.format("%.02f", expenses.sumOf { it.amount })} CHF",
-                        modifier = Modifier
-                            .testTag("totalAmount")
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        style =
-                        TextStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
-                    )
-                }
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                Surface(modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surface)) {
-                    if (expenses.isEmpty()) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .padding(top = 16.dp, bottom = 40.dp)
-                                .fillMaxSize()) {
-                            Text(text = "No expenses yet.", modifier = Modifier.testTag("noExpenses"), style = TextStyle(color = MaterialTheme.colorScheme.primary))
-                        }
-                    } else {
-                        Column {
-                            ExpenseItem(expense = sortedExpenses[0])
-                            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant, thickness = 1.dp, modifier = Modifier.padding(horizontal = 8.dp))
-                            if (expenses.size > 1) {
+                    // Latest expenses
+                    Surface(
+                        modifier =
+                            Modifier.clip(RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.surface)) {
+                          if (expenses.isEmpty()) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier =
+                                    Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
+                                  Text(
+                                      text = "No expenses yet.",
+                                      modifier = Modifier.testTag("noExpenses"),
+                                      style = TextStyle(color = MaterialTheme.colorScheme.primary))
+                                }
+                          } else {
+                            Column {
+                              ExpenseItem(expense = sortedExpenses[0])
+                              HorizontalDivider(
+                                  color = MaterialTheme.colorScheme.surfaceVariant,
+                                  thickness = 1.dp,
+                                  modifier = Modifier.padding(horizontal = 8.dp))
+                              if (expenses.size > 1) {
                                 ExpenseItem(expense = sortedExpenses[1])
-                            } else {
+                              } else {
                                 Box(modifier = Modifier.fillMaxSize())
+                              }
                             }
+                          }
                         }
+                  }
+
+              // Finance Pie Chart
+              Box(
+                  modifier =
+                      Modifier.padding(top = 8.dp, start = 4.dp, bottom = 8.dp, end = 8.dp)
+                          .clip(RoundedCornerShape(4.dp))
+                          .background(MaterialTheme.colorScheme.surface)
+                          .fillMaxSize(),
+                  contentAlignment = Alignment.Center) {
+                    if (expenses.isEmpty()) {
+                      Text(
+                          text = "No expenses yet.",
+                          modifier = Modifier.testTag("noExpensesBox"),
+                          style = TextStyle(color = MaterialTheme.colorScheme.primary))
+                    } else {
+                      Box(modifier = Modifier.size(100.dp))
                     }
-                }
+                  }
             }
-
-            // Finance Pie Chart
-            Box(
-                modifier = Modifier
-                    .padding(top = 8.dp, start = 4.dp, bottom = 8.dp, end = 8.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center) {
-                // FinancePieChart()
-                Box(modifier = Modifier.size(100.dp))
-
-            }
-        }
-    }
+      }
 }
 
 @Composable
 fun ExpenseItem(expense: Expense) {
-    Row (verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth().testTag("expenseItem")){
+  Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxWidth().testTag("expenseItem" + expense.expenseId)) {
         Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = expense.title, style = TextStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 15.sp), modifier = Modifier.testTag("expenseTitle"+expense.expenseId))
-            Text(text = "Payed by ${if(expense.userName.length > 12) expense.userName.subSequence(0, 10).toString()+"..." else expense.userName}", style = TextStyle(color = MaterialTheme.colorScheme.tertiary, fontSize = 10.sp), modifier = Modifier.testTag("expenseUser"+expense.userId))
+          Text(
+              text = expense.title,
+              style =
+                  TextStyle(
+                      fontWeight = FontWeight.Bold,
+                      color = MaterialTheme.colorScheme.primary,
+                      fontSize = 15.sp),
+              modifier = Modifier.testTag("expenseTitle" + expense.expenseId))
+          Text(
+              text =
+                  "Paid by ${if(expense.userName.length > 12) expense.userName.subSequence(0, 10).toString()+"..." else expense.userName}",
+              style = TextStyle(color = MaterialTheme.colorScheme.tertiary, fontSize = 10.sp),
+              modifier = Modifier.testTag("expenseUser" + expense.userId))
         }
 
-        Text(text = "${String.format("%.02f", expense.amount)} CHF", style = TextStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary, fontSize = 15.sp), modifier = Modifier.padding(8.dp).testTag("expenseAmount"+expense.expenseId))
-    }
+        Text(
+            text = "${String.format("%.02f", expense.amount)} CHF",
+            style =
+                TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.tertiary,
+                    fontSize = 15.sp),
+            modifier = Modifier.padding(8.dp).testTag("expenseAmount" + expense.expenseId))
+      }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun DashboardFinanceWidgetPreview() {
-    DashboardFinanceWidget(DashboardViewModel(TripsRepository("1", dispatcher = Dispatchers.IO), "")) {}
+  DashboardFinanceWidget(
+      DashboardViewModel(TripsRepository("1", dispatcher = Dispatchers.IO), "")) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ExpenseItemPreview() {
-    ExpenseItem(
-        Expense(
-            expenseId = "1",
-            title = "Groceries",
-            amount = 50.0,
-            category = Category.FOOD,
-            userId = "user001",
-            userName = "Alice",
-            participantsIds = listOf("user001", "user002", "user003"),
-            names = listOf("Alice", "Bob", "Charlie"),
-            localDate = LocalDate.now()
-        )
-    )
+  ExpenseItem(
+      Expense(
+          expenseId = "1",
+          title = "Groceries",
+          amount = 50.0,
+          category = Category.FOOD,
+          userId = "user001",
+          userName = "Alice",
+          participantsIds = listOf("user001", "user002", "user003"),
+          names = listOf("Alice", "Bob", "Charlie"),
+          localDate = LocalDate.now()))
 }

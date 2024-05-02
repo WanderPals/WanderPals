@@ -69,7 +69,7 @@ fun Dashboard(
   LaunchedEffect(Unit) {
     // Fetch the suggestions for the trip every time the screen is displayed
     dashboardViewModel.loadSuggestion(tripId)
-      dashboardViewModel.loadExpenses(tripId)
+    dashboardViewModel.loadExpenses(tripId)
   }
 
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -100,11 +100,11 @@ fun Dashboard(
                     viewModel = dashboardViewModel,
                     onClick = { navActions.navigateTo(Route.SUGGESTION) })
 
-                  Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.padding(8.dp))
 
-                    DashboardFinanceWidget(
-                        viewModel = dashboardViewModel,
-                        onClick = { navActions.navigateTo(Route.FINANCE) })
+                DashboardFinanceWidget(
+                    viewModel = dashboardViewModel,
+                    onClick = { navActions.navigateTo(Route.FINANCE) })
               }
             }
       }
