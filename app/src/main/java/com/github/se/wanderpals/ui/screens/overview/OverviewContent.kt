@@ -102,7 +102,7 @@ fun OverviewContent(
         // Title for the list of trips
         Text(
             text = "My trip projects",
-            modifier = Modifier.padding(start = 27.dp, top = 10.dp, bottom=20.dp),
+            modifier = Modifier.padding(start = 27.dp, top = 10.dp, bottom = 20.dp),
             style =
                 TextStyle(
                     fontSize = 20.sp,

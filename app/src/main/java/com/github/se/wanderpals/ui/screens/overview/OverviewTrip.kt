@@ -3,7 +3,6 @@ package com.github.se.wanderpals.ui.screens.overview
 import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -101,93 +99,103 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
           navigationActions.navigateTo(Route.TRIP)
         },
         modifier =
-        Modifier
-            .align(Alignment.TopCenter)
-            .width(360.dp)
-            .height(130.dp)
-            .padding(top = 1.dp)
-            .testTag("buttonTrip" + trip.tripId),
+            Modifier.align(Alignment.TopCenter)
+                .width(360.dp)
+                .height(130.dp)
+                .padding(top = 1.dp)
+                .testTag("buttonTrip" + trip.tripId),
         shape = RoundedCornerShape(size = 15.dp),
-        colors =
-            ButtonDefaults.buttonColors(
-                containerColor = primaryContainerLight)) {
+        colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)) {
           // Column containing trip information
           Column(modifier = Modifier.width(320.dp)) {
-              Row(
-                  modifier = Modifier.fillMaxWidth().padding(top= 8.dp)  // Ensure padding for visual spacing
-              ) {
+            Row(
+                modifier =
+                    Modifier.fillMaxWidth().padding(top = 8.dp) // Ensure padding for visual spacing
+                ) {
                   // Trip title
                   Text(
                       text = trip.title,
                       modifier = Modifier.height(24.dp),
-                      style = TextStyle(
-                          fontSize = 18.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = onPrimaryContainerLight,
-                          letterSpacing = 0.5.sp,
-                      ),
-                      textAlign = TextAlign.Start
-                  )
+                      style =
+                          TextStyle(
+                              fontSize = 18.sp,
+                              lineHeight = 24.sp,
+                              fontWeight = FontWeight(500),
+                              color = onPrimaryContainerLight,
+                              letterSpacing = 0.5.sp,
+                          ),
+                      textAlign = TextAlign.Start)
 
                   Spacer(Modifier.weight(1f))
 
                   // Start date
                   Text(
                       text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
-                      modifier = Modifier.height(24.dp).padding(top=4.dp), // the padding is for having the text on the same line and in the same height as the trip title
-                      style = TextStyle(
-                          fontSize = 14.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = onPrimaryContainerLight,
-                          letterSpacing = 0.5.sp,
-                      ),
-                      textAlign = TextAlign.End
-                  )
+                      modifier =
+                          Modifier.height(24.dp)
+                              .padding(
+                                  top =
+                                      4
+                                          .dp), // the padding is for having the text on the same
+                                                // line and in the same height as the trip title
+                      style =
+                          TextStyle(
+                              fontSize = 14.sp,
+                              lineHeight = 24.sp,
+                              fontWeight = FontWeight(500),
+                              color = onPrimaryContainerLight,
+                              letterSpacing = 0.5.sp,
+                          ),
+                      textAlign = TextAlign.End)
 
                   Spacer(modifier = Modifier.width(11.dp)) // Space between start and end date
 
                   // End date
                   Text(
                       text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
-                      modifier = Modifier.height(24.dp).padding(top=4.dp), // the padding is for having the text on the same line and in the same height as the trip title
-                      style = TextStyle(
-                          fontSize = 14.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = onPrimaryContainerLight,
-                          letterSpacing = 0.5.sp,
-                      ),
-                      textAlign = TextAlign.End
-                  )
-              }
+                      modifier =
+                          Modifier.height(24.dp)
+                              .padding(
+                                  top =
+                                      4
+                                          .dp), // the padding is for having the text on the same
+                                                // line and in the same height as the trip title
+                      style =
+                          TextStyle(
+                              fontSize = 14.sp,
+                              lineHeight = 24.sp,
+                              fontWeight = FontWeight(500),
+                              color = onPrimaryContainerLight,
+                              letterSpacing = 0.5.sp,
+                          ),
+                      textAlign = TextAlign.End)
+                }
 
-              Spacer(Modifier.height(50.dp))
-              Row(
-                  modifier = Modifier.fillMaxWidth() // Ensure padding for visual spacing
-              ){
-                  Spacer(Modifier.weight(1f))  // Pushes the icon to the end
+            Spacer(Modifier.height(50.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth() // Ensure padding for visual spacing
+                ) {
+                  Spacer(Modifier.weight(1f)) // Pushes the icon to the end
 
                   // Share trip code button
                   IconButton(
-                      modifier = Modifier
-                          .width(24.dp)
-                          .height(28.dp)
-                          .testTag("shareTripButton" + trip.tripId),
+                      modifier =
+                          Modifier.width(24.dp)
+                              .height(28.dp)
+                              .testTag("shareTripButton" + trip.tripId),
                       onClick = {
-                          isSelected.value = true
-                          context.shareTripCodeIntent(trip.tripId)
+                        isSelected.value = true
+                        context.shareTripCodeIntent(trip.tripId)
                       }) {
-                      Icon(
-                          imageVector = Icons.Default.Share,
-                          contentDescription = null,
-                          tint = Color.White,
-                          modifier =
-                          Modifier.background(
-                              if (isSelected.value) Color.LightGray else Color.Transparent))
-                  }
-              }
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier =
+                                Modifier.background(
+                                    if (isSelected.value) Color.LightGray else Color.Transparent))
+                      }
+                }
           }
         }
   }

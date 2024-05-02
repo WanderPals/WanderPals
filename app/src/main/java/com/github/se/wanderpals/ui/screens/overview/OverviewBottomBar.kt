@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
 import com.github.se.wanderpals.ui.theme.primaryContainerLight
 
-
 /**
  * Composable function that represents the bottom bar for the overview screen. Provides options for
  * joining a trip and creating a new trip.
@@ -50,8 +49,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
                   .testTag("joinTripButton"),
-          colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)
-      ) {
+          colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
@@ -60,8 +58,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                   imageVector = Icons.Default.Share,
                   contentDescription = Icons.Default.Share.name,
                   modifier = Modifier.width(18.dp).height(20.dp),
-                  tint = onPrimaryContainerLight
-              )
+                  tint = onPrimaryContainerLight)
               Text(
                   text = "Join a Trip",
                   style =
@@ -72,8 +69,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                           color = onPrimaryContainerLight,
                           textAlign = TextAlign.Center,
                           letterSpacing = 0.1.sp,
-                      )
-              )
+                      ))
             }
           }
     }
@@ -88,8 +84,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
                   .testTag("createTripButton"),
-          colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)
-      ) {
+          colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
@@ -98,8 +93,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                   imageVector = Icons.Default.Add,
                   contentDescription = Icons.Default.Add.name,
                   modifier = Modifier.width(18.dp).height(18.dp),
-                  tint = onPrimaryContainerLight
-              )
+                  tint = onPrimaryContainerLight)
               Text(
                   text = "Create a New Trip",
                   style =
@@ -110,8 +104,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
                           color = onPrimaryContainerLight,
                           textAlign = TextAlign.Center,
                           letterSpacing = 0.1.sp,
-                      )
-              )
+                      ))
             }
           }
     }
