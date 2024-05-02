@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -66,65 +65,61 @@ fun AgendaPreview() {
  */
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel) {
-    val uiState by agendaViewModel.uiState.collectAsState()
-    val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
+  val uiState by agendaViewModel.uiState.collectAsState()
+  val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
 
-    var isDrawerExpanded by remember { mutableStateOf(false) }
+  var isDrawerExpanded by remember { mutableStateOf(false) }
 
-    var isStopPressed by remember { mutableStateOf(false) }
-    var selectedStopId by remember { mutableStateOf("") }
+  var isStopPressed by remember { mutableStateOf(false) }
+  var selectedStopId by remember { mutableStateOf("") }
 
-    Scaffold(
-        topBar = {
-            Column (modifier = Modifier.background(color = Color(0xFF35618E))
-            ) {
-                Banner(
-                    agendaViewModel,
-                    isDrawerExpanded,
-                    onToggle = { isDrawerExpanded = !isDrawerExpanded })
-                AnimatedVisibility(visible = isDrawerExpanded, modifier=Modifier.background(color = Color.White).fillMaxWidth()) {
-                    CalendarWidget(
-                        days = getDaysOfWeekLabels(),
-                        yearMonth = uiState.yearMonth,
-                        dates = uiState.dates,
-                        onPreviousMonthButtonClicked = { prevMonth ->
-                            agendaViewModel.toPreviousMonth(prevMonth)
-                        },
-                        onNextMonthButtonClicked = { nextMonth ->
-                            agendaViewModel.toNextMonth(
-                                nextMonth
-                            )
-                        },
-                        onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
-                }
-                Spacer(modifier = Modifier.padding(1.dp))
-            }
-        },
-        modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
-    ) {paddingValues ->
-        Column(        modifier = Modifier.padding(paddingValues)
-        ) {
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            // Daily agenda implementation
-            DailyActivities(
-                agendaViewModel = agendaViewModel,
-                onActivityItemClick = { stopId ->
-                    isStopPressed = true
-                    selectedStopId = stopId
-                })
+  Scaffold(
+      topBar = {
+        Column(modifier = Modifier.background(color = Color(0xFF35618E))) {
+          Banner(
+              agendaViewModel,
+              isDrawerExpanded,
+              onToggle = { isDrawerExpanded = !isDrawerExpanded })
+          AnimatedVisibility(
+              visible = isDrawerExpanded,
+              modifier = Modifier.background(color = Color.White).fillMaxWidth()) {
+                CalendarWidget(
+                    days = getDaysOfWeekLabels(),
+                    yearMonth = uiState.yearMonth,
+                    dates = uiState.dates,
+                    onPreviousMonthButtonClicked = { prevMonth ->
+                      agendaViewModel.toPreviousMonth(prevMonth)
+                    },
+                    onNextMonthButtonClicked = { nextMonth ->
+                      agendaViewModel.toNextMonth(nextMonth)
+                    },
+                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+              }
+          Spacer(modifier = Modifier.padding(1.dp))
         }
+      },
+      modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
+  ) { paddingValues ->
+    Column(modifier = Modifier.padding(paddingValues)) {
+      HorizontalDivider(
+          modifier = Modifier.fillMaxWidth(),
+          thickness = 1.dp,
+          color = MaterialTheme.colorScheme.secondary)
+      // Daily agenda implementation
+      DailyActivities(
+          agendaViewModel = agendaViewModel,
+          onActivityItemClick = { stopId ->
+            isStopPressed = true
+            selectedStopId = stopId
+          })
     }
+  }
 
-    if (isStopPressed) {
-        val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
-        StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
-    }
+  if (isStopPressed) {
+    val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
+    StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
+  }
 }
-
 
 /**
  * A Composable that lays out the calendar widget, including the header with the current month and
@@ -176,7 +171,11 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
 
   Box(
       modifier =
-          Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp).background(Color(0xFF35618E)).testTag("Banner")) {
+          Modifier.fillMaxWidth()
+              .clickable { onToggle() }
+              .padding(16.dp)
+              .background(Color(0xFF35618E))
+              .testTag("Banner")) {
         DisplayDate(date = selectedDate)
         // Optional: Add an icon to indicate the expand/collapse action
         Icon(
@@ -184,8 +183,7 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
                 if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
             contentDescription = "Toggle",
             modifier = Modifier.align(Alignment.CenterEnd),
-            tint = Color.White
-        )
+            tint = Color.White)
       }
 }
 

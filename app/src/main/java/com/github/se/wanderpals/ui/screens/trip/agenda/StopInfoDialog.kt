@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -39,80 +38,66 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
   Dialog(onDismissRequest = { closeDialogueAction() }) {
-      Surface(
-          shape = RoundedCornerShape(10.dp),
-          modifier = Modifier
-              .height(470.dp) // This will make the height dynamic
-              .padding(horizontal = 13.dp)
-          .fillMaxWidth()  // Ensure the dialog utilizes the available width todo
-
-      ) {
+    Surface(
+        shape = RoundedCornerShape(10.dp),
+        modifier =
+            Modifier.height(470.dp) // This will make the height dynamic
+                .padding(horizontal = 13.dp)
+                .fillMaxWidth() // Ensure the dialog utilizes the available width todo
+        ) {
           Scaffold(
-              modifier = Modifier
-                  .testTag("activityDialog"),
-              containerColor = MaterialTheme.colorScheme.background, // Set the background color of the Scaffold
-
+              modifier = Modifier.testTag("activityDialog"),
+              containerColor =
+                  MaterialTheme.colorScheme.background, // Set the background color of the Scaffold
               topBar = {
-                Column (modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color(0xFF535F70))
-                ) {
-                    //Title
-                    Text(
-                        text = stop.title,
-                        color = Color.White,
-                        style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 24.dp)
-                            .testTag("titleText")
-
-                    )
+                Column(modifier = Modifier.fillMaxWidth().background(color = Color(0xFF535F70))) {
+                  // Title
+                  Text(
+                      text = stop.title,
+                      color = Color.White,
+                      style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                      textAlign = TextAlign.Center,
+                      modifier =
+                          Modifier.fillMaxWidth().padding(vertical = 24.dp).testTag("titleText"))
                 }
-            },
-
+              },
               content = { padding ->
-                  Column(
-                      modifier = Modifier
-                          .fillMaxSize()
-                          .background(Color.LightGray)
-                          .padding(padding)
-                          .padding(16.dp), // Apply padding to the content
-                      verticalArrangement = Arrangement.Center
-                  ) {
-
+                Column(
+                    modifier =
+                        Modifier.fillMaxSize()
+                            .background(Color.LightGray)
+                            .padding(padding)
+                            .padding(16.dp), // Apply padding to the content
+                    verticalArrangement = Arrangement.Center) {
                       Row(
                           modifier = Modifier.fillMaxWidth().padding(top = 7.dp, bottom = 2.dp),
                       ) {
-                          // Date
-                          Text(
-                              text = stop.date.format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")),
-                              style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
-                              color = Color(0xFF35618E),
-                              textAlign = TextAlign.Start,
-                              lineHeight = 20.sp,
-                              modifier =
-                              Modifier//.weight(1f)
-                                  .testTag("activityDate")
-                          )
+                        // Date
+                        Text(
+                            text =
+                                stop.date.format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")),
+                            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
+                            color = Color(0xFF35618E),
+                            textAlign = TextAlign.Start,
+                            lineHeight = 20.sp,
+                            modifier =
+                                Modifier // .weight(1f)
+                                    .testTag("activityDate"))
 
-                          Spacer(Modifier.weight(1f))
+                        Spacer(Modifier.weight(1f))
 
-                          // Time
-                          Text(
-                              text =
-                              "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
-                              style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
-                              color = Color(0xFF535F70),
-                              textAlign = TextAlign.Right,
-                              lineHeight = 20.sp,
-                              modifier =
-                              Modifier//.weight(1f)
-                                  .testTag("activitySchedule")
-                          )
+                        // Time
+                        Text(
+                            text =
+                                "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
+                            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
+                            color = Color(0xFF535F70),
+                            textAlign = TextAlign.Right,
+                            lineHeight = 20.sp,
+                            modifier =
+                                Modifier // .weight(1f)
+                                    .testTag("activitySchedule"))
                       }
-
 
                       // Address
                       Text(
@@ -121,11 +106,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                           color = Color(0xFF535F70),
                           textAlign = TextAlign.Start,
                           lineHeight = 20.sp,
-                          modifier =
-                          Modifier
-                              .align(Alignment.Start)
-                              .testTag("activityAddress")
-                      )
+                          modifier = Modifier.align(Alignment.Start).testTag("activityAddress"))
 
                       Spacer(Modifier.height(2.dp))
 
@@ -134,11 +115,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                           text = "${stop.budget}",
                           style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
                           textAlign = TextAlign.Start,
-                          modifier =
-                          Modifier
-                              .align(Alignment.Start)
-                              .testTag("activityBudget")
-                      )
+                          modifier = Modifier.align(Alignment.Start).testTag("activityBudget"))
 
                       Spacer(Modifier.height(14.dp)) // Space between Budget and Description
 
@@ -146,18 +123,23 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                       OutlinedTextField(
                           value = stop.description,
                           onValueChange = {},
-                          textStyle = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500), color = Color(0xFF535F70)),
+                          textStyle =
+                              TextStyle(
+                                  fontSize = 16.sp,
+                                  fontWeight = FontWeight(500),
+                                  color = Color(0xFF535F70)),
                           readOnly = true,
-                          modifier = Modifier
-                              .fillMaxWidth()
-                              .height(300.dp)
-                              .background(Color(0xFFF8F9FF))
-                              .testTag("activityDescription"),
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .height(300.dp)
+                                  .background(Color(0xFFF8F9FF))
+                                  .testTag("activityDescription"),
                       )
-                      Spacer(Modifier.height(16.dp)) // Space between Description and the end of the dialog
-                  }
-              }
-          )
-      }
+                      Spacer(
+                          Modifier.height(
+                              16.dp)) // Space between Description and the end of the dialog
+                }
+              })
+        }
   }
 }

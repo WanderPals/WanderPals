@@ -127,25 +127,26 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 verticalArrangement = Arrangement.SpaceEvenly) {
                   Text(
                       text = stop.title,
-                      style = TextStyle(
-                          fontSize = 16.sp,
-                          lineHeight = 20.sp,
-                          fontWeight = FontWeight(500),
-                          letterSpacing = 0.16.sp
-                      ),
-                      color =  Color(0xFF35618E),
+                      style =
+                          TextStyle(
+                              fontSize = 16.sp,
+                              lineHeight = 20.sp,
+                              fontWeight = FontWeight(500),
+                              letterSpacing = 0.16.sp),
+                      color = Color(0xFF35618E),
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTitle" + stop.stopId))
                   Text(
                       text =
                           "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
-                      style = TextStyle(
-                          fontSize = 16.sp,
-                          lineHeight = 20.sp,
-                          fontWeight = FontWeight(500),
-                          letterSpacing = 0.16.sp,
-                      ),
+                      style =
+                          TextStyle(
+                              fontSize = 16.sp,
+                              lineHeight = 20.sp,
+                              fontWeight = FontWeight(500),
+                              letterSpacing = 0.16.sp,
+                          ),
                       color = Color(0xFF535F70),
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
@@ -153,12 +154,12 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                   if (stopHasLocation) {
                     Text(
                         text = stop.address,
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 20.sp,
-                            fontWeight = FontWeight(500),
-                            letterSpacing = 0.16.sp
-                        ),
+                        style =
+                            TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 20.sp,
+                                fontWeight = FontWeight(500),
+                                letterSpacing = 0.16.sp),
                         color = Color(0xFF535F70),
                         modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
@@ -185,9 +186,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
-                      tint =
-                          if (stopHasLocation) Color(0xFF535F70)
-                          else Color.LightGray,
+                      tint = if (stopHasLocation) Color(0xFF535F70) else Color.LightGray,
                       contentDescription = null // Provide an appropriate content description
                       )
                 }
@@ -195,15 +194,15 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
         }
   }
 
-    // the horizontal divider
-    Box(
-        modifier = Modifier.fillMaxWidth(), // This ensures the box takes the full width of its container
-        contentAlignment = Alignment.Center // This will center the content inside the box
-    ) {
+  // the horizontal divider
+  Box(
+      modifier =
+          Modifier.fillMaxWidth(), // This ensures the box takes the full width of its container
+      contentAlignment = Alignment.Center // This will center the content inside the box
+      ) {
         HorizontalDivider(
             modifier = Modifier.width(380.dp), // Customize this width as needed
             thickness = 1.dp,
-            color = Color(0xFFC3C7CF)
-        )
-    }
+            color = Color(0xFFC3C7CF))
+      }
 }
