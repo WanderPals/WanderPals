@@ -436,6 +436,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     composeTestRule.onNodeWithTag("noExpenses", useUnmergedTree = true).assertDoesNotExist()
     composeTestRule.onNodeWithTag("noExpensesBox", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pieChartBox", useUnmergedTree = true).assertIsDisplayed()
     composeTestRule
         .onNodeWithTag("totalAmount", useUnmergedTree = true)
         .assertIsDisplayed()
@@ -467,6 +468,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     composeTestRule.onNodeWithTag("noExpenses", useUnmergedTree = true).assertDoesNotExist()
     composeTestRule.onNodeWithTag("noExpensesBox", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pieChartBox", useUnmergedTree = true).assertIsDisplayed()
     composeTestRule
         .onNodeWithTag("totalAmount", useUnmergedTree = true)
         .assertIsDisplayed()
@@ -512,6 +514,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     composeTestRule.onNodeWithTag("noExpenses", useUnmergedTree = true).assertDoesNotExist()
     composeTestRule.onNodeWithTag("noExpensesBox", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pieChartBox", useUnmergedTree = true).assertIsDisplayed()
     composeTestRule
         .onNodeWithTag("totalAmount", useUnmergedTree = true)
         .assertIsDisplayed()

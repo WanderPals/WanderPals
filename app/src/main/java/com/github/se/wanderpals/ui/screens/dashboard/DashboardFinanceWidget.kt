@@ -40,6 +40,7 @@ import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 
@@ -168,7 +169,10 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                           modifier = Modifier.testTag("noExpensesBox"),
                           style = TextStyle(color = MaterialTheme.colorScheme.primary))
                     } else {
-                      Box(modifier = Modifier.size(100.dp))
+                      Box(modifier = Modifier.padding(4.dp).testTag("pieChartBox")) {
+                        FinancePieChart(
+                            expenses = expenses, radiusOuter = 50.dp, chartBandWidth = 10.dp)
+                      }
                     }
                   }
             }
