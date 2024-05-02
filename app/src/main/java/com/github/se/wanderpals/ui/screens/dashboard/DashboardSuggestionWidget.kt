@@ -139,12 +139,12 @@ fun SuggestionItem(suggestion: Suggestion) {
           val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
           val endTime = startTime.plusMinutes(suggestion.stop.duration.toLong())
           Text(
-              text = startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm")),
+              text = startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
               style = TextStyle(color = MaterialTheme.colorScheme.secondary, fontSize = 14.sp),
               modifier = Modifier.testTag("suggestionStart" + suggestion.suggestionId))
           Spacer(modifier = Modifier.height(4.dp))
           Text(
-              text = endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm")),
+              text = endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
               style = TextStyle(color = MaterialTheme.colorScheme.secondary, fontSize = 14.sp),
               modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId))
         }
