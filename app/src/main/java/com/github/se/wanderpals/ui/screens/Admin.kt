@@ -79,7 +79,7 @@ import com.google.firebase.storage.StorageReference
  * @param adminViewModel The ViewModel that manages the Admin screen.
  */
 @Composable
-fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference) {
+fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
   val context = LocalContext.current
   val userList by adminViewModel.listOfUsers.collectAsState()
   val currentUser by adminViewModel.currentUser.collectAsState()
@@ -148,31 +148,31 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference) {
         if (selectedImages.isNotEmpty()) {
           Log.d("Admin", "Selected Image: ${selectedImages[0]}")
           // create a reference to the uri of the image
-          val riversRef = storageReference.child("images/${selectedImages[0]?.lastPathSegment}")
+          val riversRef = storageReference?.child("images/${selectedImages[0]?.lastPathSegment}")
           // upload the image to the firebase storage
-          val taskUp = riversRef.putFile(selectedImages[0]!!)
+          val taskUp = riversRef?.putFile(selectedImages[0]!!)
 
           // Register observers to listen for state changes
           // and progress of the upload
           taskUp
-              .addOnFailureListener {
+              ?.addOnFailureListener {
                 // Handle unsuccessful uploads
                 Log.d("Admin", "Failed to upload image")
               }
-              .addOnSuccessListener {
+              ?.addOnSuccessListener {
                 // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
                 Log.d("Admin", "Image uploaded successfully")
                 Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
               }
 
           taskUp
-              .continueWithTask { task ->
+              ?.continueWithTask { task ->
                 if (!task.isSuccessful) {
                   task.exception?.let { throw it }
                 }
                 riversRef.downloadUrl
               }
-              .addOnCompleteListener { task ->
+              ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                   adminViewModel.modifyCurrentUserProfilePhoto(task.result.toString())
                   Log.d("Admin", "Image URL: ${currentUser?.profilePhoto}")
