@@ -25,8 +25,6 @@ open class ExpenseViewModel(private val tripsRepository: TripsRepository, tripId
 
   init {
     loadMembers(tripId)
-    // _users.value =
-    //    listOf(User("1", "John Doe"), User("2", "Jane Doe"), User("3", "A1"), User("4", "A2"))
   }
 
   /** Fetches all members from the trip and updates the state flow accordingly. */
@@ -34,6 +32,7 @@ open class ExpenseViewModel(private val tripsRepository: TripsRepository, tripId
     viewModelScope.launch { _users.value = tripsRepository.getAllUsersFromTrip(tripId) }
   }
 
+  /** Adds an expense to the trip. */
   open fun addExpense(tripId: String, expense: Expense) {
     viewModelScope.launch { tripsRepository.addExpenseToTrip(tripId, expense) }
   }

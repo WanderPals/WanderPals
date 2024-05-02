@@ -58,7 +58,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 /**
- * Composable function to create an expense.
+ * Composable function to create an expense. It allows the user to input the title, amount, date,
+ * category, user who paid, and participants. The user can select the participants from the list of
+ * users and he can save the expense if all fields are filled and at least one participant is
+ * selected. If not, an error message is displayed at the bottom of the screen.
  *
  * @param tripId The id of the trip.
  * @param viewModel The [ExpenseViewModel] to handle the expense creation.
@@ -119,10 +122,10 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
 
                 Spacer(modifier = Modifier.padding(4.dp))
 
-                // Content
+                // Title text field
                 OutlinedTextField(
                     value = expenseTitle,
-                    onValueChange = { if (it.length <= 50) expenseTitle = it else {} },
+                    onValueChange = { if (it.length <= 50) expenseTitle = it },
                     label = { Text("Expense title") },
                     placeholder = { Text("Give a name to your expense") },
                     modifier =
@@ -137,10 +140,10 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                     },
                     isError = errorText.isNotEmpty(),
                 )
-
+                // Amount text field
                 OutlinedTextField(
                     value = expenseAmount,
-                    onValueChange = { if (it.length <= 20) expenseAmount = it else {} },
+                    onValueChange = { if (it.length <= 20) expenseAmount = it },
                     label = { Text("Amount") },
                     placeholder = { Text("") },
                     modifier =
@@ -156,8 +159,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                     singleLine = true, // add the currency
                     isError = errorText.isNotEmpty())
 
-                // make it take only numbers
-
+                // DatePicker
                 OutlinedTextField(
                     value = expenseDate,
                     onValueChange = { expenseDate = it },
@@ -168,7 +170,6 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                             .padding(horizontal = 24.dp, vertical = 8.dp)
                             .fillMaxWidth()
                             .clickable { showDatePicker = true },
-                    // readOnly = true,
                     singleLine = true,
                     interactionSource = DateInteractionSource { showDatePicker = true },
                     isError = errorText.isNotEmpty())
@@ -177,12 +178,13 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                   MyDatePickerDialog(
                       onDateSelected = { expenseDate = it }, onDismiss = { showDatePicker = false })
                 }
-
+                // Dropdown menu for the user who paid
                 ExposedDropdownMenuBox(
                     expanded = expandedMenu1,
                     onExpandedChange = { expandedMenu1 = !expandedMenu1 },
                     modifier =
                         Modifier.testTag("dropdownMenuPaid").padding(24.dp, 8.dp).fillMaxWidth()) {
+                      // Text field for the user who paid
                       OutlinedTextField(
                           value = selectedMenu1?.name ?: "",
                           onValueChange = {},
@@ -190,11 +192,13 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                           modifier = Modifier.testTag("paidBy").fillMaxWidth().menuAnchor(),
                           readOnly = true,
                           isError = errorText.isNotEmpty())
+                      // Dropdown menu for the user who paid
                       ExposedDropdownMenu(
                           expanded = expandedMenu1,
                           onDismissRequest = { expandedMenu1 = false },
                       ) {
                         users.forEach { item ->
+                          // Dropdown menu item for each user
                           DropdownMenuItem(
                               text = { Text(text = item.name) },
                               onClick = {
@@ -208,7 +212,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                         }
                       }
                     }
-
+                // Category dropdown
                 ExposedDropdownMenuBox(
                     expanded = expandedMenu2,
                     onExpandedChange = { expandedMenu2 = !expandedMenu2 },
@@ -216,6 +220,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                         Modifier.testTag("dropdownMenuCategory")
                             .padding(24.dp, top = 8.dp, bottom = 16.dp, end = 24.dp)
                             .fillMaxWidth()) {
+                      // Text field for the category
                       OutlinedTextField(
                           value = selectedMenu2,
                           onValueChange = {},
@@ -223,11 +228,13 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                           modifier = Modifier.fillMaxWidth().menuAnchor().testTag("category"),
                           readOnly = true,
                           isError = errorText.isNotEmpty())
+                      // Dropdown menu for the category
                       ExposedDropdownMenu(
                           expanded = expandedMenu2,
                           onDismissRequest = { expandedMenu2 = false },
                       ) {
                         Category.values().forEach { item ->
+                          // Dropdown menu item for each category
                           DropdownMenuItem(
                               text = { Text(text = item.name) },
                               onClick = {
@@ -258,11 +265,12 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                           style = MaterialTheme.typography.labelMedium,
                       )
                     }
-
+                // List of checkboxes and username to select participants
                 Surface(modifier = Modifier.fillMaxWidth(), color = Color.White) {
                   LazyColumn(modifier = Modifier.fillMaxWidth().height(200.dp)) {
                     if (users.isEmpty()) {
                       item {
+                        // edge case: no users found
                         Text(
                             text = "No users found, this should not happen.",
                             color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -270,6 +278,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                       }
                     } else {
                       items(users.size) { index ->
+                        // Simple row with a checkbox and the username
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier =
@@ -290,12 +299,11 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                             }
                       }
                     }
-                    // Add the viewModel with the list of users
                   }
                 }
               }
             }
-            // fix this
+            // Save button
             Box(
                 contentAlignment = Alignment.BottomCenter,
                 modifier = Modifier.padding().fillMaxSize()) {
@@ -304,6 +312,8 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                       horizontalAlignment = Alignment.CenterHorizontally) {
                         ExtendedFloatingActionButton(
                             onClick = {
+                              // Check if all fields are filled and at least one participant is
+                              // selected before saving
                               if (selectedMenu1 == null ||
                                   selectedMenu2.isEmpty() ||
                                   expenseTitle.isEmpty() ||
@@ -344,6 +354,7 @@ fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: Navig
                                   text = "Save",
                                   color = MaterialTheme.colorScheme.onSecondaryContainer)
                             }
+                        // Error text
                         if (errorText.isNotEmpty()) {
                           Text(
                               text = errorText,
