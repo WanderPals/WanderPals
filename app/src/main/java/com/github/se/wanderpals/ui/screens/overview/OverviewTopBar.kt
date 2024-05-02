@@ -36,7 +36,7 @@ const val EMPTY_SEARCH = ""
 @Composable
 fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
 
-  // State to track search bar activation
+  // State to track search bar activation:
   var active by remember { mutableStateOf(false) }
 
   Box(modifier = Modifier.fillMaxWidth()) {
