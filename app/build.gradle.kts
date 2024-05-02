@@ -135,10 +135,8 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 dependencies {
     implementation(libs.test.core.ktx)
     implementation(libs.firebase.messaging.ktx)
-    implementation(libs.androidx.ui.desktop)
-    val composeBom = platform(libs.compose.bom)
 
-    implementation(platform(libs.kotlin.bom))
+    val composeBom = platform(libs.compose.bom)
 
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.play.services.auth)
@@ -149,7 +147,6 @@ dependencies {
 
 
     implementation(libs.androidx.core.ktx)
-    //implementation(libs.androidx.core.ktx.v220)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -188,9 +185,6 @@ dependencies {
 
     // Firebase Authentication
     implementation(libs.firebase.auth)
-
-    implementation(libs.google.firebase.messaging.ktx)
-
 
     // Google Sign-In
     implementation(libs.play.services.auth)

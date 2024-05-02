@@ -1,9 +1,12 @@
 package com.github.se.wanderpals
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +21,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -46,10 +50,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.messaging
+import kotlinx.coroutines.tasks.await
+
 
 const val EMPTY_CODE = ""
 
@@ -158,9 +166,12 @@ class MainActivity : ComponentActivity() {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            //NotificationPermission(context = context)
+            NotificationPermission(context = context)
 
-            /*FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            var token = ""
+            Log.d( "Hello", "Hello")
+
+            FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
                     Log.w(TAG, "Fetching FCM registration token failed", task.exception)
                     return@OnCompleteListener
@@ -168,9 +179,13 @@ class MainActivity : ComponentActivity() {
                 // Get new FCM registration token
                 //Send the token to the server
                 token = task.result
+
                 Log.d(TAG, token)
 
-            })*/
+            })
+            showNotification()
+
+
           navigationActions =
               NavigationActions(
                   mainNavigation = rememberMultiNavigationAppState(startDestination = ROOT_ROUTE),
@@ -281,4 +296,24 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
+    private fun showNotification() {
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "12345"
+        val description = "Test Notification"
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel =
+                NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
+            notificationChannel.lightColor = Color.BLUE
+
+            notificationChannel.enableVibration(true)
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        val notification = NotificationCompat.Builder(applicationContext, channelId)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Hello Nilesh")
+            .setContentText("Test Notification")
+            .build()
+        notificationManager.notify(1, notification)
+    }
 }

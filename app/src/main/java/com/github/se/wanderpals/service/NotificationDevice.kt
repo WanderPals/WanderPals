@@ -6,12 +6,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
 import android.content.pm.PackageManager
 import android.os.Build
-import android.os.Message
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Text
@@ -29,21 +26,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.github.se.wanderpals.R
-import com.google.firebase.Firebase
-import com.google.firebase.messaging.messaging
-import com.google.firebase.messaging.FirebaseMessaging
+
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 class NotificationDevice: FirebaseMessagingService(){
     override fun onNewToken(token: String) {
         //send to the token to the server
+        Log.d("New_Token", token)
     }
 
-    override fun onMessageReceived(message: RemoteMessage) {
-        super.onMessageReceived(message)
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+        Log.d("Message", remoteMessage.data.toString())
+
 
         val channelId = "1234"
         val description = "Test Notification"
@@ -51,11 +48,11 @@ class NotificationDevice: FirebaseMessagingService(){
 
         //handle the message with NotificationCompat
         val notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(message.data["title"])
-            .setContentText(message.data["message"])
+            .setContentTitle(remoteMessage.data["title"])
+            .setContentText(remoteMessage.data["message"])
             .setAutoCancel(true)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .build()
+
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -63,7 +60,7 @@ class NotificationDevice: FirebaseMessagingService(){
             val channel = NotificationChannel(channelId, description, IMPORTANCE_DEFAULT)
             notificationManager.createNotificationChannel(channel)
         }
-        notificationManager.notify(0, notification)
+        notificationManager.notify(0, notification.build())
     }
 
 
@@ -74,9 +71,9 @@ class NotificationDevice: FirebaseMessagingService(){
     @SuppressLint("SuspiciousIndentation")
     @Composable
     fun NotificationPermission(context: Context) {
+        Log.d("Permission", "Checking Permission")
 
         val openDialog = remember { mutableStateOf(false) }
-        var hasNotificationPermission by remember { mutableStateOf(false)}
         var permissionDenied by remember {
             mutableStateOf(false)
         }
@@ -86,8 +83,8 @@ class NotificationDevice: FirebaseMessagingService(){
             contract = ActivityResultContracts.RequestPermission(),
             onResult = { isGranted: Boolean ->
                 if (isGranted) {
+                    Log.d( "Permission", "Permission Granted")
                     //post notif ok
-                    hasNotificationPermission = true
 
                 } else {
                     //display another dialog
@@ -95,6 +92,8 @@ class NotificationDevice: FirebaseMessagingService(){
                 }
             }
         )
+        Log.d("Permission", "Checking Permission2")
+        Log.d("Permission", "${Build.VERSION.SDK_INT}")
 
 
             // This is only necessary for API level >= 33 (TIRAMISU)
@@ -105,7 +104,7 @@ class NotificationDevice: FirebaseMessagingService(){
                     ) ==
                     PackageManager.PERMISSION_GRANTED
                 ) {
-                    hasNotificationPermission = true
+                    Log.d("Permission", "Permission Granted")
                     // FCM SDK (and your app) can post notifications.
                 } else if (ComponentActivity().shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
                     // TODO: display an educational UI explaining to the user the features that will be enabled
@@ -123,6 +122,7 @@ class NotificationDevice: FirebaseMessagingService(){
                     requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
             }
+        Log.d("Permission", "Permission already granted")
         }
 
 
