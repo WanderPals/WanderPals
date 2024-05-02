@@ -5,6 +5,7 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -17,6 +18,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
  * @param text The text of the destination.
  */
 data class Destination(val route: String, val icon: ImageVector, val text: String)
+
+val MAIN_ROUTES =
+    listOf(
+        Route.SIGN_IN,
+        Route.OVERVIEW,
+        Route.TRIP,
+        Route.CREATE_TRIP,
+        Route.CREATE_SUGGESTION,
+        Route.ADMIN_PAGE)
 
 val TRIP_BOTTOM_BAR by lazy { TRIP_DESTINATIONS.subList(0, 5) }
 
@@ -37,4 +47,5 @@ val TRIP_DESTINATIONS =
         Destination(
             route = Route.CREATE_ANNOUNCEMENT,
             icon = Icons.Default.Create,
-            text = "CreateAnnouncement"))
+            text = "CreateAnnouncement"),
+        Destination(route = Route.FINANCE, icon = Icons.Default.Menu, text = "finance"))

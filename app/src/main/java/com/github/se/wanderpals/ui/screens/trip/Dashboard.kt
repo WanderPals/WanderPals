@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -64,6 +65,11 @@ fun Dashboard(
     dashboardViewModel: DashboardViewModel,
     navActions: NavigationActions
 ) {
+  LaunchedEffect(Unit) {
+    // Fetch the suggestions for the trip every time the screen is displayed
+    dashboardViewModel.loadSuggestion(tripId)
+  }
+
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val isLoading by dashboardViewModel.isLoading.collectAsState()
@@ -131,20 +137,38 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
-        modifier = Modifier.testTag("AdminButtonTest"),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("AdminButtonTest"),
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painterResource(id = R.drawable.logo_nsa),
                 contentDescription = "NSA",
                 modifier = Modifier.clip(CircleShape).size(30.dp))
-            Text(text = "Admin", modifier = Modifier.padding(horizontal = 29.dp))
+            Text(text = "Admin", modifier = Modifier.padding(horizontal = 20.dp))
           }
         },
         onClick = {
           scope.launch {
             drawerState.close()
             navActions.navigateTo(Route.ADMIN_PAGE)
+          }
+        })
+    Spacer(modifier = Modifier.padding(2.dp))
+    ElevatedButton(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("FinanceButtonTest"),
+        content = {
+          Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painterResource(id = R.drawable.finance_logo),
+                contentDescription = "financeLogo",
+                modifier = Modifier.clip(CircleShape).size(25.dp))
+            Text(text = "Finance", modifier = Modifier.padding(horizontal = 20.dp))
+          }
+        },
+        onClick = {
+          scope.launch {
+            drawerState.close()
+            navActions.navigateTo(Route.FINANCE)
           }
         })
   }

@@ -11,6 +11,7 @@ package com.github.se.wanderpals.model.data
  * @param role User's role within the application, influencing access and capabilities.
  * @param lastPosition Geographic coordinates representing the user's last known position.
  * @param profilePictureURL URL to the user's profile picture.
+ * @param notificationTokenId Token ID used for managing notifications specific to the user.
  */
 data class User(
     val userId: String = "",
@@ -19,5 +20,6 @@ data class User(
     val nickname: String = "",
     val role: Role = Role.MEMBER,
     val lastPosition: GeoCords = GeoCords(0.0, 0.0),
-    val profilePictureURL: String = ""
+    val profilePictureURL: String = "",
+    val notificationTokenId: String = ""
 )

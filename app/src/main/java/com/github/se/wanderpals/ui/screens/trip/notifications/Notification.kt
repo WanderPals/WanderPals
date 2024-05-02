@@ -15,12 +15,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,6 +42,7 @@ import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -55,7 +57,6 @@ import com.github.se.wanderpals.ui.navigation.Route
  * @param notificationsViewModel The view model used to manage notifications and announcements.
  * @param navigationActions Actions for navigating to different destinations within the app.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Notification(
     notificationsViewModel: NotificationsViewModel,
@@ -154,39 +155,48 @@ fun Notification(
                       .testTag("noItemsText"),
               textAlign = TextAlign.Center,
               style = MaterialTheme.typography.bodyLarge)
+          IconButton(
+              onClick = { notificationsViewModel.updateStateLists() },
+              modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+              content = {
+                Icon(Icons.Default.Refresh, contentDescription = "Refresh notification")
+              })
         }
       } else {
-        LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
-          items(itemsList) { item ->
-            when (item) {
-              is TripNotification -> {
-                NotificationItem(
-                    notification = item,
-                    onNotificationItemClick = {
-                      if (item.path.isNotEmpty()) {
-                        if (item.path.contains("/")) {
-                          val (route, serializedArgs) = item.path.split("/", limit = 2)
-                          navigationActions.deserializeNavigationVariables(serializedArgs)
-                          navigationActions.navigateTo(route)
-                        } else {
-                          navigationActions.navigateTo(item.path)
-                        }
-                      }
-                    })
-              }
-              is Announcement -> {
-                AnnouncementItem(
-                    announcement = item,
-                    onAnnouncementItemClick = { announcementId ->
-                      notificationsViewModel.setAnnouncementItemPressState(true)
-                      notificationsViewModel.setSelectedAnnouncementId(announcementId)
-                    })
+        val lazyColumn =
+            @Composable {
+              LazyColumn(modifier = Modifier.fillMaxSize().weight(1f)) {
+                items(itemsList) { item ->
+                  when (item) {
+                    is TripNotification -> {
+                      NotificationItem(
+                          notification = item,
+                          onNotificationItemClick = {
+                            if (item.route.isNotEmpty()) {
+                              if (item.navActionVariables.isNotEmpty()) {
+                                navigationActions.deserializeNavigationVariables(
+                                    item.navActionVariables)
+                              }
+                              navigationActions.navigateTo(item.route)
+                            }
+                          })
+                    }
+                    is Announcement -> {
+                      AnnouncementItem(
+                          announcement = item,
+                          onAnnouncementItemClick = { announcementId ->
+                            notificationsViewModel.setAnnouncementItemPressState(true)
+                            notificationsViewModel.setSelectedAnnouncementId(announcementId)
+                          })
+                    }
+                  }
+                  HorizontalDivider(
+                      color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+                }
               }
             }
-            HorizontalDivider(
-                color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
-          }
-        }
+        PullToRefreshLazyColumn(
+            inputLazyColumn = lazyColumn, onRefresh = { notificationsViewModel.updateStateLists() })
       }
     }
 

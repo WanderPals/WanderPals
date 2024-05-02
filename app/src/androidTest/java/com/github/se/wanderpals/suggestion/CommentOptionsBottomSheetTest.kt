@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -47,9 +48,14 @@ class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
   private val _selectedComment = MutableStateFlow<Comment?>(null)
   override val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
+  private val _editingComment = MutableStateFlow(false)
+  override val editingComment: StateFlow<Boolean> = _editingComment.asStateFlow()
+
   // State flow to handle the displaying of the delete dialog
   private val _showDeleteDialog = MutableStateFlow(false)
   override val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
+
+  override val selectedSuggestion = MutableStateFlow(testSuggestions.first())
 
   private fun updateSuggestionList(suggestions: List<Suggestion>) {
     _state.value = suggestions
@@ -86,6 +92,9 @@ class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
     updateSuggestionList(
         _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
     _selectedComment.value = null
+    if (selectedSuggestion.value.suggestionId == suggestion.suggestionId) {
+      selectedSuggestion.value = newSuggestion
+    }
     hideBottomSheet()
   }
 
@@ -117,6 +126,11 @@ class FakeViewModelBottomSheetOptions(testSuggestions: List<Suggestion>) :
     deleteComment(suggestion) // Assuming deleteComment handles all necessary logic
     hideDeleteDialog()
     hideBottomSheet()
+  }
+
+  override fun editCommentOption() {
+    _editingComment.value = true
+    _bottomSheetVisible.value = false
   }
 }
 
@@ -435,5 +449,101 @@ class CommentOptionsBottomSheetTest {
 
     // Check if the delete comment option is displayed
     composeTestRule.onNodeWithTag("deleteCommentOption").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEditCommentOptionVisibleForOwner() {
+    SessionManager.setUserSession(
+        // use the same user id as the comment owner
+        userId = "user1",
+        // must not be an admin
+        role = Role.MEMBER)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the edit comment option is displayed
+    composeTestRule.onNodeWithTag("editCommentOption").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEditCommentOptionVisibleForAdmin() {
+    SessionManager.setUserSession(
+        // use a different user id to simulate a different user
+        userId = "userid2",
+        // must be an admin
+        role = Role.ADMIN)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the edit comment option is displayed
+    composeTestRule.onNodeWithTag("editCommentOption").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEditCommentOptionNotVisibleForOtherUserNonAdmin() {
+    SessionManager.setUserSession(
+        // use a different user id to simulate a different user
+        userId = "userid2",
+        // must not be an admin
+        role = Role.VIEWER)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the edit comment option is not displayed
+    composeTestRule.onNodeWithTag("editCommentOption").assertDoesNotExist()
+  }
+
+  @Test
+  fun testEditCommentOptionChangesText() {
+    val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = viewModel,
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    viewModel.showBottomSheet(mockSuggestion.comments.first())
+
+    // Click on the edit comment option
+    composeTestRule.onNodeWithTag("editCommentOption").performClick()
+
+    composeTestRule.onNodeWithTag("NewCommentInput").assertTextContains("This is a comment")
   }
 }

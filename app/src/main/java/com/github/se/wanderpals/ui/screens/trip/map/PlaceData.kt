@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.map
 
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.Place
 
 /** Data class to store the place details. */
@@ -13,11 +14,13 @@ data class PlaceData(
     var placeWebsite: String = "",
     var placeOpeningHours: String = "",
     var placeIconUrl: String = "",
-    var placeBusinessStatus: String = ""
+    var placeBusinessStatus: String = "",
+    var placeCoordinates: LatLng = LatLng(0.0, 0.0)
 ) {
 
   /** Function to set the place data. */
-  fun setPlaceData(place: Place, placeId: String): PlaceData {
+  fun setPlaceData(place: Place, placeId: String, placeCoordinates: LatLng): PlaceData {
+    this.placeCoordinates = placeCoordinates
     this.placeId = placeId
     place.name?.let { it1 -> placeName = it1 }
     place.iconUrl?.let { it1 -> placeIconUrl = it1 }

@@ -48,7 +48,6 @@ open class AgendaViewModel(
       _uiState.update { currentState ->
         currentState.copy(dates = dataSource.getDates(currentState.yearMonth, LocalDate.now()))
       }
-      fetchDailyActivities(selectedDate ?: LocalDate.now())
     }
   }
 
@@ -123,12 +122,9 @@ open class AgendaViewModel(
   private suspend fun getDailyActivities(selectedDate: LocalDate): List<Stop>? {
     // Assuming tripsRepository.getAllStopsFromTrip returns a List<Stop>
     val allStops = tripsRepository?.getAllStopsFromTrip(tripId)
-    val allStopsFromSubscribedTrips =
-        tripsRepository?.getAllSuggestionsFromTrip(tripId)?.map { it.stop }
-    val displayedStops = allStops?.toMutableList()
 
     // Filter stops to include only those that occur on the selected date
-    return displayedStops?.filter { stop -> stop.date.isEqual(selectedDate) }
+    return allStops?.filter { stop -> stop.date.isEqual(selectedDate) }
   }
 
   fun fetchDailyActivities(selectedDate: LocalDate) {

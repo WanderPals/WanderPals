@@ -19,11 +19,6 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-  init {
-    // Fetch all trips when the ViewModel is initialized
-    loadSuggestion(tripId)
-  }
-
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {
     viewModelScope.launch {

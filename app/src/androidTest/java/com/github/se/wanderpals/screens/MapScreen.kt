@@ -16,4 +16,5 @@ class MapScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val searchButtonIcon: KNode = onNode { hasTestTag("searchButtonIcon") }
   val clearSearchButtonIcon: KNode = onNode { hasTestTag("clearSearchButtonIcon") }
   val listOfPropositions: KNode = onNode { hasTestTag("listOfPropositions") }
+  val clearMarkersButton = onNode { hasTestTag("clearMarkersButton") }
 }

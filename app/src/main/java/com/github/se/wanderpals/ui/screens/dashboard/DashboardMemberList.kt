@@ -27,6 +27,8 @@ fun DashboardMemberList(
   val members = membersViewModel.members.collectAsState()
   var selectedMember by remember { mutableStateOf<User?>(null) }
 
+  LaunchedEffect(Unit) { membersViewModel.loadMembers() }
+
   selectedMember?.let { user ->
     DashboardMemberDetail(
         member = user,

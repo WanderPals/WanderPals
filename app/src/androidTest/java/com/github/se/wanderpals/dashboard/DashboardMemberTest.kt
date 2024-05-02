@@ -48,7 +48,7 @@ class MembersViewModelTest(list: List<User>) :
   private val _members = MutableStateFlow(list)
   override val members: StateFlow<List<User>> = _members.asStateFlow()
 
-  override fun loadMembers(tripId: String) {}
+  override fun loadMembers() {}
 
   fun setLoading(isLoading: Boolean) {
     _isLoading.value = isLoading
