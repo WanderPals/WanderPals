@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
+import com.github.se.wanderpals.ui.theme.primaryLight
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -75,7 +76,7 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
 
   Scaffold(
       topBar = {
-        Column(modifier = Modifier.background(color = Color(0xFF35618E))) {
+        Column(modifier = Modifier.background(primaryLight)) {
           Banner(
               agendaViewModel,
               isDrawerExpanded,
@@ -174,7 +175,7 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
           Modifier.fillMaxWidth()
               .clickable { onToggle() }
               .padding(16.dp)
-              .background(Color(0xFF35618E))
+              .background(primaryLight)
               .testTag("Banner")) {
         DisplayDate(date = selectedDate)
         // Optional: Add an icon to indicate the expand/collapse action

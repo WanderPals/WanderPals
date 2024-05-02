@@ -44,6 +44,9 @@ import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
+import com.github.se.wanderpals.ui.theme.outlineVariantLight
+import com.github.se.wanderpals.ui.theme.primaryLight
+import com.github.se.wanderpals.ui.theme.secondaryLight
 import kotlinx.coroutines.Dispatchers
 
 @Preview(showBackground = true)
@@ -133,7 +136,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                               lineHeight = 20.sp,
                               fontWeight = FontWeight(500),
                               letterSpacing = 0.16.sp),
-                      color = Color(0xFF35618E),
+                      color = primaryLight,
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTitle" + stop.stopId))
@@ -147,7 +150,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                               fontWeight = FontWeight(500),
                               letterSpacing = 0.16.sp,
                           ),
-                      color = Color(0xFF535F70),
+                      color = secondaryLight,
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTime" + stop.stopId))
@@ -160,7 +163,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                                 lineHeight = 20.sp,
                                 fontWeight = FontWeight(500),
                                 letterSpacing = 0.16.sp),
-                        color = Color(0xFF535F70),
+                        color = secondaryLight,
                         modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
                                 .testTag("ActivityAddress" + stop.stopId))
@@ -186,7 +189,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
-                      tint = if (stopHasLocation) Color(0xFF535F70) else Color.LightGray,
+                      tint = if (stopHasLocation) secondaryLight else Color.LightGray,
                       contentDescription = null // Provide an appropriate content description
                       )
                 }
@@ -203,6 +206,6 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
         HorizontalDivider(
             modifier = Modifier.width(380.dp), // Customize this width as needed
             thickness = 1.dp,
-            color = Color(0xFFC3C7CF))
+            color = outlineVariantLight)
       }
 }
