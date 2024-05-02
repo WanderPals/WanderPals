@@ -40,6 +40,7 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
 import com.github.se.wanderpals.ui.theme.primaryContainerLight
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
@@ -91,7 +92,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
     }
   }
 
-  Box(modifier = Modifier.fillMaxWidth()) {
+  Box(modifier = Modifier.fillMaxWidth().padding(bottom = 30.dp)) {
     // Button representing the trip overview
     Button(
         onClick = {
@@ -100,28 +101,30 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
           navigationActions.navigateTo(Route.TRIP)
         },
         modifier =
-            Modifier.align(Alignment.TopCenter)
-                .width(360.dp)
-                .height(100.dp)
-                .padding(top = 16.dp)
-                .testTag("buttonTrip" + trip.tripId),
+        Modifier
+            .align(Alignment.TopCenter)
+            .width(360.dp)
+            .height(130.dp)
+            .padding(top = 1.dp)
+            .testTag("buttonTrip" + trip.tripId),
         shape = RoundedCornerShape(size = 15.dp),
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = primaryContainerLight)) {
           // Column containing trip information
           Column(modifier = Modifier.width(320.dp)) {
-              Row(){
+              Row(
+                  modifier = Modifier.fillMaxWidth().padding(top= 8.dp)  // Ensure padding for visual spacing
+              ) {
                   // Trip title
                   Text(
                       text = trip.title,
                       modifier = Modifier.height(24.dp),
-                      style =
-                      TextStyle(
-                          fontSize = 16.sp,
+                      style = TextStyle(
+                          fontSize = 18.sp,
                           lineHeight = 24.sp,
                           fontWeight = FontWeight(500),
-                          color = MaterialTheme.colorScheme.onPrimaryContainer,
+                          color = onPrimaryContainerLight,
                           letterSpacing = 0.5.sp,
                       ),
                       textAlign = TextAlign.Start
@@ -132,57 +135,59 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                   // Start date
                   Text(
                       text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
-                      modifier = Modifier.height(24.dp),
-                      style =
-                      TextStyle(
-                          fontSize = 12.sp,
+                      modifier = Modifier.height(24.dp).padding(top=4.dp), // the padding is for having the text on the same line and in the same height as the trip title
+                      style = TextStyle(
+                          fontSize = 14.sp,
                           lineHeight = 24.sp,
                           fontWeight = FontWeight(500),
-                          color = MaterialTheme.colorScheme.onPrimaryContainer,
+                          color = onPrimaryContainerLight,
                           letterSpacing = 0.5.sp,
                       ),
                       textAlign = TextAlign.End
                   )
 
                   Spacer(modifier = Modifier.width(11.dp)) // Space between start and end date
+
                   // End date
                   Text(
                       text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
-                      modifier = Modifier.height(24.dp),
-                      style =
-                      TextStyle(
-                          fontSize = 12.sp,
+                      modifier = Modifier.height(24.dp).padding(top=4.dp), // the padding is for having the text on the same line and in the same height as the trip title
+                      style = TextStyle(
+                          fontSize = 14.sp,
                           lineHeight = 24.sp,
                           fontWeight = FontWeight(500),
-                          color = MaterialTheme.colorScheme.onPrimaryContainer,
+                          color = onPrimaryContainerLight,
                           letterSpacing = 0.5.sp,
                       ),
                       textAlign = TextAlign.End
                   )
               }
 
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.SpaceBetween) {
+              Spacer(Modifier.height(50.dp))
+              Row(
+                  modifier = Modifier.fillMaxWidth() // Ensure padding for visual spacing
+              ){
+                  Spacer(Modifier.weight(1f))  // Pushes the icon to the end
 
-//todo: cont change icon place & change the styling of the text, icon, button and round corner; add avatar to search box
-              //todo: change two bottons below's color
                   // Share trip code button
                   IconButton(
-                      modifier = Modifier.size(20.dp).testTag("shareTripButton" + trip.tripId),
+                      modifier = Modifier
+                          .width(24.dp)
+                          .height(28.dp)
+                          .testTag("shareTripButton" + trip.tripId),
                       onClick = {
-                        isSelected.value = true
-                        context.shareTripCodeIntent(trip.tripId)
+                          isSelected.value = true
+                          context.shareTripCodeIntent(trip.tripId)
                       }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier =
-                                Modifier.background(
-                                    if (isSelected.value) Color.LightGray else Color.Transparent))
-                      }
-
+                      Icon(
+                          imageVector = Icons.Default.Share,
+                          contentDescription = null,
+                          tint = Color.White,
+                          modifier =
+                          Modifier.background(
+                              if (isSelected.value) Color.LightGray else Color.Transparent))
+                  }
+              }
           }
         }
   }
