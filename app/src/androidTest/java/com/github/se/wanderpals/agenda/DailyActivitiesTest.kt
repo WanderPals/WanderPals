@@ -184,7 +184,7 @@ class DailyActivitiesTest {
       composeTestRule.onNodeWithTag("activityDate").assertIsDisplayed()
       composeTestRule
           .onNodeWithTag("activityDate")
-          .assertTextEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+          .assertTextEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")))
       //      composeTestRule.onNodeWithTag("titleSchedule").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activitySchedule").assertIsDisplayed()
       //      composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
