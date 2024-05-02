@@ -44,7 +44,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
       Button(
           onClick = { onLinkClick() },
           modifier =
-              Modifier.width(320.dp)
+              Modifier.width(360.dp)
                   .height(70.dp)
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
@@ -79,7 +79,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
       Button(
           onClick = { onCreateTripClick() },
           modifier =
-              Modifier.width(320.dp)
+              Modifier.width(360.dp)
                   .height(70.dp)
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
