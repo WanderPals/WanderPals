@@ -33,6 +33,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
 import java.time.Duration
@@ -317,7 +318,7 @@ fun CreateSuggestion(
                       Suggestion(
                           suggestionId = "", // modified by database
                           userId = "", // modified by database
-                          userName = "tempUsername", // modified by database
+                          userName = SessionManager.getCurrentUser()!!.name, // modified by database
                           text = "", // Empty for now
                           createdAt = LocalDate.now(), // Should add time
                           createdAtTime = LocalTime.now(),
