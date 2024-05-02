@@ -413,7 +413,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
       category { performClick() }
       categoryAccommodation { performClick() }
-      category { assertTextContains("ACCOMODATION") }
+      category { assertTextContains("ACCOMMODATION") }
 
       category { performClick() }
       categoryTransport { performClick() }
