@@ -95,11 +95,6 @@ class MapManager(private val context: Context) {
           ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ==
               PackageManager.PERMISSION_GRANTED) {
         Log.d("MapActivity", "Location permission already granted")
-      } else if (ContextCompat.checkSelfPermission(
-          context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED &&
-          ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ==
-              PackageManager.PERMISSION_DENIED) {
-        Log.d("MapActivity", "Location permission already denied")
       } else {
         Log.d("MapActivity", "Requesting location permission")
         locationPermissionRequest.launch(
