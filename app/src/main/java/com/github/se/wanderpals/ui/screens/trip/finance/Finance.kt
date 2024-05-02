@@ -70,7 +70,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       },
       bottomBar = {
         if (currentSelectedOption == FinanceOption.EXPENSES) {
-          FinanceBottomBar()
+          FinanceBottomBar(expenseList, financeViewModel.trip)
         }
       },
       floatingActionButton = {
@@ -91,7 +91,10 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
-        LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
+        LaunchedEffect(Unit) {
+          financeViewModel.updateStateLists()
+          financeViewModel.getTrip()
+        }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
             ExpensesContent(innerPadding = innerPadding, expenseList = expenseList)
