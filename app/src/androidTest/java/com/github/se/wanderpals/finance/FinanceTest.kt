@@ -48,7 +48,7 @@ class FinanceViewModelTest :
           expenseId = "2",
           title = "Movie Night",
           amount = 25.0,
-          category = Category.ENTERTAINMENT,
+          category = Category.TRANSPORT,
           userId = "user002",
           userName = "Bob",
           participantsIds = listOf("user001", "user002", "user003"),
