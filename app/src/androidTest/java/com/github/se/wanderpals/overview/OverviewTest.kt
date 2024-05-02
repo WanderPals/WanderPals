@@ -127,11 +127,9 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       buttonTrip1 { assertIsDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
-      buttonTrip3 { assertIsDisplayed() }
 
       shareTripButton1 { assertIsDisplayed() }
       shareTripButton2 { assertIsDisplayed() }
-      shareTripButton3 { assertIsDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
@@ -297,11 +295,9 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       buttonTrip1 { assertIsDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
-      buttonTrip3 { assertIsDisplayed() }
 
       shareTripButton1 { assertIsDisplayed() }
       shareTripButton2 { assertIsDisplayed() }
-      shareTripButton3 { assertIsDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
