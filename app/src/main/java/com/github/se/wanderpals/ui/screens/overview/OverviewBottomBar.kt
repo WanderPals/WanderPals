@@ -45,7 +45,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
           onClick = { onLinkClick() },
           modifier =
               Modifier.width(320.dp)
-                  .height(60.dp)
+                  .height(70.dp)
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
                   .testTag("joinTripButton"),
@@ -80,7 +80,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
           onClick = { onCreateTripClick() },
           modifier =
               Modifier.width(320.dp)
-                  .height(60.dp)
+                  .height(70.dp)
                   .padding(bottom = 20.dp)
                   .align(Alignment.TopCenter)
                   .testTag("createTripButton"),

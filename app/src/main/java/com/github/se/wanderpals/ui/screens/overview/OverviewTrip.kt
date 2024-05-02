@@ -134,10 +134,8 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                       modifier =
                           Modifier.height(24.dp)
                               .padding(
-                                  top =
-                                      4
-                                          .dp), // the padding is for having the text on the same
-                                                // line and in the same height as the trip title
+                                  top = 4.dp), // the padding is for having the text on the same
+                      // line and in the same height as the trip title
                       style =
                           TextStyle(
                               fontSize = 14.sp,
@@ -156,10 +154,8 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                       modifier =
                           Modifier.height(24.dp)
                               .padding(
-                                  top =
-                                      4
-                                          .dp), // the padding is for having the text on the same
-                                                // line and in the same height as the trip title
+                                  top = 4.dp), // the padding is for having the text on the same
+                      // line and in the same height as the trip title
                       style =
                           TextStyle(
                               fontSize = 14.sp,
