@@ -123,12 +123,11 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-      val storage = Firebase.storage
+    val storage = Firebase.storage
 
-      var storageRef = storage.reference
+    val storageRef = storage.reference
 
-
-      context = this
+    context = this
 
     SharedPreferencesManager.init(context)
 

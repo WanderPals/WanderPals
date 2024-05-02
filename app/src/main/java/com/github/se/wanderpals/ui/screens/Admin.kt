@@ -67,7 +67,6 @@ import com.github.se.wanderpals.model.data.Role as Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.navigationActions
-import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberDetail
@@ -81,7 +80,7 @@ import com.google.firebase.storage.StorageReference
  */
 @Composable
 fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference) {
-    val context = LocalContext.current
+  val context = LocalContext.current
   val userList by adminViewModel.listOfUsers.collectAsState()
   val currentUser by adminViewModel.currentUser.collectAsState()
 
@@ -147,41 +146,39 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference) {
     ) {
       Row(verticalAlignment = BiasAlignment.Vertical(-0.6f)) {
         if (selectedImages.isNotEmpty()) {
-            Log.d("Admin", "Selected Image: ${selectedImages[0]}")
-            //create a reference to the uri of the image
-            val riversRef = storageReference.child("images/${selectedImages[0]?.lastPathSegment}")
-            //upload the image to the firebase storage
-            val taskUp = riversRef.putFile(selectedImages[0]!!)
+          Log.d("Admin", "Selected Image: ${selectedImages[0]}")
+          // create a reference to the uri of the image
+          val riversRef = storageReference.child("images/${selectedImages[0]?.lastPathSegment}")
+          // upload the image to the firebase storage
+          val taskUp = riversRef.putFile(selectedImages[0]!!)
 
-            //Register observers to listen for state changes
-            // and progress of the upload
-            taskUp
-                .addOnFailureListener{
-                    // Handle unsuccessful uploads
-                    Log.d("Admin", "Failed to upload image")
-                }
-                .addOnSuccessListener {
-                    // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                    Log.d("Admin", "Image uploaded successfully")
-                    Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-                }
+          // Register observers to listen for state changes
+          // and progress of the upload
+          taskUp
+              .addOnFailureListener {
+                // Handle unsuccessful uploads
+                Log.d("Admin", "Failed to upload image")
+              }
+              .addOnSuccessListener {
+                // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                Log.d("Admin", "Image uploaded successfully")
+                Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+              }
 
-            taskUp
-                .continueWithTask{ task ->
-                    if (!task.isSuccessful) {
-                        task.exception?.let {
-                            throw it
-                        }
-                    }
-                    riversRef.downloadUrl
-
-                }.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        adminViewModel.modifyCurrentUserProfilePhoto(task.result.toString())
-                        Log.d("Admin", "Image URL: ${currentUser?.profilePhoto}")
-                    }
+          taskUp
+              .continueWithTask { task ->
+                if (!task.isSuccessful) {
+                  task.exception?.let { throw it }
                 }
-            adminViewModel.modifyCurrentUserProfilePhoto(selectedImages[0].toString())
+                riversRef.downloadUrl
+              }
+              .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                  adminViewModel.modifyCurrentUserProfilePhoto(task.result.toString())
+                  Log.d("Admin", "Image URL: ${currentUser?.profilePhoto}")
+                }
+              }
+          adminViewModel.modifyCurrentUserProfilePhoto(selectedImages[0].toString())
           AsyncImage( // Icon for the admin screen
               model = currentUser?.profilePhoto!!,
               contentDescription = "Admin Icon",
@@ -198,7 +195,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference) {
                       .testTag("IconAdminScreen"))
         } else {
           if (currentUser != null) {
-              Log.d("Admin", "Current User: ${currentUser!!.profilePhoto}")
+            Log.d("Admin", "Current User: ${currentUser!!.profilePhoto}")
             AsyncImage(
                 model = currentUser!!.profilePhoto,
                 contentDescription = "Admin Icon",
