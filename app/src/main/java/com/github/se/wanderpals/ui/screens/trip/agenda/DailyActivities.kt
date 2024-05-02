@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,8 +32,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
@@ -123,24 +127,39 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 verticalArrangement = Arrangement.SpaceEvenly) {
                   Text(
                       text = stop.title,
-                      style = MaterialTheme.typography.bodyLarge,
-                      color = Color.Black,
+                      style = TextStyle(
+                          fontSize = 16.sp,
+                          lineHeight = 20.sp,
+                          fontWeight = FontWeight(500),
+                          letterSpacing = 0.16.sp
+                      ),
+                      color =  Color(0xFF35618E),
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTitle" + stop.stopId))
                   Text(
                       text =
                           "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
-                      style = MaterialTheme.typography.bodyLarge,
-                      color = Color.Black,
+                      style = TextStyle(
+                          fontSize = 16.sp,
+                          lineHeight = 20.sp,
+                          fontWeight = FontWeight(500),
+                          letterSpacing = 0.16.sp,
+                      ),
+                      color = Color(0xFF535F70),
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTime" + stop.stopId))
                   if (stopHasLocation) {
                     Text(
                         text = stop.address,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Black,
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight(500),
+                            letterSpacing = 0.16.sp
+                        ),
+                        color = Color(0xFF535F70),
                         modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
                                 .testTag("ActivityAddress" + stop.stopId))
@@ -167,7 +186,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
                       tint =
-                          if (stopHasLocation) MaterialTheme.colorScheme.primary
+                          if (stopHasLocation) Color(0xFF535F70)
                           else Color.LightGray,
                       contentDescription = null // Provide an appropriate content description
                       )
@@ -175,8 +194,16 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
           }
         }
   }
-  HorizontalDivider(
-      modifier = Modifier.fillMaxWidth(),
-      thickness = 1.dp,
-      color = MaterialTheme.colorScheme.secondary)
+
+    // the horizontal divider
+    Box(
+        modifier = Modifier.fillMaxWidth(), // This ensures the box takes the full width of its container
+        contentAlignment = Alignment.Center // This will center the content inside the box
+    ) {
+        HorizontalDivider(
+            modifier = Modifier.width(380.dp), // Customize this width as needed
+            thickness = 1.dp,
+            color = Color(0xFFC3C7CF)
+        )
+    }
 }
