@@ -33,12 +33,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.theme.primaryContainerLight
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -106,40 +108,65 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
         shape = RoundedCornerShape(size = 15.dp),
         colors =
             ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                containerColor = primaryContainerLight)) {
           // Column containing trip information
           Column(modifier = Modifier.width(320.dp)) {
-            // Trip title
-            Text(
-                text = trip.title,
-                modifier = Modifier.height(24.dp),
-                style =
-                    TextStyle(
-                        fontSize = 16.sp,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight(500),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        letterSpacing = 0.5.sp,
-                    ))
-            Spacer(modifier = Modifier.height(3.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
-                  // Start date
+              Row(){
+                  // Trip title
                   Text(
-                      text =
-                          "From : %s"
-                              .format(
-                                  trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN))),
+                      text = trip.title,
                       modifier = Modifier.height(24.dp),
                       style =
-                          TextStyle(
-                              fontSize = 12.sp,
-                              lineHeight = 24.sp,
-                              fontWeight = FontWeight(500),
-                              color = MaterialTheme.colorScheme.onPrimaryContainer,
-                              letterSpacing = 0.5.sp,
-                          ))
+                      TextStyle(
+                          fontSize = 16.sp,
+                          lineHeight = 24.sp,
+                          fontWeight = FontWeight(500),
+                          color = MaterialTheme.colorScheme.onPrimaryContainer,
+                          letterSpacing = 0.5.sp,
+                      ),
+                      textAlign = TextAlign.Start
+                  )
+
+                  Spacer(Modifier.weight(1f))
+
+                  // Start date
+                  Text(
+                      text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
+                      modifier = Modifier.height(24.dp),
+                      style =
+                      TextStyle(
+                          fontSize = 12.sp,
+                          lineHeight = 24.sp,
+                          fontWeight = FontWeight(500),
+                          color = MaterialTheme.colorScheme.onPrimaryContainer,
+                          letterSpacing = 0.5.sp,
+                      ),
+                      textAlign = TextAlign.End
+                  )
+
+                  Spacer(modifier = Modifier.width(11.dp)) // Space between start and end date
+                  // End date
+                  Text(
+                      text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
+                      modifier = Modifier.height(24.dp),
+                      style =
+                      TextStyle(
+                          fontSize = 12.sp,
+                          lineHeight = 24.sp,
+                          fontWeight = FontWeight(500),
+                          color = MaterialTheme.colorScheme.onPrimaryContainer,
+                          letterSpacing = 0.5.sp,
+                      ),
+                      textAlign = TextAlign.End
+                  )
+              }
+
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween) {
+
+//todo: cont change icon place & change the styling of the text, icon, button and round corner; add avatar to search box
+              //todo: change two bottons below's color
                   // Share trip code button
                   IconButton(
                       modifier = Modifier.size(20.dp).testTag("shareTripButton" + trip.tripId),
@@ -155,22 +182,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
                                 Modifier.background(
                                     if (isSelected.value) Color.LightGray else Color.Transparent))
                       }
-                }
-            // End date
 
-            Text(
-                text =
-                    "To : %s"
-                        .format(trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN))),
-                modifier = Modifier.height(24.dp),
-                style =
-                    TextStyle(
-                        fontSize = 12.sp,
-                        lineHeight = 24.sp,
-                        fontWeight = FontWeight(500),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                        letterSpacing = 0.5.sp,
-                    ))
           }
         }
   }
