@@ -27,18 +27,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
@@ -155,32 +149,4 @@ fun SuggestionItem(suggestion: Suggestion) {
               modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId))
         }
       }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DashboardSuggestionWidgetPreview() {
-  val viewModel =
-      DashboardViewModel(tripsRepository = (TripsRepository("a", Dispatchers.IO)), tripId = "a")
-  DashboardSuggestionWidget(viewModel = viewModel, onClick = {})
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SuggestionItemPreview() {
-  val suggestion =
-      Suggestion(
-          "1",
-          "Stop 1",
-          "Alice",
-          "",
-          LocalDate.now(),
-          LocalTime.now(),
-          Stop(
-              title = "Stop 1",
-              description = "Description 1",
-              startTime = LocalTime.now(),
-              date = LocalDate.now(),
-              duration = 180))
-  SuggestionItem(suggestion)
 }
