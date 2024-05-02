@@ -1,6 +1,8 @@
 package com.github.se.wanderpals.ui.screens
 
 import android.net.Uri
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,6 +54,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role as semanticRole
 import androidx.compose.ui.text.font.FontStyle
@@ -64,10 +67,12 @@ import com.github.se.wanderpals.model.data.Role as Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberDetail
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberItem
+import com.google.firebase.storage.StorageReference
 
 /**
  * Admin screen that allows the owner to manage the users of the trip.
@@ -75,7 +80,8 @@ import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberItem
  * @param adminViewModel The ViewModel that manages the Admin screen.
  */
 @Composable
-fun Admin(adminViewModel: AdminViewModel) {
+fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference) {
+    val context = LocalContext.current
   val userList by adminViewModel.listOfUsers.collectAsState()
   val currentUser by adminViewModel.currentUser.collectAsState()
 
@@ -141,9 +147,43 @@ fun Admin(adminViewModel: AdminViewModel) {
     ) {
       Row(verticalAlignment = BiasAlignment.Vertical(-0.6f)) {
         if (selectedImages.isNotEmpty()) {
-          adminViewModel.modifyCurrentUserProfilePhoto(selectedImages[0].toString())
+            Log.d("Admin", "Selected Image: ${selectedImages[0]}")
+            //create a reference to the uri of the image
+            val riversRef = storageReference.child("images/${selectedImages[0]?.lastPathSegment}")
+            //upload the image to the firebase storage
+            val taskUp = riversRef.putFile(selectedImages[0]!!)
+
+            //Register observers to listen for state changes
+            // and progress of the upload
+            taskUp
+                .addOnFailureListener{
+                    // Handle unsuccessful uploads
+                    Log.d("Admin", "Failed to upload image")
+                }
+                .addOnSuccessListener {
+                    // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                    Log.d("Admin", "Image uploaded successfully")
+                    Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+                }
+
+            taskUp
+                .continueWithTask{ task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
+                    }
+                    riversRef.downloadUrl
+
+                }.addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        adminViewModel.modifyCurrentUserProfilePhoto(task.result.toString())
+                        Log.d("Admin", "Image URL: ${currentUser?.profilePhoto}")
+                    }
+                }
+            adminViewModel.modifyCurrentUserProfilePhoto(selectedImages[0].toString())
           AsyncImage( // Icon for the admin screen
-              model = selectedImages[0],
+              model = currentUser?.profilePhoto!!,
               contentDescription = "Admin Icon",
               contentScale = ContentScale.Crop,
               modifier =
@@ -158,6 +198,7 @@ fun Admin(adminViewModel: AdminViewModel) {
                       .testTag("IconAdminScreen"))
         } else {
           if (currentUser != null) {
+              Log.d("Admin", "Current User: ${currentUser!!.profilePhoto}")
             AsyncImage(
                 model = currentUser!!.profilePhoto,
                 contentDescription = "Admin Icon",
