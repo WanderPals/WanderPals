@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
@@ -131,7 +132,12 @@ class DashboardViewModelTest(list: List<Suggestion>) :
   private val _state = MutableStateFlow(list)
   override val state: StateFlow<List<Suggestion>> = _state.asStateFlow()
 
+    private val _expenses = MutableStateFlow(emptyList<Expense>())
+    override val expenses: StateFlow<List<Expense>> = _expenses
+
   override fun loadSuggestion(tripId: String) {}
+
+    override fun loadExpenses(tripId: String) {}
 
   fun setLoading(isLoading: Boolean) {
     _isLoading.value = isLoading
