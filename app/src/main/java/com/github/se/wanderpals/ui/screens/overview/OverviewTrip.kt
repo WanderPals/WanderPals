@@ -121,6 +121,7 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
   // Mutable state to check if the icon button for sharing the trip is selected
   val isSelected = remember { mutableStateOf(false) }
 
+  // Mutable state to check if the dialog is open
   var dialogIsOpen by remember { mutableStateOf(false) }
 
   // Use of a launch effect to reset the value of isSelected to false after 100ms
@@ -144,13 +145,19 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
           }
         })
   }
+
   Box(modifier = Modifier.fillMaxWidth().padding(bottom = 30.dp)) {
     // Button representing the trip overview
     Button(
         onClick = {
-          SessionManager.setTripName(trip.title)
-          navigationActions.setVariablesTrip(trip.tripId)
-          navigationActions.navigateTo(Route.TRIP)
+          if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
+            dialogIsOpen = false
+            SessionManager.setTripName(trip.title)
+            navigationActions.setVariablesTrip(trip.tripId)
+            navigationActions.navigateTo(Route.TRIP)
+          } else {
+            dialogIsOpen = true
+          }
         },
         modifier =
             Modifier.align(Alignment.TopCenter)

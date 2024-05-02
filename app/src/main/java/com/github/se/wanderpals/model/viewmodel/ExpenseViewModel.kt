@@ -11,28 +11,20 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-/** Finance View model, not doing anything with database for the moment */
-open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String) :
+/**
+ * ViewModel for the Expense
+ *
+ * @param tripsRepository Repository to fetch data from
+ * @param tripId Id of the trip
+ */
+open class ExpenseViewModel(private val tripsRepository: TripsRepository, tripId: String) :
     ViewModel() {
 
   private val _users = MutableStateFlow(emptyList<User>())
   open val users: StateFlow<List<User>> = _users.asStateFlow()
 
-  private val _expenseStateList = MutableStateFlow(emptyList<Expense>())
-  open val expenseStateList: StateFlow<List<Expense>> = _expenseStateList
-
-  private val _isLoading = MutableStateFlow(true)
-  open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-  /** Fetches all expenses from the trip and updates the state flow accordingly. */
-  open fun updateStateLists() {
-    viewModelScope.launch {
-      _isLoading.value = true
-
-      _expenseStateList.value = tripsRepository.getAllExpensesFromTrip(tripId)
-
-      _isLoading.value = false
-    }
+  init {
+    loadMembers(tripId)
   }
 
   /** Fetches all members from the trip and updates the state flow accordingly. */
@@ -45,13 +37,14 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     viewModelScope.launch { tripsRepository.addExpenseToTrip(tripId, expense) }
   }
 
-  class FinanceViewModelFactory(
+  class ExpenseViewModelFactory(
       private val tripsRepository: TripsRepository,
       private val tripId: String
   ) : ViewModelProvider.Factory {
+
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-      if (modelClass.isAssignableFrom(FinanceViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST") return FinanceViewModel(tripsRepository, tripId) as T
+      if (modelClass.isAssignableFrom(ExpenseViewModel::class.java)) {
+        @Suppress("UNCHECKED_CAST") return ExpenseViewModel(tripsRepository, tripId) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }

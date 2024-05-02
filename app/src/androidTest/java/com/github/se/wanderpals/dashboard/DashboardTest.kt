@@ -2,10 +2,13 @@ package com.github.se.wanderpals.dashboard
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.data.Category
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
@@ -123,6 +126,42 @@ private val suggestion4: Suggestion =
         text = "This is a suggestion for a stop.",
         userId = "1")
 
+private val expense1 =
+    Expense(
+        expenseId = "1",
+        title = "Groceries",
+        amount = 50.0,
+        category = Category.FOOD,
+        userId = "1",
+        userName = "Alice",
+        participantsIds = listOf("user001", "user002", "user003"),
+        names = listOf("Alice", "Bob", "Charlie"),
+        localDate = LocalDate.of(2024, 4, 28))
+
+private val expense2 =
+    Expense(
+        expenseId = "2",
+        title = "Movie Night",
+        amount = 25.0,
+        category = Category.OTHER,
+        userId = "2",
+        userName = "Bob",
+        participantsIds = listOf("user001", "user002", "user003"),
+        names = listOf("Alice", "Bob", "Charlie"),
+        localDate = LocalDate.of(2024, 4, 29))
+
+private val expense3 =
+    Expense(
+        expenseId = "3",
+        title = "Dinner",
+        amount = 100.0,
+        category = Category.FOOD,
+        userId = "3",
+        userName = "Charlie",
+        participantsIds = listOf("user001", "user002", "user003"),
+        names = listOf("Alice", "Bob", "Charlie"),
+        localDate = LocalDate.of(2024, 4, 30))
+
 class DashboardViewModelTest(list: List<Suggestion>) :
     DashboardViewModel(tripId = "", tripsRepository = TripsRepository("", Dispatchers.IO)) {
   private val _isLoading = MutableStateFlow(false)
@@ -131,7 +170,16 @@ class DashboardViewModelTest(list: List<Suggestion>) :
   private val _state = MutableStateFlow(list)
   override val state: StateFlow<List<Suggestion>> = _state.asStateFlow()
 
+  private val _expenses = MutableStateFlow(emptyList<Expense>())
+  override val expenses: StateFlow<List<Expense>> = _expenses
+
   override fun loadSuggestion(tripId: String) {}
+
+  override fun loadExpenses(tripId: String) {}
+
+  fun setExpenses(expenses: List<Expense>) {
+    _expenses.value = expenses
+  }
 
   fun setLoading(isLoading: Boolean) {
     _isLoading.value = isLoading
@@ -172,9 +220,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     // Check that the top bar is displayed
     composeTestRule.onNodeWithTag("dashboardTopBar", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget is displayed
-    composeTestRule
-        .onNodeWithTag("dashboardSuggestions", useUnmergedTree = true)
-        .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("suggestionCard", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget title is displayed
     composeTestRule.onNodeWithTag("suggestionTitle", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget is displayed
@@ -194,12 +240,9 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the first suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion1", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 doesn't exist
-    composeTestRule.onNodeWithTag("divider0", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -215,22 +258,14 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the first suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion1", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the second suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion2", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem2", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider0", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider1 doesn't exist
-    composeTestRule.onNodeWithTag("divider1", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -246,32 +281,19 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the first suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion1", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the second suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion2", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem2", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the third suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion3", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem3", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider0", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider1 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider1", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider2 doesn't exist
-    composeTestRule.onNodeWithTag("divider2", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -287,35 +309,22 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("noSuggestions", useUnmergedTree = true).assertDoesNotExist()
 
     // Check that the first suggestion doesn't exist
-    composeTestRule.onNodeWithTag("suggestion1", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("suggestionItem1", useUnmergedTree = true).assertDoesNotExist()
     // Check that the second suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion2", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem2", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the third suggestion exist and is displayed
     composeTestRule
-        .onNodeWithTag("suggestion3", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem3", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the fourth suggestion doesn't exist
     composeTestRule
-        .onNodeWithTag("suggestion4", useUnmergedTree = true)
+        .onNodeWithTag("suggestionItem4", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-
-    // Check that the divider0 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider0", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider1 exist and is displayed
-    composeTestRule
-        .onNodeWithTag("divider1", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the divider2 doesn't exist
-    composeTestRule.onNodeWithTag("divider2", useUnmergedTree = true).assertDoesNotExist()
   }
 
   @Test
@@ -328,21 +337,24 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the stop title is displayed
     composeTestRule
-        .onNodeWithTag("stopTitle", useUnmergedTree = true)
-        .assertExists()
-        .assertIsDisplayed()
-    // Check that the created at date is displayed
-    composeTestRule
-        .onNodeWithTag("createdAt", useUnmergedTree = true)
+        .onNodeWithTag("suggestionTitle1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
     // Check that the user name is displayed
     composeTestRule
-        .onNodeWithTag("userName", useUnmergedTree = true)
+        .onNodeWithTag("suggestionUser1", useUnmergedTree = true)
         .assertExists()
         .assertIsDisplayed()
-    // Check that the time is displayed
-    composeTestRule.onNodeWithTag("time", useUnmergedTree = true).assertExists().assertIsDisplayed()
+    // Check that the start time is displayed
+    composeTestRule
+        .onNodeWithTag("suggestionStart1", useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
+    // Check that the end time is displayed
+    composeTestRule
+        .onNodeWithTag("suggestionEnd1", useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
   }
 
   @Test
@@ -357,6 +369,159 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("menuNav").assertIsNotDisplayed()
 
     verify { mockNavActions.navigateTo(Route.ADMIN_PAGE) }
+    confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun financeWidgetDisplaysProperly() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("financeCard", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("financeTitle", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("totalAmount", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("noExpenses", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("noExpensesBox", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("financeIcon", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  @Test
+  fun financeWidgetDisplaysProperlyOne() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setExpenses(listOf(expense1))
+
+    composeTestRule.onNodeWithTag("noExpenses", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("noExpensesBox", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pieChartBox", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Total: 50.00 CHF")
+    composeTestRule.onNodeWithTag("expenseItem1", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("expenseItem2", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("expenseTitle1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Groceries")
+    composeTestRule
+        .onNodeWithTag("expenseAmount1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("50.00 CHF")
+    composeTestRule
+        .onNodeWithTag("expenseUser1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Paid by Alice")
+  }
+
+  @Test
+  fun financeWidgetDisplaysProperlyTwo() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+    viewModel.setExpenses(listOf(expense1, expense2))
+
+    composeTestRule.onNodeWithTag("noExpenses", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("noExpensesBox", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pieChartBox", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Total: 75.00 CHF")
+    composeTestRule.onNodeWithTag("expenseItem1", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("expenseItem2", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("expenseItem3", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("expenseTitle1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Groceries")
+    composeTestRule
+        .onNodeWithTag("expenseAmount1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("50.00 CHF")
+    composeTestRule
+        .onNodeWithTag("expenseUser1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Paid by Alice")
+    composeTestRule
+        .onNodeWithTag("expenseTitle2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Movie Night")
+    composeTestRule
+        .onNodeWithTag("expenseAmount2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("25.00 CHF")
+    composeTestRule
+        .onNodeWithTag("expenseUser2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Paid by Bob")
+  }
+
+  @Test
+  fun financeWidgetDisplaysProperlyThree() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setExpenses(listOf(expense1, expense2, expense3))
+
+    composeTestRule.onNodeWithTag("noExpenses", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("noExpensesBox", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("pieChartBox", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Total: 175.00 CHF")
+    composeTestRule.onNodeWithTag("expenseItem1", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("expenseItem2", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("expenseItem3", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("expenseTitle2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Movie Night")
+    composeTestRule
+        .onNodeWithTag("expenseAmount2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("25.00 CHF")
+    composeTestRule
+        .onNodeWithTag("expenseUser2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Paid by Bob")
+    composeTestRule
+        .onNodeWithTag("expenseTitle3", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Dinner")
+    composeTestRule
+        .onNodeWithTag("expenseAmount3", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("100.00 CHF")
+    composeTestRule
+        .onNodeWithTag("expenseUser3", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Paid by Charlie")
+  }
+
+  @Test
+  fun financeWidgetNavigation() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("financeCard").performClick()
+    verify { mockNavActions.navigateTo(Route.FINANCE) }
     confirmVerified(mockNavActions)
   }
 }
