@@ -164,7 +164,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                 Log.d("Admin", "Image uploaded successfully")
                 Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
               }
-
+          // Continue with the task to get the download URL
           taskUp
               ?.continueWithTask { task ->
                 if (!task.isSuccessful) {
