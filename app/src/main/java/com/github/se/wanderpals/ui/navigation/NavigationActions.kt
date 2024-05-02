@@ -125,15 +125,29 @@ data class NavigationActions(
    * @param route The route to navigate to.
    */
   fun navigateTo(route: String) {
-    Log.d("NavigationAction", "navigateTo before")
-    if (TRIP_DESTINATIONS.any { it.route == route }) {
+    if (TRIP_DESTINATIONS.any { it.route == route } && checkIfNavGraphWasSet(tripNavigation)) {
       lastlyUsedController = tripNavigation
       tripNavigation.navigateTo(route)
-    } else if (MAIN_ROUTES.any { it == route }) {
+    } else if (MAIN_ROUTES.any { it == route } && checkIfNavGraphWasSet(mainNavigation)) {
       lastlyUsedController = mainNavigation
       mainNavigation.navigateTo(route)
     }
-    Log.d("NavigationAction", "navigateTo after")
+  }
+
+  /**
+   * Check if the nav graph was set.
+   *
+   * @param nav The navigation state.
+   * @return True if the nav graph was set, false otherwise.
+   */
+  private fun checkIfNavGraphWasSet(nav: MultiNavigationAppState): Boolean {
+    return try {
+      nav.getNavController.graph
+      true
+    } catch (e: Exception) {
+      Log.d("NavigationAction", "Nav graph was not set")
+      false
+    }
   }
 
   /**
