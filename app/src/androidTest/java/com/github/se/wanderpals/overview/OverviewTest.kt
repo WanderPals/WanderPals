@@ -15,6 +15,7 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.screens.OverviewScreen
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.overview.Overview
@@ -64,7 +65,7 @@ class OverviewViewModelTest :
           description = "A ski trip to the snowy mountains.",
           imageUrl = "https://example.com/winter_ski_trip.jpg",
           stops = listOf("ski_resort1", "ski_resort2"),
-          users = listOf("user4", "user5"),
+          users = listOf("user1", "user4", "user5"),
           suggestions = listOf("suggestion3", "suggestion4", "suggestion5"))
 
   private val trip3 =
@@ -77,7 +78,7 @@ class OverviewViewModelTest :
           description = "Exploring famous landmarks and enjoying city life.",
           imageUrl = "https://example.com/city_exploration.jpg",
           stops = listOf("city_stop1", "city_stop2"),
-          users = listOf("user6", "user7", "user8"),
+          users = listOf("user1", "user6", "user7", "user8"),
           suggestions = emptyList())
   private val _state = MutableStateFlow(listOf(trip1, trip2, trip3))
   override val state: StateFlow<List<Trip>> = _state
@@ -90,7 +91,8 @@ class OverviewViewModelTest :
   }
 
   override fun createTrip(trip: Trip) {
-    _state.value = _state.value.toMutableList().apply { add(trip) }
+    val newTrip = trip.copy(users = listOf("user1"))
+    _state.value = _state.value.toMutableList().apply { add(newTrip) }
   }
 
   override fun getAllTrips() {}
@@ -109,6 +111,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
   @Before
   fun testSetup() {
+    SessionManager.setUserSession(userId = "user1")
+
     composeTestRule.setContent {
       Overview(overviewViewModel = overviewViewModelTest, navigationActions = mockNavActions)
     }
