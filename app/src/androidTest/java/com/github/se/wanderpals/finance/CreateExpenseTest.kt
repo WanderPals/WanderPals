@@ -99,9 +99,9 @@ private class ExpenseScreen(semanticsProvider: SemanticsNodeInteractionsProvider
   val errorText: KNode = onNode { hasTestTag("errorText") }
   val categoryFood: KNode = onNode { hasTestTag(Category.FOOD.name) }
   val categoryTransport: KNode = onNode { hasTestTag(Category.TRANSPORT.name) }
-  val categoryEntertainment: KNode = onNode { hasTestTag(Category.ENTERTAINMENT.name) }
+  val categoryAccodommation: KNode = onNode { hasTestTag(Category.ACCOMODATION.name) }
   val categoryOther: KNode = onNode { hasTestTag(Category.OTHER.name) }
-  val categoryUtilities: KNode = onNode { hasTestTag(Category.UTILITIES.name) }
+  val categoryActivities: KNode = onNode { hasTestTag(Category.ACTIVITIES.name) }
   val user1: KNode = onNode { hasTestTag(mockUser1.userId) }
   val user2: KNode = onNode { hasTestTag(mockUser2.userId) }
   val user3: KNode = onNode { hasTestTag(mockUser3.userId) }
@@ -147,9 +147,9 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       errorText { assertDoesNotExist() }
       categoryFood { assertDoesNotExist() }
       categoryTransport { assertDoesNotExist() }
-      categoryEntertainment { assertDoesNotExist() }
+      categoryAccodommation { assertDoesNotExist() }
       categoryOther { assertDoesNotExist() }
-      categoryUtilities { assertDoesNotExist() }
+      categoryActivities { assertDoesNotExist() }
       user1 { assertDoesNotExist() }
       user2 { assertDoesNotExist() }
       user3 { assertDoesNotExist() }
@@ -167,9 +167,9 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       dropdownMenuCategory { performClick() }
       categoryFood { assertIsDisplayed() }
       categoryTransport { assertIsDisplayed() }
-      categoryEntertainment { assertIsDisplayed() }
+      categoryAccodommation { assertIsDisplayed() }
       categoryOther { assertIsDisplayed() }
-      categoryUtilities { assertIsDisplayed() }
+      categoryActivities { assertIsDisplayed() }
     }
   }
 
@@ -412,16 +412,16 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       category { assertTextContains("FOOD") }
 
       category { performClick() }
-      categoryEntertainment { performClick() }
-      category { assertTextContains("ENTERTAINMENT") }
+      categoryAccodommation { performClick() }
+      category { assertTextContains("ACCOMODATION") }
 
       category { performClick() }
       categoryTransport { performClick() }
       category { assertTextContains("TRANSPORT") }
 
       category { performClick() }
-      categoryUtilities { performClick() }
-      category { assertTextContains("UTILITIES") }
+      categoryActivities { performClick() }
+      category { assertTextContains("ACTIVITIES") }
 
       category { performClick() }
       categoryOther { performClick() }
