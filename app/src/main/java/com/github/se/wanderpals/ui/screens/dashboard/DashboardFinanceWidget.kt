@@ -33,16 +33,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
-import java.time.LocalDate
-import kotlinx.coroutines.Dispatchers
 
 /**
  * Composable function for displaying the finance widget in the Dashboard screen. The finance widget
@@ -187,7 +182,9 @@ fun ExpenseItem(expense: Expense) {
       modifier = Modifier.fillMaxWidth().testTag("expenseItem" + expense.expenseId)) {
         Column(modifier = Modifier.padding(8.dp)) {
           Text(
-              text = expense.title,
+              text =
+                  if (expense.title.length > 20) expense.title.subSequence(0, 18).toString() + "..."
+                  else expense.title,
               style =
                   TextStyle(
                       fontWeight = FontWeight.Bold,
@@ -210,27 +207,4 @@ fun ExpenseItem(expense: Expense) {
                     fontSize = 15.sp),
             modifier = Modifier.padding(8.dp).testTag("expenseAmount" + expense.expenseId))
       }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DashboardFinanceWidgetPreview() {
-  DashboardFinanceWidget(
-      DashboardViewModel(TripsRepository("1", dispatcher = Dispatchers.IO), "")) {}
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ExpenseItemPreview() {
-  ExpenseItem(
-      Expense(
-          expenseId = "1",
-          title = "Groceries",
-          amount = 50.0,
-          category = Category.FOOD,
-          userId = "user001",
-          userName = "Alice",
-          participantsIds = listOf("user001", "user002", "user003"),
-          names = listOf("Alice", "Bob", "Charlie"),
-          localDate = LocalDate.now()))
 }
