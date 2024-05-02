@@ -6,7 +6,7 @@ import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.ExpenseViewModel
+import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.trip.finance.CreateExpense
 import com.kaspersky.components.composesupport.config.withComposeSupport
@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Rule
 import org.junit.Test
 
-private class FakeExpenseViewModel : ExpenseViewModel(TripsRepository("", Dispatchers.IO), "") {
+private class FakeFinanceViewModel : FinanceViewModel(TripsRepository("", Dispatchers.IO), "") {
 
   private val _users = MutableStateFlow(listOf(mockUser1, mockUser2, mockUser3, mockUser4))
   override val users = _users
@@ -99,7 +99,7 @@ private class ExpenseScreen(semanticsProvider: SemanticsNodeInteractionsProvider
   val errorText: KNode = onNode { hasTestTag("errorText") }
   val categoryFood: KNode = onNode { hasTestTag(Category.FOOD.name) }
   val categoryTransport: KNode = onNode { hasTestTag(Category.TRANSPORT.name) }
-  val categoryAccodommation: KNode = onNode { hasTestTag(Category.ACCOMODATION.name) }
+  val categoryAccommodation: KNode = onNode { hasTestTag(Category.ACCOMMODATION.name) }
   val categoryOther: KNode = onNode { hasTestTag(Category.OTHER.name) }
   val categoryActivities: KNode = onNode { hasTestTag(Category.ACTIVITIES.name) }
   val user1: KNode = onNode { hasTestTag(mockUser1.userId) }
@@ -118,7 +118,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   // test case
   @Test
   fun createExpenseDisplaysProperly() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -147,7 +147,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       errorText { assertDoesNotExist() }
       categoryFood { assertDoesNotExist() }
       categoryTransport { assertDoesNotExist() }
-      categoryAccodommation { assertDoesNotExist() }
+      categoryAccommodation { assertDoesNotExist() }
       categoryOther { assertDoesNotExist() }
       categoryActivities { assertDoesNotExist() }
       user1 { assertDoesNotExist() }
@@ -159,7 +159,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseDisplaysCategory() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -167,7 +167,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       dropdownMenuCategory { performClick() }
       categoryFood { assertIsDisplayed() }
       categoryTransport { assertIsDisplayed() }
-      categoryAccodommation { assertIsDisplayed() }
+      categoryAccommodation { assertIsDisplayed() }
       categoryOther { assertIsDisplayed() }
       categoryActivities { assertIsDisplayed() }
     }
@@ -175,7 +175,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseDisplaysUsers() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -190,7 +190,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseSavesExpense() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -214,7 +214,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseMissingTitle() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -237,7 +237,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseMissingBudget() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -260,7 +260,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseMissingDate() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -279,7 +279,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseMissingCategory() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -300,7 +300,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseMissingPaidBy() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -322,7 +322,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseMissingParticipants() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -345,7 +345,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseSelectOne() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -358,7 +358,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseSelectAll() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -402,7 +402,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun createExpenseSelectCategory() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 
@@ -412,7 +412,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       category { assertTextContains("FOOD") }
 
       category { performClick() }
-      categoryAccodommation { performClick() }
+      categoryAccommodation { performClick() }
       category { assertTextContains("ACCOMODATION") }
 
       category { performClick() }
@@ -433,7 +433,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   fun viewModelTest() // This test might pose problem later, concurrency issues. If this breaks,
     // remove it.
   {
-    val viewModel = ExpenseViewModel(FakeExpenseTripRepository(), "")
+    val viewModel = FinanceViewModel(FakeExpenseTripRepository(), "")
     viewModel.loadMembers("")
     viewModel.addExpense("", mockExpense)
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
@@ -452,7 +452,7 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
 
   @Test
   fun goBackButton() {
-    val viewModel = FakeExpenseViewModel()
+    val viewModel = FakeFinanceViewModel()
 
     composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
 

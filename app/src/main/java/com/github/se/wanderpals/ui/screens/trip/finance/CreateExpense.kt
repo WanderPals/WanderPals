@@ -33,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -50,6 +51,7 @@ import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.ExpenseViewModel
+import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
@@ -69,7 +71,9 @@ import java.time.format.DateTimeFormatter
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateExpense(tripId: String, viewModel: ExpenseViewModel, navActions: NavigationActions) {
+fun CreateExpense(tripId: String, viewModel: FinanceViewModel, navActions: NavigationActions) {
+
+  LaunchedEffect(key1 = Unit) { viewModel.loadMembers(tripId) }
 
   var expandedMenu1 by remember { mutableStateOf(false) }
   var expandedMenu2 by remember { mutableStateOf(false) }

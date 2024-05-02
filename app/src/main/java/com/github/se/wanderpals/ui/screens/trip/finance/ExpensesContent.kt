@@ -111,7 +111,7 @@ fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
                       Text(
                           text =
                               buildAnnotatedString {
-                                append("Payed by ")
+                                append("Paid by ")
                                 withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                   append(expense.userName)
                                 }

@@ -27,6 +27,7 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 
 /**
  * Enum class representing different finance options available in the Finance screen.
@@ -77,7 +78,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             SessionManager.getCurrentUser()!!.role != Role.VIEWER) {
           FloatingActionButton(
               modifier = Modifier.testTag("financeFloatingActionButton"),
-              onClick = { /* TODO navigate to create expense screen*/},
+              onClick = { navigationActions.navigateTo(Route.CREATE_EXPENSE) },
               containerColor = MaterialTheme.colorScheme.primary,
               shape = RoundedCornerShape(50.dp)) {
                 Icon(
