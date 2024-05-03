@@ -233,7 +233,7 @@ fun TopDashboardBar(
                         fontWeight = FontWeight(500),
                         color = Color.White,
                     ),
-                modifier = Modifier.padding(start = 24.dp).testTag("dashboardTripTitle"))
+                modifier = Modifier.padding(start = 24.dp))
             Row(modifier = Modifier.fillMaxWidth()) {} // to fill the remaining space of the top bar
           }
         }

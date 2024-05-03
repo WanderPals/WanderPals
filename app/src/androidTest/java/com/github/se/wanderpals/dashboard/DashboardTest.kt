@@ -219,8 +219,6 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     // Check that the top bar is displayed
     composeTestRule.onNodeWithTag("dashboardTopBar", useUnmergedTree = true).assertIsDisplayed()
-    // Check that the trip title is displayed
-    composeTestRule.onNodeWithTag("dashboardTripTitle", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget is displayed
     composeTestRule.onNodeWithTag("suggestionCard", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget title is displayed
