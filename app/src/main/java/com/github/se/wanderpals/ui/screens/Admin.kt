@@ -130,7 +130,10 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
 
   Column(modifier = Modifier.testTag("adminScreen")) {
     IconButton(
-        onClick = { modifierButton = true },
+        onClick = {
+          modifierButton = true
+          isAlreadyClicked = false
+        },
         modifier = Modifier.align(BiasAlignment.Horizontal(0.9F))) {
           Icon(Icons.Default.Create, contentDescription = "Modify")
         }
@@ -147,7 +150,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
         // elevation = CardDefaults.cardElevation(defaultElevation = 100.dp)
     ) {
       Row(verticalAlignment = BiasAlignment.Vertical(-0.6f)) {
-        if (selectedImages.isNotEmpty()) {
+        if (selectedImages.isNotEmpty() && selectedImages[0] != null) {
           Log.d("Admin", "Selected Image: ${selectedImages[0]}")
           // create a reference to the uri of the image
           val riversRef = storageReference?.child("images/${selectedImages[0]?.lastPathSegment}")
@@ -193,6 +196,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                       .clickable {
                         if (modifierButton && !isAlreadyClicked) {
                           isAlreadyClicked = true
+                          modifierButton = false
                           singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
                         }
                       }
@@ -212,6 +216,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                         .clickable {
                           if (modifierButton && !isAlreadyClicked) {
                             isAlreadyClicked = true
+                            modifierButton = false
                             singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
                           }
                         }
