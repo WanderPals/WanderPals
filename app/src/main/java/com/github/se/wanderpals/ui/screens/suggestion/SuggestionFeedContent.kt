@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +34,9 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.theme.onSurfaceLight
+import com.github.se.wanderpals.ui.theme.primaryLight
+import com.github.se.wanderpals.ui.theme.scrimLight
 
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
@@ -88,19 +90,25 @@ fun SuggestionFeedContent(
         modifier = Modifier.padding(start = 27.dp, top = 15.dp),
         style =
             TextStyle(
-                lineHeight = 24.sp,
-                textAlign = TextAlign.Center,
                 fontSize = 20.sp,
+                lineHeight = 24.sp,
                 fontWeight = FontWeight(500),
-                color = Color(0xFF5A7BF0),
-                letterSpacing = 0.5.sp),
+                color = primaryLight,
+                letterSpacing = 0.2.sp),
         textAlign = TextAlign.Center)
 
     // Add the filter options UI
     Text(
         text = "Filter by:",
-        modifier = Modifier.padding(start = 16.dp, top = 8.dp, end = 16.dp),
-    )
+        modifier = Modifier.padding(start = 27.dp, top = 8.dp, end = 16.dp),
+        style =
+            TextStyle(
+                fontSize = 16.sp,
+                lineHeight = 24.sp,
+                fontWeight = FontWeight(500),
+                color = onSurfaceLight,
+                letterSpacing = 0.16.sp,
+            ))
 
     SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
@@ -121,7 +129,7 @@ fun SuggestionFeedContent(
                     fontSize = 18.sp,
                     fontWeight = FontWeight(500),
                     textAlign = TextAlign.Center,
-                    color = Color(0xFF000000)),
+                    color = scrimLight),
         )
         IconButton(
             onClick = { suggestionsViewModel.loadSuggestion(tripId) },
