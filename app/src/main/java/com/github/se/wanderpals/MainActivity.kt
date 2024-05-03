@@ -153,7 +153,7 @@ class MainActivity : ComponentActivity() {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           NotificationPermission(context = context)
 
-            Log.d("Hello", "Hello")
+          Log.d("Hello", "Hello")
 
           FirebaseMessaging.getInstance()
               .token
@@ -165,7 +165,7 @@ class MainActivity : ComponentActivity() {
                     }
                     // Get new FCM registration token
                     // Send the token to the server
-                      val token = task.result
+                    val token = task.result
                     SessionManager.setNotificationToken(task.result)
 
                     Log.d(TAG, token)
