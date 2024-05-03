@@ -50,7 +50,7 @@ class NotificationDevice : FirebaseMessagingService() {
             .setContentTitle(remoteMessage.data["title"])
             .setContentText(remoteMessage.data["message"])
             .setAutoCancel(true)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.logo_nsa)
 
     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

@@ -165,7 +165,9 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
                     Button(
                         onClick = {
                           val success = addTripCodeAction(tripCode)
+
                           if (success) {
+
                             isError = false
                             tripCode = EMPTY_CODE
                             closeDialogueAction()
