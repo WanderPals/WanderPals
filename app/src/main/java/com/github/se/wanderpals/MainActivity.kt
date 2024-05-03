@@ -38,9 +38,11 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.storage.storage
 
 const val EMPTY_CODE = ""
 
@@ -81,7 +83,7 @@ class MainActivity : ComponentActivity() {
                           userId = uid,
                           name = account.displayName ?: "",
                           email = account.email ?: "",
-                          profilePhoto = it.result.user?.photoUrl.toString())
+                          profilePhoto = it.result?.user?.photoUrl.toString())
 
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
@@ -121,6 +123,9 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    val storage = Firebase.storage
+
+    val storageRef = storage.reference
 
     context = this
 
@@ -245,7 +250,8 @@ class MainActivity : ComponentActivity() {
                                   AdminViewModel.AdminViewModelFactory(
                                       navigationActions.variables.currentTrip,
                                       viewModel.getTripsRepository()),
-                              key = "AdminPage"))
+                              key = "AdminPage"),
+                      storageReference = storageRef)
                 }
               }
         }
