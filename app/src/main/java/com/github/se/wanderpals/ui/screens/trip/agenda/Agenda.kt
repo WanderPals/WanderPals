@@ -21,7 +21,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
+import com.github.se.wanderpals.ui.theme.primaryLight
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -73,34 +74,39 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
   var isStopPressed by remember { mutableStateOf(false) }
   var selectedStopId by remember { mutableStateOf("") }
 
-  Surface(
+  Scaffold(
+      topBar = {
+        Column(modifier = Modifier.background(primaryLight)) {
+          Banner(
+              agendaViewModel,
+              isDrawerExpanded,
+              onToggle = { isDrawerExpanded = !isDrawerExpanded })
+          AnimatedVisibility(
+              visible = isDrawerExpanded,
+              modifier = Modifier.background(color = Color.White).fillMaxWidth()) {
+                CalendarWidget(
+                    days = getDaysOfWeekLabels(),
+                    yearMonth = uiState.yearMonth,
+                    dates = uiState.dates,
+                    onPreviousMonthButtonClicked = { prevMonth ->
+                      agendaViewModel.toPreviousMonth(prevMonth)
+                    },
+                    onNextMonthButtonClicked = { nextMonth ->
+                      agendaViewModel.toNextMonth(nextMonth)
+                    },
+                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+              }
+          Spacer(modifier = Modifier.padding(1.dp))
+        }
+      },
       modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
-  ) {
-    if (isStopPressed) {
-      val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
-      StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
-    }
-    Column {
-
-      // Banner to toggle drawer visibility
-      Banner(agendaViewModel, isDrawerExpanded, onToggle = { isDrawerExpanded = !isDrawerExpanded })
-      AnimatedVisibility(visible = isDrawerExpanded) {
-        CalendarWidget(
-            days = getDaysOfWeekLabels(),
-            yearMonth = uiState.yearMonth,
-            dates = uiState.dates,
-            onPreviousMonthButtonClicked = { prevMonth ->
-              agendaViewModel.toPreviousMonth(prevMonth)
-            },
-            onNextMonthButtonClicked = { nextMonth -> agendaViewModel.toNextMonth(nextMonth) },
-            onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
-      }
-      Spacer(modifier = Modifier.padding(1.dp))
+  ) { paddingValues ->
+    Column(modifier = Modifier.padding(paddingValues)) {
       HorizontalDivider(
           modifier = Modifier.fillMaxWidth(),
           thickness = 1.dp,
           color = MaterialTheme.colorScheme.secondary)
-      // Implement the daily agenda here
+      // Daily agenda implementation
       DailyActivities(
           agendaViewModel = agendaViewModel,
           onActivityItemClick = { stopId ->
@@ -108,6 +114,11 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
             selectedStopId = stopId
           })
     }
+  }
+
+  if (isStopPressed) {
+    val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
+    StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
   }
 }
 
@@ -134,7 +145,7 @@ fun CalendarWidget(
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
-  Column(modifier = Modifier.padding(16.dp)) {
+  Column(modifier = Modifier.padding(16.dp).background(Color.White)) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -161,14 +172,19 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
 
   Box(
       modifier =
-          Modifier.fillMaxWidth().clickable { onToggle() }.padding(16.dp).testTag("Banner")) {
+          Modifier.fillMaxWidth()
+              .clickable { onToggle() }
+              .padding(16.dp)
+              .background(primaryLight)
+              .testTag("Banner")) {
         DisplayDate(date = selectedDate)
         // Optional: Add an icon to indicate the expand/collapse action
         Icon(
             imageVector =
                 if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
             contentDescription = "Toggle",
-            modifier = Modifier.align(Alignment.CenterEnd))
+            modifier = Modifier.align(Alignment.CenterEnd),
+            tint = Color.White)
       }
 }
 

@@ -73,7 +73,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       adminScreenCard { assertIsDisplayed() }
@@ -89,7 +89,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) { userName { assertIsDisplayed() } }
   }
@@ -100,7 +100,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { assertIsDisplayed() }
@@ -113,7 +113,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       deleteUserButton { assertIsDisplayed() }
@@ -126,7 +126,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       deleteUserButton { performClick() }
@@ -140,7 +140,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       deleteUserButton { performClick() }
@@ -154,7 +154,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
@@ -168,7 +168,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
@@ -182,7 +182,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
@@ -199,7 +199,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
@@ -213,7 +213,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User1.userId, User1.name, User1.email, User1.role, profilePhoto = User1.profilePictureURL)
-      Admin(adminViewModel = FakeAdminViewModel())
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
     }
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
       editRoleButton { performClick() }
@@ -229,7 +229,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User3.userId, User3.name, User3.email, User3.role, profilePhoto = User3.profilePictureURL)
-      Admin(FakeAdminViewModel())
+      Admin(FakeAdminViewModel(), storageReference = null)
     }
 
     composeTestRule
@@ -279,7 +279,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
           User3.email,
           User3.role,
           profilePhoto = User3.profilePictureURL)
-      Admin(viewModel)
+      Admin(viewModel, storageReference = null)
     }
 
     composeTestRule
@@ -298,7 +298,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
     composeTestRule.setContent {
       SessionManager.setUserSession(
           User3.userId, User3.name, User3.email, User3.role, profilePhoto = User3.profilePictureURL)
-      Admin(FakeAdminViewModel())
+      Admin(FakeAdminViewModel(), storageReference = null)
     }
     composeTestRule
         .onNodeWithTag("memberCard" + User1.userId, useUnmergedTree = true)
@@ -333,7 +333,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
 
     composeTestRule.setContent {
       SessionManager.setUserSession(User3.userId, User3.name, User3.email, User3.role)
-      Admin(membersViewModel)
+      Admin(membersViewModel, storageReference = null)
     }
     composeTestRule
         .onNodeWithTag("memberCard" + User2.userId, useUnmergedTree = true)
@@ -362,5 +362,35 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
         .assertExists()
         .assertIsDisplayed()
         .assertTextContains("Johnson2@epfl.ch")
+  }
+
+  @Test
+  fun OwnerCanModifyRoles() {
+    val viewModel = FakeAdminViewModel()
+    val User2 = viewModel.listOfUsers.value[1]
+    val User1 = viewModel.listOfUsers.value[0]
+    SessionManager.setUserSession(
+        userId = User2.userId,
+        User2.name,
+        User2.email,
+        User2.role,
+        profilePhoto = User2.profilePictureURL)
+    viewModel.listOfUsers.value = listOf(User2, User1)
+    viewModel.currentUser.value = SessionManager.getCurrentUser()
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          userId = User2.userId,
+          User2.name,
+          User2.email,
+          User2.role,
+          profilePhoto = User2.profilePictureURL)
+      Admin(viewModel, storageReference = null)
+    }
+
+    ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
+      editRoleButton { performClick() }
+      composeTestRule.onNodeWithText("MEMBER").performClick()
+      ConfirmRoleChangeButton { performClick() }
+    }
   }
 }

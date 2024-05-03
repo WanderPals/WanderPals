@@ -65,6 +65,7 @@ open class AdminViewModel(
       modifyUser(user.copy(profilePictureURL = profilePhoto))
     }
   }
+  // Send a a Uri to the repository to upload the image
 
   class AdminViewModelFactory(
       private val tripId: String,

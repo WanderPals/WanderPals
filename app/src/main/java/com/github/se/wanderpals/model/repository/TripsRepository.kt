@@ -36,7 +36,7 @@ import kotlinx.coroutines.withContext
  * @param uid Unique identifier of the current user. Used to fetch user-specific trip data.(UsersId
  *   in short)
  */
-class TripsRepository(
+open class TripsRepository(
     val uid: String,
     private val dispatcher: CoroutineDispatcher // Inject dispatcher
 ) {
@@ -91,7 +91,7 @@ class TripsRepository(
    * @return The email associated with the username if found, or null if no such username exists or
    *   an error occurs.
    */
-  suspend fun getUserEmail(username: String): String? =
+  open suspend fun getUserEmail(username: String): String? =
       withContext(dispatcher) {
         try {
           val documentSnapshot = usernameCollection.document(username).get().await()
@@ -115,7 +115,7 @@ class TripsRepository(
    * @return True if the email was successfully added, false if the username already exists or an
    *   error occurs.
    */
-  suspend fun addEmailToUsername(username: String, email: String): Boolean =
+  open suspend fun addEmailToUsername(username: String, email: String): Boolean =
       withContext(dispatcher) {
         try {
           val documentRef = usernameCollection.document(username)
@@ -147,7 +147,7 @@ class TripsRepository(
    * @return True if the deletion was successful or the username did not exist, false if an error
    *   occurs during deletion.
    */
-  suspend fun deleteEmailByUsername(username: String): Boolean =
+  open suspend fun deleteEmailByUsername(username: String): Boolean =
       withContext(dispatcher) {
         try {
           val documentRef = usernameCollection.document(username)
@@ -184,7 +184,7 @@ class TripsRepository(
    *   of an error during data retrieval. Errors during the operation are logged and an empty map is
    *   returned.
    */
-  suspend fun getBalances(tripId: String): Map<String, Double> =
+  open suspend fun getBalances(tripId: String): Map<String, Double> =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -214,7 +214,7 @@ class TripsRepository(
    *   the operation is successful, and `false` if there is an error during the setting operation.
    *   Errors are logged.
    */
-  suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
+  open suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
       withContext(dispatcher) {
         try {
           val balanceDocument =
@@ -247,7 +247,7 @@ class TripsRepository(
    *   notifications in the document, or in case of an error during data retrieval. Errors during
    *   the operation are logged and an empty list is returned.
    */
-  suspend fun getNotificationList(tripId: String): List<TripNotification> =
+  open suspend fun getNotificationList(tripId: String): List<TripNotification> =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -294,7 +294,10 @@ class TripsRepository(
    *   the operation is successful, and `false` if there is an error during the setting operation.
    *   Errors are logged.
    */
-  suspend fun setNotificationList(tripId: String, notifications: List<TripNotification>): Boolean =
+  open suspend fun setNotificationList(
+      tripId: String,
+      notifications: List<TripNotification>
+  ): Boolean =
       withContext(dispatcher) {
         try {
 
@@ -333,7 +336,7 @@ class TripsRepository(
    * @return An `Expense` object if found, or `null` if the expense is not found or if an error
    *   occurs. The method logs an error and returns `null` in case of failure.
    */
-  suspend fun getExpenseFromTrip(tripId: String, expenseId: String): Expense? =
+  open suspend fun getExpenseFromTrip(tripId: String, expenseId: String): Expense? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -370,7 +373,7 @@ class TripsRepository(
    * @return A list of `Expense` objects. Returns an empty list if the trip is not found or if an
    *   error occurs during fetching. Errors are logged and an empty list is returned in these cases.
    */
-  suspend fun getAllExpensesFromTrip(tripId: String): List<Expense> =
+  open suspend fun getAllExpensesFromTrip(tripId: String): List<Expense> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -402,7 +405,7 @@ class TripsRepository(
    * @return The unique identifier of the newly added expense if the operation is successful, or an
    *   empty string if it fails. The method logs the outcome of the operation.
    */
-  suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
+  open suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -450,7 +453,7 @@ class TripsRepository(
    * @return `true` if the expense is successfully removed and the trip is updated; `false` if the
    *   trip is not found or if any error occurs during the operation. Errors are logged.
    */
-  suspend fun removeExpenseFromTrip(tripId: String, expenseId: String): Boolean =
+  open suspend fun removeExpenseFromTrip(tripId: String, expenseId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -494,7 +497,7 @@ class TripsRepository(
    * @return `true` if the expense is successfully updated; `false` if the trip is not found or an
    *   error occurs. Errors are logged and the method returns `false` in these cases.
    */
-  suspend fun updateExpenseInTrip(tripId: String, expense: Expense): Boolean =
+  open suspend fun updateExpenseInTrip(tripId: String, expense: Expense): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateExpenseInTrip: Updating a Expense in trip $tripId")
@@ -528,7 +531,7 @@ class TripsRepository(
    * @return A `Announcement` object if found, or `null` if the Announcement is not found or if an
    *   error occurs. The method logs an error and returns `null` in case of failure.
    */
-  suspend fun getAnnouncementFromTrip(tripId: String, announcementId: String): Announcement? =
+  open suspend fun getAnnouncementFromTrip(tripId: String, announcementId: String): Announcement? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -566,7 +569,7 @@ class TripsRepository(
    *   there are no Announcements associated with the trip, or in case of an error during data
    *   retrieval.
    */
-  suspend fun getAllAnnouncementsFromTrip(tripId: String): List<Announcement> =
+  open suspend fun getAllAnnouncementsFromTrip(tripId: String): List<Announcement> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -601,7 +604,7 @@ class TripsRepository(
    * @param announcement The Announcement object to add.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
+  open suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -655,7 +658,7 @@ class TripsRepository(
    * @param announcementId The unique identifier of the Announcement to be removed.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
+  open suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -699,7 +702,7 @@ class TripsRepository(
    * @param announcement The Announcement object that contains updated data.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun updateAnnouncementInTrip(tripId: String, announcement: Announcement): Boolean =
+  open suspend fun updateAnnouncementInTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -735,7 +738,7 @@ class TripsRepository(
    * @return A `Suggestion` object if found, `null` otherwise. The method logs an error and returns
    *   `null` if the suggestion is not found or if an error occurs during the Firestore query.
    */
-  suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Suggestion? =
+  open suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Suggestion? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -772,7 +775,7 @@ class TripsRepository(
    *   there are no suggestions associated with the trip, or in case of an error during data
    *   retrieval.
    */
-  suspend fun getAllSuggestionsFromTrip(tripId: String): List<Suggestion> =
+  open suspend fun getAllSuggestionsFromTrip(tripId: String): List<Suggestion> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -805,7 +808,7 @@ class TripsRepository(
    * @return `true` if the suggestion was added successfully, `false` otherwise. Errors during the
    *   process are logged.
    */
-  suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
+  open suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -855,7 +858,7 @@ class TripsRepository(
    * @return `true` if the suggestion was successfully deleted and the trip updated, `false`
    *   otherwise. Errors during the process are logged.
    */
-  suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
+  open suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -902,7 +905,7 @@ class TripsRepository(
    * @return `true` if the suggestion was successfully updated, `false` otherwise. Errors during the
    *   update process are logged.
    */
-  suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
+  open suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateSuggestionInTrip: Updating a Suggestion in trip $tripId")
@@ -934,7 +937,7 @@ class TripsRepository(
    * @param userId The unique identifier of the user.
    * @return A `User` object if found, `null` otherwise.
    */
-  suspend fun getUserFromTrip(tripId: String, userId: String): User? =
+  open suspend fun getUserFromTrip(tripId: String, userId: String): User? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -970,7 +973,7 @@ class TripsRepository(
    * @return A list of `User` objects. Returns an empty list if the trip is not found or in case of
    *   an error.
    */
-  suspend fun getAllUsersFromTrip(tripId: String): List<User> =
+  open suspend fun getAllUsersFromTrip(tripId: String): List<User> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -995,7 +998,7 @@ class TripsRepository(
    * @param user The `User` object containing the user's details.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  suspend fun addUserToTrip(tripId: String, user: User): Boolean =
+  open suspend fun addUserToTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
           // for users, there IDs are google ids currently no need to gen a new one
@@ -1039,7 +1042,7 @@ class TripsRepository(
    * @param user The `User` object to be updated.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  suspend fun updateUserInTrip(tripId: String, user: User): Boolean =
+  open suspend fun updateUserInTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateUserInTrip: Updating a user in trip $tripId")
@@ -1071,7 +1074,7 @@ class TripsRepository(
    * @param userId The unique identifier of the user to be removed.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  suspend fun removeUserFromTrip(tripId: String, userId: String): Boolean =
+  open suspend fun removeUserFromTrip(tripId: String, userId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "removeUserFromTrip: Deleting user $userId from trip $tripId")
@@ -1110,7 +1113,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun getStopFromTrip(tripId: String, stopId: String): Stop? =
+  open suspend fun getStopFromTrip(tripId: String, stopId: String): Stop? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -1136,7 +1139,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun getAllStopsFromTrip(tripId: String): List<Stop> =
+  open suspend fun getAllStopsFromTrip(tripId: String): List<Stop> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -1154,7 +1157,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
+  open suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString() + "," + stop.stopId
@@ -1186,7 +1189,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
+  open suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteStopFromTrip: Deleting stop $stopId from trip $tripId")
@@ -1219,7 +1222,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
+  open suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateStopInTrip: Updating a stop in trip $tripId")
@@ -1249,7 +1252,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to retrieve.
    * @return The Trip object if found, null otherwise.
    */
-  suspend fun getTrip(tripId: String): Trip? =
+  open suspend fun getTrip(tripId: String): Trip? =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTrip: Retrieving trip with ID $tripId.")
@@ -1269,7 +1272,7 @@ class TripsRepository(
    *
    * @return List of Trip objects.
    */
-  suspend fun getAllTrips(): List<Trip> =
+  open suspend fun getAllTrips(): List<Trip> =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getAllTrips: Fetching all trips for user $uid.")
@@ -1289,7 +1292,7 @@ class TripsRepository(
    * @param trip The Trip object to add.
    * @return Boolean indicating success or failure of the operation.
    */
-  suspend fun addTrip(trip: Trip): Boolean =
+  open suspend fun addTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "addTrip: Adding a trip")
@@ -1320,7 +1323,7 @@ class TripsRepository(
    * @param trip The Trip object to update.
    * @return Boolean indicating success or failure of the operation.
    */
-  suspend fun updateTrip(trip: Trip): Boolean =
+  open suspend fun updateTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateTrip: Updating a trip")
@@ -1346,7 +1349,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to delete.
    * @return Boolean indicating success or failure of the operation.
    */
-  suspend fun deleteTrip(tripId: String): Boolean =
+  open suspend fun deleteTrip(tripId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteTrip: Deleting trip")
@@ -1368,7 +1371,7 @@ class TripsRepository(
    * @return A list containing the trip IDs or an empty list if either the user's document does not
    *   exist or it doesn't contain any trip IDs.
    */
-  suspend fun getTripsIds(): List<String> =
+  open suspend fun getTripsIds(): List<String> =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTripsIds: Getting Trips linked to user")
@@ -1430,7 +1433,7 @@ class TripsRepository(
    * Assigns a role to a user in a trip based on their ownership status and updates the trip's
    * participant list.
    *
-   * This suspend function should be invoked within a coroutine context. It fetches the current
+   * This open suspend function should be invoked within a coroutine context. It fetches the current
    * user's details, assigns either the 'OWNER' or 'MEMBER' role based on the `isOwner` flag, and
    * updates the trip accordingly.
    *
@@ -1446,7 +1449,7 @@ class TripsRepository(
             userId = uid,
             name = currentUser.name,
             email = currentUser.email,
-            nickname = currentUser.name,
+            nickname = currentUser.nickname,
             role = role,
             notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
@@ -1462,7 +1465,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun addTripId(tripId: String, isOwner: Boolean = false): Boolean =
+  open suspend fun addTripId(tripId: String, isOwner: Boolean = false): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
 
@@ -1538,7 +1541,7 @@ class TripsRepository(
    *   be removed. If not provided, the ID of the current user is used as the default.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun removeTripId(tripId: String, userId: String = uid): Boolean =
+  open suspend fun removeTripId(tripId: String, userId: String = uid): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "removeTripId: Removing tripId from user")
 

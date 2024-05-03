@@ -3,6 +3,7 @@ package com.github.se.wanderpals.model.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,9 @@ open class DashboardViewModel(val tripsRepository: TripsRepository, tripId: Stri
   // State flow to hold the list of suggestions
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   open val state: StateFlow<List<Suggestion>> = _state
+
+  private val _expenses = MutableStateFlow(emptyList<Expense>())
+  open val expenses: StateFlow<List<Expense>> = _expenses
 
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -36,9 +40,16 @@ open class DashboardViewModel(val tripsRepository: TripsRepository, tripId: Stri
   open fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
       _isLoading.value = true
-      // Fetch all trips from the repository
+      // Fetch all suggestions from the trip
       _state.value = tripsRepository.getAllSuggestionsFromTrip(tripId)
       _isLoading.value = false
+    }
+  }
+
+  open fun loadExpenses(tripId: String) {
+    viewModelScope.launch {
+      // Fetch all expenses from the trip
+      _expenses.value = tripsRepository.getAllExpensesFromTrip(tripId)
     }
   }
 
