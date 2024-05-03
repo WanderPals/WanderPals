@@ -37,7 +37,6 @@ fun SuggestionBottomBar(onSuggestionClick: () -> Unit = {}) {
             Modifier
                 .align(Alignment.BottomEnd) // Align the button to the bottom end of the screen
                 .padding(end = 27.dp) // Add padding to the end of the screen
-//                .width(56.dp) // Set the width to 56.dp for square shape
                 .height(64.dp) // Set the height to 56.dp to make it a square
                 .testTag("suggestionButtonExists"),
             shape = RoundedCornerShape(size = 16.dp),
@@ -53,9 +52,3 @@ fun SuggestionBottomBar(onSuggestionClick: () -> Unit = {}) {
         }
     }
 }
-
-
-//todo: cont chatgpt
-//pass the code and the following thing to him:
-//With what I have now, (image1) I have a rectangle blue button at the right-down side, but I want a square!
-//Also, I want this square to be 16.dp above the end, and doesn't care about supperpose with the suggestionItem (the box behind, called Go to the beach)
