@@ -79,7 +79,7 @@ import com.google.firebase.storage.StorageReference
  * @param adminViewModel The ViewModel that manages the Admin screen.
  */
 @Composable
-fun Admin(adminViewModel: AdminViewModel, storageReference:  StorageReference?) {
+fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
   val context = LocalContext.current
   val userList by adminViewModel.listOfUsers.collectAsState()
   val currentUser by adminViewModel.currentUser.collectAsState()
