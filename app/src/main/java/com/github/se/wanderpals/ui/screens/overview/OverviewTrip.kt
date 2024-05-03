@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -65,43 +66,6 @@ fun Context.shareTripCodeIntent(tripId: String) {
   startActivity(shareIntent)
 }
 
-fun formatTripTitle(title: String, maxLineLength: Int = 12): String {
-  if (title.length <= maxLineLength) return title
-
-  val words = title.split(" ")
-  val builder = StringBuilder()
-  var currentLineLength = 0
-
-  words.forEach { word ->
-    if (currentLineLength + word.length > maxLineLength) {
-      if (currentLineLength != 0) {
-        builder.append("-\n-")
-        currentLineLength = 1 // account for the hyphen at the beginning of the new line
-      }
-      if (word.length > maxLineLength) {
-        // If the word is longer than the max line length, split the word itself
-        word.chunked(maxLineLength - 1).forEach { chunk ->
-          if (currentLineLength + chunk.length > maxLineLength - 1) {
-            builder.append("-\n-")
-            currentLineLength = 1
-          }
-          builder.append(chunk)
-          currentLineLength += chunk.length
-        }
-      } else {
-        builder.append(word)
-        currentLineLength += word.length
-      }
-    } else {
-      if (currentLineLength > 0) builder.append(" ")
-      builder.append(word)
-      currentLineLength += word.length + 1 // +1 for the space
-    }
-  }
-
-  return builder.toString()
-}
-
 /**
  * Composable function that represents an overview of a trip. Displays basic trip information such
  * as title, start date, and end date.
@@ -110,7 +74,11 @@ fun formatTripTitle(title: String, maxLineLength: Int = 12): String {
  * @param navigationActions The navigation actions used for navigating to detailed trip view.
  */
 @Composable
-fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
+fun OverviewTrip(
+    trip: Trip,
+    navigationActions: NavigationActions,
+    overviewViewModel: OverviewViewModel
+) {
 
   // Date pattern for formatting start and end dates
   val DATE_PATTERN = "dd/MM/yyyy"

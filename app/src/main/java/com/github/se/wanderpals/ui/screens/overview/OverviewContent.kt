@@ -119,7 +119,10 @@ fun OverviewContent(
             @Composable {
               LazyColumn(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxSize()) {
                 items(filteredTripsByTitle) { trip ->
-                  OverviewTrip(trip = trip, navigationActions = navigationActions)
+                  OverviewTrip(
+                      trip = trip,
+                      navigationActions = navigationActions,
+                      overviewViewModel = overviewViewModel)
                 }
               }
             }
