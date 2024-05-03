@@ -131,16 +131,18 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       buttonTrip1 { assertIsDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
-      buttonTrip3 { assertIsDisplayed() }
 
       shareTripButton1 { assertIsDisplayed() }
       shareTripButton2 { assertIsDisplayed() }
-      shareTripButton3 { assertIsDisplayed() }
+
+      sendTripButton1 { assertIsDisplayed() }
+      sendTripButton2 { assertIsDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
       dialog { assertIsNotDisplayed() }
+      emailDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -165,10 +167,15 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       shareTripButton2 { assertIsNotDisplayed() }
       shareTripButton3 { assertIsNotDisplayed() }
 
+      sendTripButton1 { assertIsNotDisplayed() }
+      sendTripButton2 { assertIsNotDisplayed() }
+      sendTripButton3 { assertIsNotDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
       dialog { assertIsNotDisplayed() }
+      emailDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -193,10 +200,15 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       shareTripButton2 { assertIsNotDisplayed() }
       shareTripButton3 { assertIsDisplayed() }
 
+      sendTripButton1 { assertIsNotDisplayed() }
+      sendTripButton2 { assertIsNotDisplayed() }
+      sendTripButton3 { assertIsDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
       dialog { assertIsNotDisplayed() }
+      emailDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -221,10 +233,15 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       shareTripButton2 { assertIsDisplayed() }
       shareTripButton3 { assertIsNotDisplayed() }
 
+      sendTripButton1 { assertIsNotDisplayed() }
+      sendTripButton2 { assertIsDisplayed() }
+      sendTripButton3 { assertIsNotDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
       dialog { assertIsNotDisplayed() }
+      emailDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -249,10 +266,15 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       shareTripButton2 { assertIsDisplayed() }
       shareTripButton3 { assertIsNotDisplayed() }
 
+      sendTripButton1 { assertIsDisplayed() }
+      sendTripButton2 { assertIsDisplayed() }
+      sendTripButton3 { assertIsNotDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
       dialog { assertIsNotDisplayed() }
+      emailDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -277,10 +299,15 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       shareTripButton2 { assertIsNotDisplayed() }
       shareTripButton3 { assertIsNotDisplayed() }
 
+      sendTripButton1 { assertIsNotDisplayed() }
+      sendTripButton2 { assertIsNotDisplayed() }
+      sendTripButton3 { assertIsNotDisplayed() }
+
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
       dialog { assertIsNotDisplayed() }
+      emailDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -301,16 +328,18 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       buttonTrip1 { assertIsDisplayed() }
       buttonTrip2 { assertIsDisplayed() }
-      buttonTrip3 { assertIsDisplayed() }
 
       shareTripButton1 { assertIsDisplayed() }
       shareTripButton2 { assertIsDisplayed() }
-      shareTripButton3 { assertIsDisplayed() }
+
+      sendTripButton1 { assertIsDisplayed() }
+      sendTripButton2 { assertIsDisplayed() }
 
       joinTripButton { assertIsDisplayed() }
       createTripButton { assertIsDisplayed() }
 
       dialog { assertIsNotDisplayed() }
+      emailDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -367,5 +396,16 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
             hasAction(Intent.ACTION_CHOOSER), hasExtra(`is`(Intent.EXTRA_INTENT), expectedIntent)))
 
     Intents.release()
+  }
+
+  @Test
+  fun sendTripButtonNavigatesToTheSendTripView() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      sendTripButton2 {
+        assertIsDisplayed()
+        performClick()
+      }
+      emailDialog { assertIsDisplayed() }
+    }
   }
 }

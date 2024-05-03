@@ -102,7 +102,7 @@ fun OverviewContent(
         // Title for the list of trips
         Text(
             text = "My trip projects",
-            modifier = Modifier.padding(start = 27.dp, top = 10.dp),
+            modifier = Modifier.padding(start = 27.dp, top = 10.dp, bottom = 20.dp),
             style =
                 TextStyle(
                     fontSize = 20.sp,
@@ -119,7 +119,10 @@ fun OverviewContent(
             @Composable {
               LazyColumn(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxSize()) {
                 items(filteredTripsByTitle) { trip ->
-                  OverviewTrip(trip = trip, navigationActions = navigationActions)
+                  OverviewTrip(
+                      trip = trip,
+                      navigationActions = navigationActions,
+                      overviewViewModel = overviewViewModel)
                 }
               }
             }

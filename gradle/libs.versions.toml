@@ -5,6 +5,7 @@ androidxCoreKtxVersion = "2.2.0"
 coilCompose = "2.6.0"
 coreKtxVersion = "1.8.1"
 firebaseAuth = "22.3.1"
+firebaseBom = "32.8.1"
 firebaseDatabaseKtx = "20.3.1"
 firebaseFirestore = "24.11.0"
 kotlin = "1.8.10"
@@ -37,6 +38,7 @@ places = "3.4.0"
 androidxCoreKtx = "1.5.0"
 firebaseMessagingKtx = "23.4.1"
 uiDesktop = "1.6.6"
+firebaseStorageKtx = "20.3.0"
 
 
 [libraries]
@@ -48,9 +50,11 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose"
 core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version.ref = "firebaseFirestore" }
 google-firebase-messaging-ktx = { module = "com.google.firebase:firebase-messaging-ktx" }
+firebase-storage = { module = "com.google.firebase:firebase-storage" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -89,6 +93,7 @@ places = { group = "com.google.android.libraries.places", name = "places", versi
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version.ref = "uiDesktop" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

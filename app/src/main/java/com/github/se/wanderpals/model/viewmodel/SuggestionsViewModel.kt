@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import java.time.LocalTime
@@ -319,6 +320,8 @@ open class SuggestionsViewModel(
           if (selectedSuggestion.value?.suggestionId == suggestion.suggestionId) {
             _selectedSuggestion.value = null
           }
+          // Go back to suggestion list
+          navigationActions.goBack()
         }
       }
     }

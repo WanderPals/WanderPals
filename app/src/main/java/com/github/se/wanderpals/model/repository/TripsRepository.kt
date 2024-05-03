@@ -1449,7 +1449,7 @@ open class TripsRepository(
             userId = uid,
             name = currentUser.name,
             email = currentUser.email,
-            nickname = currentUser.name,
+            nickname = currentUser.nickname,
             role = role,
             notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
