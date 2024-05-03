@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,6 +24,7 @@ import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -46,6 +49,7 @@ import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
+import com.github.se.wanderpals.ui.theme.primaryLight
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -82,7 +86,10 @@ fun Dashboard(
     if (isLoading) {
       Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(
-            modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+            modifier = Modifier
+                .size(50.dp)
+                .align(Alignment.Center)
+                .testTag("loading"))
       }
     } else {
       Scaffold(
@@ -90,9 +97,10 @@ fun Dashboard(
       ) { contentPadding ->
         Surface(
             modifier =
-                Modifier.background(Color.White)
-                    .padding(contentPadding)
-                    .testTag("dashboardSuggestions")) {
+            Modifier
+                .background(Color.White)
+                .padding(contentPadding)
+                .testTag("dashboardSuggestions")) {
               Column {
                 DashboardSuggestionWidget(
                     viewModel = dashboardViewModel,
@@ -119,7 +127,11 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
-          Modifier.testTag("menuNav").requiredWidth(200.dp).requiredHeight(250.dp).padding(8.dp),
+      Modifier
+          .testTag("menuNav")
+          .requiredWidth(200.dp)
+          .requiredHeight(250.dp)
+          .padding(8.dp),
   ) {
     ElevatedButton(
         modifier = Modifier.testTag("backToOverview"),
@@ -137,13 +149,18 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("AdminButtonTest"),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 2.dp)
+            .testTag("AdminButtonTest"),
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painterResource(id = R.drawable.logo_nsa),
                 contentDescription = "NSA",
-                modifier = Modifier.clip(CircleShape).size(30.dp))
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(30.dp))
             Text(text = "Admin", modifier = Modifier.padding(horizontal = 20.dp))
           }
         },
@@ -155,13 +172,18 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("FinanceButtonTest"),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 2.dp)
+            .testTag("FinanceButtonTest"),
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painterResource(id = R.drawable.finance_logo),
                 contentDescription = "financeLogo",
-                modifier = Modifier.clip(CircleShape).size(25.dp))
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(25.dp))
             Text(text = "Finance", modifier = Modifier.padding(horizontal = 20.dp))
           }
         },
@@ -185,13 +207,21 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
  */
 @Composable
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState) {
-  Column(modifier = Modifier.padding(8.dp).testTag("dashboardTopBar")) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-      ElevatedButton(
-          modifier = Modifier.testTag("menuButton"),
-          content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
+  Column(modifier = Modifier
+      .background(primaryLight)
+      .height(54.dp)
+      .testTag("dashboardTopBar")) {
+      IconButton(
+          modifier = Modifier
+              .padding(start = 22.dp, top = 16.dp, bottom = 16.dp)
+              .width(33.dp)
+              .height(22.dp)
+              .testTag("menuButton"),
+          content = {
+              Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
+          },
           onClick = { scope.launch { drawerState.apply { if (isClosed) open() else close() } } })
+      Row(modifier = Modifier.fillMaxWidth()) {
     }
-    HorizontalDivider(modifier = Modifier.padding(8.dp))
   }
 }
