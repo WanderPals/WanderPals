@@ -1,0 +1,197 @@
+Title	URL	Assignees	Status	Labels	Linked pull requests	Milestone	Repository	Reviewers
+Set up Firebase	https://github.com/WanderPals/WanderPals/issues/9	tosigame	Done in Sprint #1	Sprint Task, Sprint#1	https://github.com/WanderPals/WanderPals/pull/17		WanderPals/WanderPals	
+Create the Overview screen 	https://github.com/WanderPals/WanderPals/issues/51	Exino329	Done in Sprint #2	4h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/93		WanderPals/WanderPals	
+Agenda Screen Display	https://github.com/WanderPals/WanderPals/issues/53	ForestDope	Done in Sprint #2	4h, Code Implementation, Sprint#2			WanderPals/WanderPals	
+Implement Google authentication	https://github.com/WanderPals/WanderPals/issues/15	Polo150202	Done in Sprint #2	Code Implementation, Sprint Task, Sprint#1			WanderPals/WanderPals	
+Set initial structure of the project	https://github.com/WanderPals/WanderPals/issues/42	Exino329	Done in Sprint #2	1h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/43		WanderPals/WanderPals	
+Implement a CI Action working with Jacobo and Sonar	https://github.com/WanderPals/WanderPals/issues/7	mtv47	Done in Sprint #1	Code Implementation, Sprint Task, Sprint#1, Technical	https://github.com/WanderPals/WanderPals/pull/4		WanderPals/WanderPals	
+Set up Github	https://github.com/WanderPals/WanderPals/issues/11	tosigame	Done in Sprint #1	Sprint Task, Sprint#1, Technical			WanderPals/WanderPals	
+Setup Figma 	https://github.com/WanderPals/WanderPals/issues/13	ForestDope	Done in Sprint #1	Figma, Sprint Task, Sprint#1			WanderPals/WanderPals	
+Setting up a SCRUM board	https://github.com/WanderPals/WanderPals/issues/12	Exino329	Done in Sprint #1	Sprint Task, Sprint#1, Technical			WanderPals/WanderPals	
+Ensure project works locally	https://github.com/WanderPals/WanderPals/issues/10	AgeX21, annhit29, Exino329, ForestDope, mtv47, Polo150202, tosigame	Done in Sprint #1	Sprint Task, Sprint#1, Technical			WanderPals/WanderPals	
+Create Tasks for Sprint 3	https://github.com/WanderPals/WanderPals/issues/80	mtv47	Done in Sprint #2	2h, Organization, Sprint#2			WanderPals/WanderPals	
+User enters the app by signing in or signing up.			Done in Sprint #3					
+User selects the option to create a new trip.			Done in Sprint #3					
+Invites fellow travelers via email or app username, which creates a group linked to that specifc trip.			Done in Sprint #3					
+Within the trip, users access the map feature to search for destinations, lodging, tourist attractions, and restaurants.			Done in Sprint #3					
+Users pin selected locations to the map, creating a visual representation of potential places to visit.			Done in Sprint #3					
+Group members suggest daily activities and places to visit through a suggestion feed section.			Done in Sprint #3					
+Members vote on suggestions using a like/dislike system and discuss details in the comments section under each suggestion.			Done in Sprint #3					
+Usera have an overview of all its trips			Done in Sprint #3					
+All group members can view the shared agenda, which includes times, dates, and locations.			Done in Sprint #3					
+A shared agenda is updated generated based on the finalized itinerary, detailing activities and locations for each day.			Done in Sprint #3					
+Create Login Screen and add tests 	https://github.com/WanderPals/WanderPals/issues/46	Polo150202	Done in Sprint #3	2h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/84		WanderPals/WanderPals	
+One End-to-end test	https://github.com/WanderPals/WanderPals/issues/77	AgeX21, annhit29, Exino329, ForestDope, mtv47, Polo150202, tosigame	Done in Sprint #3	4h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/172		WanderPals/WanderPals	
+Sort High-priority user stories at the top	https://github.com/WanderPals/WanderPals/issues/75	mtv47	Done in Sprint #3	1h, Organization, Sprint#3			WanderPals/WanderPals	
+Rewrite users stories and add acceptance criteria to all of them	https://github.com/WanderPals/WanderPals/issues/79	mtv47	Done in Sprint #3	3h, Organization, Sprint#3			WanderPals/WanderPals	
+Architecture Diagram	https://github.com/WanderPals/WanderPals/issues/74	tosigame	Done in Sprint #3	2h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/140		WanderPals/WanderPals	
+Create Tasks and User Stories for Sprint 4	https://github.com/WanderPals/WanderPals/issues/76	tosigame	Done in Sprint #3	4h, Organization, Sprint#3			WanderPals/WanderPals	
+Update revised “Stop” data class 	https://github.com/WanderPals/WanderPals/issues/82	tosigame	Done in Sprint #3	1h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/83		WanderPals/WanderPals	
+Write repository methods for managing stops	https://github.com/WanderPals/WanderPals/issues/63	tosigame	Done in Sprint #3	3h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/92		WanderPals/WanderPals	
+Write repository methods to manage Suggestions	https://github.com/WanderPals/WanderPals/issues/65	tosigame	Done in Sprint #3	4h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/107		WanderPals/WanderPals	
+Write repository methods to manage Users	https://github.com/WanderPals/WanderPals/issues/64	tosigame	Done in Sprint #3	3h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/104		WanderPals/WanderPals	
+Display detailed Stop information	https://github.com/WanderPals/WanderPals/issues/116	Exino329	Done in Sprint #3	2h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/120		WanderPals/WanderPals	
+Agenda Summary for a Selected Day	https://github.com/WanderPals/WanderPals/issues/71	ForestDope	Done in Sprint #3	4h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/120		WanderPals/WanderPals	
+Generate an APK, Test the App on a real Phone and Fix accordingly	https://github.com/WanderPals/WanderPals/issues/78	mtv47	Done in Sprint #3	1h, Organization, Sprint#3	https://github.com/WanderPals/WanderPals/pull/124		WanderPals/WanderPals	
+Create Map Screen and init Map API Setup	https://github.com/WanderPals/WanderPals/issues/49	Polo150202	Done in Sprint #2	2h, Code Implementation, Sprint#2			WanderPals/WanderPals	
+Search on Map Screen to see relevant locations	https://github.com/WanderPals/WanderPals/issues/66	Polo150202	Done in Sprint #3	4h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/119		WanderPals/WanderPals	
+Add wanted stops using the SearchBar of Map Screen	https://github.com/WanderPals/WanderPals/issues/67	Polo150202	Done in Sprint #3	3h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/119		WanderPals/WanderPals	
+Suggestion Feed Screen	https://github.com/WanderPals/WanderPals/issues/52	annhit29	Done in Sprint #3	4h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/110		WanderPals/WanderPals	
+Like/dislike System on suggestions + Filter the Feed Screen	https://github.com/WanderPals/WanderPals/issues/69	annhit29	Done in Sprint #3	3h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/135		WanderPals/WanderPals	
+Invite other users functionality / group creation	https://github.com/WanderPals/WanderPals/issues/81	Exino329	Done in Sprint #3	4h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/106		WanderPals/WanderPals	
+Suggestion Creation Screen	https://github.com/WanderPals/WanderPals/issues/50	AgeX21	Done in Sprint #3	4h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/115		WanderPals/WanderPals	
+Widget display for Suggestion on the Dashboard	https://github.com/WanderPals/WanderPals/issues/70	AgeX21	Done in Sprint #3	3h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/121		WanderPals/WanderPals	
+Creating Trip Creation Screen with inputs	https://github.com/WanderPals/WanderPals/issues/47	mtv47	Done in Sprint #3	3h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/60		WanderPals/WanderPals	
+Commentary on a Selected Suggestion Screen	https://github.com/WanderPals/WanderPals/issues/87	AgeX21	Done in Sprint #3	4h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/141		WanderPals/WanderPals	
+ Define and assign tasks for the sprint number 2	https://github.com/WanderPals/WanderPals/issues/55	Exino329	Done in Sprint #2	2h, Organization, Sprint#2			WanderPals/WanderPals	
+Create DataClasses	https://github.com/WanderPals/WanderPals/issues/45	tosigame	Done in Sprint #2	2h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/54		WanderPals/WanderPals	
+Fetch and Push datas to Firestore	https://github.com/WanderPals/WanderPals/issues/44	tosigame	Done in Sprint #2	4h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/59		WanderPals/WanderPals	
+Navigation actions and navigation Bottom Bar	https://github.com/WanderPals/WanderPals/issues/48	mtv47	Done in Sprint #2	3h, Code Implementation, Sprint#2			WanderPals/WanderPals	
+Put Suggestion instead of Finance in the NavBar	https://github.com/WanderPals/WanderPals/issues/62	mtv47	Done in Sprint #2	1h, Code Implementation, Sprint#2	https://github.com/WanderPals/WanderPals/pull/61		WanderPals/WanderPals	
+Start creating Figma wireframe	https://github.com/WanderPals/WanderPals/issues/14	annhit29, ForestDope	Done in Sprint #2	Figma, Sprint Task, Sprint#1			WanderPals/WanderPals	
+Create the logo of the application	https://github.com/WanderPals/WanderPals/issues/16	AgeX21	Done in Sprint #2	Frontend, Sprint Task, Sprint#1			WanderPals/WanderPals	
+The app shows the live location of members on the group’s map, facilitating easy meetups.			Done in Sprint #6					
+Group members enable location sharing within the app to find each other in real-time, useful for coordinating daily meetups or finding group members in crowded places.			Done in Sprint #6					
+Oflline access			Product Backlog					
+Clean + upgrade for the Create Trip and Overview Screen	https://github.com/WanderPals/WanderPals/issues/109	Exino329	Done in Sprint #3	2h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/111		WanderPals/WanderPals	
+Figma Wireframes - Creating a New Trip	https://github.com/WanderPals/WanderPals/issues/88	ForestDope	Done in Sprint #3	1h, Figma, Sprint#3			WanderPals/WanderPals	
+Figma Wireframe - Shared Agenda Creation	https://github.com/WanderPals/WanderPals/issues/91	Exino329	Done in Sprint #3	1h, Figma, Sprint#3			WanderPals/WanderPals	
+Figma Wireframe -  Exploring and Pinning Locations	https://github.com/WanderPals/WanderPals/issues/89	Polo150202	Done in Sprint #3	4h, Figma, Sprint#3			WanderPals/WanderPals	
+Add Side Menu for Dashboard and Add BackButton for Trip	https://github.com/WanderPals/WanderPals/issues/113	mtv47	Done in Sprint #3	1h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/114		WanderPals/WanderPals	
+Mockups in Figma: SignIn / LogIn	https://github.com/WanderPals/WanderPals/issues/73	ForestDope	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Mockups in Figma : Creating a New Trip	https://github.com/WanderPals/WanderPals/issues/125	ForestDope	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Create CI Action to generate APK	https://github.com/WanderPals/WanderPals/issues/129	mtv47	Done in Sprint #3	2h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/130, https://github.com/WanderPals/WanderPals/pull/133, https://github.com/WanderPals/WanderPals/pull/134		WanderPals/WanderPals	
+Help with Map creation widget	https://github.com/WanderPals/WanderPals/issues/131	mtv47	Done in Sprint #3	2h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/126		WanderPals/WanderPals	
+Fixed Bug with navigation	https://github.com/WanderPals/WanderPals/issues/132	mtv47	Done in Sprint #3	1h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/128		WanderPals/WanderPals	
+Figma wireframe : Overview screen	https://github.com/WanderPals/WanderPals/issues/138	Exino329	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Figma wireframe : Suggestions	https://github.com/WanderPals/WanderPals/issues/139	Exino329	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Trip Notification Viewing			Done in Sprint #5					
+User information			Done in Sprint #5					
+Admin Notification Posting			Done in Sprint #5					
+Admin Notification deletion			Done in Sprint #5					
+Search for activities around a specific location			Done in Sprint #5					
+Manage the User Data			Done in Sprint #6					
+Edit suggestion			Done in Sprint #5					
+User with update of the announcement/notification			Done in Sprint #5					
+As expenses occur, any group member inputs them into the app, categorizing the expense and indicating who it applies to.			Done in Sprint #6					
+Finance overview accessible from the dashboard to allow users to track the total cost of the trip			Done in Sprint #6					
+At the end of the trip or at any designated point, the app provides a summary of expenses and balances.			Sprint Backlog					
+The group finalises the daily itinerary based on the most liked suggestions and discussion outcomes.			Done in Sprint #6					
+Documents storing and sharing			Sprint Backlog					
+Log out from the app			Sprint Backlog					
+Remember sign-in option			Sprint Backlog					
+Image for the trip			Sprint Backlog					
+Finance category and debt			Sprint Backlog					
+Suggestion history			Sprint Backlog					
+List of all stops			Sprint Backlog					
+Delete stops			Sprint Backlog					
+Delete expense			Sprint Backlog					
+Delete trip			Sprint Backlog					
+Members settle their dues based on the app’s calculations, using the payment informations listed for each member.			Done in Sprint #6					
+The app automatically updates the group’s finance tracker, showing who has paid for what and calculating outstanding balances.			Done in Sprint #6					
+Create a Sign In Button that doesn't involve GoogleClient	https://github.com/WanderPals/WanderPals/issues/159	mtv47, Polo150202	Done in Sprint #3	2h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/162		WanderPals/WanderPals	
+Connection between the suggestions screen and map screen 	https://github.com/WanderPals/WanderPals/issues/163	mtv47, Polo150202	Done in Sprint #3	2h, Code Implementation, Sprint#3	https://github.com/WanderPals/WanderPals/pull/164		WanderPals/WanderPals	
+Mockups in Figma : Trip dashboard	https://github.com/WanderPals/WanderPals/issues/165	ForestDope	Done in Sprint #3	1h, Figma, Sprint#3			WanderPals/WanderPals	
+Mockups in Figma : View Agenda and daily activities	https://github.com/WanderPals/WanderPals/issues/166	ForestDope	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Mockups in Figma : Suggestion creation	https://github.com/WanderPals/WanderPals/issues/167	ForestDope	Done in Sprint #3	1h, Figma, Sprint#3			WanderPals/WanderPals	
+Mockups in Figma :  Suggestion search/like/comment	https://github.com/WanderPals/WanderPals/issues/168	AgeX21	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Mockups in Figma : Navigate the map and pin	https://github.com/WanderPals/WanderPals/issues/169	annhit29	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Mockups in Figma : Fix mockups flaws and harmonize design	https://github.com/WanderPals/WanderPals/issues/170	ForestDope	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Figma mockups linking	https://github.com/WanderPals/WanderPals/issues/171	AgeX21	Done in Sprint #3	2h, Figma, Sprint#3			WanderPals/WanderPals	
+Have a single global navhost	https://github.com/WanderPals/WanderPals/issues/160	mtv47	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/187		WanderPals/WanderPals	
+Update User data class	https://github.com/WanderPals/WanderPals/issues/161	tosigame	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/173		WanderPals/WanderPals	
+2nd defintive Sign-In Option	https://github.com/WanderPals/WanderPals/issues/158	mtv47	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/190		WanderPals/WanderPals	
+Create Announcement Screen	https://github.com/WanderPals/WanderPals/issues/154	annhit29	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/180		WanderPals/WanderPals	
+Admin Notification delete	https://github.com/WanderPals/WanderPals/issues/156	annhit29	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/181		WanderPals/WanderPals	
+Create Notification Data class	https://github.com/WanderPals/WanderPals/issues/155	tosigame	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/174		WanderPals/WanderPals	
+Delete Suggestion	https://github.com/WanderPals/WanderPals/issues/152	AgeX21	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/191		WanderPals/WanderPals	
+Delete User From Trip	https://github.com/WanderPals/WanderPals/issues/150	Polo150202	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/213		WanderPals/WanderPals	
+Detail User View Screen	https://github.com/WanderPals/WanderPals/issues/148	AgeX21	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/186		WanderPals/WanderPals	
+ Admin User Management Screen	https://github.com/WanderPals/WanderPals/issues/147	Polo150202	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/213		WanderPals/WanderPals	
+Member List Screen	https://github.com/WanderPals/WanderPals/issues/146	AgeX21	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/186		WanderPals/WanderPals	
+Update User List When Joining a Trip	https://github.com/WanderPals/WanderPals/issues/145	tosigame	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/176		WanderPals/WanderPals	
+Create Notification TripsRepository methods	https://github.com/WanderPals/WanderPals/issues/142	tosigame	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/177		WanderPals/WanderPals	
+Implement Global User Trip Object	https://github.com/WanderPals/WanderPals/issues/143	tosigame	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/175		WanderPals/WanderPals	
+Notification Screen : display notifications	https://github.com/WanderPals/WanderPals/issues/153	Exino329	Done in Sprint #4	3h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/189		WanderPals/WanderPals	
+Display Annoucement in notification screen	https://github.com/WanderPals/WanderPals/issues/182	Exino329	Done in Sprint #4	2h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/189		WanderPals/WanderPals	
+Refactor Suggestion Popup into Dedicated Suggestion Screen	https://github.com/WanderPals/WanderPals/issues/178	ForestDope	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/179		WanderPals/WanderPals	
+Delete Comments	https://github.com/WanderPals/WanderPals/issues/151	ForestDope	Done in Sprint #4	4h, Code Implementation, Sprint#4	https://github.com/WanderPals/WanderPals/pull/183, https://github.com/WanderPals/WanderPals/pull/184		WanderPals/WanderPals	
+User Joining a Trip			Done in Sprint #4					
+Trip Owner Upon Creation			Done in Sprint #4					
+Member List			Done in Sprint #4					
+2nd definitive Sign-in option			Done in Sprint #4					
+Admin Deleting User comments			Done in Sprint #4					
+User Deleting comments			Done in Sprint #4					
+Admin Deleting User Suggestions			Done in Sprint #4					
+Back Button			Done in Sprint #4					
+Admin Removing a User from a Trip			Done in Sprint #4					
+User Deleting Suggestions			Done in Sprint #4					
+Manage Users			Done in Sprint #4					
+Ask the user for their location permissions	https://github.com/WanderPals/WanderPals/issues/192	mtv47	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/217		WanderPals/WanderPals	
+See your current location in the map	https://github.com/WanderPals/WanderPals/issues/193	mtv47	Done in Sprint #5	1h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/217		WanderPals/WanderPals	
+Adapte the suggested searches based on your location	https://github.com/WanderPals/WanderPals/issues/194	mtv47	Done in Sprint #5	1h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/217		WanderPals/WanderPals	
+Role Scrum Master	https://github.com/WanderPals/WanderPals/issues/196	Polo150202	Done in Sprint #5	2h, Organization, Sprint#5			WanderPals/WanderPals	
+See details about already present suggestions	https://github.com/WanderPals/WanderPals/issues/197	mtv47	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/218		WanderPals/WanderPals	
+Create a spending screen	https://github.com/WanderPals/WanderPals/issues/202	AgeX21	Done in Sprint #6	4h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/267		WanderPals/WanderPals	
+Transforms the suggestion voting system at the stop	https://github.com/WanderPals/WanderPals/issues/203	annhit29	Done in Sprint #5	4h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/256		WanderPals/WanderPals	
+Investigate screen flickers, and find methods to solve them	https://github.com/WanderPals/WanderPals/issues/204	tosigame	Done in Sprint #5	4h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/211		WanderPals/WanderPals	
+Add Trip repository methods to handle Notifications	https://github.com/WanderPals/WanderPals/issues/205	tosigame	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/212		WanderPals/WanderPals	
+Fix the Announcement data class	https://github.com/WanderPals/WanderPals/issues/206	tosigame	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/188		WanderPals/WanderPals	
+Figma Wireflows (Members List and Notifications)	https://github.com/WanderPals/WanderPals/issues/157	ForestDope	Done in Sprint #5	4h, Figma, Sprint#5			WanderPals/WanderPals	
+Update the announcement list upon creation or deletion	https://github.com/WanderPals/WanderPals/issues/207	Exino329	Done in Sprint #5	4h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/216		WanderPals/WanderPals	
+Transform suggestion to stop when admin	https://github.com/WanderPals/WanderPals/issues/201	AgeX21	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/221		WanderPals/WanderPals	
+Set the current profile of the user and manage the User Data	https://github.com/WanderPals/WanderPals/issues/195	Polo150202	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/224		WanderPals/WanderPals	
+Make some progress on figma wireframes	https://github.com/WanderPals/WanderPals/issues/198	ForestDope	Done in Sprint #5	3h, Figma, Sprint#5			WanderPals/WanderPals	
+Transfer Owner permissions	https://github.com/WanderPals/WanderPals/issues/149	Polo150202	Done in Sprint #5	2h, Code Implementation, Sprint#4, Sprint#5	https://github.com/WanderPals/WanderPals/pull/224		WanderPals/WanderPals	
+Update notification view when a new event is triggered 	https://github.com/WanderPals/WanderPals/issues/208	Exino329	Done in Sprint #5	4h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/216		WanderPals/WanderPals	
+Make the notification/announcement items interactable	https://github.com/WanderPals/WanderPals/issues/209	Exino329	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/216		WanderPals/WanderPals	
+Fix navigation bar to properly display current screen selected	https://github.com/WanderPals/WanderPals/issues/230	mtv47	Done in Sprint #6	3h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/263		WanderPals/WanderPals	
+Invite user to trip using his app username	https://github.com/WanderPals/WanderPals/issues/231	mtv47	Done in Sprint #6	4h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/284		WanderPals/WanderPals	
+Finance screen : top bar navigation and expenses list	https://github.com/WanderPals/WanderPals/issues/239	Exino329	Done in Sprint #6	4h, Code Implementation, Frontend, Sprint#6	https://github.com/WanderPals/WanderPals/pull/266		WanderPals/WanderPals	
+Save draft markers on map	https://github.com/WanderPals/WanderPals/issues/232	mtv47	Done in Sprint #6	4h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/262		WanderPals/WanderPals	
+Refresh all viewmodels with pull to refresh interaction	https://github.com/WanderPals/WanderPals/issues/233	mtv47	Done in Sprint #6	4h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/265		WanderPals/WanderPals	
+Fix database function when removing a user	https://github.com/WanderPals/WanderPals/issues/234	tosigame	Done in Sprint #6	2h, Backend, Sprint#6	https://github.com/WanderPals/WanderPals/pull/260		WanderPals/WanderPals	
+Add a database function to get user emails using their username	https://github.com/WanderPals/WanderPals/issues/235	tosigame	Done in Sprint #6	3h, Backend, Sprint#6	https://github.com/WanderPals/WanderPals/pull/225		WanderPals/WanderPals	
+Fix creation of repository to be lifecycle aware, and be correctly initialised in onCreate	https://github.com/WanderPals/WanderPals/issues/236	tosigame	Done in Sprint #6	2h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/227		WanderPals/WanderPals	
+Add finance data classes	https://github.com/WanderPals/WanderPals/issues/237	tosigame	Done in Sprint #6	2h, Backend, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/254		WanderPals/WanderPals	
+Push notifications	https://github.com/WanderPals/WanderPals/issues/238	Polo150202	In Development	4h, Backend, Code Implementation, Sprint#6, Sprint#7	https://github.com/WanderPals/WanderPals/pull/286		WanderPals/WanderPals	
+Upload images from the application to firebase	https://github.com/WanderPals/WanderPals/issues/240	Polo150202	Done in Sprint #6	2h, Backend, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/274		WanderPals/WanderPals	
+Figma mockups for the members list	https://github.com/WanderPals/WanderPals/issues/241	ForestDope	In Development	3h, Figma, Sprint#6			WanderPals/WanderPals	
+Figma mockups for the notifcation/annoucement screens	https://github.com/WanderPals/WanderPals/issues/242	ForestDope	Done in Sprint #6	3h, Figma, Sprint#6			WanderPals/WanderPals	
+Figma mockups for the finance screens	https://github.com/WanderPals/WanderPals/issues/243	ForestDope	Done in Sprint #6	3h, Figma, Sprint#6			WanderPals/WanderPals	
+Finance widget on dashboard	https://github.com/WanderPals/WanderPals/issues/245	AgeX21	Done in Sprint #6	4h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/270		WanderPals/WanderPals	
+Finance categories breakdown (pie chart)	https://github.com/WanderPals/WanderPals/issues/246	AgeX21	Done in Sprint #6	4h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/269		WanderPals/WanderPals	
+Update suggestions screens based on figma mockups	https://github.com/WanderPals/WanderPals/issues/247	annhit29	In Development	4h, Code Implementation, Frontend, Sprint#6	https://github.com/WanderPals/WanderPals/pull/281		WanderPals/WanderPals	
+Update dashboard screen based on figma mockups	https://github.com/WanderPals/WanderPals/issues/248	annhit29	In Review	3h, Code Implementation, Frontend, Sprint#6	https://github.com/WanderPals/WanderPals/pull/279		WanderPals/WanderPals	
+Update agenda screen based on figma mockups	https://github.com/WanderPals/WanderPals/issues/249	annhit29	Done in Sprint #6	2h, Code Implementation, Frontend, Sprint#6	https://github.com/WanderPals/WanderPals/pull/272		WanderPals/WanderPals	
+Update the trip overview screen based on figma mockups	https://github.com/WanderPals/WanderPals/issues/250	annhit29	Done in Sprint #6	3h, Code Implementation, Frontend, Sprint#6	https://github.com/WanderPals/WanderPals/pull/276		WanderPals/WanderPals	
+Finance repository method	https://github.com/WanderPals/WanderPals/issues/251	tosigame	Done in Sprint #6	4h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/257		WanderPals/WanderPals	
+Architecture diagram	https://github.com/WanderPals/WanderPals/issues/252	tosigame	Done in Sprint #6	2h, Organization, Sprint#6	https://github.com/WanderPals/WanderPals/pull/280		WanderPals/WanderPals	
+Fixing BottonNavigationBar not updating selected icon when going back	https://github.com/WanderPals/WanderPals/issues/214	mtv47	Done in Sprint #5	2h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/215		WanderPals/WanderPals	
+Transfer of Trip Ownership			Done in Sprint #5					
+Edit comment	https://github.com/WanderPals/WanderPals/issues/226	AgeX21	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/223		WanderPals/WanderPals	
+Navigate to map when cliking a stop in the agenda view	https://github.com/WanderPals/WanderPals/issues/229	Exino329	Done in Sprint #6	3h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/258		WanderPals/WanderPals	
+Redefine color theme in the application theme	https://github.com/WanderPals/WanderPals/issues/244	ForestDope	Done in Sprint #6	3h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/255		WanderPals/WanderPals	
+Edit suggestion	https://github.com/WanderPals/WanderPals/issues/200	AgeX21	Done in Sprint #5	3h, Code Implementation, Sprint#5	https://github.com/WanderPals/WanderPals/pull/222		WanderPals/WanderPals	
+ Bug fixing and adjustements in Notification screen	https://github.com/WanderPals/WanderPals/issues/228	Exino329	Done in Sprint #6	3h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/253		WanderPals/WanderPals	
+Helping for the Figma	https://github.com/WanderPals/WanderPals/issues/210	AgeX21, annhit29	Done in Sprint #5	4h, Figma, Sprint#5			WanderPals/WanderPals	
+Notifications : add notifications for suggestion/stop	https://github.com/WanderPals/WanderPals/issues/259	Exino329	Done in Sprint #6	3h, Code Implementation, Sprint#6	https://github.com/WanderPals/WanderPals/pull/264		WanderPals/WanderPals	
+Updated Architecture diagram	https://github.com/WanderPals/WanderPals/pull/280	tosigame	Done in Sprint #6				WanderPals/WanderPals	mtv47
+Log out from the app	https://github.com/WanderPals/WanderPals/issues/288	mtv47	In Development	2h, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Remember sign in when starting the app	https://github.com/WanderPals/WanderPals/issues/289	mtv47	In Development	4h, Backend, Code Implementation, Sprint#7			WanderPals/WanderPals	
+Private document screen	https://github.com/WanderPals/WanderPals/issues/290	Polo150202	In Development	4h, Backend, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Group document screen	https://github.com/WanderPals/WanderPals/issues/291	Polo150202	In Development	4h, Backend, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Image for the trip	https://github.com/WanderPals/WanderPals/issues/292	Polo150202	In Development	2h, Backend, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Finance category screen UI	https://github.com/WanderPals/WanderPals/issues/293	Exino329	In Development	4h, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Finance category screen Logic	https://github.com/WanderPals/WanderPals/issues/294	Exino329	In Development	3h, Backend, Code Implementation, Sprint#7			WanderPals/WanderPals	
+Fix ViewModel tests 	https://github.com/WanderPals/WanderPals/issues/295	tosigame	In Development	4h, Backend, Code Implementation, Sprint#7			WanderPals/WanderPals	
+Make fakeTripsRepository for viewModel testing	https://github.com/WanderPals/WanderPals/issues/296	tosigame	In Development	4h, Backend, Code Implementation, Sprint#7			WanderPals/WanderPals	
+Fix deleteTrip	https://github.com/WanderPals/WanderPals/issues/297	tosigame	In Development	4h, Backend, Code Implementation, Sprint#7			WanderPals/WanderPals	
+Finance Debt screen	https://github.com/WanderPals/WanderPals/issues/298	AgeX21	In Development	4h, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Suggestion History	https://github.com/WanderPals/WanderPals/issues/299	annhit29	In Development	4h, Backend, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+List of all stops	https://github.com/WanderPals/WanderPals/issues/302	ForestDope	In Development	4h, Backend, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Delete stops	https://github.com/WanderPals/WanderPals/issues/301	ForestDope	In Development	3h, Backend, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Add marker in Agenda for clarity	https://github.com/WanderPals/WanderPals/issues/300	annhit29	In Development	3h, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Refactor admin screen	https://github.com/WanderPals/WanderPals/issues/303	ForestDope	In Development	4h, Code Implementation, Frontend, Sprint#7			WanderPals/WanderPals	
+Delete Expense	https://github.com/WanderPals/WanderPals/issues/304	AgeX21	In Development	2h, Backend, Code Implementation, Sprint#7			WanderPals/WanderPals	
+Delete Trip	https://github.com/WanderPals/WanderPals/issues/305	AgeX21	In Development	3h, Backend, Code Implementation, Sprint#7			WanderPals/WanderPals	
