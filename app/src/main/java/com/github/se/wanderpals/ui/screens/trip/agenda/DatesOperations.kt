@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -140,7 +141,7 @@ fun DisplayDate(date: LocalDate?) {
   Text(
       text = formattedDate,
       style = MaterialTheme.typography.bodyLarge,
-      color = MaterialTheme.colorScheme.primary,
+      color = Color.White,
       textAlign = TextAlign.Center,
       modifier = Modifier.padding(8.dp).testTag("displayDateText"))
 }

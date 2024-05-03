@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.screens.CreateSuggestionScreen
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.suggestion.CreateSuggestion
@@ -128,6 +129,8 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
             onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
       }
 
+      SessionManager.setUserSession("testUser123", "tempUsername")
+
       step("Open create suggestion screen") {
         inputTitle {
           assertIsDisplayed()
@@ -230,6 +233,8 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
             onCancel = { mockNavActions.navigateTo(Route.DASHBOARD) })
       }
+
+      SessionManager.setUserSession("testUser123", "tempUsername")
 
       step("Open create suggestion screen") {
         inputTitle {

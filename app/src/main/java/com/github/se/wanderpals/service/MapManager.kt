@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat
 import com.github.se.wanderpals.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -89,9 +90,18 @@ class MapManager(private val context: Context) {
   /** Function to ask for location permission. */
   fun askLocationPermission() {
     if (::locationPermissionRequest.isInitialized) {
-      locationPermissionRequest.launch(
-          arrayOf(
-              Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+      if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+          PackageManager.PERMISSION_GRANTED ||
+          ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+              PackageManager.PERMISSION_GRANTED) {
+        Log.d("MapActivity", "Location permission already granted")
+      } else {
+        Log.d("MapActivity", "Requesting location permission")
+        locationPermissionRequest.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION))
+      }
     }
   }
 

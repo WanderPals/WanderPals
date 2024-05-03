@@ -18,6 +18,7 @@ import com.github.se.wanderpals.screens.CreateTripoScreen
 import com.github.se.wanderpals.screens.OverviewScreen
 import com.github.se.wanderpals.screens.TripScreen
 import com.github.se.wanderpals.service.MapManager
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.rememberMultiNavigationAppState
@@ -51,6 +52,8 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
 
   @Before
   fun testSetup() {
+
+    SessionManager.setUserSession(userId = "user1")
 
     val context = ApplicationProvider.getApplicationContext<Context>()
     val mapManager = MapManager(context)

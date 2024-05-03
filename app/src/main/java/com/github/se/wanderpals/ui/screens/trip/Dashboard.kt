@@ -47,6 +47,7 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.dashboard.DashboardFinanceWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
 import com.github.se.wanderpals.ui.theme.primaryLight
 import kotlinx.coroutines.CoroutineScope
@@ -71,6 +72,7 @@ fun Dashboard(
   LaunchedEffect(Unit) {
     // Fetch the suggestions for the trip every time the screen is displayed
     dashboardViewModel.loadSuggestion(tripId)
+    dashboardViewModel.loadExpenses(tripId)
   }
 
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -100,6 +102,12 @@ fun Dashboard(
                 DashboardSuggestionWidget(
                     viewModel = dashboardViewModel,
                     onClick = { navActions.navigateTo(Route.SUGGESTION) })
+
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                DashboardFinanceWidget(
+                    viewModel = dashboardViewModel,
+                    onClick = { navActions.navigateTo(Route.FINANCE) })
               }
             }
       }
