@@ -54,9 +54,7 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var context: Context
 
-  private val viewModel: MainViewModel by viewModels {
-    MainViewModel.MainViewModelFactory(application)
-  }
+  val viewModel: MainViewModel by viewModels { MainViewModel.MainViewModelFactory(application) }
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -81,8 +79,9 @@ class MainActivity : ComponentActivity() {
                           userId = uid,
                           name = account.displayName ?: "",
                           email = account.email ?: "",
+                          nickname = viewModel.getUserName(account.email ?: ""),
                           profilePhoto = it.result.user?.photoUrl.toString())
-
+                      viewModel.setUserName(account.email ?: "")
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
                       Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
@@ -176,7 +175,9 @@ class MainActivity : ComponentActivity() {
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.displayName ?: "",
-                              email = result.user?.email ?: "")
+                              email = result.user?.email ?: "",
+                              nickname = viewModel.getUserName(result.user?.email ?: ""))
+                          viewModel.setUserName(email)
                           navigationActions.navigateTo(Route.OVERVIEW)
                         }
                         FirebaseAuth.getInstance()
