@@ -130,8 +130,7 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                                     Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
                                   Text(
                                       text = "No expenses yet.",
-                                      modifier = Modifier
-                                          .testTag("noExpenses"),
+                                      modifier = Modifier.testTag("noExpenses"),
                                       style = TextStyle(color = MaterialTheme.colorScheme.primary),
                                   )
                                 }
