@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -195,7 +196,9 @@ fun OverviewTrip(
                               color = onPrimaryContainerLight,
                               letterSpacing = 0.1.sp,
                           ),
-                      textAlign = TextAlign.Start)
+                      textAlign = TextAlign.Start,
+                      overflow = TextOverflow.Ellipsis,
+                      maxLines = 1)
 
                   Spacer(Modifier.weight(1f))
 
