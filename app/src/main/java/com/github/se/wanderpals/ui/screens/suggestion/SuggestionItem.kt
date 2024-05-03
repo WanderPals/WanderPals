@@ -1,9 +1,11 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,19 +23,27 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.ui.theme.backgroundLight
+import com.github.se.wanderpals.ui.theme.onBackgroundLight
+import com.github.se.wanderpals.ui.theme.primaryLight
+import com.github.se.wanderpals.ui.theme.secondaryLight
+import com.github.se.wanderpals.ui.theme.surfaceVariantLight
+import com.github.se.wanderpals.ui.theme.tertiaryLight
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -46,118 +56,188 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun SuggestionItem(
     suggestion: Suggestion,
-    onClick: () -> Unit, // this callback is for the suggestion item click
-    tripId: String, // the trip id of the suggestion
+    onClick: () -> Unit,
+    tripId: String,
     viewModel: SuggestionsViewModel,
-    modifier: Modifier = Modifier // Add this line to accept a Modifier
+    modifier: Modifier = Modifier
 ) {
-  // State for the like status of the suggestion
   val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
-
-  // State for the like count, which depends on the `userLikes` size
-  // Calculate the like count dynamically based on whether the suggestion is liked
   val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
+  val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
 
-  // Define card colors with a white background
-  val cardColors =
-      CardDefaults.cardColors(
-          containerColor = Color.White // This sets the background color of the Card
-          )
-
-  // Use Card for elevation and surface coloring, if needed
   Card(
       modifier =
           modifier
-              .padding(8.dp)
-              .width(380.dp) // the width of the Card
-              .height(166.dp) // the height of the Card
-              .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(25.dp))
-              .clickable(
-                  onClick = onClick), // Invoke the onClick lambda when the item is clicked (see
-      // SuggestionFeedContent.kt)
-      colors = cardColors // Use the cardColors with the white background
-      ) {
+              .padding(start = 27.dp, end = 27.dp, top = 16.dp, bottom = 16.dp)
+              .fillMaxWidth()
+              .height(166.dp)
+              .border(width = 1.dp, color = surfaceVariantLight, shape = RoundedCornerShape(10.dp))
+              .clickable(onClick = onClick),
+      colors = cardColors) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
-          Row( // Row for title and date
-              modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
-              horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(text = suggestion.stop.title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+          Row(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.fillMaxWidth(0.6f).padding(end = 8.dp)) {
+              Text(
+                  text = suggestion.stop.title,
+                  style =
+                      TextStyle(
+                          fontSize = 15.sp,
+                          lineHeight = 20.sp,
+                          fontWeight = FontWeight(500),
+                          color = primaryLight,
+                          letterSpacing = 0.15.sp,
+                      ))
+              Spacer(modifier = Modifier.height(4.dp))
+              Text(
+                  text = suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                  style =
+                      TextStyle(
+                          fontSize = 14.sp,
+                          lineHeight = 20.sp,
+                          fontWeight = FontWeight(500),
+                          color = secondaryLight,
+                          letterSpacing = 0.14.sp,
+                      ))
+            }
+            Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
+              val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+              val endTime = startTime.plusMinutes(suggestion.stop.duration.toLong())
+              Text(
+                  text = startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                  style =
+                      TextStyle(
+                          fontSize = 14.sp,
+                          lineHeight = 20.sp,
+                          fontWeight = FontWeight(500),
+                          color = secondaryLight,
+                          letterSpacing = 0.14.sp,
+                      ),
+                  modifier = Modifier.testTag("suggestionStart" + suggestion.suggestionId))
+              Spacer(modifier = Modifier.height(4.dp))
+              Text(
+                  text = endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                  style =
+                      TextStyle(
+                          fontSize = 14.sp,
+                          lineHeight = 20.sp,
+                          fontWeight = FontWeight(500),
+                          color = secondaryLight,
+                          letterSpacing = 0.14.sp,
+                      ),
+                  modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId))
+            }
+          }
+          Spacer(modifier = Modifier.height(8.dp))
+
+          // Description
+          Box(
+              modifier =
+                  Modifier.fillMaxWidth()
+                      .height(55.dp)
+                      .background(backgroundLight, RoundedCornerShape(10.dp))
+                      .padding(8.dp)) {
                 Text(
-                    text = suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray)
+                    text = suggestion.stop.description,
+                    style =
+                        TextStyle(
+                            fontSize = 12.sp,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight(500),
+                            color = onBackgroundLight,
+                            letterSpacing = 0.12.sp,
+                        ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
               }
 
-          Spacer(
-              modifier =
-                  Modifier.height(4.dp)) // Add spacing between the first row and the second row
+          Spacer(modifier = Modifier.height(12.dp))
 
-          // the second row
-          Text(
-              text = suggestion.userName,
-              style = MaterialTheme.typography.bodyMedium,
-              fontSize = 14.sp)
-
-          Spacer(
-              modifier =
-                  Modifier.height(8.dp)) // Add spacing between the second row and the third row
-
-          // the third row
-          Text(
-              text = suggestion.stop.description,
-              style = MaterialTheme.typography.bodySmall,
-              fontSize = 14.sp,
-              maxLines = 2, // Limit the text to two lines
-              overflow = TextOverflow.Ellipsis // Add ellipsis if the text is longer than two lines
-              )
-
-          Spacer(modifier = Modifier.weight(1f)) // Pushes the icons to the bottom
-
-          Row( // Row for comments and likes
-              modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically) {
-                Spacer(Modifier.width(240.dp)) // Use the space to align the mail icon
-
-                Icon(
-                    imageVector = Icons.Default.MailOutline,
-                    contentDescription = null, // Decorative element
-                    modifier = Modifier.size(18.dp))
-
-                Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
-
+          // User and Icons
+          Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
-                    text = "${suggestion.comments.size}",
-                )
+                    text = "Suggested by ${suggestion.userName}",
+                    style =
+                        TextStyle(
+                            fontSize = 14.sp,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight(500),
+                            color = tertiaryLight,
+                            letterSpacing = 0.14.sp,
+                        ))
 
-                Spacer(modifier = Modifier.weight(1f)) // Pushes the heart icon to the end
+                Spacer(Modifier.weight(1f)) // push the icons to the right
 
-                // Icon click handler
-                Icon(
-                    imageVector =
-                        if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
-                    contentDescription = "Like",
-                    modifier =
-                        Modifier.size(18.dp)
-                            .clickable { viewModel.toggleLikeSuggestion(suggestion) }
-                            .testTag("likeIconSuggestionFeedScreen_${suggestion.suggestionId}"))
+                Row {
+                  Icon(
+                      imageVector =
+                          if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                      contentDescription = "Like",
+                      tint = if (isLiked) Color.Red else tertiaryLight,
+                      modifier =
+                          Modifier.size(18.dp)
+                              .padding(
+                                  end = 4.dp) // 4.dp is the space between the icon and the text
+                              .clickable { viewModel.toggleLikeSuggestion(suggestion) }
+                              .testTag("likeIconSuggestionFeedScreen_${suggestion.suggestionId}"))
 
-                Spacer(modifier = Modifier.width(4.dp)) // Space between icon and text
+                  Text(
+                      text = likesCount,
+                      style =
+                          TextStyle(
+                              fontSize = 14.sp,
+                              lineHeight = 20.sp,
+                              fontWeight = FontWeight(500),
+                              color = tertiaryLight,
+                              letterSpacing = 0.14.sp,
+                          ))
 
-                Text(
-                    text = likesCount,
-                    modifier = Modifier.testTag("likeCountTextSuggestionFeedScreen_sugg1"))
+                  Spacer(
+                      modifier =
+                          Modifier.width(
+                              8.dp)) // 8.dp is the space between the text and the next icon
 
-                Spacer(modifier = Modifier.width(4.dp))
+                  Icon(
+                      imageVector = Icons.Default.MailOutline,
+                      contentDescription = null,
+                      tint = tertiaryLight,
+                      modifier =
+                          Modifier.size(18.dp)
+                              .padding(
+                                  end = 4.dp) // 4.dp is the space between the icon and the text
+                      )
 
-                Icon(
-                    imageVector = Icons.Outlined.MoreVert,
-                    contentDescription = "Options",
-                    modifier =
-                        Modifier.clickable { viewModel.showSuggestionBottomSheet(suggestion) }
-                            .testTag("suggestionOptionIcon" + suggestion.suggestionId)
-                            .padding(8.dp))
+                  Text(
+                      text = "${suggestion.comments.size}",
+                      style =
+                          TextStyle(
+                              fontSize = 14.sp,
+                              lineHeight = 20.sp,
+                              fontWeight = FontWeight(500),
+                              color = tertiaryLight,
+                              letterSpacing = 0.14.sp,
+                          ))
+
+                  Spacer(
+                      modifier =
+                          Modifier.width(
+                              8.dp)) // 8.dp is the space between the text and the next icon
+
+                  Icon(
+                      imageVector = Icons.Outlined.MoreVert,
+                      contentDescription = "Options",
+                      tint = tertiaryLight,
+                      modifier =
+                          Modifier.size(
+                                  18.dp) // Make sure to set the size as you did with other icons
+                              .clickable { viewModel.showSuggestionBottomSheet(suggestion) }
+                              .testTag("suggestionOptionIcon" + suggestion.suggestionId)
+                              .graphicsLayer {
+                                rotationZ = 90f // Rotate by 90 degrees
+                              })
+                }
               }
         }
       }

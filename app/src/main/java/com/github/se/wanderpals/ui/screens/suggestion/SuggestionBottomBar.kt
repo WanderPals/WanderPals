@@ -18,13 +18,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
+import com.github.se.wanderpals.ui.theme.primaryContainerLight
 
 @Composable
 fun SuggestionBottomBar(onSuggestionClick: () -> Unit = {}) {
@@ -40,25 +41,25 @@ fun SuggestionBottomBar(onSuggestionClick: () -> Unit = {}) {
                   .width(300.dp)
                   .height(70.dp)
                   .testTag("suggestionButtonExists"),
-          colors = ButtonDefaults.buttonColors(Color(0xFFDEE1F9))) {
+          colors = ButtonDefaults.buttonColors(primaryContainerLight)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically) {
                   Icon(
                       imageVector = Icons.Default.Add,
-                      tint = Color(0xFF000000),
+                      tint = onPrimaryContainerLight,
                       modifier = Modifier.size(20.dp),
                       contentDescription = null)
                   Text(
                       text = "Create a suggestion",
                       style =
                           TextStyle(
-                              lineHeight = 18.sp,
-                              fontSize = 18.sp,
+                              lineHeight = 20.sp,
+                              fontSize = 20.sp,
                               fontWeight = FontWeight(500),
                               textAlign = TextAlign.Center,
-                              letterSpacing = 0.5.sp,
-                              color = Color(0xFF000000)))
+                              letterSpacing = 0.1.sp,
+                              color = onPrimaryContainerLight))
                 }
           }
     }

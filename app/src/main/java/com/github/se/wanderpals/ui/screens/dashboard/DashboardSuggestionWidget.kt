@@ -150,7 +150,7 @@ fun SuggestionItem(suggestion: Suggestion) {
                   ),
               modifier = Modifier.testTag("suggestionUser" + suggestion.userId))
         }
-
+        // cont
         Column(modifier = Modifier.padding(8.dp)) {
           val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
           val endTime = startTime.plusMinutes(suggestion.stop.duration.toLong())
