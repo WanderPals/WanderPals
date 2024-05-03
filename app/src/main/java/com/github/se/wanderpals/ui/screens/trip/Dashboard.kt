@@ -215,7 +215,7 @@ fun TopDashboardBar(
                 scope.launch { drawerState.apply { if (isClosed) open() else close() } }
               })
 
-          Text(
+          Text( // Trip title
               text = tripTitle!!,
               style =
                   TextStyle(
