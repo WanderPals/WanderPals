@@ -194,7 +194,9 @@ fun Trip(
                                   FinanceViewModel.FinanceViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
-                      CreateExpense(tripId, viewModel, oldNavActions)
+                      CreateExpense(tripId, viewModel, oldNavActions) {
+                        viewModel.updateStateLists()
+                      }
                     }
                   }
             }

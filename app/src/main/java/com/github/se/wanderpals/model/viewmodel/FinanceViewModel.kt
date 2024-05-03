@@ -42,7 +42,11 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   /** Adds an expense to the trip. */
   open fun addExpense(tripId: String, expense: Expense) {
-    viewModelScope.launch { tripsRepository.addExpenseToTrip(tripId, expense) }
+    viewModelScope.launch {
+      tripsRepository.addExpenseToTrip(tripId, expense)
+      _expenseStateList.value += expense
+      val ahahaah = 0
+    }
   }
 
   class FinanceViewModelFactory(
