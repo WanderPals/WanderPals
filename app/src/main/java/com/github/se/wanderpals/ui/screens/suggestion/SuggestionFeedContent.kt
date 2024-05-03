@@ -10,8 +10,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -49,8 +55,6 @@ fun SuggestionFeedContent(
     suggestionsViewModel: SuggestionsViewModel,
     navigationActions: NavigationActions
 ) {
-  // State to track the currently selected suggestion item
-  var selectedSuggestion by remember { mutableStateOf<Suggestion?>(null) }
 
   // State to track the selected filter criteria
   var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
@@ -100,12 +104,6 @@ fun SuggestionFeedContent(
 
     SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
-    // When a suggestion is selected, display the detail screen
-    selectedSuggestion?.let { suggestion ->
-      navigationActions.setVariablesSuggestionId(suggestion.suggestionId)
-      navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
-    }
-
     // If suggestion list is empty, display a message
     if (suggestionList.isEmpty()) {
       Box(modifier = Modifier.fillMaxSize()) {
@@ -125,22 +123,38 @@ fun SuggestionFeedContent(
                     textAlign = TextAlign.Center,
                     color = Color(0xFF000000)),
         )
+        IconButton(
+            onClick = { suggestionsViewModel.loadSuggestion(tripId) },
+            modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+            content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestions") })
       }
     } else {
       // LazyColumn to display the list of suggestions with sorting and search filtering
       // (Note: can only have one LazyColumn in a composable function)
-      LazyColumn {
-        itemsIndexed(displayList) { index, suggestion ->
-          SuggestionItem(
-              suggestion = suggestion,
-              onClick = {
-                selectedSuggestion = suggestion
-              }, // This lambda is passed to the SuggestionItem composable
-              modifier = Modifier.testTag("suggestion${index + 1}"),
-              tripId = tripId,
-              viewModel = suggestionsViewModel)
-        }
-      }
+      val lazyColumn =
+          @Composable {
+            LazyColumn(modifier = Modifier.testTag("suggestionFeedContentList")) {
+              itemsIndexed(displayList) { index, suggestion ->
+                // Only render items that have not been added to stops
+                val addedToStops =
+                    suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
+                val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
+                if (!isSuggestionAddedToStop) {
+                  SuggestionItem(
+                      suggestion = suggestion,
+                      onClick = {
+                        navigationActions.setVariablesSuggestion(suggestion)
+                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
+                      }, // This lambda is passed to the SuggestionItem composable
+                      modifier = Modifier.testTag("suggestion${index + 1}"),
+                      tripId = tripId,
+                      viewModel = suggestionsViewModel)
+                }
+              }
+            }
+          }
+      PullToRefreshLazyColumn(
+          inputLazyColumn = lazyColumn, onRefresh = { suggestionsViewModel.loadSuggestion(tripId) })
     }
 
     SuggestionBottomSheet(

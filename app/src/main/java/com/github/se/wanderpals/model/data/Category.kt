@@ -4,7 +4,7 @@ package com.github.se.wanderpals.model.data
 enum class Category {
   FOOD,
   TRANSPORT,
-  UTILITIES,
-  ENTERTAINMENT,
+  ACCOMMODATION,
+  ACTIVITIES,
   OTHER
 }

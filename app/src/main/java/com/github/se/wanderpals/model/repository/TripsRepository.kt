@@ -3,6 +3,7 @@ package com.github.se.wanderpals.model.repository
 import FirestoreTrip
 import android.util.Log
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
@@ -10,6 +11,7 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.firestoreData.FirestoreAnnouncement
+import com.github.se.wanderpals.model.firestoreData.FirestoreExpense
 import com.github.se.wanderpals.model.firestoreData.FirestoreStop
 import com.github.se.wanderpals.model.firestoreData.FirestoreSuggestion
 import com.github.se.wanderpals.model.firestoreData.FirestoreTripNotification
@@ -34,7 +36,7 @@ import kotlinx.coroutines.withContext
  * @param uid Unique identifier of the current user. Used to fetch user-specific trip data.(UsersId
  *   in short)
  */
-class TripsRepository(
+open class TripsRepository(
     val uid: String,
     private val dispatcher: CoroutineDispatcher // Inject dispatcher
 ) {
@@ -48,6 +50,7 @@ class TripsRepository(
   private lateinit var usernameCollection: CollectionReference
 
   private val notificationsId = "Notifications"
+  private val balancesId = "Balances"
 
   /**
    * (Currently used only for unit tests)
@@ -88,7 +91,7 @@ class TripsRepository(
    * @return The email associated with the username if found, or null if no such username exists or
    *   an error occurs.
    */
-  suspend fun getUserEmail(username: String): String? =
+  open suspend fun getUserEmail(username: String): String? =
       withContext(dispatcher) {
         try {
           val documentSnapshot = usernameCollection.document(username).get().await()
@@ -112,7 +115,7 @@ class TripsRepository(
    * @return True if the email was successfully added, false if the username already exists or an
    *   error occurs.
    */
-  suspend fun addEmailToUsername(username: String, email: String): Boolean =
+  open suspend fun addEmailToUsername(username: String, email: String): Boolean =
       withContext(dispatcher) {
         try {
           val documentRef = usernameCollection.document(username)
@@ -144,7 +147,7 @@ class TripsRepository(
    * @return True if the deletion was successful or the username did not exist, false if an error
    *   occurs during deletion.
    */
-  suspend fun deleteEmailByUsername(username: String): Boolean =
+  open suspend fun deleteEmailByUsername(username: String): Boolean =
       withContext(dispatcher) {
         try {
           val documentRef = usernameCollection.document(username)
@@ -171,6 +174,68 @@ class TripsRepository(
       }
 
   /**
+   * Retrieves the balance map for a specific trip from Firestore. This method queries the Firestore
+   * subcollection for balances associated with a given trip document identified by its unique trip
+   * ID. The balances are stored under a specific document, which is predefined by `balancesId`.
+   *
+   * @param tripId The unique identifier of the trip for which balances are to be fetched.
+   * @return A map of String to Double representing the balances for the trip. Returns an empty map
+   *   if the balances document is not found, if there are no balances in the document, or in case
+   *   of an error during data retrieval. Errors during the operation are logged and an empty map is
+   *   returned.
+   */
+  open suspend fun getBalances(tripId: String): Map<String, Double> =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_BALANCES_SUBCOLLECTION.path)
+                  .document(balancesId)
+                  .get()
+                  .await()
+          @Suppress("UNCHECKED_CAST")
+          (documentSnapshot.data as? Map<String, Double>) ?: emptyMap()
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "getBalances: Error getting balance map for trip $tripId", e)
+          emptyMap()
+        }
+      }
+
+  /**
+   * Sets or updates the balance map for a specific trip in Firestore. This method updates the
+   * Firestore subcollection for balances by setting a map of String to Double associated with a
+   * given trip document, identified by its unique trip ID. The balances are stored under a specific
+   * document predefined by `balancesId`.
+   *
+   * @param tripId The unique identifier of the trip for which balances are to be set.
+   * @param balancesMap The map of String to Double to be stored as balances for the trip.
+   * @return A Boolean value indicating the success or failure of the operation. Returns `true` if
+   *   the operation is successful, and `false` if there is an error during the setting operation.
+   *   Errors are logged.
+   */
+  open suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
+      withContext(dispatcher) {
+        try {
+          val balanceDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_BALANCES_SUBCOLLECTION.path)
+                  .document(balancesId)
+
+          if (balancesMap.isEmpty()) {
+            balanceDocument.delete().await()
+          } else {
+            balanceDocument.set(balancesMap).await()
+          }
+          true
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "setBalances: Error setting balance map for trip $tripId", e)
+          false
+        }
+      }
+
+  /**
    * Retrieves a list of notifications for a specific trip from Firestore. This method queries the
    * Firestore subcollection for notifications associated with a given trip document identified by
    * its unique trip ID. The notifications are stored under a specific document, which is
@@ -182,7 +247,7 @@ class TripsRepository(
    *   notifications in the document, or in case of an error during data retrieval. Errors during
    *   the operation are logged and an empty list is returned.
    */
-  suspend fun getNotificationList(tripId: String): List<TripNotification> =
+  open suspend fun getNotificationList(tripId: String): List<TripNotification> =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -194,6 +259,7 @@ class TripsRepository(
                   .await()
           // Attempt to retrieve the list using the correct type information
           val data = documentSnapshot.data
+          @Suppress("UNCHECKED_CAST")
           val notificationsList =
               data?.get(notificationsId) as? List<Map<String, Any>> ?: emptyList()
 
@@ -201,8 +267,9 @@ class TripsRepository(
           notificationsList.map { map ->
             FirestoreTripNotification(
                     title = map["title"] as String,
-                    path = map["path"] as String,
-                    timestamp = map["timestamp"] as String)
+                    route = map["route"] as String,
+                    timestamp = map["timestamp"] as String,
+                    navActionVariables = map["navActionVariables"] as String)
                 .toTripNotification()
           }
         } catch (e: Exception) {
@@ -227,7 +294,10 @@ class TripsRepository(
    *   the operation is successful, and `false` if there is an error during the setting operation.
    *   Errors are logged.
    */
-  suspend fun setNotificationList(tripId: String, notifications: List<TripNotification>): Boolean =
+  open suspend fun setNotificationList(
+      tripId: String,
+      notifications: List<TripNotification>
+  ): Boolean =
       withContext(dispatcher) {
         try {
 
@@ -256,6 +326,201 @@ class TripsRepository(
           false
         }
       }
+
+  /**
+   * Retrieves a specific expense from a trip using the expense's unique identifier. This method
+   * queries the Firestore subcollection for trip expenses within a specific trip document.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param expenseId The unique identifier of the expense to be retrieved.
+   * @return An `Expense` object if found, or `null` if the expense is not found or if an error
+   *   occurs. The method logs an error and returns `null` in case of failure.
+   */
+  open suspend fun getExpenseFromTrip(tripId: String, expenseId: String): Expense? =
+      withContext(dispatcher) {
+        try {
+          val documentSnapshot =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+                  .document(expenseId)
+                  .get()
+                  .await()
+          val firestoreExpense = documentSnapshot.toObject<FirestoreExpense>()
+          if (firestoreExpense != null) {
+            firestoreExpense.toExpense()
+          } else {
+            Log.e(
+                "TripsRepository",
+                "getExpenseFromTrip: Not found Expense $expenseId from trip $tripId.")
+            null
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "getExpenseFromTrip: Error getting Expense $expenseId from trip $tripId.",
+              e)
+          null // error
+        }
+      }
+
+  /**
+   * Fetches all expenses associated with a specific trip. This method retrieves an array of
+   * expenses by leveraging the `getExpenseFromTrip` method for each expense ID found in the trip
+   * document.
+   *
+   * @param tripId The unique identifier of the trip for which expenses are being retrieved.
+   * @return A list of `Expense` objects. Returns an empty list if the trip is not found or if an
+   *   error occurs during fetching. Errors are logged and an empty list is returned in these cases.
+   */
+  open suspend fun getAllExpensesFromTrip(tripId: String): List<Expense> =
+      withContext(dispatcher) {
+        try {
+          val trip = getTrip(tripId)
+
+          if (trip != null) {
+            val expenseIds = trip.expenses
+            expenseIds.mapNotNull { expenseId -> getExpenseFromTrip(tripId, expenseId) }
+          } else {
+            Log.e("TripsRepository", "getAllExpensesFromTrip: Trip not found with ID $tripId.")
+            emptyList()
+          }
+        } catch (e: Exception) {
+
+          Log.e(
+              "TripsRepository",
+              "getAllExpensesFromTrip: Error fetching Expenses to trip $tripId.",
+              e)
+          emptyList()
+        }
+      }
+
+  /**
+   * Adds a new expense to a specified trip. This method generates a unique identifier for the new
+   * expense, stores it in the Firestore, and updates the trip document to include this new expense
+   * ID.
+   *
+   * @param tripId The unique identifier of the trip to which the expense is being added.
+   * @param expense The `Expense` object to be added.
+   * @return The unique identifier of the newly added expense if the operation is successful, or an
+   *   empty string if it fails. The method logs the outcome of the operation.
+   */
+  open suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
+      withContext(dispatcher) {
+        try {
+          val uniqueID = UUID.randomUUID().toString()
+          val firebaseExpense =
+              FirestoreExpense.fromExpense(
+                  expense.copy(
+                      expenseId = uniqueID,
+                      userId = uid)) // we already know who creates the Expense
+          val expenseDocument =
+              tripsCollection
+                  .document(tripId)
+                  .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+                  .document(uniqueID)
+          expenseDocument.set(firebaseExpense).await()
+          Log.d("TripsRepository", "addExpenseToTrip: Expense added successfully to trip $tripId.")
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            // Add the new ExpenseId to the trip's Expense list and update the
+            // trip
+            val updatedExpensesList = trip.expenses + uniqueID
+            val updatedTrip = trip.copy(expenses = updatedExpensesList)
+            updateTrip(updatedTrip)
+            Log.d("TripsRepository", "addExpenseToTrip: Expense ID added to trip successfully.")
+
+            uniqueID // this function will return the new object ID if its successful
+          } else {
+
+            Log.e("TripsRepository", "addExpenseToTrip: Trip not found with ID $tripId.")
+
+            "" // And will return an empty string in case of failure
+          }
+        } catch (e: Exception) {
+          Log.e("TripsRepository", "addExpenseToTrip: Error adding Expense to trip $tripId.", e)
+          ""
+        }
+      }
+
+  /**
+   * Removes a specific expense from a trip. This method deletes the expense document from Firestore
+   * and updates the trip's expense list to exclude the removed expense ID.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param expenseId The unique identifier of the expense to be removed.
+   * @return `true` if the expense is successfully removed and the trip is updated; `false` if the
+   *   trip is not found or if any error occurs during the operation. Errors are logged.
+   */
+  open suspend fun removeExpenseFromTrip(tripId: String, expenseId: String): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d(
+              "TripsRepository",
+              "removeExpenseFromTrip: removing Expense $expenseId from trip $tripId")
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+              .document(expenseId)
+              .delete()
+              .await()
+
+          val trip = getTrip(tripId)
+          if (trip != null) {
+            val updatedExpensesList = trip.expenses.filterNot { it == expenseId }
+            val updatedTrip = trip.copy(expenses = updatedExpensesList)
+            updateTrip(updatedTrip)
+            Log.d(
+                "TripsRepository",
+                "removeExpenseFromTrip: Expense $expenseId remove and trip updated successfully.")
+            true
+          } else {
+            Log.e("TripsRepository", "removeExpenseFromTrip: Trip not found with ID $tripId.")
+            false
+          }
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "removeExpenseFromTrip: Error removing Expense $expenseId from trip $tripId.",
+              e)
+          false
+        }
+      }
+
+  /**
+   * Updates an existing expense within a trip. This method replaces the current expense document in
+   * Firestore with the updated expense data provided.
+   *
+   * @param tripId The unique identifier of the trip containing the expense.
+   * @param expense The updated `Expense` object.
+   * @return `true` if the expense is successfully updated; `false` if the trip is not found or an
+   *   error occurs. Errors are logged and the method returns `false` in these cases.
+   */
+  open suspend fun updateExpenseInTrip(tripId: String, expense: Expense): Boolean =
+      withContext(dispatcher) {
+        try {
+          Log.d("TripsRepository", "updateExpenseInTrip: Updating a Expense in trip $tripId")
+          val firestoreExpense = FirestoreExpense.fromExpense(expense)
+          tripsCollection
+              .document(tripId)
+              .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
+              .document(firestoreExpense.expenseId)
+              .set(firestoreExpense)
+              .await()
+          Log.d(
+              "TripsRepository",
+              "updateExpenseInTrip: Trip's Expense updated successfully for ID $tripId.")
+          true
+        } catch (e: Exception) {
+          Log.e(
+              "TripsRepository",
+              "updateExpenseInTrip: Error updating Expense with ID ${expense.expenseId} in trip with ID $tripId",
+              e)
+          false
+        }
+      }
+
   /**
    * Retrieves a specific trip Announcement from a trip based on the Announcement's unique
    * identifier. This method queries the Firestore subcollection for trip Announcements within a
@@ -266,7 +531,7 @@ class TripsRepository(
    * @return A `Announcement` object if found, or `null` if the Announcement is not found or if an
    *   error occurs. The method logs an error and returns `null` in case of failure.
    */
-  suspend fun getAnnouncementFromTrip(tripId: String, announcementId: String): Announcement? =
+  open suspend fun getAnnouncementFromTrip(tripId: String, announcementId: String): Announcement? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -304,7 +569,7 @@ class TripsRepository(
    *   there are no Announcements associated with the trip, or in case of an error during data
    *   retrieval.
    */
-  suspend fun getAllAnnouncementsFromTrip(tripId: String): List<Announcement> =
+  open suspend fun getAllAnnouncementsFromTrip(tripId: String): List<Announcement> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -339,7 +604,7 @@ class TripsRepository(
    * @param announcement The Announcement object to add.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
+  open suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -393,7 +658,7 @@ class TripsRepository(
    * @param announcementId The unique identifier of the Announcement to be removed.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
+  open suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -437,7 +702,7 @@ class TripsRepository(
    * @param announcement The Announcement object that contains updated data.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun updateAnnouncementInTrip(tripId: String, announcement: Announcement): Boolean =
+  open suspend fun updateAnnouncementInTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -473,7 +738,7 @@ class TripsRepository(
    * @return A `Suggestion` object if found, `null` otherwise. The method logs an error and returns
    *   `null` if the suggestion is not found or if an error occurs during the Firestore query.
    */
-  suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Suggestion? =
+  open suspend fun getSuggestionFromTrip(tripId: String, suggestionId: String): Suggestion? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -510,7 +775,7 @@ class TripsRepository(
    *   there are no suggestions associated with the trip, or in case of an error during data
    *   retrieval.
    */
-  suspend fun getAllSuggestionsFromTrip(tripId: String): List<Suggestion> =
+  open suspend fun getAllSuggestionsFromTrip(tripId: String): List<Suggestion> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -543,7 +808,7 @@ class TripsRepository(
    * @return `true` if the suggestion was added successfully, `false` otherwise. Errors during the
    *   process are logged.
    */
-  suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
+  open suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -593,7 +858,7 @@ class TripsRepository(
    * @return `true` if the suggestion was successfully deleted and the trip updated, `false`
    *   otherwise. Errors during the process are logged.
    */
-  suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
+  open suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -640,7 +905,7 @@ class TripsRepository(
    * @return `true` if the suggestion was successfully updated, `false` otherwise. Errors during the
    *   update process are logged.
    */
-  suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
+  open suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateSuggestionInTrip: Updating a Suggestion in trip $tripId")
@@ -672,7 +937,7 @@ class TripsRepository(
    * @param userId The unique identifier of the user.
    * @return A `User` object if found, `null` otherwise.
    */
-  suspend fun getUserFromTrip(tripId: String, userId: String): User? =
+  open suspend fun getUserFromTrip(tripId: String, userId: String): User? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -708,7 +973,7 @@ class TripsRepository(
    * @return A list of `User` objects. Returns an empty list if the trip is not found or in case of
    *   an error.
    */
-  suspend fun getAllUsersFromTrip(tripId: String): List<User> =
+  open suspend fun getAllUsersFromTrip(tripId: String): List<User> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -733,7 +998,7 @@ class TripsRepository(
    * @param user The `User` object containing the user's details.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  suspend fun addUserToTrip(tripId: String, user: User): Boolean =
+  open suspend fun addUserToTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
           // for users, there IDs are google ids currently no need to gen a new one
@@ -749,7 +1014,12 @@ class TripsRepository(
           if (trip != null) {
             // Add the new userID to the trip's user list and update the trip
             val updatedStopsList = trip.users + user.userId
-            val updatedTrip = trip.copy(users = updatedStopsList)
+
+            var updatedTokensList = trip.tokenIds
+            if (!SessionManager.getNotificationToken().isEmpty()) {
+              updatedTokensList = updatedStopsList + SessionManager.getNotificationToken()
+            }
+            val updatedTrip = trip.copy(users = updatedStopsList, tokenIds = updatedTokensList)
             updateTrip(updatedTrip)
             Log.d("TripsRepository", "addUserToTrip: Stop ID added to trip successfully.")
             true
@@ -772,7 +1042,7 @@ class TripsRepository(
    * @param user The `User` object to be updated.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  suspend fun updateUserInTrip(tripId: String, user: User): Boolean =
+  open suspend fun updateUserInTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateUserInTrip: Updating a user in trip $tripId")
@@ -798,13 +1068,13 @@ class TripsRepository(
 
   /**
    * Removes a user from a trip. This method deletes a user's document from the Users subcollection
-   * within a trip.
+   * within a trip. And the TripId from his accessible trips
    *
    * @param tripId The unique identifier of the trip.
    * @param userId The unique identifier of the user to be removed.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  suspend fun removeUserFromTrip(tripId: String, userId: String): Boolean =
+  open suspend fun removeUserFromTrip(tripId: String, userId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "removeUserFromTrip: Deleting user $userId from trip $tripId")
@@ -818,8 +1088,14 @@ class TripsRepository(
           val trip = getTrip(tripId)
           if (trip != null) {
             val updatedUsersList = trip.users.filterNot { it == userId }
-            val updatedTrip = trip.copy(users = updatedUsersList)
+            var updatedTokensList = trip.tokenIds
+            if (trip.tokenIds.contains(SessionManager.getNotificationToken())) {
+              updatedTokensList = updatedTokensList - SessionManager.getNotificationToken()
+            }
+            val updatedTrip = trip.copy(users = updatedUsersList, tokenIds = updatedTokensList)
+
             updateTrip(updatedTrip)
+            removeTripId(tripId, userId) // remove the Trip from the the deleted user
             Log.d(
                 "TripsRepository",
                 "removeUserFromTrip: User $userId deleted and trip updated successfully.")
@@ -837,7 +1113,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun getStopFromTrip(tripId: String, stopId: String): Stop? =
+  open suspend fun getStopFromTrip(tripId: String, stopId: String): Stop? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -863,7 +1139,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun getAllStopsFromTrip(tripId: String): List<Stop> =
+  open suspend fun getAllStopsFromTrip(tripId: String): List<Stop> =
       withContext(dispatcher) {
         try {
           val trip = getTrip(tripId)
@@ -881,10 +1157,10 @@ class TripsRepository(
         }
       }
 
-  suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
+  open suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
-          val uniqueID = UUID.randomUUID().toString() + "/" + stop.stopId
+          val uniqueID = UUID.randomUUID().toString() + "," + stop.stopId
           val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
           val stopDocument =
               tripsCollection
@@ -913,7 +1189,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
+  open suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteStopFromTrip: Deleting stop $stopId from trip $tripId")
@@ -946,7 +1222,7 @@ class TripsRepository(
         }
       }
 
-  suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
+  open suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateStopInTrip: Updating a stop in trip $tripId")
@@ -976,7 +1252,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to retrieve.
    * @return The Trip object if found, null otherwise.
    */
-  suspend fun getTrip(tripId: String): Trip? =
+  open suspend fun getTrip(tripId: String): Trip? =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTrip: Retrieving trip with ID $tripId.")
@@ -996,7 +1272,7 @@ class TripsRepository(
    *
    * @return List of Trip objects.
    */
-  suspend fun getAllTrips(): List<Trip> =
+  open suspend fun getAllTrips(): List<Trip> =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getAllTrips: Fetching all trips for user $uid.")
@@ -1016,7 +1292,7 @@ class TripsRepository(
    * @param trip The Trip object to add.
    * @return Boolean indicating success or failure of the operation.
    */
-  suspend fun addTrip(trip: Trip): Boolean =
+  open suspend fun addTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "addTrip: Adding a trip")
@@ -1047,7 +1323,7 @@ class TripsRepository(
    * @param trip The Trip object to update.
    * @return Boolean indicating success or failure of the operation.
    */
-  suspend fun updateTrip(trip: Trip): Boolean =
+  open suspend fun updateTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateTrip: Updating a trip")
@@ -1073,7 +1349,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to delete.
    * @return Boolean indicating success or failure of the operation.
    */
-  suspend fun deleteTrip(tripId: String): Boolean =
+  open suspend fun deleteTrip(tripId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteTrip: Deleting trip")
@@ -1095,7 +1371,7 @@ class TripsRepository(
    * @return A list containing the trip IDs or an empty list if either the user's document does not
    *   exist or it doesn't contain any trip IDs.
    */
-  suspend fun getTripsIds(): List<String> =
+  open suspend fun getTripsIds(): List<String> =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTripsIds: Getting Trips linked to user")
@@ -1157,7 +1433,7 @@ class TripsRepository(
    * Assigns a role to a user in a trip based on their ownership status and updates the trip's
    * participant list.
    *
-   * This suspend function should be invoked within a coroutine context. It fetches the current
+   * This open suspend function should be invoked within a coroutine context. It fetches the current
    * user's details, assigns either the 'OWNER' or 'MEMBER' role based on the `isOwner` flag, and
    * updates the trip accordingly.
    *
@@ -1168,7 +1444,14 @@ class TripsRepository(
   private suspend fun manageUserTripRole(tripId: String, isOwner: Boolean) {
     val currentUser = SessionManager.getCurrentUser()!!
     val role = if (isOwner) Role.OWNER else Role.MEMBER
-    val user = User(uid, currentUser.name, currentUser.email, currentUser.name, role)
+    val user =
+        User(
+            userId = uid,
+            name = currentUser.name,
+            email = currentUser.email,
+            nickname = currentUser.name,
+            role = role,
+            notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
   }
 
@@ -1182,7 +1465,7 @@ class TripsRepository(
    * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun addTripId(tripId: String, isOwner: Boolean = false): Boolean =
+  open suspend fun addTripId(tripId: String, isOwner: Boolean = false): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
 
@@ -1249,18 +1532,20 @@ class TripsRepository(
       }
 
   /**
-   * remove a trip ID from the current user's list of trip IDs in their document within the 'Users'
+   * Remove a trip ID from a user's list of trip IDs in their document within the 'Users'
    * collection. This operation is performed within a Firestore transaction to ensure atomicity and
-   * consistency.
+   * consistency. The user ID can be specified; if not, the current user's ID is used by default.
    *
-   * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
+   * @param tripId The unique identifier of the trip to remove from the user's list of trip IDs.
+   * @param userId Optional; the unique identifier of the user from whose document the trip ID will
+   *   be removed. If not provided, the ID of the current user is used as the default.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  suspend fun removeTripId(tripId: String): Boolean =
+  open suspend fun removeTripId(tripId: String, userId: String = uid): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "removeTripId: Removing tripId from user")
 
-        val userDocumentRef = usersCollection.document(uid)
+        val userDocumentRef = usersCollection.document(userId)
 
         try {
           val transactionResult =

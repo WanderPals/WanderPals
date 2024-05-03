@@ -30,6 +30,7 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -127,19 +128,12 @@ class MainActivity : ComponentActivity() {
         }
       }
 
-  @Suppress("DEPRECATION")
-  @Deprecated("Deprecated in Java")
-  override fun onBackPressed() {
-    super.onBackPressed()
-    if (::navigationActions.isInitialized) {
-      navigationActions.updateCurrentRoute()
-    }
-  }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     context = this
+
+    SharedPreferencesManager.init(context)
 
     val gso: GoogleSignInOptions =
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

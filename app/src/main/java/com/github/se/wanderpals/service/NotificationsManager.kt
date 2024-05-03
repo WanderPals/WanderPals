@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.service
 
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.navigationActions
@@ -39,6 +40,25 @@ object NotificationsManager {
   }
 
   /**
+   * Removes the path from a notification containing the provided suggestion ID.
+   *
+   * @param tripId The ID of the trip containing the notification.
+   * @param suggestionId The suggestion for which the notification path should be removed.
+   */
+  suspend fun removeSuggestionPath(tripId: String, suggestionId: String) {
+    val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+
+    notifList.replaceAll {
+      if (it.navActionVariables.contains("suggestionId: $suggestionId")) {
+        it.copy(route = "", navActionVariables = "")
+      } else {
+        it
+      }
+    }
+    tripsRepository.setNotificationList(tripId, notifList.toList())
+  }
+
+  /**
    * Adds a notification indicating that a user has joined a trip.
    *
    * @param tripId The ID of the trip for which the notification is added.
@@ -49,7 +69,8 @@ object NotificationsManager {
         TripNotification(
             "${SessionManager.getCurrentUser()!!.name} joined the trip ",
             Route.ADMIN_PAGE,
-            LocalDateTime.now())
+            LocalDateTime.now(),
+            "")
     addNewNotification(notifList, newNotif)
     tripsRepository.setNotificationList(tripId, notifList.toList())
   }
@@ -67,8 +88,32 @@ object NotificationsManager {
     val newNotif =
         TripNotification(
             "${SessionManager.getCurrentUser()!!.name} created a new suggestion ",
-            Route.SUGGESTION_DETAIL + "/" + navActions.serializeNavigationVariable(),
-            LocalDateTime.now())
+            Route.SUGGESTION_DETAIL,
+            LocalDateTime.now(),
+            navActions.serializeNavigationVariable())
+    addNewNotification(notifList, newNotif)
+    tripsRepository.setNotificationList(tripId, notifList.toList())
+  }
+
+  /**
+   * Adds a notification for a new stop to the notification list of a trip.
+   *
+   * @param tripId The ID of the trip to which to add the notification.
+   * @param stop The added stop for which to create the notification.
+   */
+  suspend fun addStopNotification(tripId: String, stop: Stop) {
+    val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+    val navActions = navigationActions.copy()
+    var route = ""
+    var navActionVariables = ""
+    if (stop.address.isNotEmpty()) {
+      navActions.setVariablesLocation(geoCords = stop.geoCords, address = stop.address)
+      route = Route.MAP
+      navActionVariables = navActions.serializeNavigationVariable()
+    }
+    val newNotif =
+        TripNotification(
+            "A new stop has been added ", route, LocalDateTime.now(), navActionVariables)
     addNewNotification(notifList, newNotif)
     tripsRepository.setNotificationList(tripId, notifList.toList())
   }

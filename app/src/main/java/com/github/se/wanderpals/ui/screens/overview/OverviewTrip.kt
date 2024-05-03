@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -24,8 +25,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -81,6 +84,9 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
   // Mutable state to check if the icon button for sharing the trip is selected
   val isSelected = remember { mutableStateOf(false) }
 
+  // Mutable state to check if the dialog is open
+  var dialogIsOpen by remember { mutableStateOf(false) }
+
   // Use of a launch effect to reset the value of isSelected to false after 100ms
   LaunchedEffect(isSelected.value) {
     if (isSelected.value) {
@@ -89,13 +95,32 @@ fun OverviewTrip(trip: Trip, navigationActions: NavigationActions) {
     }
   }
 
+  if (dialogIsOpen) {
+    AlertDialog(
+        onDismissRequest = { dialogIsOpen = false },
+        title = { Text("You are no longer part of this trip.") },
+        text = { Text("please refresh the page to see the updated list of trips.") },
+        confirmButton = {
+          Button(
+              onClick = { dialogIsOpen = false },
+          ) {
+            Text("Close")
+          }
+        })
+  }
+
   Box(modifier = Modifier.fillMaxWidth()) {
     // Button representing the trip overview
     Button(
         onClick = {
-          SessionManager.setTripName(trip.title)
-          navigationActions.setVariablesTrip(trip.tripId)
-          navigationActions.navigateTo(Route.TRIP)
+          if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
+            dialogIsOpen = false
+            SessionManager.setTripName(trip.title)
+            navigationActions.setVariablesTrip(trip.tripId)
+            navigationActions.navigateTo(Route.TRIP)
+          } else {
+            dialogIsOpen = true
+          }
         },
         modifier =
             Modifier.align(Alignment.TopCenter)

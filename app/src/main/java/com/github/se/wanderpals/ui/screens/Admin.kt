@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CircleShape
@@ -35,6 +38,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,7 +64,7 @@ import com.github.se.wanderpals.model.data.Role as Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.navigationActions
-import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberDetail
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberItem
@@ -73,12 +77,13 @@ import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberItem
 @Composable
 fun Admin(adminViewModel: AdminViewModel) {
   val userList by adminViewModel.listOfUsers.collectAsState()
+  val currentUser by adminViewModel.currentUser.collectAsState()
+
   var displayed by remember { mutableStateOf(false) }
   var userToDelete by remember { mutableStateOf("") }
   var displayedChoiceBox by remember { mutableStateOf(false) }
   var userToUpdate by remember { mutableStateOf(User()) }
   var selectedImages by remember { mutableStateOf<List<Uri?>>(emptyList()) }
-  var roleChange by remember { mutableStateOf(SessionManager.getCurrentUser()?.role) }
 
   val radioOptions = listOf(Role.OWNER, Role.ADMIN, Role.MEMBER, Role.VIEWER)
   var (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[0]) }
@@ -104,6 +109,8 @@ fun Admin(adminViewModel: AdminViewModel) {
             Color(0xFF4DD0E1),
             Color(0xFF9575CD)))
   }
+
+  LaunchedEffect(Unit) { adminViewModel.getUsers() }
 
   // Details of the users:
 
@@ -134,7 +141,7 @@ fun Admin(adminViewModel: AdminViewModel) {
     ) {
       Row(verticalAlignment = BiasAlignment.Vertical(-0.6f)) {
         if (selectedImages.isNotEmpty()) {
-          SessionManager.setPhoto(selectedImages[0].toString())
+          adminViewModel.modifyCurrentUserProfilePhoto(selectedImages[0].toString())
           AsyncImage( // Icon for the admin screen
               model = selectedImages[0],
               contentDescription = "Admin Icon",
@@ -150,9 +157,9 @@ fun Admin(adminViewModel: AdminViewModel) {
                       }
                       .testTag("IconAdminScreen"))
         } else {
-          if (SessionManager.getCurrentUser() != null) {
+          if (currentUser != null) {
             AsyncImage(
-                model = SessionManager.getCurrentUser()?.profilePhoto,
+                model = currentUser!!.profilePhoto,
                 contentDescription = "Admin Icon",
                 contentScale = ContentScale.Crop,
                 modifier =
@@ -170,9 +177,9 @@ fun Admin(adminViewModel: AdminViewModel) {
         Column(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(start = 10.dp, top = 30.dp)) {
-              if (SessionManager.getCurrentUser() != null) {
+              if (currentUser != null) {
                 Text(
-                    text = SessionManager.getCurrentUser()!!.name,
+                    text = currentUser!!.name,
                     style = MaterialTheme.typography.displaySmall,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -181,9 +188,9 @@ fun Admin(adminViewModel: AdminViewModel) {
               }
               HorizontalDivider(modifier = Modifier.padding(end = 30.dp).testTag("CardDivider"))
 
-              if (SessionManager.getCurrentUser() != null) {
+              if (currentUser != null) {
                 Text(
-                    text = SessionManager.getCurrentUser()!!.tripName,
+                    text = currentUser!!.tripName,
                     style = MaterialTheme.typography.displayMedium,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -193,7 +200,7 @@ fun Admin(adminViewModel: AdminViewModel) {
             }
       }
       Text(
-          text = roleChange.toString(),
+          text = currentUser?.role.toString(),
           modifier = Modifier.padding(start = 60.dp, top = 20.dp),
           fontWeight = FontWeight.Bold,
           fontStyle = FontStyle.Italic)
@@ -206,64 +213,74 @@ fun Admin(adminViewModel: AdminViewModel) {
         fontWeight = FontWeight.Bold)
 
     HorizontalDivider(modifier = Modifier.padding(20.dp).testTag("AdminDivider"))
-    if (SessionManager.getCurrentUser()?.role == Role.OWNER ||
-        SessionManager.getCurrentUser()?.role == Role.ADMIN) {
-      for (user in userList) {
-        // Log.d("Admin", "User: $user")
+    if (currentUser?.role == Role.OWNER || currentUser?.role == Role.ADMIN) {
+      val lazyColumn =
+          @Composable {
+            LazyColumn(Modifier.fillMaxSize()) {
+              items(userList) { user ->
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically) {
+                      Text(
+                          text = user.name,
+                          style = MaterialTheme.typography.titleMedium,
+                          modifier = Modifier.padding(start = 30.dp).testTag("userName"))
 
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically) {
-              Text(
-                  text = user.name,
-                  style = MaterialTheme.typography.titleMedium,
-                  modifier = Modifier.padding(start = 30.dp).testTag("userName"))
+                      // to change the role of a user
+                      if (currentUser!!.role == Role.OWNER && currentUser!!.userId != user.userId ||
+                          currentUser!!.role != Role.OWNER) {
+                        IconButton(
+                            onClick = {
+                              userToUpdate = user
+                              selectedOption = user.role
+                              // Log.d("Admin", "User: $selectedOption")
+                              // change the onOptionSelected
+                              onOptionSelected(selectedOption)
+                              displayedChoiceBox = true
+                            },
+                            modifier = Modifier.testTag("editRoleButton")) {
+                              Icon(
+                                  imageVector = Icons.Default.Person,
+                                  contentDescription = "Edit Role",
+                                  modifier = Modifier.size(20.dp))
+                            }
+                      }
 
-              // to change the role of a user
-              IconButton(
-                  onClick = {
-                    userToUpdate = user
-                    selectedOption = user.role
-                    // Log.d("Admin", "User: $selectedOption")
-                    // change the onOptionSelected
-                    onOptionSelected(selectedOption)
-                    displayedChoiceBox = true
-                  },
-                  modifier = Modifier.testTag("editRoleButton")) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Edit Role",
-                        modifier = Modifier.size(20.dp))
-                  }
-
-              // Transfer Owner rights
-              if (roleChange == Role.OWNER) {
-                IconButton(
-                    onClick = {
-                      roleChange = Role.ADMIN
-                      SessionManager.setRole(Role.ADMIN)
-                      adminViewModel.modifyUser(user.copy(role = Role.OWNER))
-                    }) {
-                      Icon(
-                          Icons.Default.Star,
-                          contentDescription = "transferRights",
-                          modifier = Modifier.size(20.dp))
+                      // Transfer Owner rights
+                      if (currentUser!!.role == Role.OWNER && currentUser!!.userId != user.userId) {
+                        IconButton(
+                            onClick = {
+                              adminViewModel.modifyUser(user.copy(role = Role.OWNER))
+                              adminViewModel.modifyCurrentUserRole(Role.ADMIN)
+                            }) {
+                              Icon(
+                                  Icons.Default.Star,
+                                  contentDescription = "transferRights",
+                                  modifier = Modifier.size(20.dp))
+                            }
+                      }
+                      // to delete a user
+                      if ((currentUser!!.userId == user.userId ||
+                          currentUser!!.role.ordinal < user.role.ordinal) &&
+                          currentUser!!.role != Role.OWNER) {
+                        IconButton(
+                            onClick = {
+                              displayed = true
+                              userToDelete = user.userId
+                            },
+                            modifier = Modifier.testTag("deleteUserButton")) {
+                              Icon(
+                                  imageVector = Icons.Default.Close,
+                                  contentDescription = "Delete User",
+                                  modifier = Modifier.size(20.dp))
+                            }
+                      }
                     }
               }
-              // to delete a user
-              IconButton(
-                  onClick = {
-                    displayed = true
-                    userToDelete = user.userId
-                  },
-                  modifier = Modifier.testTag("deleteUserButton")) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Delete User",
-                        modifier = Modifier.size(20.dp))
-                  }
             }
-      }
+          }
+      PullToRefreshLazyColumn(
+          inputLazyColumn = lazyColumn, onRefresh = { adminViewModel.getUsers() })
       if (displayed) {
         AlertDialog(
             onDismissRequest = { displayed = false },
@@ -271,7 +288,7 @@ fun Admin(adminViewModel: AdminViewModel) {
               TextButton(
                   onClick = {
                     adminViewModel.deleteUser(userToDelete)
-                    if (userToDelete == SessionManager.getCurrentUser()?.userId)
+                    if (userToDelete == currentUser?.userId)
                         navigationActions.navigateTo(Route.OVERVIEW)
                   },
                   modifier = Modifier.testTag("confirmDeleteUserButton")) {
@@ -325,7 +342,10 @@ fun Admin(adminViewModel: AdminViewModel) {
                                 text = text.toString(),
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier =
-                                    Modifier.padding(start = 16.dp).testTag("stringRole$text"))
+                                    Modifier.padding(start = 16.dp).testTag("stringRole$text"),
+                                color =
+                                    if (currentUser!!.role.ordinal <= text.ordinal) Color.Black
+                                    else Color.Gray)
                           }
                     }
                   }
@@ -335,7 +355,14 @@ fun Admin(adminViewModel: AdminViewModel) {
                     TextButton(
                         onClick = {
                           userToUpdate = userToUpdate.copy(role = selectedOption)
-                          adminViewModel.modifyUser(user = userToUpdate)
+                          if (currentUser?.userId != userToUpdate.userId &&
+                              userToUpdate.role.ordinal > currentUser?.role!!.ordinal) {
+                            adminViewModel.modifyUser(userToUpdate)
+                          } else if (currentUser?.userId == userToUpdate.userId &&
+                              userToUpdate.role.ordinal > currentUser?.role!!.ordinal &&
+                              currentUser?.role != Role.OWNER) {
+                            adminViewModel.modifyCurrentUserRole(selectedOption)
+                          }
                           displayedChoiceBox = false
                         },
                         modifier = Modifier.padding(10.dp).testTag("ConfirmRoleChangeButton")) {
@@ -348,18 +375,25 @@ fun Admin(adminViewModel: AdminViewModel) {
       }
     } else {
       Column(modifier = Modifier.padding(5.dp)) {
-        for (member in userList) { // Display each member in the list
-          DashboardMemberItem(member = member, onClick = { selectedMember = member })
-          if (member != userList.last()) { // Add a divider between the members
-            Spacer(modifier = Modifier.height(4.dp))
-            HorizontalDivider(
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(horizontal = 32.dp)
-                        .testTag("divider" + member.userId))
-            Spacer(modifier = Modifier.height(4.dp))
-          }
-        }
+        val lazyColumn =
+            @Composable {
+              LazyColumn(Modifier.fillMaxSize()) {
+                items(userList) { member ->
+                  DashboardMemberItem(member = member, onClick = { selectedMember = member })
+                  if (member != userList.last()) { // Add a divider between the members
+                    Spacer(modifier = Modifier.height(4.dp))
+                    HorizontalDivider(
+                        modifier =
+                            Modifier.fillMaxWidth()
+                                .padding(horizontal = 32.dp)
+                                .testTag("divider" + member.userId))
+                    Spacer(modifier = Modifier.height(4.dp))
+                  }
+                }
+              }
+            }
+        PullToRefreshLazyColumn(
+            inputLazyColumn = lazyColumn, onRefresh = { adminViewModel.getUsers() })
       }
     }
   }

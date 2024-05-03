@@ -7,6 +7,8 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.service.SharedPreferencesManager
+import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -26,6 +28,7 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   open var userNames = MutableStateFlow(emptyList<String>())
   open var userPosition = MutableStateFlow(LatLng(0.0, 0.0))
   open var seeUserPosition = MutableStateFlow(false)
+  open var listOfTempPlaceData = MutableStateFlow(emptyList<PlaceData>())
 
   /**
    * Execute a job on the view model scope.
@@ -35,15 +38,41 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
    */
   open fun executeJob(block: suspend () -> Unit) = viewModelScope.launch { block() }
 
-  init {
-    refreshData()
-  }
-
   /** Refresh the data. */
   fun refreshData() {
     getAllStops()
     getAllSuggestions()
     getAllUsersPositions()
+    getAllPlaceData()
+  }
+
+  /** Clear all the shared preferences. */
+  open fun clearAllSharedPreferences() {
+    SharedPreferencesManager.clearAll()
+    listOfTempPlaceData.value = emptyList()
+  }
+
+  /**
+   * Save the place data.
+   *
+   * @param placeData The place data to save.
+   */
+  open fun savePlaceDataState(placeData: PlaceData) {
+    listOfTempPlaceData.value = SharedPreferencesManager.savePlaceData(placeData)
+  }
+
+  /**
+   * Delete the place data.
+   *
+   * @param placeData The place data to delete.
+   */
+  open fun deletePlaceDataState(placeData: PlaceData) {
+    listOfTempPlaceData.value = SharedPreferencesManager.deletePlaceData(placeData)
+  }
+
+  /** Get all temporary markers. */
+  open fun getAllPlaceData() {
+    listOfTempPlaceData.value = SharedPreferencesManager.getAllPlaceData()
   }
 
   /** Get all stops from the trip. */

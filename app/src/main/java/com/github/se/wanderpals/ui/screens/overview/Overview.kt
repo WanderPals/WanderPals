@@ -97,7 +97,8 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
               innerPadding = innerPadding,
               navigationActions = navigationActions,
               tripsList = tripsList,
-              searchText = searchText)
+              searchText = searchText,
+              overviewViewModel = overviewViewModel)
         }
   }
 }

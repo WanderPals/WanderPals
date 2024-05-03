@@ -23,6 +23,8 @@ object SessionManager {
 
   private var currentUser: SessionUser? = null
 
+  private var currentUserNotificationTokenId: String = ""
+
   /**
    * Sets or updates the current user session with provided details.
    *
@@ -42,6 +44,24 @@ object SessionManager {
       tripName: String = currentUser?.tripName ?: ""
   ) {
     currentUser = SessionUser(userId, name, email, role, geoCords, profilePhoto, tripName)
+  }
+
+  /**
+   * Retrieves the current user's notification token.
+   *
+   * @return the notification token ID of the current user.
+   */
+  fun getNotificationToken(): String {
+    return currentUserNotificationTokenId
+  }
+
+  /**
+   * Updates the current user's notification token.
+   *
+   * @param currentUserNotificationTokenId the new notification token ID to be set.
+   */
+  fun setNotificationToken(currentUserNotificationTokenId: String) {
+    this.currentUserNotificationTokenId = currentUserNotificationTokenId
   }
 
   /**

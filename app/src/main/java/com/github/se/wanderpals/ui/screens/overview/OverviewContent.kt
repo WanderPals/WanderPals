@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +26,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
 /**
@@ -38,7 +44,8 @@ fun OverviewContent(
     innerPadding: PaddingValues,
     navigationActions: NavigationActions,
     tripsList: List<Trip>,
-    searchText: String
+    searchText: String,
+    overviewViewModel: OverviewViewModel
 ) {
   // Filter trips by title based on search text
   val filteredTripsByTitle =
@@ -68,6 +75,10 @@ fun OverviewContent(
                   letterSpacing = 0.5.sp,
               ),
       )
+      IconButton(
+          onClick = { overviewViewModel.getAllTrips() },
+          modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+          content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
     }
   } else {
     Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
@@ -104,11 +115,16 @@ fun OverviewContent(
             textAlign = TextAlign.Center)
 
         // LazyColumn to display the list of trips
-        LazyColumn(Modifier.padding(top = 10.dp, bottom = 20.dp)) {
-          items(filteredTripsByTitle) { trip ->
-            OverviewTrip(trip = trip, navigationActions = navigationActions)
-          }
-        }
+        val lazyColumn =
+            @Composable {
+              LazyColumn(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxSize()) {
+                items(filteredTripsByTitle) { trip ->
+                  OverviewTrip(trip = trip, navigationActions = navigationActions)
+                }
+              }
+            }
+        PullToRefreshLazyColumn(
+            inputLazyColumn = lazyColumn, onRefresh = { overviewViewModel.getAllTrips() })
       }
     }
   }

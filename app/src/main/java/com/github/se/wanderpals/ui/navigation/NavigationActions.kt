@@ -102,24 +102,21 @@ data class NavigationActions(
     var tripNavigation: MultiNavigationAppState = MultiNavigationAppState(),
 ) {
 
-  var currentRoute = MutableStateFlow(tripNavigation.getStartDestination())
+  var currentRouteTrip = MutableStateFlow(tripNavigation.getStartDestination())
 
   private var lastlyUsedController = mainNavigation
 
   /** Update the current route. */
-  fun updateCurrentRoute() {
-    currentRoute.value =
-        lastlyUsedController.getNavController.currentBackStackEntry?.destination?.route.toString()
-    if (currentRoute.value == Route.TRIP) {
-      currentRoute.value = Route.DASHBOARD
-    }
-    lastlyUsedController.printBackStack()
+  fun updateCurrentRouteOfTrip(route: String) {
+    currentRouteTrip.value = route
   }
 
   /** Go back in the navigation stack. */
   fun goBack() {
+    Log.d("NavigationAction", "goBack before")
+    lastlyUsedController.printBackStack()
     lastlyUsedController.goBack()
-    updateCurrentRoute()
+    Log.d("NavigationAction", "goBack after")
   }
 
   /**
@@ -128,14 +125,29 @@ data class NavigationActions(
    * @param route The route to navigate to.
    */
   fun navigateTo(route: String) {
-    if (TRIP_DESTINATIONS.any { it.route == route }) {
+    if (TRIP_DESTINATIONS.any { it.route == route } && checkIfNavGraphWasSet(tripNavigation)) {
       lastlyUsedController = tripNavigation
       tripNavigation.navigateTo(route)
-    } else {
+    } else if (MAIN_ROUTES.any { it == route } && checkIfNavGraphWasSet(mainNavigation)) {
       lastlyUsedController = mainNavigation
       mainNavigation.navigateTo(route)
     }
-    updateCurrentRoute()
+  }
+
+  /**
+   * Check if the nav graph was set.
+   *
+   * @param nav The navigation state.
+   * @return True if the nav graph was set, false otherwise.
+   */
+  private fun checkIfNavGraphWasSet(nav: MultiNavigationAppState): Boolean {
+    return try {
+      nav.getNavController.graph
+      true
+    } catch (e: Exception) {
+      Log.d("NavigationAction", "Nav graph was not set")
+      false
+    }
   }
 
   /**
@@ -176,6 +188,7 @@ data class NavigationActions(
     variables.suggestionId = suggestion.suggestionId
     variables.currentGeoCords = suggestion.stop.geoCords
     variables.currentSuggestion = suggestion
+    variables.currentAddress = suggestion.stop.address
   }
 
   /**

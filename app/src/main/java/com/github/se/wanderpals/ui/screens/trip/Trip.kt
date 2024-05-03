@@ -27,6 +27,7 @@ import androidx.navigation.navigation
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
@@ -37,6 +38,8 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
+import com.github.se.wanderpals.ui.screens.trip.finance.CreateExpense
+import com.github.se.wanderpals.ui.screens.trip.finance.Finance
 import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
@@ -78,6 +81,7 @@ fun Trip(
                   startDestination = oldNavActions.tripNavigation.getStartDestination(),
                   route = Route.TRIP) {
                     composable(Route.DASHBOARD) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.DASHBOARD)
                       val dashboardViewModel: DashboardViewModel =
                           viewModel(
                               factory =
@@ -87,6 +91,7 @@ fun Trip(
                       Dashboard(tripId, dashboardViewModel, oldNavActions)
                     }
                     composable(Route.AGENDA) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.AGENDA)
                       val agendaViewModel: AgendaViewModel =
                           viewModel(
                               factory =
@@ -95,6 +100,7 @@ fun Trip(
                       Agenda(agendaViewModel)
                     }
                     composable(Route.SUGGESTION) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION)
                       val suggestionsViewModel: SuggestionsViewModel =
                           viewModel(
                               factory =
@@ -112,6 +118,7 @@ fun Trip(
                           })
                     }
                     composable(Route.MAP) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.MAP)
                       val mapViewModel: MapViewModel =
                           viewModel(
                               factory = MapViewModel.MapViewModelFactory(tripsRepository, tripId))
@@ -129,6 +136,7 @@ fun Trip(
                       }
                     }
                     composable(Route.NOTIFICATION) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.NOTIFICATION)
                       val notificationsViewModel: NotificationsViewModel =
                           viewModel(
                               factory =
@@ -138,6 +146,7 @@ fun Trip(
                       Notification(notificationsViewModel, oldNavActions)
                     }
                     composable(Route.CREATE_ANNOUNCEMENT) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_ANNOUNCEMENT)
                       val notificationsViewModel: NotificationsViewModel =
                           viewModel(
                               factory =
@@ -149,6 +158,7 @@ fun Trip(
                     }
 
                     composable(Route.SUGGESTION_DETAIL) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION_DETAIL)
                       Log.d(
                           "SuggestionDetail",
                           "SuggestionDetail: ${oldNavActions.variables.suggestionId}")
@@ -159,10 +169,32 @@ fun Trip(
                                   SuggestionsViewModel.SuggestionsViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "SuggestionsViewModel")
+                      suggestionsViewModel.setSelectedSuggestion(
+                          oldNavActions.variables.currentSuggestion)
                       SuggestionDetail(
                           suggestionId = oldNavActions.variables.suggestionId,
                           viewModel = suggestionsViewModel,
                           navActions = oldNavActions)
+                    }
+                    composable(Route.FINANCE) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
+                      val viewModel: FinanceViewModel =
+                          viewModel(
+                              factory =
+                                  FinanceViewModel.FinanceViewModelFactory(
+                                      tripsRepository, oldNavActions.variables.currentTrip),
+                              key = "FinanceViewModel")
+                      Finance(financeViewModel = viewModel, navigationActions = oldNavActions)
+                    }
+                    composable(Route.CREATE_EXPENSE) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_EXPENSE)
+                      val viewModel: FinanceViewModel =
+                          viewModel(
+                              factory =
+                                  FinanceViewModel.FinanceViewModelFactory(
+                                      tripsRepository, oldNavActions.variables.currentTrip),
+                              key = "FinanceViewModel")
+                      CreateExpense(tripId, viewModel, oldNavActions)
                     }
                   }
             }
@@ -176,7 +208,7 @@ fun Trip(
  */
 @Composable
 fun BottomBar(navActions: NavigationActions) {
-  val currentRoute by navActions.currentRoute.collectAsState()
+  val currentRoute by navActions.currentRouteTrip.collectAsState()
 
   NavigationBar(
       modifier = Modifier.testTag("bottomNav").height(56.dp),

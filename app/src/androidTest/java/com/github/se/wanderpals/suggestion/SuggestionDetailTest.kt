@@ -62,6 +62,9 @@ class FakeViewModelDetails(testSuggestions: List<Suggestion>) :
     val newSuggestion = suggestion.copy(userLikes = suggestion.userLikes + "userid")
     updateSuggestionList(
         _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
+    if (selectedSuggestion.value.suggestionId == suggestion.suggestionId) {
+      selectedSuggestion.value = newSuggestion
+    }
   }
 
   // Mock AddComment function
@@ -76,7 +79,12 @@ class FakeViewModelDetails(testSuggestions: List<Suggestion>) :
                     comment.copy(userId = "userid", userName = "John Doe", commentId = "comment2"))
     updateSuggestionList(
         _state.value.map { if (it.suggestionId == suggestion.suggestionId) newSuggestion else it })
+    if (selectedSuggestion.value.suggestionId == suggestion.suggestionId) {
+      selectedSuggestion.value = newSuggestion
+    }
   }
+
+  override val selectedSuggestion = MutableStateFlow(testSuggestions.first())
 }
 
 @RunWith(AndroidJUnit4::class)

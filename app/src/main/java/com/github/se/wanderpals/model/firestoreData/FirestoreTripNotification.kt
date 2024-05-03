@@ -10,15 +10,17 @@ import java.time.format.DateTimeFormatter
  * interactions with Firestore.
  *
  * @param title A brief title of the TripNotification.
- * @param path A string path that could represent the itinerary path or related resource.
+ * @param route The route of the navigation (can be empty).
  * @param timestamp The exact date and time when the TripNotification was created, stored as a
  *   String.
+ * @param navActionVariables The navigation action variables stored as a string.
  */
 data class FirestoreTripNotification(
     val title: String = "",
-    val path: String = "",
+    val route: String = "",
     val timestamp: String =
-        "" // LocalDateTime is converted to String to ensure Firestore compatibility
+        "", // LocalDateTime is converted to String to ensure Firestore compatibility
+    val navActionVariables: String = ""
 ) {
   companion object {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -32,10 +34,10 @@ data class FirestoreTripNotification(
     fun fromTripNotification(tripNotification: TripNotification): FirestoreTripNotification {
       return FirestoreTripNotification(
           title = tripNotification.title,
-          path = tripNotification.path,
+          route = tripNotification.route,
           timestamp =
-              tripNotification.timestamp.format(formatter) // Convert LocalDateTime to String
-          )
+              tripNotification.timestamp.format(formatter), // Convert LocalDateTime to String
+          navActionVariables = tripNotification.navActionVariables)
     }
   }
 
@@ -47,9 +49,9 @@ data class FirestoreTripNotification(
   fun toTripNotification(): TripNotification {
     return TripNotification(
         title = this.title,
-        path = this.path,
+        route = this.route,
         timestamp =
-            LocalDateTime.parse(this.timestamp, formatter) // Convert String back to LocalDateTime
-        )
+            LocalDateTime.parse(this.timestamp, formatter), // Convert String back to LocalDateTime
+        navActionVariables = this.navActionVariables)
   }
 }

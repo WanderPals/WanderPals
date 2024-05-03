@@ -1,7 +1,9 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,11 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -23,6 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.ui.theme.backgroundLight
+import com.github.se.wanderpals.ui.theme.primaryLight
+import com.github.se.wanderpals.ui.theme.secondaryLight
 import java.time.format.DateTimeFormatter
 
 /**
@@ -35,96 +42,107 @@ import java.time.format.DateTimeFormatter
 fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
   Dialog(onDismissRequest = { closeDialogueAction() }) {
     Surface(
+        shape = RoundedCornerShape(10.dp),
         modifier =
-            Modifier.fillMaxSize().padding(top = 30.dp, bottom = 30.dp).testTag("activityDialog"),
-        color = MaterialTheme.colorScheme.background,
-        shape = RoundedCornerShape(16.dp)) {
-          Column(
-              modifier = Modifier.fillMaxSize().padding(16.dp),
-              verticalArrangement = Arrangement.SpaceEvenly) {
-
-                // Title
-                Text(
-                    text = stop.title,
-                    style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.CenterHorizontally).testTag("titleText"))
-                Spacer(modifier = Modifier.height(15.dp))
-
-                // Description
-                OutlinedTextField(
-                    value = stop.description,
-                    onValueChange = {},
+            Modifier.height(470.dp) // This will make the height dynamic
+                .padding(horizontal = 13.dp)
+                .fillMaxWidth() // Ensure the dialog utilizes the available width todo
+        ) {
+          Scaffold(
+              modifier = Modifier.testTag("activityDialog"),
+              containerColor =
+                  MaterialTheme.colorScheme.background, // Set the background color of the Scaffold
+              topBar = {
+                Column(modifier = Modifier.fillMaxWidth().background(secondaryLight)) {
+                  // Title
+                  Text(
+                      text = stop.title,
+                      color = Color.White,
+                      style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                      textAlign = TextAlign.Center,
+                      modifier =
+                          Modifier.fillMaxWidth().padding(vertical = 24.dp).testTag("titleText"))
+                }
+              },
+              content = { padding ->
+                Column(
                     modifier =
-                        Modifier.fillMaxWidth().height(225.dp).testTag("activityDescription"),
-                    readOnly = true)
-                Spacer(modifier = Modifier.height(15.dp))
+                        Modifier.fillMaxSize()
+                            .background(Color.LightGray)
+                            .padding(padding)
+                            .padding(16.dp), // Apply padding to the content
+                    verticalArrangement = Arrangement.Center) {
+                      Row(
+                          modifier = Modifier.fillMaxWidth().padding(top = 7.dp, bottom = 2.dp),
+                      ) {
+                        // Date
+                        Text(
+                            text =
+                                stop.date.format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")),
+                            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
+                            color = primaryLight,
+                            textAlign = TextAlign.Start,
+                            lineHeight = 20.sp,
+                            modifier =
+                                Modifier // .weight(1f)
+                                    .testTag("activityDate"))
 
-                // Date
-                Text(
-                    text = "Date",
-                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.testTag("titleDate"))
+                        Spacer(Modifier.weight(1f))
 
-                Text(
-                    text = stop.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                    style = TextStyle(fontSize = 16.sp),
-                    textAlign = TextAlign.Center,
-                    modifier =
-                        Modifier.align(Alignment.Start)
-                            .padding(bottom = 20.dp)
-                            .testTag("activityDate"))
+                        // Time
+                        Text(
+                            text =
+                                "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
+                            style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
+                            color = secondaryLight,
+                            textAlign = TextAlign.Right,
+                            lineHeight = 20.sp,
+                            modifier =
+                                Modifier // .weight(1f)
+                                    .testTag("activitySchedule"))
+                      }
 
-                // Schedule
-                Text(
-                    text = "Schedule",
-                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.testTag("titleSchedule"))
+                      // Address
+                      Text(
+                          text = stop.address.ifEmpty { "No address provided" },
+                          style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
+                          color = secondaryLight,
+                          textAlign = TextAlign.Start,
+                          lineHeight = 20.sp,
+                          modifier = Modifier.align(Alignment.Start).testTag("activityAddress"))
 
-                Text(
-                    text =
-                        "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
-                    style = TextStyle(fontSize = 16.sp),
-                    textAlign = TextAlign.Center,
-                    modifier =
-                        Modifier.align(Alignment.Start)
-                            .padding(bottom = 20.dp)
-                            .testTag("activitySchedule"))
+                      Spacer(Modifier.height(2.dp))
 
-                // Address
-                Text(
-                    text = "Address",
-                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.testTag("titleAddress"))
+                      // Budget
+                      Text(
+                          text = "${stop.budget}",
+                          style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
+                          textAlign = TextAlign.Start,
+                          modifier = Modifier.align(Alignment.Start).testTag("activityBudget"))
 
-                Text(
-                    text = stop.address,
-                    style = TextStyle(fontSize = 16.sp),
-                    textAlign = TextAlign.Center,
-                    modifier =
-                        Modifier.align(Alignment.Start)
-                            .padding(bottom = 20.dp)
-                            .testTag("activityAddress"))
+                      Spacer(Modifier.height(14.dp)) // Space between Budget and Description
 
-                // Budget
-                Text(
-                    text = "Budget",
-                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.testTag("titleBudget"))
-
-                Text(
-                    text = "${stop.budget}",
-                    style = TextStyle(fontSize = 16.sp),
-                    textAlign = TextAlign.Center,
-                    modifier =
-                        Modifier.align(Alignment.Start)
-                            .padding(bottom = 20.dp)
-                            .testTag("activityBudget"))
-              }
+                      // Description
+                      OutlinedTextField(
+                          value = stop.description,
+                          onValueChange = {},
+                          textStyle =
+                              TextStyle(
+                                  fontSize = 16.sp,
+                                  fontWeight = FontWeight(500),
+                                  color = secondaryLight),
+                          readOnly = true,
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .height(300.dp)
+                                  .background(backgroundLight)
+                                  .testTag("activityDescription"),
+                      )
+                      Spacer(
+                          Modifier.height(
+                              16.dp)) // Space between Description and the end of the dialog
+                }
+              })
         }
   }
 }
