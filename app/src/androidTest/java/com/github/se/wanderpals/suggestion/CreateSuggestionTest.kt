@@ -1,6 +1,10 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTouchInput
+import androidx.test.espresso.action.ViewActions.swipeDown
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
@@ -1040,5 +1044,29 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
       }
       confirmVerified(mockNavActions)
     }
+  }
+
+  /** Test if the CreateSuggestion screen is scrollable. */
+  @Test
+  fun checkIfCreateSuggestionIsScrollable() {
+    val viewModel = CreateSuggestionViewModel(TripsRepository("testUser123", Dispatchers.IO))
+    val suggestion =
+        Suggestion(
+            stop =
+                Stop(
+                    title = "Sample Title",
+                    description = "Long description here to ensure scrollable content.",
+                    geoCords = GeoCords(0.0, 0.0)))
+
+    composeTestRule.setContent { CreateSuggestion("tripId", viewModel, suggestion = suggestion) }
+
+    // Use swipeUp and swipeDown to simulate user scroll actions
+    val scrollableNode = composeTestRule.onNodeWithText("Sample Title")
+
+    // Perform a swipe up action to scroll down
+    scrollableNode.performTouchInput { swipeUp() }
+
+    // Perform a swipe down action to scroll back up
+    scrollableNode.performTouchInput { swipeDown() }
   }
 }
