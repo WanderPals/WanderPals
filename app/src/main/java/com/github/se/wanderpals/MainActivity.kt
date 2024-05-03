@@ -38,9 +38,11 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.storage.storage
 
 const val EMPTY_CODE = ""
 
@@ -81,8 +83,9 @@ class MainActivity : ComponentActivity() {
                           userId = uid,
                           name = account.displayName ?: "",
                           email = account.email ?: "",
-                          profilePhoto = it.result.user?.photoUrl.toString())
-
+                          profilePhoto = it.result?.user?.photoUrl.toString(),
+                          nickname = viewModel.getUserName(account.email ?: ""))
+                      viewModel.setUserName(account.email ?: "")
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
                       Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
@@ -121,6 +124,9 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    val storage = Firebase.storage
+
+    val storageRef = storage.reference
 
     context = this
 
@@ -162,7 +168,10 @@ class MainActivity : ComponentActivity() {
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
                               SessionManager.setUserSession(
-                                  userId = uid, name = "Anonymous User", email = "")
+                                  userId = uid,
+                                  name = "Anonymous User",
+                                  email = "",
+                                  nickname = "Anonymous User")
                               navigationActions.navigateTo(Route.OVERVIEW)
                             }
                             .addOnFailureListener {
@@ -176,7 +185,9 @@ class MainActivity : ComponentActivity() {
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.displayName ?: "",
-                              email = result.user?.email ?: "")
+                              email = result.user?.email ?: "",
+                              nickname = viewModel.getUserName(result.user?.email ?: ""))
+                          viewModel.setUserName(email)
                           navigationActions.navigateTo(Route.OVERVIEW)
                         }
                         FirebaseAuth.getInstance()
@@ -245,7 +256,8 @@ class MainActivity : ComponentActivity() {
                                   AdminViewModel.AdminViewModelFactory(
                                       navigationActions.variables.currentTrip,
                                       viewModel.getTripsRepository()),
-                              key = "AdminPage"))
+                              key = "AdminPage"),
+                      storageReference = storageRef)
                 }
               }
         }

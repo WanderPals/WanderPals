@@ -131,7 +131,8 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                                   Text(
                                       text = "No expenses yet.",
                                       modifier = Modifier.testTag("noExpenses"),
-                                      style = TextStyle(color = MaterialTheme.colorScheme.primary))
+                                      style = TextStyle(color = MaterialTheme.colorScheme.primary),
+                                  )
                                 }
                           } else {
                             Column {

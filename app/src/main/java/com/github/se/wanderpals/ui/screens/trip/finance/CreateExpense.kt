@@ -71,7 +71,12 @@ import java.time.format.DateTimeFormatter
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateExpense(tripId: String, viewModel: FinanceViewModel, navActions: NavigationActions) {
+fun CreateExpense(
+    tripId: String,
+    viewModel: FinanceViewModel,
+    navActions: NavigationActions,
+    onDone: () -> Unit = {}
+) {
 
   LaunchedEffect(key1 = Unit) { viewModel.loadMembers(tripId) }
 
@@ -345,6 +350,7 @@ fun CreateExpense(tripId: String, viewModel: FinanceViewModel, navActions: Navig
                                         names = selectedUsers.map { it.name })
                                 errorText = ""
                                 viewModel.addExpense(tripId, expense)
+                                onDone()
                                 navActions.goBack()
                               }
                             },
