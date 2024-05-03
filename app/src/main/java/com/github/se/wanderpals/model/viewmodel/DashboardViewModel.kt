@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 open class DashboardViewModel(private val tripsRepository: TripsRepository, tripId: String) :
     ViewModel() {
@@ -22,6 +23,9 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
 
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+  private var _tripTitle = MutableStateFlow("")
+  open val tripTitle: StateFlow<String> = _tripTitle.asStateFlow()
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {
@@ -38,6 +42,11 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
       // Fetch all expenses from the trip
       _expenses.value = tripsRepository.getAllExpensesFromTrip(tripId)
     }
+  }
+
+  open fun loadTripTitle(tripId: String) {
+    // Get the title of the trip
+    runBlocking { _tripTitle.value = tripsRepository.getTrip(tripId)?.title ?: "" }
   }
 
   class DashboardViewModelFactory(

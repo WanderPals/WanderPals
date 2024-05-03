@@ -62,7 +62,7 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
                 Icon(
                     Icons.Default.Menu,
                     contentDescription = "suggestionIcon",
-                    tint = MaterialTheme.colorScheme.onPrimary,
+                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
                     modifier = Modifier.testTag("suggestionIcon"))
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(

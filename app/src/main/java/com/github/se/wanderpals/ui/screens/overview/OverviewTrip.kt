@@ -268,7 +268,7 @@ fun OverviewTrip(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Send,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier =
                                 Modifier.background(
                                     if (isEmailSelected.value) Color.LightGray
@@ -290,7 +290,7 @@ fun OverviewTrip(
                         Icon(
                             imageVector = Icons.Default.Share,
                             contentDescription = null,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier =
                                 Modifier.background(
                                     if (isSelected.value) Color.LightGray else Color.Transparent))
