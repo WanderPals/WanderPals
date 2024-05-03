@@ -83,8 +83,9 @@ class MainActivity : ComponentActivity() {
                           userId = uid,
                           name = account.displayName ?: "",
                           email = account.email ?: "",
-                          profilePhoto = it.result?.user?.photoUrl.toString())
-
+                          profilePhoto = it.result?.user?.photoUrl.toString(),
+                          nickname = viewModel.getUserName(account.email ?: ""))
+                      viewModel.setUserName(account.email ?: "")
                       navigationActions.navigateTo(Route.OVERVIEW)
                     } else {
                       Toast.makeText(context, "FireBase Failed", Toast.LENGTH_SHORT).show()
@@ -167,7 +168,10 @@ class MainActivity : ComponentActivity() {
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
                               SessionManager.setUserSession(
-                                  userId = uid, name = "Anonymous User", email = "")
+                                  userId = uid,
+                                  name = "Anonymous User",
+                                  email = "",
+                                  nickname = "Anonymous User")
                               navigationActions.navigateTo(Route.OVERVIEW)
                             }
                             .addOnFailureListener {
@@ -181,7 +185,9 @@ class MainActivity : ComponentActivity() {
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.displayName ?: "",
-                              email = result.user?.email ?: "")
+                              email = result.user?.email ?: "",
+                              nickname = viewModel.getUserName(result.user?.email ?: ""))
+                          viewModel.setUserName(email)
                           navigationActions.navigateTo(Route.OVERVIEW)
                         }
                         FirebaseAuth.getInstance()

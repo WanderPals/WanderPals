@@ -228,7 +228,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
             modifier = Modifier.padding(start = 10.dp, top = 30.dp)) {
               if (currentUser != null) {
                 Text(
-                    text = currentUser!!.name,
+                    text = currentUser!!.nickname,
                     style = MaterialTheme.typography.displaySmall,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,

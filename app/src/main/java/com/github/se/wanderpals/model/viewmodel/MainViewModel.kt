@@ -1,11 +1,13 @@
 package com.github.se.wanderpals.model.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 
 /**
  * ViewModel to manage data for the main user interface components. It handles the initialization
@@ -37,6 +39,34 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    */
   fun getTripsRepository(): TripsRepository {
     return tripsRepository
+  }
+
+  /**
+   * Get a username
+   *
+   * @param email The email to get the username for.
+   */
+  fun getUserName(email: String): String {
+    val userName = email.substringBefore('@')
+    val after = email.substringAfter('@')
+    return if (after == "gmail.com") {
+      val returnName = "$userName@gml"
+      Log.d("MainViewModel", "getUserName: $returnName")
+      returnName
+    } else {
+      val returnName = "$userName@mle${after.hashCode().mod(1000)}"
+      Log.d("MainViewModel", "getUserName: $returnName")
+      returnName
+    }
+  }
+
+  /**
+   * Set a username
+   *
+   * @param email The email to set the username for.
+   */
+  fun setUserName(email: String) {
+    runBlocking { tripsRepository.addEmailToUsername(getUserName(email), email) }
   }
 
   /**

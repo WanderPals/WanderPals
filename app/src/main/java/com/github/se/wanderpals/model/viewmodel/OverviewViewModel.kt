@@ -28,6 +28,14 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  // State flow to track if the user can send a trip
+  private val _canSend = MutableStateFlow(false)
+  open val canSend: StateFlow<Boolean> = _canSend.asStateFlow()
+
+  // State flow to track the user that we want to send the trip
+  private val _userToSend = MutableStateFlow("")
+  open val userToSend: StateFlow<String> = _userToSend.asStateFlow()
+
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
     viewModelScope.launch {
@@ -73,6 +81,27 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
       }
     }
     return success
+  }
+
+  /**
+   * Add a user to which send an email
+   *
+   * @param user The user to send the trip.
+   */
+  open fun addUserToSend(user: String) {
+    runBlocking {
+      val it = tripsRepository.getUserEmail(user)
+      if (it != null) {
+        _userToSend.value = it
+        _canSend.value = true
+      }
+    }
+  }
+
+  /** Clear the user to send the trip */
+  open fun clearUserToSend() {
+    _userToSend.value = ""
+    _canSend.value = false
   }
 
   class OverviewViewModelFactory(private val tripsRepository: TripsRepository) :
