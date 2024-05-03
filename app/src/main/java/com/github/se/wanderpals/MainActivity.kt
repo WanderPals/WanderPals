@@ -161,7 +161,10 @@ class MainActivity : ComponentActivity() {
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
                               SessionManager.setUserSession(
-                                  userId = uid, name = "Anonymous User", email = "")
+                                  userId = uid,
+                                  name = "Anonymous User",
+                                  email = "",
+                                  nickname = "Anonymous User")
                               navigationActions.navigateTo(Route.OVERVIEW)
                             }
                             .addOnFailureListener {
