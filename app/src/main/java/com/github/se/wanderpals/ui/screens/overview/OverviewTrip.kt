@@ -310,7 +310,7 @@ fun DialogHandlerEmail(
         closeDialogueAction()
       }) {
         Surface(
-            modifier = Modifier.height(220.dp).testTag("dialog"),
+            modifier = Modifier.height(220.dp).testTag("emailDialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)) {
               Column(

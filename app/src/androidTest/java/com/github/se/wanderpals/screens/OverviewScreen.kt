@@ -28,5 +28,10 @@ class OverviewScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val shareTripButton2: KNode = onNode { hasTestTag("shareTripButton2") }
   val shareTripButton3: KNode = onNode { hasTestTag("shareTripButton3") }
 
+  val sendTripButton1: KNode = onNode { hasTestTag("sendTripButton1") }
+  val sendTripButton2: KNode = onNode { hasTestTag("sendTripButton2") }
+  val sendTripButton3: KNode = onNode { hasTestTag("sendTripButton3") }
+
   val dialog: KNode = onNode { hasTestTag("dialog") }
+  val emailDialog: KNode = onNode { hasTestTag("emailDialog") }
 }
