@@ -134,6 +134,7 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 
 dependencies {
     implementation(libs.test.core.ktx)
+    implementation(libs.firebase.storage.ktx)
     val composeBom = platform(libs.compose.bom)
 
     implementation(libs.androidx.navigation.runtime.ktx)

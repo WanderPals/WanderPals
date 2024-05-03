@@ -34,6 +34,7 @@ playServicesAuth = "21.0.0"
 navigationRuntimeKtx = "2.7.7"
 places = "3.4.0"
 androidxCoreKtx = "1.5.0"
+firebaseStorageKtx = "20.3.0"
 
 
 [libraries]
@@ -82,6 +83,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
 places = { group = "com.google.android.libraries.places", name = "places", version.ref = "places" }
 test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "androidxCoreKtx" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
