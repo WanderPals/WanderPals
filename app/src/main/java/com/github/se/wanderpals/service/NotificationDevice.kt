@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,8 +28,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.github.se.wanderpals.R
+import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.firebase.messaging.messaging
 
 class NotificationDevice : FirebaseMessagingService() {
   override fun onNewToken(token: String) {
@@ -129,18 +132,16 @@ fun ShowRationalPermissionDialog(openDialog: MutableState<Boolean>, onclick: () 
 }
 
 // function to subscribe to a topic
-/*fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Context) {
-    Firebase.messaging.subscribeToTopic("Trip_$tripName")
-        .addOnCompleteListener {task ->
-            var msg = "Subscribed to Trip_$tripName"
-            if (!task.isSuccessful) {
-                msg = "Failed to subscribe to Trip_$tripName"
-            }
-            Log.d("Firebase", msg)
-            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-
-        }
-}*/
+fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Context) {
+  Firebase.messaging.subscribeToTopic("Trip_$tripName").addOnCompleteListener { task ->
+    var msg = "Subscribed to Trip_$tripName"
+    if (!task.isSuccessful) {
+      msg = "Failed to subscribe to Trip_$tripName"
+    }
+    Log.d("Firebase", msg)
+    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+  }
+}
 
 // function to send message to a topic from a client app
 
