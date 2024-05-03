@@ -191,8 +191,10 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                       .clip(CircleShape)
                       .border(3.dp, rainbowColorsBrush, CircleShape)
                       .clickable {
-                        if (modifierButton && !isAlreadyClicked) isAlreadyClicked = true
-                        singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                        if (modifierButton && !isAlreadyClicked) {
+                          isAlreadyClicked = true
+                          singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                        }
                       }
                       .testTag("IconAdminScreen"))
         } else {
@@ -208,8 +210,10 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                         .clip(CircleShape)
                         .border(3.dp, rainbowColorsBrush, CircleShape)
                         .clickable {
-                          if (modifierButton && !isAlreadyClicked) isAlreadyClicked = true
-                          singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                          if (modifierButton && !isAlreadyClicked) {
+                            isAlreadyClicked = true
+                            singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                          }
                         }
                         .testTag("IconAdminScreen"))
           }
