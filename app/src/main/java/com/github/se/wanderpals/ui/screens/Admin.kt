@@ -276,7 +276,8 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                           modifier = Modifier.padding(start = 30.dp).testTag("userName"))
 
                       // to change the role of a user
-                      if (currentUser!!.role != Role.OWNER) {
+                      if (currentUser!!.role == Role.OWNER && currentUser!!.userId != user.userId ||
+                          currentUser!!.role != Role.OWNER) {
                         IconButton(
                             onClick = {
                               userToUpdate = user

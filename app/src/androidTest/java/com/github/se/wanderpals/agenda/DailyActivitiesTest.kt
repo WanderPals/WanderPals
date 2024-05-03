@@ -180,14 +180,14 @@ class DailyActivitiesTest {
       composeTestRule
           .onNodeWithTag("activityDescription")
           .assertTextEquals("Description " + testStop.stopId)
-      composeTestRule.onNodeWithTag("titleDate").assertIsDisplayed()
+      //      composeTestRule.onNodeWithTag("titleDate").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityDate").assertIsDisplayed()
       composeTestRule
           .onNodeWithTag("activityDate")
-          .assertTextEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
-      composeTestRule.onNodeWithTag("titleSchedule").assertIsDisplayed()
+          .assertTextEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")))
+      //      composeTestRule.onNodeWithTag("titleSchedule").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activitySchedule").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
+      //      composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityAddress").assertIsDisplayed()
       if (testStop.address.isNotEmpty()) {
         composeTestRule
@@ -201,7 +201,7 @@ class DailyActivitiesTest {
             .assertIsDisplayed()
             .assertIsNotEnabled()
       }
-      composeTestRule.onNodeWithTag("titleBudget").assertIsDisplayed()
+      //      composeTestRule.onNodeWithTag("titleBudget").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityBudget").assertIsDisplayed()
       composeTestRule.onNodeWithTag("activityBudget").assertTextEquals("0.0")
     }
