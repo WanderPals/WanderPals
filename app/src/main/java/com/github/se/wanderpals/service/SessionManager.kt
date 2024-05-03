@@ -9,11 +9,11 @@ data class SessionUser(
     val userId: String = "",
     var name: String = "",
     var email: String = "",
-    val nickname: String = "",
     var role: Role = Role.VIEWER,
     var geoCords: GeoCords = GeoCords(0.0, 0.0),
     var profilePhoto: String = "",
-    var tripName: String = ""
+    var tripName: String = "",
+    val nickname: String = ""
 )
 
 /**
@@ -39,13 +39,13 @@ object SessionManager {
       userId: String = currentUser?.userId ?: "",
       name: String = currentUser?.name ?: "",
       email: String = currentUser?.email ?: "",
-      nickname: String = currentUser?.nickname ?: "",
       role: Role = currentUser?.role ?: Role.VIEWER,
       geoCords: GeoCords = currentUser?.geoCords ?: GeoCords(0.0, 0.0),
       profilePhoto: String = currentUser?.profilePhoto ?: "",
-      tripName: String = currentUser?.tripName ?: ""
+      tripName: String = currentUser?.tripName ?: "",
+      nickname: String = currentUser?.nickname ?: ""
   ) {
-    currentUser = SessionUser(userId, name, email, nickname, role, geoCords, profilePhoto, tripName)
+    currentUser = SessionUser(userId, name, email, role, geoCords, profilePhoto, tripName, nickname)
   }
 
   /**
