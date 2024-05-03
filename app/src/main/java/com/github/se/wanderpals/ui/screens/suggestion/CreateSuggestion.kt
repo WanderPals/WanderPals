@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
@@ -76,6 +77,9 @@ fun CreateSuggestion(
     onFailure: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
+  // Remembering scroll state for the vertical scroll of the main Column
+  val scrollState = rememberScrollState()
+
   var description by remember { mutableStateOf(suggestion.stop.description) }
   var address by remember { mutableStateOf(suggestion.stop.address) }
   var _website by remember { mutableStateOf(suggestion.stop.website) }
@@ -128,7 +132,9 @@ fun CreateSuggestion(
 
   Surface(modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier =
+            Modifier.fillMaxSize()
+                .verticalScroll(scrollState), // Add vertical scroll to the main Column
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
           Column(
