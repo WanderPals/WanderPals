@@ -29,6 +29,7 @@ open class DashboardViewModel(val tripsRepository: TripsRepository, tripId: Stri
     loadTripTitle(tripId)
   }
 
+  /** Fetches the trip title from the repository and updates the state flow accordingly. */
   private fun loadTripTitle(tripId: String) {
     viewModelScope.launch {
       val trip = tripsRepository.getTrip(tripId)

@@ -234,7 +234,10 @@ fun TopDashboardBar(
                         color = Color.White,
                     ),
                 modifier = Modifier.padding(start = 24.dp))
-            Row(modifier = Modifier.fillMaxWidth()) {} // to fill the remaining space of the top bar
+            Row(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()) {} // in order to fill the remaining space of the top bar
           }
         }
   }
