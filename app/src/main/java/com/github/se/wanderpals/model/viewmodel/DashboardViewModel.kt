@@ -10,14 +10,27 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-open class DashboardViewModel(private val tripsRepository: TripsRepository, tripId: String) :
-    ViewModel() {
+open class DashboardViewModel(val tripsRepository: TripsRepository, tripId: String) : ViewModel() {
   // State flow to hold the list of suggestions
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   open val state: StateFlow<List<Suggestion>> = _state
 
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+  private val _tripTitle = MutableStateFlow<String?>(null)
+  val tripTitle: StateFlow<String?> = _tripTitle.asStateFlow()
+
+  init {
+    loadTripTitle(tripId)
+  }
+
+  private fun loadTripTitle(tripId: String) {
+    viewModelScope.launch {
+      val trip = tripsRepository.getTrip(tripId)
+      _tripTitle.value = trip?.title
+    }
+  }
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {

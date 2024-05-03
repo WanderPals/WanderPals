@@ -42,7 +42,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -89,7 +92,7 @@ fun Dashboard(
       }
     } else {
       Scaffold(
-          topBar = { TopDashboardBar(scope, drawerState) },
+          topBar = { TopDashboardBar(scope, drawerState, dashboardViewModel) },
       ) { contentPadding ->
         Surface(
             modifier =
@@ -187,16 +190,42 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
  * Contains a menu button to open the drawer.
  */
 @Composable
-fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState) {
+fun TopDashboardBar(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    dashboardViewModel: DashboardViewModel,
+) {
+  // Collect the trip title from the view model
+  val tripTitle by dashboardViewModel.tripTitle.collectAsState()
+
   Column(modifier = Modifier.background(primaryLight).height(54.dp).testTag("dashboardTopBar")) {
-    IconButton(
-        modifier =
-            Modifier.padding(start = 22.dp, top = 16.dp, bottom = 16.dp)
-                .width(33.dp)
-                .height(22.dp)
-                .testTag("menuButton"),
-        content = { Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White) },
-        onClick = { scope.launch { drawerState.apply { if (isClosed) open() else close() } } })
-    Row(modifier = Modifier.fillMaxWidth()) {}
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(horizontal = 16.dp)) {
+          IconButton(
+              modifier =
+                  Modifier.padding(start = 22.dp, top = 16.dp, bottom = 16.dp)
+                      .width(33.dp)
+                      .height(22.dp)
+                      .testTag("menuButton"),
+              content = {
+                Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
+              },
+              onClick = {
+                scope.launch { drawerState.apply { if (isClosed) open() else close() } }
+              })
+
+          Text(
+              text = tripTitle!!,
+              style =
+                  TextStyle(
+                      fontSize = 24.sp,
+                      lineHeight = 20.sp,
+                      fontWeight = FontWeight(500),
+                      color = Color.White,
+                  ),
+              modifier = Modifier.padding(start = 24.dp).testTag("dashboardTripTitle"))
+          Row(modifier = Modifier.fillMaxWidth()) {} // to fill the remaining space of the top bar
+    }
   }
 }
