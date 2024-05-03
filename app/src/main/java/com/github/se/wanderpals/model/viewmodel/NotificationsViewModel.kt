@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,6 +55,12 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
       // Set loading state to false after data is fetched
       _isLoading.value = false
     }
+  }
+
+  open fun getSuggestion(suggestionId : String): Suggestion {
+    var suggestion = Suggestion()
+    runBlocking { suggestion = tripsRepository.getSuggestionFromTrip(tripId,suggestionId)!! }
+    return suggestion
   }
 
   /**
