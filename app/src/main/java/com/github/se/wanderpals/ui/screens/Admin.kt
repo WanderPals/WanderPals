@@ -102,6 +102,8 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
 
   var selectedMember by remember { mutableStateOf<User?>(null) }
 
+  var isAlreadyClicked by remember { mutableStateOf(false) }
+
   val rainbowColorsBrush = remember {
     Brush.sweepGradient(
         listOf(
@@ -189,8 +191,9 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                       .clip(CircleShape)
                       .border(3.dp, rainbowColorsBrush, CircleShape)
                       .clickable {
-                        if (modifierButton)
-                            singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                        if (modifierButton && !isAlreadyClicked)
+                            isAlreadyClicked = true
+                          singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
                       }
                       .testTag("IconAdminScreen"))
         } else {
@@ -206,8 +209,9 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                         .clip(CircleShape)
                         .border(3.dp, rainbowColorsBrush, CircleShape)
                         .clickable {
-                          if (modifierButton)
-                              singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+                          if (modifierButton && !isAlreadyClicked)
+                              isAlreadyClicked = true
+                            singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
                         }
                         .testTag("IconAdminScreen"))
           }
