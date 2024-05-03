@@ -223,17 +223,19 @@ fun TopDashboardBar(
                 scope.launch { drawerState.apply { if (isClosed) open() else close() } }
               })
 
-          Text( // Trip title
-              text = tripTitle!!,
-              style =
-                  TextStyle(
-                      fontSize = 24.sp,
-                      lineHeight = 20.sp,
-                      fontWeight = FontWeight(500),
-                      color = Color.White,
-                  ),
-              modifier = Modifier.padding(start = 24.dp).testTag("dashboardTripTitle"))
-          Row(modifier = Modifier.fillMaxWidth()) {} // to fill the remaining space of the top bar
-    }
+          if (tripTitle != null) {
+            Text( // Trip title
+                text = tripTitle!!,
+                style =
+                    TextStyle(
+                        fontSize = 24.sp,
+                        lineHeight = 20.sp,
+                        fontWeight = FontWeight(500),
+                        color = Color.White,
+                    ),
+                modifier = Modifier.padding(start = 24.dp).testTag("dashboardTripTitle"))
+            Row(modifier = Modifier.fillMaxWidth()) {} // to fill the remaining space of the top bar
+          }
+        }
   }
 }
