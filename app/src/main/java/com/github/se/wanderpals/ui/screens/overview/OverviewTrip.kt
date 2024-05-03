@@ -121,6 +121,7 @@ fun OverviewTrip(
 
   // Mutable state to check if the icon button for sharing the trip is selected
   val isSelected = remember { mutableStateOf(false) }
+  val isEmailSelected = remember { mutableStateOf(false) }
 
   // Mutable state to check if the dialog is open
   var dialogIsOpen by remember { mutableStateOf(false) }
@@ -131,6 +132,13 @@ fun OverviewTrip(
     if (isSelected.value) {
       delay(100)
       isSelected.value = false
+    }
+  }
+
+  LaunchedEffect(isEmailSelected.value) {
+    if (isEmailSelected.value) {
+      delay(100)
+      isEmailSelected.value = false
     }
   }
 
@@ -254,7 +262,7 @@ fun OverviewTrip(
                               .height(28.dp)
                               .testTag("sendTripButton" + trip.tripId),
                       onClick = {
-                        isSelected.value = true
+                        isEmailSelected.value = true
                         dialogIsOpenEmail = true
                       }) {
                         Icon(
@@ -263,7 +271,8 @@ fun OverviewTrip(
                             tint = Color.White,
                             modifier =
                                 Modifier.background(
-                                    if (isSelected.value) Color.LightGray else Color.Transparent))
+                                    if (isEmailSelected.value) Color.LightGray
+                                    else Color.Transparent))
                       }
 
                   Spacer(Modifier.width(10.dp))
