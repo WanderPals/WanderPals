@@ -384,7 +384,7 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
           User2.email,
           User2.role,
           profilePhoto = User2.profilePictureURL)
-      Admin(viewModel)
+      Admin(viewModel, storageReference = null)
     }
 
     ComposeScreen.onComposeScreen<AdminScreen>(composeTestRule) {
