@@ -57,9 +57,9 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     }
   }
 
-  open fun getSuggestion(suggestionId : String): Suggestion {
-    var suggestion = Suggestion()
-    runBlocking { suggestion = tripsRepository.getSuggestionFromTrip(tripId,suggestionId)!! }
+  open fun getSuggestion(suggestionId: String): Suggestion {
+    var suggestion: Suggestion
+    runBlocking { suggestion = tripsRepository.getSuggestionFromTrip(tripId, suggestionId)!! }
     return suggestion
   }
 

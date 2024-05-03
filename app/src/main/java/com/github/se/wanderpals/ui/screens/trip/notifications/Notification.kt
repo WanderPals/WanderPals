@@ -176,10 +176,11 @@ fun Notification(
                               if (item.navActionVariables.isNotEmpty()) {
                                 navigationActions.deserializeNavigationVariables(
                                     item.navActionVariables)
-                                navigationActions.variables.currentSuggestion =
-                                    notificationsViewModel.getSuggestion(
-                                        navigationActions.variables.suggestionId
-                                    )
+                                if (item.route == Route.SUGGESTION_DETAIL) {
+                                  navigationActions.variables.currentSuggestion =
+                                      notificationsViewModel.getSuggestion(
+                                          navigationActions.variables.suggestionId)
+                                }
                               }
                               navigationActions.navigateTo(item.route)
                             }
