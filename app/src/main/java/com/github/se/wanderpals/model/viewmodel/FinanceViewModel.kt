@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Expense
-import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,8 +23,6 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-  var trip: Trip? = null
 
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
@@ -47,8 +44,6 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   open fun addExpense(tripId: String, expense: Expense) {
     viewModelScope.launch { tripsRepository.addExpenseToTrip(tripId, expense) }
   }
-
-  open fun getTrip() = viewModelScope.launch { trip = tripsRepository.getTrip(tripId) }
 
   class FinanceViewModelFactory(
       private val tripsRepository: TripsRepository,
