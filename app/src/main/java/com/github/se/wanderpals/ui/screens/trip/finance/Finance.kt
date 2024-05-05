@@ -2,6 +2,7 @@ package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -60,6 +61,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
   var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
+    val users by financeViewModel.users.collectAsState()
 
   Scaffold(
       modifier = Modifier.testTag("financeScreen"),
@@ -91,7 +93,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
-        LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
+        LaunchedEffect(Unit) { financeViewModel.updateStateLists(); financeViewModel.loadMembers(navigationActions.variables.currentTrip) }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
             ExpensesContent(innerPadding = innerPadding, expenseList = expenseList)
@@ -105,11 +107,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             }
           }
           FinanceOption.DEBTS -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-              Text(
-                  modifier = Modifier.align(Alignment.Center),
-                  text = "Not available yet. ",
-              )
+            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+              DebtContent(expenses = expenseList, users = users)
             }
           }
         }
