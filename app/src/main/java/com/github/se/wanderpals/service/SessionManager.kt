@@ -1,11 +1,15 @@
 package com.github.se.wanderpals.service
 
 import android.net.Uri
+import androidx.compose.runtime.getValue
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 /** Represents a simplified user model within the session management context. */
 data class SessionUser(
@@ -27,6 +31,9 @@ const val default_profile_photo =
  * Provides utility methods to handle user permissions based on roles and trip data.
  */
 object SessionManager {
+
+  private val _profilePicture: MutableStateFlow<String> = MutableStateFlow(default_profile_photo)
+  val profilePicture: StateFlow<String> = _profilePicture.asStateFlow()
 
   private var currentUser: SessionUser? = null
 
@@ -55,6 +62,7 @@ object SessionManager {
     val profilePhotoUse = profilePhoto.isNullOrEmpty().let { default_profile_photo }
     currentUser =
         SessionUser(userId, name, email, role, geoCords, profilePhotoUse, tripName, nickname)
+    _profilePicture.value = profilePhotoUse
 
     if (FirebaseAuth.getInstance().currentUser?.photoUrl.toString().isNullOrEmpty()) {
       FirebaseAuth.getInstance()
@@ -141,6 +149,7 @@ object SessionManager {
 
   fun setPhoto(photoUrl: String) {
     currentUser?.profilePhoto = photoUrl
+    _profilePicture.value = photoUrl
   }
 
   fun setTripName(tripName: String) {

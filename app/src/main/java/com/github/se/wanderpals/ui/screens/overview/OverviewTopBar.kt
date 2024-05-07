@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,6 +52,8 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
   // State to track search bar activation:
   var active by remember { mutableStateOf(false) }
   var logout by remember { mutableStateOf(false) }
+
+  val picture by SessionManager.profilePicture.collectAsState()
 
   if (logout) {
     AlertDialog(
@@ -105,7 +108,7 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
                 }
           } else {
             AsyncImage(
-                model = FirebaseAuth.getInstance().currentUser?.photoUrl.toString(),
+                model = picture,
                 contentDescription = "Profile photo",
                 contentScale = ContentScale.Crop,
                 modifier =
