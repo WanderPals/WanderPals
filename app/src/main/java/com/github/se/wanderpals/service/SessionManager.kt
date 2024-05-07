@@ -1,8 +1,12 @@
 package com.github.se.wanderpals.service
 
+import android.net.Uri
+import android.util.Log
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 
 /** Represents a simplified user model within the session management context. */
 data class SessionUser(
@@ -11,10 +15,13 @@ data class SessionUser(
     var email: String = "",
     var role: Role = Role.VIEWER,
     var geoCords: GeoCords = GeoCords(0.0, 0.0),
-    var profilePhoto: String = "",
+    var profilePhoto: String = default_profile_photo,
     var tripName: String = "",
     val nickname: String = ""
 )
+
+const val default_profile_photo =
+    "https://firebasestorage.googleapis.com/v0/b/wanderpals.appspot.com/o/images%2FDEFAULT_PROFILE_PHOTO.png?alt=media&token=a57fa34b-87ea-47e1-ae72-21a94178940e"
 
 /**
  * Global object to manage session information such as current user and active trip details.
@@ -35,17 +42,30 @@ object SessionManager {
    * @param role The user's role within the application, optional.
    * @param geoCords The user's geographic coordinates, optional.
    */
+  @Suppress("UselessCallOnNotNull")
   fun setUserSession(
       userId: String = currentUser?.userId ?: "",
       name: String = currentUser?.name ?: "",
       email: String = currentUser?.email ?: "",
       role: Role = currentUser?.role ?: Role.VIEWER,
       geoCords: GeoCords = currentUser?.geoCords ?: GeoCords(0.0, 0.0),
-      profilePhoto: String = currentUser?.profilePhoto ?: "",
+      profilePhoto: String = currentUser?.profilePhoto ?: default_profile_photo,
       tripName: String = currentUser?.tripName ?: "",
       nickname: String = currentUser?.nickname ?: ""
   ) {
-    currentUser = SessionUser(userId, name, email, role, geoCords, profilePhoto, tripName, nickname)
+    val profilePhotoUse = profilePhoto.isNullOrEmpty().let { default_profile_photo }
+    currentUser =
+        SessionUser(userId, name, email, role, geoCords, profilePhotoUse, tripName, nickname)
+
+    if (FirebaseAuth.getInstance().currentUser?.photoUrl.toString().isNullOrEmpty()) {
+      FirebaseAuth.getInstance()
+          .currentUser
+          ?.updateProfile(
+              UserProfileChangeRequest.Builder()
+                  .setPhotoUri(Uri.parse(profilePhotoUse))
+                  .setDisplayName(name)
+                  .build())
+    }
   }
 
   /**
