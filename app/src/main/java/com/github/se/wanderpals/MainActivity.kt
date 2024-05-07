@@ -153,10 +153,23 @@ class MainActivity : ComponentActivity() {
                   mainNavigation = rememberMultiNavigationAppState(startDestination = ROOT_ROUTE),
                   tripNavigation =
                       rememberMultiNavigationAppState(startDestination = Route.DASHBOARD))
+          val currentUser = FirebaseAuth.getInstance().currentUser
+          val startDestination = if (currentUser != null) Route.OVERVIEW else Route.SIGN_IN
+          if (currentUser != null) {
+            Log.d("MainActivity", "User is already signed in")
+            viewModel.initRepository(currentUser.uid)
+
+            SessionManager.setUserSession(
+                userId = currentUser.uid,
+                name = currentUser.displayName ?: "",
+                email = currentUser.email ?: "",
+                profilePhoto = currentUser.photoUrl.toString(),
+                nickname = viewModel.getUserName(currentUser.email ?: ""))
+          }
 
           NavHost(
               navController = navigationActions.mainNavigation.getNavController,
-              startDestination = Route.SIGN_IN,
+              startDestination = startDestination,
               route = ROOT_ROUTE) {
                 composable(Route.SIGN_IN) {
                   SignIn(
@@ -171,6 +184,7 @@ class MainActivity : ComponentActivity() {
                                   userId = uid,
                                   name = "Anonymous User",
                                   email = "",
+                                  profilePhoto = result.user?.photoUrl.toString(),
                                   nickname = "Anonymous User")
                               navigationActions.navigateTo(Route.OVERVIEW)
                             }
@@ -184,8 +198,9 @@ class MainActivity : ComponentActivity() {
                           viewModel.initRepository(uid)
                           SessionManager.setUserSession(
                               userId = uid,
-                              name = result.user?.displayName ?: "",
+                              name = result.user?.email?.substringBefore("@") ?: "",
                               email = result.user?.email ?: "",
+                              profilePhoto = result.user?.photoUrl.toString(),
                               nickname = viewModel.getUserName(result.user?.email ?: ""))
                           viewModel.setUserName(email)
                           navigationActions.navigateTo(Route.OVERVIEW)
