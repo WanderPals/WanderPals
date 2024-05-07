@@ -37,7 +37,7 @@ import kotlinx.coroutines.withContext
  *   in short)
  */
 open class TripsRepository(
-    val uid: String,
+    var uid: String,
     private val dispatcher: CoroutineDispatcher // Inject dispatcher
 ) {
 
