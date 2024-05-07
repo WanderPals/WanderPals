@@ -1451,6 +1451,8 @@ open class TripsRepository(
             email = currentUser.email,
             nickname = currentUser.nickname,
             role = role,
+            lastPosition = currentUser.geoCords,
+            profilePictureURL = currentUser.profilePhoto,
             notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
   }
