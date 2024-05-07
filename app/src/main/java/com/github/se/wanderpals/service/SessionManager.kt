@@ -64,7 +64,7 @@ object SessionManager {
         SessionUser(userId, name, email, role, geoCords, profilePhotoUse, tripName, nickname)
     _profilePicture.value = profilePhotoUse
 
-    if (FirebaseAuth.getInstance().currentUser?.photoUrl.toString().isNullOrEmpty()) {
+    if (profilePhoto.isNullOrEmpty()) {
       FirebaseAuth.getInstance()
           .currentUser
           ?.updateProfile(
