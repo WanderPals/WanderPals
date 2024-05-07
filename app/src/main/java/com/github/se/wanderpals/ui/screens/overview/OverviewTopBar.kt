@@ -113,7 +113,7 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
                         .clip(CircleShape)
                         .border(3.dp, onSurfaceVariantLight, CircleShape)
                         .clickable { logout = true }
-                        .testTag("IconOverflowMenu"))
+                        .testTag("profilePhoto"))
           }
         },
         leadingIcon = {
