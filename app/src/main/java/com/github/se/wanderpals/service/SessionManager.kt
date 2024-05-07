@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.service
 
 import android.net.Uri
-import android.util.Log
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
 import com.google.android.gms.maps.model.LatLng
