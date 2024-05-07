@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.overview
 
-import android.app.AlertDialog
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -106,7 +105,7 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
                 }
           } else {
             AsyncImage(
-                model = SessionManager.getCurrentUser()?.profilePhoto ?: "",
+                model = FirebaseAuth.getInstance().currentUser?.photoUrl.toString(),
                 contentDescription = "Profile photo",
                 contentScale = ContentScale.Crop,
                 modifier =
