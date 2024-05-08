@@ -31,6 +31,7 @@ import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
+import com.github.se.wanderpals.model.viewmodel.StopsListViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -43,6 +44,7 @@ import com.github.se.wanderpals.ui.screens.trip.finance.Finance
 import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
+import com.github.se.wanderpals.ui.screens.trip.stops.StopsList
 import com.google.android.gms.maps.model.LatLng
 
 /**
@@ -197,6 +199,16 @@ fun Trip(
                       CreateExpense(tripId, viewModel, oldNavActions) {
                         viewModel.updateStateLists()
                       }
+                    }
+                    composable(Route.STOPS_LIST) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.STOPS_LIST)
+                      val viewModel: StopsListViewModel =
+                          viewModel(
+                              factory =
+                                  StopsListViewModel.StopsListViewModelFactory(
+                                      tripsRepository, oldNavActions.variables.currentTrip),
+                              key = "StopsListViewModel")
+                      StopsList(viewModel)
                     }
                   }
             }
