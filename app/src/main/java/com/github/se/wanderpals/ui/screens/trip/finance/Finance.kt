@@ -97,12 +97,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             ExpensesContent(innerPadding = innerPadding, expenseList = expenseList)
           }
           FinanceOption.CATEGORIES -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-              Text(
-                  modifier = Modifier.align(Alignment.Center),
-                  text = "Not available yet. ",
-              )
-            }
+            CategoryContent(innerPadding = innerPadding, expenseList = expenseList)
           }
           FinanceOption.DEBTS -> {
             Box(modifier = Modifier.fillMaxSize()) {

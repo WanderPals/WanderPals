@@ -1,10 +1,14 @@
 package com.github.se.wanderpals.model.data
 
+
+import androidx.compose.ui.graphics.Color
+
 /** Categories of expenses that can be used to classify each expense record. */
-enum class Category {
-  FOOD,
-  TRANSPORT,
-  ACCOMMODATION,
-  ACTIVITIES,
-  OTHER
+enum class Category(val nameToDisplay : String,val color : Color) {
+  FOOD("Food", Color(0xFFFFC09F)),
+  TRANSPORT("Transport",Color(0xFF2E5EAA)),
+  ACCOMMODATION("Accomodation",Color(0xFFCF4D6F)),
+  ACTIVITIES( "Activities",Color(0xFFAE59DC)),
+  OTHER("Other", Color(0xFF30BCED))
+
 }

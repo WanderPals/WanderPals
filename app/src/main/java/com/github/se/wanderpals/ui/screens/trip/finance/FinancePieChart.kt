@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 
 /**
@@ -40,12 +41,11 @@ fun FinancePieChart(
 
   val colors =
       listOf(
-          Color(0xFFFFC09F),
-          Color(0xFF2E5EAA),
-          Color(0xFFCF4D6F),
-          Color(0xFFA5F8D3),
-          Color(
-              0xFF30BCED)) // Need to change this to prettier color but i don't know if hard coding
+          Category.TRANSPORT.color,
+          Category.ACCOMMODATION.color,
+          Category.ACTIVITIES.color,
+          Category.FOOD.color,
+          Category.OTHER.color) // Need to change this to prettier color but i don't know if hard coding
   // is the best way to do it
 
   var lastValue = -90f
@@ -53,8 +53,7 @@ fun FinancePieChart(
   Box(
       modifier =
           Modifier.size(radiusOuter * 2f + chartBandWidth)
-              .testTag("FinancePieChart")
-              .background(Color.White),
+              .testTag("FinancePieChart"),
       contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.size(radiusOuter * 2f).testTag("canvasPieChart")) {
           pieChartValues.forEachIndexed { index, fl ->
