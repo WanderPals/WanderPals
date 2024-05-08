@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,13 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import com.github.se.wanderpals.model.data.Expense
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Category
 import java.time.LocalDate
 
@@ -81,74 +76,93 @@ fun CategoryContentPreview() {
 
 @Composable
 fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
-    Surface(
+
+    val categoryTransactionMap = expenseList.groupBy { it.category }
+        .mapValues { (_, expenses) ->
+            val nbPayments = expenses.size
+            val totalAmount = expenses.sumOf { it.amount }
+            Pair(nbPayments, totalAmount)
+        }
+        .withDefault { _ -> Pair(0, 0.0) }
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(innerPadding),
-        shape = RoundedCornerShape(20.dp),
-        color = Color(0xFFD1E4FF),
-
+            .padding(innerPadding)
+            .padding(horizontal = 25.dp, vertical = 10.dp),
     ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            FinancePieChart(expenses = expenseList, radiusOuter = 100.dp)
+        // Pie chart
+        item{
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally) {
+                    FinancePieChart(expenses = expenseList, radiusOuter = 80.dp)
 
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ){
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ){
 
-                CategoryText(
-                    categoryName = Category.TRANSPORT.nameToDisplay,
-                    categoryColor = Category.TRANSPORT.color
-                )
-                CategoryText(
-                    categoryName = Category.ACCOMMODATION.nameToDisplay,
-                    categoryColor = Category.ACCOMMODATION.color
-                )
-                CategoryText(
-                    categoryName = Category.ACTIVITIES.nameToDisplay,
-                    categoryColor = Category.ACTIVITIES.color
-                )
+                        PieChartCategoryText(category = Category.TRANSPORT)
 
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ){
-                CategoryText(
-                    categoryName = Category.FOOD.nameToDisplay,
-                    categoryColor = Category.FOOD.color
-                )
-                CategoryText(
-                    categoryName = Category.OTHER.nameToDisplay,
-                    categoryColor = Category.OTHER.color
-                )
+                        PieChartCategoryText(category = Category.ACCOMMODATION)
 
+                        PieChartCategoryText(category = Category.ACTIVITIES)
+
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ){
+
+                        PieChartCategoryText(category = Category.FOOD)
+
+                        PieChartCategoryText(category = Category.OTHER)
+                    }
+                }
 
             }
         }
+        items(Category.values()){ category ->
+            CategoryInfoItem(
+                category = category,
+                nbTransaction = categoryTransactionMap[category]!!.first,
+                totalCategoryAmount = categoryTransactionMap[category]!!.second)
+        }
 
     }
+
 }
 
 @Composable
-fun CategoryText(categoryName : String,categoryColor : Color){
+fun PieChartCategoryText(category: Category){
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
                 .size(10.dp)
-                .background(categoryColor, shape = RoundedCornerShape(size = 2.dp))
+                .background(category.color, shape = RoundedCornerShape(size = 2.dp))
         )
         Text(
-            text = categoryName,
+            text = category.nameToDisplay,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(start = 8.dp)
         )
     }
+}
+
+@Composable
+fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount: Double){
+
+
 }
