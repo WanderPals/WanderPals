@@ -82,6 +82,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
         topBar = {
           // Top bar with search functionality based on the title of the trips
           OverviewTopBar(
+              overviewViewModel = overviewViewModel,
               searchText = searchText,
               onSearchTextChanged = { newSearchText -> searchText = newSearchText })
         },

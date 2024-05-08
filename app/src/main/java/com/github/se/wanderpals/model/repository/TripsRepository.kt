@@ -39,7 +39,7 @@ import kotlinx.coroutines.withContext
  *   in short)
  */
 open class TripsRepository(
-    val uid: String,
+    var uid: String,
     private val dispatcher: CoroutineDispatcher // Inject dispatcher
 ) {
 
@@ -1480,6 +1480,8 @@ open class TripsRepository(
             email = currentUser.email,
             nickname = currentUser.nickname,
             role = role,
+            lastPosition = currentUser.geoCords,
+            profilePictureURL = currentUser.profilePhoto,
             notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
   }

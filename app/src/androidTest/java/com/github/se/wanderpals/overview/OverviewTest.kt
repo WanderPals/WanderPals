@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.screens.OverviewScreen
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -114,6 +115,7 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
     SessionManager.setUserSession(userId = "user1")
 
     composeTestRule.setContent {
+      navigationActions = mockNavActions
       Overview(overviewViewModel = overviewViewModelTest, navigationActions = mockNavActions)
     }
   }
@@ -143,6 +145,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       dialog { assertIsNotDisplayed() }
       emailDialog { assertIsNotDisplayed() }
+      profilePhoto { assertIsDisplayed() }
+      logoutDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -176,6 +180,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       dialog { assertIsNotDisplayed() }
       emailDialog { assertIsNotDisplayed() }
+      profilePhoto { assertIsNotDisplayed() }
+      logoutDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -209,6 +215,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       dialog { assertIsNotDisplayed() }
       emailDialog { assertIsNotDisplayed() }
+      profilePhoto { assertIsNotDisplayed() }
+      logoutDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -242,6 +250,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       dialog { assertIsNotDisplayed() }
       emailDialog { assertIsNotDisplayed() }
+      profilePhoto { assertIsNotDisplayed() }
+      logoutDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -275,6 +285,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       dialog { assertIsNotDisplayed() }
       emailDialog { assertIsNotDisplayed() }
+      profilePhoto { assertIsNotDisplayed() }
+      logoutDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -308,6 +320,8 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
       dialog { assertIsNotDisplayed() }
       emailDialog { assertIsNotDisplayed() }
+      profilePhoto { assertIsDisplayed() }
+      logoutDialog { assertIsNotDisplayed() }
     }
   }
 
@@ -406,6 +420,53 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
         performClick()
       }
       emailDialog { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun logoutDialogIsDisplayed() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      profilePhoto {
+        assertIsDisplayed()
+        performClick()
+      }
+      logoutDialog { assertIsDisplayed() }
+      cancelLogoutButton { assertIsDisplayed() }
+      confirmLogoutButton { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun logoutNavigation() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      profilePhoto {
+        assertIsDisplayed()
+        performClick()
+      }
+      logoutDialog { assertIsDisplayed() }
+      confirmLogoutButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      verify { mockNavActions.navigateTo(Route.SIGN_IN) }
+      confirmVerified(mockNavActions)
+    }
+  }
+
+  @Test
+  fun cancelLogout() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      profilePhoto {
+        assertIsDisplayed()
+        performClick()
+      }
+      logoutDialog { assertIsDisplayed() }
+      cancelLogoutButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      logoutDialog { assertIsNotDisplayed() }
+      overviewScreen { assertIsDisplayed() }
     }
   }
 }

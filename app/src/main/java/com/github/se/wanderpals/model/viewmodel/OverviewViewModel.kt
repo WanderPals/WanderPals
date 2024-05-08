@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
+import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.service.SessionUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,6 +38,10 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   private val _userToSend = MutableStateFlow("")
   open val userToSend: StateFlow<String> = _userToSend.asStateFlow()
 
+  // State flow to hold the current user
+  private var _currentUser = MutableStateFlow(SessionManager.getCurrentUser())
+  open val currentUser: StateFlow<SessionUser?> = _currentUser.asStateFlow()
+
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
     viewModelScope.launch {
@@ -45,6 +51,8 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
       _state.value = tripsRepository.getAllTrips()
       // Set loading state to false after data is fetched
       _isLoading.value = false
+      // Update the current user
+      _currentUser.value = SessionManager.getCurrentUser()
     }
   }
   /**
