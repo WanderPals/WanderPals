@@ -161,10 +161,15 @@ class MainActivity : ComponentActivity() {
 
             SessionManager.setUserSession(
                 userId = currentUser.uid,
-                name = currentUser.displayName ?: "",
+                name =
+                    currentUser.isAnonymous.takeIf { it }?.let { "Anonymous User" }
+                        ?: currentUser.displayName
+                        ?: "",
                 email = currentUser.email ?: "",
                 profilePhoto = currentUser.photoUrl.toString(),
-                nickname = viewModel.getUserName(currentUser.email ?: ""))
+                nickname =
+                    currentUser.isAnonymous.takeIf { it }?.let { "Anonymous User" }
+                        ?: viewModel.getUserName(currentUser.email ?: ""))
           }
 
           NavHost(

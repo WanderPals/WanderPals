@@ -1,15 +1,12 @@
 package com.github.se.wanderpals.service
 
 import android.net.Uri
-import androidx.compose.runtime.getValue
+import android.util.Log
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 /** Represents a simplified user model within the session management context. */
 data class SessionUser(
@@ -32,9 +29,6 @@ const val default_profile_photo =
  */
 object SessionManager {
 
-  private val _profilePicture: MutableStateFlow<String> = MutableStateFlow(default_profile_photo)
-  val profilePicture: StateFlow<String> = _profilePicture.asStateFlow()
-
   private var currentUser: SessionUser? = null
 
   private var currentUserNotificationTokenId: String = ""
@@ -48,7 +42,6 @@ object SessionManager {
    * @param role The user's role within the application, optional.
    * @param geoCords The user's geographic coordinates, optional.
    */
-  @Suppress("UselessCallOnNotNull")
   fun setUserSession(
       userId: String = currentUser?.userId ?: "",
       name: String = currentUser?.name ?: "",
@@ -59,19 +52,32 @@ object SessionManager {
       tripName: String = currentUser?.tripName ?: "",
       nickname: String = currentUser?.nickname ?: ""
   ) {
-    val profilePhotoUse = profilePhoto.isNullOrEmpty().let { default_profile_photo }
+    val profilePhotoUse = if (profilePhoto == "null") default_profile_photo else profilePhoto
     currentUser =
         SessionUser(userId, name, email, role, geoCords, profilePhotoUse, tripName, nickname)
-    _profilePicture.value = profilePhotoUse
 
-    if (profilePhoto.isNullOrEmpty()) {
+    if (isFirebaseInitialized()) {
+      val currentUser = FirebaseAuth.getInstance().currentUser!!
+      if (currentUser.photoUrl.toString() != profilePhotoUse || currentUser.displayName != name) {
+        FirebaseAuth.getInstance()
+            .currentUser
+            ?.updateProfile(
+                UserProfileChangeRequest.Builder()
+                    .setPhotoUri(Uri.parse(profilePhotoUse))
+                    .setDisplayName(name)
+                    .build())
+      }
+    }
+  }
+
+  /** See if Firebase is initialized */
+  fun isFirebaseInitialized(): Boolean {
+    return try {
       FirebaseAuth.getInstance()
-          .currentUser
-          ?.updateProfile(
-              UserProfileChangeRequest.Builder()
-                  .setPhotoUri(Uri.parse(profilePhotoUse))
-                  .setDisplayName(name)
-                  .build())
+      true
+    } catch (e: Exception) {
+      Log.e("SessionManager", "Firebase not initialized")
+      false
     }
   }
 
@@ -149,7 +155,6 @@ object SessionManager {
 
   fun setPhoto(photoUrl: String) {
     currentUser?.profilePhoto = photoUrl
-    _profilePicture.value = photoUrl
   }
 
   fun setTripName(tripName: String) {

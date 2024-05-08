@@ -30,8 +30,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.service.default_profile_photo
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.onSurfaceVariantLight
 import com.google.firebase.auth.FirebaseAuth
@@ -47,13 +49,17 @@ const val EMPTY_SEARCH = ""
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
+fun OverviewTopBar(
+    overviewViewModel: OverviewViewModel,
+    searchText: String,
+    onSearchTextChanged: (String) -> Unit
+) {
 
   // State to track search bar activation:
   var active by remember { mutableStateOf(false) }
   var logout by remember { mutableStateOf(false) }
 
-  val picture by SessionManager.profilePicture.collectAsState()
+  val currentUser by overviewViewModel.currentUser.collectAsState()
 
   if (logout) {
     AlertDialog(
@@ -108,7 +114,7 @@ fun OverviewTopBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
                 }
           } else {
             AsyncImage(
-                model = picture,
+                model = (currentUser?.profilePhoto ?: default_profile_photo),
                 contentDescription = "Profile photo",
                 contentScale = ContentScale.Crop,
                 modifier =
