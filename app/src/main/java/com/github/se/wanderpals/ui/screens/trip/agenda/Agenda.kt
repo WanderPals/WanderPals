@@ -105,10 +105,12 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
       modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues)) {
-      HorizontalDivider(
-          modifier = Modifier.fillMaxWidth(),
-          thickness = 1.dp,
-          color = MaterialTheme.colorScheme.secondary)
+      if (isDrawerExpanded) {
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.secondary)
+      }
       // Daily agenda implementation
       DailyActivities(
           agendaViewModel = agendaViewModel,
@@ -181,7 +183,7 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
               .background(MaterialTheme.colorScheme.primaryContainer)
               .testTag("Banner")) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          DisplayDate(date = selectedDate)
+          DisplayDate(date = selectedDate, color = MaterialTheme.colorScheme.onPrimaryContainer)
           // Optional: Add an icon to indicate the expand/collapse action
           Icon(
               imageVector =

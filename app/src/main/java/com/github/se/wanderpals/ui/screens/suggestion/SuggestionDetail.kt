@@ -76,10 +76,7 @@ fun SuggestionDetail(
         topBar = {
           TopAppBar(
               title = {
-                Text(
-                    text = suggestion.stop.title,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.testTag("SuggestionTitle"))
+                Text(text = suggestion.stop.title, modifier = Modifier.testTag("SuggestionTitle"))
               },
               navigationIcon = {
                 IconButton(
