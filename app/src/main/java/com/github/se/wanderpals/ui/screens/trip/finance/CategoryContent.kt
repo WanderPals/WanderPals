@@ -49,7 +49,7 @@ fun createExpenses(): List<Expense> {
     val expense2 = Expense(
         expenseId = "2",
         title = "Taxi",
-        amount = 2000.0,
+        amount = 20.0,
         category = Category.FOOD,
         userId = "user2",
         userName = "Jane",

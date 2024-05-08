@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 
 /**
@@ -33,24 +32,11 @@ fun FinancePieChart(
     chartBandWidth: Dp = 20.dp,
     totalValueDisplayIsEnabled : Boolean = false
 ) {
-  val pieChartData =
-      expenses
-          .groupBy { it.category }
-          .map { (category, expenses) -> category to expenses.sumOf { it.amount } }
-          .toMap()
 
-  val totalExpense = pieChartData.values.sum()
-  val pieChartValues =
-      pieChartData.values.toList().map { 360f * it.toFloat() / totalExpense.toFloat() }
-
-  val colors =
-      listOf(
-          Category.TRANSPORT.color,
-          Category.ACCOMMODATION.color,
-          Category.ACTIVITIES.color,
-          Category.FOOD.color,
-          Category.OTHER.color) // Need to change this to prettier color but i don't know if hard coding
-  // is the best way to do it
+    val totalExpense = expenses.sumOf { it.amount }
+    val pieChartData = expenses
+        .groupBy { it.category }
+        .mapValues { (_, expenses) -> expenses.sumOf { it.amount / totalExpense * 360 }.toFloat() }
 
   var lastValue = -90f
 
@@ -60,14 +46,14 @@ fun FinancePieChart(
               .testTag("FinancePieChart"),
       contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.size(radiusOuter * 2f).testTag("canvasPieChart")) {
-          pieChartValues.forEachIndexed { index, fl ->
+          pieChartData.forEach { (category,relativeCost) ->
             drawArc(
-                color = colors[index],
+                color = category.color,
                 startAngle = lastValue,
-                sweepAngle = fl - 2,
+                sweepAngle = relativeCost - 2,
                 useCenter = false,
                 style = Stroke(width = chartBandWidth.toPx(), cap = StrokeCap.Butt))
-            lastValue += fl
+            lastValue += relativeCost
           }
         }
         if(totalValueDisplayIsEnabled){
