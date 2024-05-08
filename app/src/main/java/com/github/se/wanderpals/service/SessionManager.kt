@@ -73,8 +73,7 @@ object SessionManager {
   /** See if Firebase is initialized */
   fun isFirebaseInitialized(): Boolean {
     return try {
-      FirebaseAuth.getInstance()
-      true
+      FirebaseAuth.getInstance().currentUser != null
     } catch (e: Exception) {
       Log.e("SessionManager", "Firebase not initialized")
       false
