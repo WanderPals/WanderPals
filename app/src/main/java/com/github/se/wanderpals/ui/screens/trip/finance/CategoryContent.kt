@@ -33,57 +33,27 @@ import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import java.time.LocalDate
 
-fun createExpenses(): List<Expense> {
-    val currentDate = LocalDate.now()
-
-    val expense1 = Expense(
-        expenseId = "1",
-        title = "Lunch",
-        amount = 15.0,
-        category = Category.TRANSPORT,
-        userId = "user1",
-        userName = "John",
-        participantsIds = listOf("user1", "user2"),
-        names = listOf("John", "Jane"),
-        localDate = currentDate.minusDays(2)
-    )
-
-    val expense2 = Expense(
-        expenseId = "2",
-        title = "Taxi",
-        amount = 20.0,
-        category = Category.FOOD,
-        userId = "user2",
-        userName = "Jane",
-        participantsIds = listOf("user2", "user3"),
-        names = listOf("Jane", "Bob"),
-        localDate = currentDate.minusDays(1)
-    )
-
-    val expense3 = Expense(
-        expenseId = "3",
-        title = "Museum tickets",
-        amount = 25.0,
-        category = Category.ACTIVITIES,
-        userId = "user3",
-        userName = "Bob",
-        participantsIds = listOf("user1", "user3"),
-        names = listOf("John", "Bob"),
-        localDate = currentDate
-    )
-    return listOf(expense1, expense2, expense3)
-}
-
-@Preview(showBackground = true)
+/**
+ * Composable function to display information about expenses that have been made during the trip
+ *
+ * A pie-chart is displayed to compare the amount of expenses in each category relative to the others
+ * the number of transaction and the total amount for each category is also displayed as items below
+ * the pie-chart.
+ *
+ * @param innerPadding Padding values for the inner content
+ * @param expenseList List of expenses
+ * @param onRefresh Callback function for handling refresh action
+ */
 @Composable
-fun CategoryContentPreview() {
-    val expenses = createExpenses()
-    CategoryContent(innerPadding = PaddingValues(16.dp), expenseList = expenses,onRefresh = {})
-}
+fun CategoryContent(
+    innerPadding: PaddingValues,
+    expenseList: List<Expense>,
+    onRefresh: () -> Unit
+) {
 
-@Composable
-fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>,onRefresh : () -> Unit) {
-
+    /*Grouping expenses by category and calculating total number of transactions
+     and total amount for each category which are by default 0 if the category
+     has no associated expenses */
     val categoryTransactionMap = expenseList.groupBy { it.category }
         .mapValues { (_, expenses) ->
             val nbPayments = expenses.size
@@ -150,6 +120,7 @@ fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>,onRe
                     }
                 }
 
+                // Category information items
                 items(Category.values()) { category ->
                     val categoryInfo = categoryTransactionMap.getValue(category)
                     Spacer(modifier = Modifier.height(20.dp))
@@ -162,13 +133,17 @@ fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>,onRe
 
             }
         }
-        PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
-
+    PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
 
 }
-
+/**
+ * Composable function to display a row containing a colored box representing
+ * the category and the name of the category.
+ *
+ * @param category The category to be displayed.
+ */
 @Composable
-fun PieChartCategoryText(category: Category){
+fun PieChartCategoryText(category: Category) {
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -185,14 +160,22 @@ fun PieChartCategoryText(category: Category){
     }
 }
 
+/**
+ * Composable function to display information about a specific category,
+ * including the number of transactions and the total amount spent in that category.
+ *
+ * @param category The category for which the information is displayed.
+ * @param nbTransaction The number of transactions in the category.
+ * @param totalCategoryAmount The total amount spent in the category.
+ */
 @Composable
-fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount: Double) {
+fun CategoryInfoItem(category: Category, nbTransaction: Int, totalCategoryAmount: Double) {
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .testTag(category.nameToDisplay+"InfoItem"),
+            .testTag(category.nameToDisplay + "InfoItem"),
         shape = RoundedCornerShape(10.dp),
         color = MaterialTheme.colorScheme.secondaryContainer,
     ) {
@@ -205,7 +188,7 @@ fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Box(
                     modifier = Modifier
                         .padding(start = 10.dp)
@@ -222,9 +205,10 @@ fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        modifier = Modifier.padding(start = 10.dp)
-                            .testTag(category.nameToDisplay+"NbTransactions"),
-                        text = "$nbTransaction transactions" ,
+                        modifier = Modifier
+                            .padding(start = 10.dp)
+                            .testTag(category.nameToDisplay + "NbTransactions"),
+                        text = "$nbTransaction transactions",
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
                     )
@@ -232,9 +216,11 @@ fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount
             }
 
             Text(
-                modifier = Modifier.padding(end = 15.dp).testTag(category.nameToDisplay+"TotalAmount"),
+                modifier = Modifier
+                    .padding(end = 15.dp)
+                    .testTag(category.nameToDisplay + "TotalAmount"),
                 text = "%.2f CHF".format(totalCategoryAmount),
-                style =  MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.End,
                 overflow = TextOverflow.Ellipsis,
