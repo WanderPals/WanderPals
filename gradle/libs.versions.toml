@@ -4,6 +4,7 @@ agp = "8.4.0"
 androidxCoreKtxVersion = "2.2.0"
 coilCompose = "2.6.0"
 coreKtxVersion = "1.8.1"
+firebaseAdmin = "9.2.0"
 firebaseAuth = "22.3.1"
 firebaseBom = "32.8.1"
 firebaseDatabaseKtx = "20.3.1"
@@ -48,6 +49,7 @@ androidx-core-ktx-v220 = { module = "androidx.core:core-ktx", version.ref = "and
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoCore" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
+firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }

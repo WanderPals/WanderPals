@@ -177,6 +177,7 @@ dependencies {
     // Import the BoM for the Firebase platform
     implementation(platform(libs.firebase.bom))
 
+
     // Add the dependency for the Cloud Storage library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation(libs.firebase.storage)

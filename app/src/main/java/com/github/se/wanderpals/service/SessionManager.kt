@@ -26,6 +26,8 @@ object SessionManager {
 
   private var currentUserNotificationTokenId: String = ""
 
+    private var currentListOfTokensTrip = mutableListOf<String>()
+
   /**
    * Sets or updates the current user session with provided details.
    *
@@ -82,6 +84,16 @@ object SessionManager {
   fun canRemove(userId: String = ""): Boolean {
     return isAdmin() || currentUser?.userId == userId
   }
+
+    //update the list of tokens for the trip
+    fun setListOfTokensTrip(listOfTokens: MutableList<String>) {
+        currentListOfTokensTrip += listOfTokens
+    }
+
+    //get the list of tokens for the trip
+    fun getListOfTokensTrip(): MutableList<String> {
+        return currentListOfTokensTrip
+    }
 
   /**
    * Checks if the current user is an admin or owner.

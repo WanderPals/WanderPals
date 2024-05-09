@@ -33,6 +33,9 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.messaging
 
+
+const val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/your-project-id/messages:send"
+
 class NotificationDevice : FirebaseMessagingService() {
   override fun onNewToken(token: String) {
     super.onNewToken(token)
@@ -141,6 +144,21 @@ fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Contex
     Log.d("Firebase", msg)
     Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
   }
+}
+
+//create a notification to send by the FCM REST API
+fun createNotification(title: String, message: String, context: Context) {
+    val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/your-project-id/messages:send"
+
+    //val notification =
+
+    try {
+        Log.d("Firebase", "Sending message to Trip_$title")
+        //Firebase.messaging.send(notification)
+    } catch (e: Exception) {
+        Log.d("Firebase", "Failed to send message to Trip_$title")
+        Toast.makeText(context, "Failed to send message to Trip_$title", Toast.LENGTH_SHORT).show()
+    }
 }
 
 // function to send message to a topic from a client app
