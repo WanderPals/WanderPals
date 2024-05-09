@@ -165,25 +165,22 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("CategoriesButton").performClick()
     composeTestRule.onNodeWithTag("categoryOptionPieChart").assertIsDisplayed()
     composeTestRule.onNodeWithTag("FinancePieChart").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("TransportInfoItem").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("AccommodationInfoItem").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("ActivitiesInfoItem").assertIsDisplayed()
 
-    composeTestRule
-        .onNodeWithTag("categoryOptionLazyColumn")
-        .performScrollToIndex(Category.FOOD.ordinal + 1)
-    composeTestRule.onNodeWithTag("FoodInfoItem").assertIsDisplayed()
-
-    composeTestRule
-        .onNodeWithTag("categoryOptionLazyColumn")
-        .performScrollToIndex(Category.OTHER.ordinal + 1)
-    composeTestRule.onNodeWithTag("OtherInfoItem").assertIsDisplayed()
+    Category.values().forEach { category ->
+      composeTestRule
+          .onNodeWithTag("categoryOptionLazyColumn")
+          .performScrollToIndex(category.ordinal + 1)
+      composeTestRule.onNodeWithTag("${category.nameToDisplay}InfoItem").assertExists()
+    }
   }
 
   @Test
   fun categoryItemsDisplayCorrectNumberOfTransactionsForEachCategory() = run {
     composeTestRule.onNodeWithTag("CategoriesButton").performClick()
-    composeTestRule.onNodeWithTag("categoryOptionPieChart").assertIsDisplayed()
+
+    composeTestRule
+        .onNodeWithTag("categoryOptionLazyColumn")
+        .performScrollToIndex(Category.values().size)
 
     composeTestRule.onNodeWithTag("TransportNbTransactions").assertTextEquals("1 transaction")
 
@@ -191,15 +188,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
     composeTestRule.onNodeWithTag("ActivitiesNbTransactions").assertTextEquals("0 transactions")
 
-    composeTestRule
-        .onNodeWithTag("categoryOptionLazyColumn")
-        .performScrollToIndex(Category.FOOD.ordinal + 1)
-
     composeTestRule.onNodeWithTag("FoodNbTransactions").assertTextEquals("2 transactions")
-
-    composeTestRule
-        .onNodeWithTag("categoryOptionLazyColumn")
-        .performScrollToIndex(Category.OTHER.ordinal + 1)
 
     composeTestRule.onNodeWithTag("OtherNbTransactions").assertTextEquals("0 transactions")
   }
@@ -207,7 +196,10 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
   @Test
   fun categoryItemsDisplayCorrectTotalAmountForEachCategory() = run {
     composeTestRule.onNodeWithTag("CategoriesButton").performClick()
-    composeTestRule.onNodeWithTag("categoryOptionPieChart").assertIsDisplayed()
+
+    composeTestRule
+        .onNodeWithTag("categoryOptionLazyColumn")
+        .performScrollToIndex(Category.values().size)
 
     composeTestRule.onNodeWithTag("TransportTotalAmount").assertTextEquals("25.00 CHF")
 
@@ -215,15 +207,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
     composeTestRule.onNodeWithTag("ActivitiesTotalAmount").assertTextEquals("0.00 CHF")
 
-    composeTestRule
-        .onNodeWithTag("categoryOptionLazyColumn")
-        .performScrollToIndex(Category.FOOD.ordinal + 1)
-
     composeTestRule.onNodeWithTag("FoodTotalAmount").assertTextEquals("150.00 CHF")
-
-    composeTestRule
-        .onNodeWithTag("categoryOptionLazyColumn")
-        .performScrollToIndex(Category.OTHER.ordinal + 1)
 
     composeTestRule.onNodeWithTag("OtherTotalAmount").assertTextEquals("0.00 CHF")
   }
