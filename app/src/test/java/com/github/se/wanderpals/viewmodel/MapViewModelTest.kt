@@ -11,10 +11,16 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
+import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.google.android.gms.maps.model.LatLng
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.verify
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
@@ -45,9 +51,16 @@ class MapViewModelTest {
   fun setup() {
     // Set the main dispatcher to a test dispatcher to control coroutine execution
     Dispatchers.setMain(testDispatcher)
+    mockkObject(SharedPreferencesManager)
     SharedPreferencesManager.init(context)
 
-    SessionManager.setUserSession(userId = "someId")
+    every { SharedPreferencesManager.clearAll() } just Runs
+    every { SharedPreferencesManager.savePlaceData(any()) } returns
+        listOf(PlaceData(placeId = "someplaceId")).toMutableList()
+    every { SharedPreferencesManager.deletePlaceData(any()) } returns
+        listOf<PlaceData>().toMutableList()
+
+    SessionManager.setUserSession(userId = "user1")
     // Mock the TripsRepository to be used in the ViewModel
     mockTripsRepository = mockk(relaxed = true)
     setupMockResponses()
@@ -113,6 +126,19 @@ class MapViewModelTest {
     coEvery { mockTripsRepository.updateUserInTrip(any(), any()) } returns true
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `getAllUsersPositions fetches and updates LiveData correctly`() =
+      runBlockingTest(testDispatcher) {
+        SessionManager.setUserSession("userNew")
+        viewModel.refreshData()
+
+        advanceUntilIdle()
+        assertEquals(1, viewModel.usersPositions.value.size)
+        assertEquals(40.712776, viewModel.usersPositions.value.first().latitude, 0.001)
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `getAllStops fetches and updates LiveData correctly`() =
       runBlockingTest(testDispatcher) {
@@ -123,6 +149,7 @@ class MapViewModelTest {
         assertEquals("Central Park", viewModel.stops.value.first().title)
       }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `getAllSuggestions fetches and updates LiveData correctly`() =
       runBlockingTest(testDispatcher) {
@@ -130,19 +157,10 @@ class MapViewModelTest {
 
         advanceUntilIdle()
         assertEquals(1, viewModel.suggestions.value.size)
-        assertEquals("Statue of Liberty", viewModel.suggestions.value.get(0).title)
+        assertEquals("Statue of Liberty", viewModel.suggestions.value[0].title)
       }
 
-  @Test
-  fun `getAllUsersPositions fetches and updates LiveData correctly`() =
-      runBlockingTest(testDispatcher) {
-        viewModel.refreshData()
-
-        advanceUntilIdle()
-        assertEquals(1, viewModel.usersPositions.value.size)
-        assertEquals(40.712776, viewModel.usersPositions.value.first().latitude, 0.001)
-      }
-
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `updateLastPosition updates repository and LiveData`() =
       runBlockingTest(testDispatcher) {
@@ -153,6 +171,34 @@ class MapViewModelTest {
         coVerify { mockTripsRepository.updateUserInTrip("tripId", any()) }
         assertEquals(newLatLng, viewModel.userPosition.value)
       }
+
+  @Test
+  fun `clearAllSharedPreferences clears all data`() = runBlockingTest {
+    viewModel.clearAllSharedPreferences()
+
+    verify { SharedPreferencesManager.clearAll() }
+    assertEquals(emptyList<PlaceData>(), viewModel.listOfTempPlaceData.value)
+  }
+
+  @Test
+  fun `savePlaceDataState saves place data and updates LiveData`() = runBlockingTest {
+    val placeData = PlaceData("someplaceId")
+
+    viewModel.savePlaceDataState(placeData)
+
+    verify { SharedPreferencesManager.savePlaceData(placeData) }
+    assertEquals(listOf(placeData), viewModel.listOfTempPlaceData.value)
+  }
+
+  @Test
+  fun `deletePlaceDataState deletes place data and updates LiveData`() = runBlockingTest {
+    val placeData = PlaceData("Some place")
+
+    viewModel.deletePlaceDataState(placeData)
+
+    verify { SharedPreferencesManager.deletePlaceData(placeData) }
+    assertEquals(emptyList<PlaceData>(), viewModel.listOfTempPlaceData.value)
+  }
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @After
