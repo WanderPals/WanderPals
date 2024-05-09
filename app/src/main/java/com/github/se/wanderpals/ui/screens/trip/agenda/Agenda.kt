@@ -78,7 +78,7 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
 
   Scaffold(
       topBar = {
-        Column(modifier = Modifier.background(MaterialTheme.colorScheme.primaryContainer)) {
+        Column(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
           Banner(
               agendaViewModel,
               isDrawerExpanded,
@@ -179,18 +179,18 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
       modifier =
           Modifier.fillMaxWidth()
               .clickable { onToggle() }
-              .padding(16.dp)
-              .background(MaterialTheme.colorScheme.primaryContainer)
+              .padding(8.dp)
+              .background(MaterialTheme.colorScheme.primary)
               .testTag("Banner")) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          DisplayDate(date = selectedDate, color = MaterialTheme.colorScheme.onPrimaryContainer)
+          DisplayDate(date = selectedDate, color = MaterialTheme.colorScheme.onPrimary)
           // Optional: Add an icon to indicate the expand/collapse action
           Icon(
               imageVector =
                   if (isExpanded) Icons.Default.KeyboardArrowUp
                   else Icons.Default.KeyboardArrowDown,
               contentDescription = "Toggle",
-              tint = MaterialTheme.colorScheme.onPrimaryContainer)
+              tint = MaterialTheme.colorScheme.onPrimary)
           Spacer(modifier = Modifier.weight(1f))
           // Add an icon to tap that opens the full list of all stops for the trip
           IconButton(
@@ -203,7 +203,7 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_event_note_24),
                     contentDescription = "Open Stops",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                 )
               })
         }

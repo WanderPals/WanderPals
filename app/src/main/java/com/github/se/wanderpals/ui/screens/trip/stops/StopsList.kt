@@ -77,7 +77,7 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
                       TextStyle(
                           fontWeight = FontWeight.Bold,
                           fontSize = 20.sp,
-                          color = MaterialTheme.colorScheme.onPrimaryContainer))
+                          color = MaterialTheme.colorScheme.onPrimary))
             },
             navigationIcon = {
               IconButton(
@@ -85,14 +85,14 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
                   modifier = Modifier.testTag("BackButton"),
                   colors =
                       IconButtonDefaults.iconButtonColors(
-                          contentColor = MaterialTheme.colorScheme.onPrimaryContainer)) {
+                          contentColor = MaterialTheme.colorScheme.onPrimary)) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                   }
             },
             colors =
                 TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary),
         )
       }) { it ->
         Column(modifier = Modifier.padding(it)) {
@@ -117,14 +117,14 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
                                       Modifier.fillMaxWidth()
                                           .weight(1f)
                                           .testTag("DateBox")
-                                          .background(MaterialTheme.colorScheme.tertiaryContainer),
+                                          .background(MaterialTheme.colorScheme.secondaryContainer),
                                   content = {
                                     Row(
                                         modifier = Modifier.padding(8.dp),
                                         verticalAlignment = Alignment.CenterVertically) {
                                           DisplayDate(
                                               date = date,
-                                              color = MaterialTheme.colorScheme.onTertiaryContainer)
+                                              color = MaterialTheme.colorScheme.onSecondaryContainer)
                                         }
                                   },
                                   contentAlignment = Alignment.CenterStart)
