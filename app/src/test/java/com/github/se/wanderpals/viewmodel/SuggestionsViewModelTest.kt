@@ -40,35 +40,35 @@ class SuggestionsViewModelTest {
   private val testDispatcher = StandardTestDispatcher()
   private val tripId = "tripId"
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Before
-    fun setup() {
-        // Set the Coroutine dispatcher for main thread to the test dispatcher
-        Dispatchers.setMain(testDispatcher)
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Before
+  fun setup() {
+    // Set the Coroutine dispatcher for main thread to the test dispatcher
+    Dispatchers.setMain(testDispatcher)
 
-        // Initialize the mock for navigation actions and session manager
-        navigationActions = mockk(relaxed = true)
-        every { navigationActions.goBack() } just Runs
+    // Initialize the mock for navigation actions and session manager
+    navigationActions = mockk(relaxed = true)
+    every { navigationActions.goBack() } just Runs
 
-        // Setup Mock repository and session manager
-        mockTripsRepository = mockk(relaxed = true)
-        SessionManager.setUserSession("user", "user@example.com", "token", Role.MEMBER)
+    // Setup Mock repository and session manager
+    mockTripsRepository = mockk(relaxed = true)
+    SessionManager.setUserSession("user", "user@example.com", "token", Role.MEMBER)
 
-        // Mock NotificationsManager and its interactions
-        NotificationsManager.initNotificationsManager(mockTripsRepository)
-        mockkObject(NotificationsManager)
-        coEvery { NotificationsManager.addJoinTripNotification(any()) } returns Unit
-        coEvery { NotificationsManager.addStopNotification(any(), any()) } returns Unit
-        coEvery { NotificationsManager.removeSuggestionPath(any(), any()) } returns Unit
-        coEvery { NotificationsManager.addCreateSuggestionNotification(any(), any()) } returns Unit
+    // Mock NotificationsManager and its interactions
+    NotificationsManager.initNotificationsManager(mockTripsRepository)
+    mockkObject(NotificationsManager)
+    coEvery { NotificationsManager.addJoinTripNotification(any()) } returns Unit
+    coEvery { NotificationsManager.addStopNotification(any(), any()) } returns Unit
+    coEvery { NotificationsManager.removeSuggestionPath(any(), any()) } returns Unit
+    coEvery { NotificationsManager.addCreateSuggestionNotification(any(), any()) } returns Unit
 
-        // Initialize the ViewModel with the factory pattern
-        val factory = SuggestionsViewModel.SuggestionsViewModelFactory(mockTripsRepository, tripId)
-        viewModel = factory.create(SuggestionsViewModel::class.java)
+    // Initialize the ViewModel with the factory pattern
+    val factory = SuggestionsViewModel.SuggestionsViewModelFactory(mockTripsRepository, tripId)
+    viewModel = factory.create(SuggestionsViewModel::class.java)
 
-        // Set up mock responses for repository interactions
-        setupMockResponses()
-    }
+    // Set up mock responses for repository interactions
+    setupMockResponses()
+  }
 
   private fun setupMockResponses() {
 
@@ -129,7 +129,7 @@ class SuggestionsViewModelTest {
     coEvery { mockTripsRepository.removeSuggestionFromTrip(any(), any()) } returns true
   }
 
-    // Example test for loading suggestions
+  // Example test for loading suggestions
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun testLoadSuggestions() =
@@ -146,38 +146,41 @@ class SuggestionsViewModelTest {
   @Test
   fun testAddComment() =
       runBlockingTest(testDispatcher) {
-          // Load existing suggestions to set initial state
-          viewModel.loadSuggestion(tripId)
-          advanceUntilIdle()
+        // Load existing suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
 
-          // Capture the state before adding the new comment
-          val suggestion = viewModel.state.value.first()
-          val newComment = Comment(
-              commentId = UUID.randomUUID().toString(),
-              userId = "user456",
-              userName = "Bob",
-              text = "Looks awesome!",
-              createdAt = LocalDate.now(),
-              createdAtTime = LocalTime.now()
-          )
+        // Capture the state before adding the new comment
+        val suggestion = viewModel.state.value.first()
+        val newComment =
+            Comment(
+                commentId = UUID.randomUUID().toString(),
+                userId = "user456",
+                userName = "Bob",
+                text = "Looks awesome!",
+                createdAt = LocalDate.now(),
+                createdAtTime = LocalTime.now())
 
-          // Prepare the updated suggestion with the new comment
-          val updatedSuggestion = suggestion.copy(comments = suggestion.comments + newComment)
-          coEvery { mockTripsRepository.updateSuggestionInTrip(tripId, updatedSuggestion) } returns true
-          coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns listOf(updatedSuggestion)
+        // Prepare the updated suggestion with the new comment
+        val updatedSuggestion = suggestion.copy(comments = suggestion.comments + newComment)
+        coEvery { mockTripsRepository.updateSuggestionInTrip(tripId, updatedSuggestion) } returns
+            true
+        coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns
+            listOf(updatedSuggestion)
 
-          // Perform the action to add a comment
-          viewModel.addComment(suggestion, newComment)
-          advanceUntilIdle()
+        // Perform the action to add a comment
+        viewModel.addComment(suggestion, newComment)
+        advanceUntilIdle()
 
-          // Assert the new comment is included and the comments count is correct
+        // Assert the new comment is included and the comments count is correct
         assertTrue(viewModel.state.value.first().comments.contains(newComment))
         assertEquals(suggestion.comments.size + 1, viewModel.state.value.first().comments.size)
       }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testUpdateComment() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testUpdateComment() =
+      runBlockingTest(testDispatcher) {
         // Load the existing suggestions to establish initial state
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -191,13 +194,16 @@ class SuggestionsViewModelTest {
         val updatedComment = originalComment.copy(text = updatedText)
 
         // Prepare the suggestion with the updated comment
-        val updatedSuggestion = originalSuggestion.copy(
-            comments = originalSuggestion.comments.map {
-                if (it.commentId == updatedComment.commentId) updatedComment else it
-            }
-        )
-        coEvery { mockTripsRepository.updateSuggestionInTrip(tripId, updatedSuggestion) } returns true
-        coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns listOf(updatedSuggestion)
+        val updatedSuggestion =
+            originalSuggestion.copy(
+                comments =
+                    originalSuggestion.comments.map {
+                      if (it.commentId == updatedComment.commentId) updatedComment else it
+                    })
+        coEvery { mockTripsRepository.updateSuggestionInTrip(tripId, updatedSuggestion) } returns
+            true
+        coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns
+            listOf(updatedSuggestion)
 
         // Execute the action to update the comment
         viewModel.updateComment(originalSuggestion, updatedComment)
@@ -205,12 +211,12 @@ class SuggestionsViewModelTest {
 
         // Verify the comment text has been updated as expected
         assertEquals(updatedText, viewModel.state.value.first().comments.first().text)
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testToggleLikeSuggestion() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testToggleLikeSuggestion() =
+      runBlockingTest(testDispatcher) {
         // Load suggestions to establish initial state
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -221,7 +227,7 @@ class SuggestionsViewModelTest {
 
         // Mock the repository to reflect a change in the like status
         coEvery { mockTripsRepository.getAllSuggestionsFromTrip(any()) } returns
-                listOf(suggestion.copy(userLikes = listOf("")))
+            listOf(suggestion.copy(userLikes = listOf("")))
 
         // Execute the toggle like action
         viewModel.toggleLikeSuggestion(suggestion)
@@ -229,11 +235,12 @@ class SuggestionsViewModelTest {
 
         // Assert that the like status has toggled as expected
         assertEquals(!initialLikeStatus, viewModel.getIsLiked(suggestion.suggestionId))
-    }
+      }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testTransformToStop() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testTransformToStop() =
+      runBlockingTest(testDispatcher) {
         // Load suggestions to establish the initial state
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -241,8 +248,10 @@ class SuggestionsViewModelTest {
         // Identify the suggestion to be transformed
         val suggestion = viewModel.state.value.first()
 
-        // Mock the repository to simulate the suggestion being transformed and removed from the list
-        val updatedSuggestions = viewModel.state.value.filterNot { it.suggestionId == suggestion.suggestionId }
+        // Mock the repository to simulate the suggestion being transformed and removed from the
+        // list
+        val updatedSuggestions =
+            viewModel.state.value.filterNot { it.suggestionId == suggestion.suggestionId }
         coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns updatedSuggestions
 
         // Execute the transformation of the suggestion to a stop
@@ -251,12 +260,12 @@ class SuggestionsViewModelTest {
 
         // Assert that the suggestion is no longer present in the state
         assertFalse(viewModel.state.value.contains(suggestion))
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testDeleteSuggestion() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testDeleteSuggestion() =
+      runBlockingTest(testDispatcher) {
         // Load suggestions to establish initial state
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -266,7 +275,7 @@ class SuggestionsViewModelTest {
 
         // Mock the repository response for deleting a suggestion
         coEvery {
-            mockTripsRepository.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
+          mockTripsRepository.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
         } returns true
 
         // Execute the deletion of the suggestion
@@ -276,12 +285,12 @@ class SuggestionsViewModelTest {
         // Verify repository methods were called as expected
         coVerify { mockTripsRepository.removeSuggestionFromTrip(tripId, suggestion.suggestionId) }
         coVerify { mockTripsRepository.getAllSuggestionsFromTrip(tripId) }
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testConfirmDeleteSuggestion() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testConfirmDeleteSuggestion() =
+      runBlockingTest(testDispatcher) {
         // Load suggestions to prepare for the operation
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -295,12 +304,12 @@ class SuggestionsViewModelTest {
 
         // Verify the delete action was confirmed at the repository level
         coVerify { mockTripsRepository.removeSuggestionFromTrip(tripId, suggestion.suggestionId) }
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testShowSuggestionBottomSheet() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testShowSuggestionBottomSheet() =
+      runBlockingTest(testDispatcher) {
         // Load suggestions to get the current state
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -315,12 +324,12 @@ class SuggestionsViewModelTest {
         // Verify the bottom sheet is visible and the selected suggestion is correct
         assertTrue(viewModel.bottomSheetVisible.value)
         assertEquals(suggestion, viewModel.selectedSuggestion.value)
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testDeleteComment() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testDeleteComment() =
+      runBlockingTest(testDispatcher) {
         // Prepare by loading suggestions and setting the initial UI state
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -343,16 +352,17 @@ class SuggestionsViewModelTest {
 
         // Verify the correct repository method was called with the expected state
         coVerify {
-            mockTripsRepository.updateSuggestionInTrip(tripId, match { it.comments == expectedComments })
+          mockTripsRepository.updateSuggestionInTrip(
+              tripId, match { it.comments == expectedComments })
         }
         // Assert the UI reflects that the bottom sheet should be hidden post-deletion
         assertFalse(viewModel.bottomSheetVisible.value)
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testConfirmDeleteComment() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testConfirmDeleteComment() =
+      runBlockingTest(testDispatcher) {
         // Set up by loading suggestions and selecting a comment
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -372,30 +382,31 @@ class SuggestionsViewModelTest {
 
         // Verify that the UI state reflects no selected comment after deletion
         assertNull(viewModel.selectedComment.value)
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testShowDeleteDialog() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testShowDeleteDialog() =
+      runBlockingTest(testDispatcher) {
         // Directly test the UI reaction to showing a delete dialog
         viewModel.showDeleteDialog()
         assertTrue(viewModel.showDeleteDialog.value)
-    }
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testHideDeleteDialog() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testHideDeleteDialog() =
+      runBlockingTest(testDispatcher) {
         // Directly test the UI reaction to hiding a delete dialog
         viewModel.hideDeleteDialog()
         // Assert that the delete dialog is no longer visible
         assertFalse(viewModel.showDeleteDialog.value)
-    }
+      }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testSetSelectedSuggestion() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testSetSelectedSuggestion() =
+      runBlockingTest(testDispatcher) {
         // Load suggestions to set the initial state and select one
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -407,11 +418,11 @@ class SuggestionsViewModelTest {
 
         // Verify that the selected suggestion is correctly set in the ViewModel
         assertEquals(suggestion, viewModel.selectedSuggestion.value)
-    }
+      }
 
-
-    @Test
-    fun testGetNbrLiked() = runBlockingTest(testDispatcher) {
+  @Test
+  fun testGetNbrLiked() =
+      runBlockingTest(testDispatcher) {
         // Load suggestions to ensure there is data to test
         viewModel.loadSuggestion(tripId)
         advanceUntilIdle()
@@ -419,20 +430,20 @@ class SuggestionsViewModelTest {
         // Test the method that fetches the number of likes for a specific suggestion ID
         val likesCount = viewModel.getNbrLiked("suggestion1")
 
-        // Assert that the number of likes matches the expected count (note: test seems contradictory in comment, adjust if needed)
-        assertEquals(0, likesCount)  // Assuming the test setup has no users liking the suggestion
-    }
+        // Assert that the number of likes matches the expected count (note: test seems
+        // contradictory in comment, adjust if needed)
+        assertEquals(0, likesCount) // Assuming the test setup has no users liking the suggestion
+      }
 
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun testEditCommentOption() = runBlockingTest(testDispatcher) {
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testEditCommentOption() =
+      runBlockingTest(testDispatcher) {
         // Simulate starting the comment editing process
         viewModel.editCommentOption()
 
         // Verify that the state reflects that the bottom sheet is closed and editing mode is active
         assertFalse(viewModel.bottomSheetVisible.value)
         assertTrue(viewModel.editingComment.value)
-    }
-
+      }
 }
