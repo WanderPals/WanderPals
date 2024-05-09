@@ -414,8 +414,7 @@ open class TripsRepository(
           val firebaseExpense =
               FirestoreExpense.fromExpense(
                   expense.copy(
-                      expenseId = uniqueID,
-                      userId = uid)) // we already know who creates the Expense
+                      expenseId = uniqueID)) // we already know who creates the Expense
           val expenseDocument =
               tripsCollection
                   .document(tripId)

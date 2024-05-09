@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 /** Finance View model, not doing anything with database for the moment */
 open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String) :
@@ -42,11 +43,10 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   /** Adds an expense to the trip. */
   open fun addExpense(tripId: String, expense: Expense) {
-    viewModelScope.launch {
+    runBlocking {
       tripsRepository.addExpenseToTrip(tripId, expense)
-      _expenseStateList.value += expense
-      val ahahaah = 0
     }
+    viewModelScope.launch { updateStateLists() }
   }
 
   class FinanceViewModelFactory(
