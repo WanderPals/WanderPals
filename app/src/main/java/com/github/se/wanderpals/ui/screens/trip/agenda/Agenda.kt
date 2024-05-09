@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -137,7 +138,7 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
  * @param onDateClickListener A lambda function to be called when the user selects a date.
  */
 @Composable
-fun CalendarWidget(
+fun CalendarWidget( //here to add the marker
     days: Array<String>,
     yearMonth: YearMonth,
     dates: List<CalendarUiState.Date>,
@@ -277,14 +278,23 @@ fun Content(
  * @param onClickListener A lambda function to be called when this date item is clicked.
  * @param modifier A `Modifier` to be applied to this Composable for styling and layout purposes.
  */
+
+///*
 @Composable
-fun ContentItem(
+fun ContentItem( //todo: cont from here
     date: CalendarUiState.Date,
     onClickListener: (CalendarUiState.Date) -> Unit,
     modifier: Modifier = Modifier
 ) {
   // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
   val isEmptyDate = date.dayOfMonth.isEmpty()
+
+    // Set the marker color based on the stop status
+    val markerColor = when (date.stopStatus) {
+        CalendarUiState.StopStatus.RECENT -> Color.Green  // Most recent stop
+        CalendarUiState.StopStatus.EARLIER ->  MaterialTheme.colorScheme.secondaryContainer // Color.Blue  // Earlier stops
+        else -> Color.Transparent // No stop
+    }
 
   val baseModifier =
       modifier
@@ -306,12 +316,30 @@ fun ContentItem(
         baseModifier.clickable { onClickListener(date) }
       } else baseModifier
 
-  Box(modifier = finalModifier) {
-    if (!isEmptyDate) {
-      Text(
-          text = date.dayOfMonth,
-          style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.align(Alignment.Center).padding(10.dp))
+
+
+    Box(modifier = finalModifier
+        .padding(10.dp)) {
+        if(!isEmptyDate) {
+            Text(
+                text = date.dayOfMonth,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+            // Displaying the status dot below the date
+            if (date.stopStatus != CalendarUiState.StopStatus.NONE) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)  // Center the dot at the bottom of the date cell
+                        .size(8.dp)  // Size of the dot
+                        .clip(CircleShape)  // Make it circular
+                        .background(markerColor)  // Set the appropriate color
+                        .padding(bottom = 4.dp)  // Add some padding to the bottom
+                )
+            }
+        }
+
+
     }
-  }
 }
+//*/

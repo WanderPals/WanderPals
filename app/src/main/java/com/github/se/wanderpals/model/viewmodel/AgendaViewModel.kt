@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+//todo: cont from step3
 /**
  * ViewModel for managing the agenda of a trip, handling UI state and data interactions for a
  * calendar view.
@@ -43,10 +44,20 @@ open class AgendaViewModel(
 
   open var selectedDate: LocalDate? = LocalDate.now()
 
+  private val _stopsInfo = MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>>(emptyMap())
+
+  /** Exposed read-only state flow of stops info. */
+  val stopsInfo: StateFlow<Map<LocalDate, CalendarUiState.StopStatus>> = _stopsInfo.asStateFlow()
+
+
+  /**
+   * Initializes the UI state of the agenda by fetching the dates for the current month and updating
+   * the UI state accordingly.
+   */
   init {
     viewModelScope.launch {
       _uiState.update { currentState ->
-        currentState.copy(dates = dataSource.getDates(currentState.yearMonth, LocalDate.now()))
+        currentState.copy(dates = dataSource.getDates(currentState.yearMonth, LocalDate.now(), stopsInfo = _stopsInfo.value))
       }
     }
   }
@@ -98,7 +109,7 @@ open class AgendaViewModel(
       _uiState.update { currentState ->
         currentState.copy(
             yearMonth = nextMonth,
-            dates = dataSource.getDates(nextMonth, currentState.selectedDate))
+            dates = dataSource.getDates(nextMonth, currentState.selectedDate, _stopsInfo.value))
       }
     }
   }
@@ -113,7 +124,7 @@ open class AgendaViewModel(
       _uiState.update { currentState ->
         currentState.copy(
             yearMonth = prevMonth,
-            dates = dataSource.getDates(prevMonth, currentState.selectedDate))
+            dates = dataSource.getDates(prevMonth, currentState.selectedDate, _stopsInfo.value))
       }
     }
   }
