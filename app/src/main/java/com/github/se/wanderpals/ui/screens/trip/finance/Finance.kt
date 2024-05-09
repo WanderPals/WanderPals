@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.service.SessionManager
-import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -36,13 +35,13 @@ import com.github.se.wanderpals.ui.navigation.Route
  * @param optionName The name of the finance option.
  */
 enum class FinanceOption(private val optionName: String) {
-    EXPENSES("Expenses"),
-    CATEGORIES("Categories"),
-    DEBTS("Debts");
+  EXPENSES("Expenses"),
+  CATEGORIES("Categories"),
+  DEBTS("Debts");
 
-    override fun toString(): String {
-        return this.optionName
-    }
+  override fun toString(): String {
+    return this.optionName
+  }
 }
 
 /**
@@ -58,69 +57,63 @@ enum class FinanceOption(private val optionName: String) {
 @Composable
 fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationActions) {
 
-    var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
+  var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
 
-    val expenseList by financeViewModel.expenseStateList.collectAsState()
+  val expenseList by financeViewModel.expenseStateList.collectAsState()
 
-    LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
+  LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
 
-    Scaffold(
-        modifier = Modifier.testTag("financeScreen"),
-        topBar = {
-            FinanceTopBar(
-                currentSelectedOption = currentSelectedOption,
-                onSelectOption = { newOption -> currentSelectedOption = newOption })
-        },
-        bottomBar = {
-            if (currentSelectedOption == FinanceOption.EXPENSES) {
-                FinanceBottomBar(expenseList)
-            }
-        },
-        floatingActionButton = {
-            if (currentSelectedOption == FinanceOption.EXPENSES &&
-                SessionManager.getCurrentUser()!!.role != Role.VIEWER
-            ) {
-                FloatingActionButton(
-                    modifier = Modifier.testTag("financeFloatingActionButton"),
-                    onClick = { navigationActions.navigateTo(Route.CREATE_EXPENSE) },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(50.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        Icons.Default.Add.name,
-                        modifier = Modifier.size(35.dp),
-                        tint = Color.White
-                    )
-                }
-            }
-        }) {
-        // Content
-            innerPadding ->
-        when (currentSelectedOption) {
-            FinanceOption.EXPENSES -> {
-                ExpensesContent(
-                    innerPadding = innerPadding,
-                    expenseList = expenseList,
-                    onRefresh = { financeViewModel.updateStateLists() })
-            }
-
-            FinanceOption.CATEGORIES -> {
-                CategoryContent(
-                    innerPadding = innerPadding,
-                    expenseList = expenseList,
-                    onRefresh = { financeViewModel.updateStateLists() })
-            }
-
-            FinanceOption.DEBTS -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = "Not available yet. ",
-                    )
-                }
-            }
+  Scaffold(
+      modifier = Modifier.testTag("financeScreen"),
+      topBar = {
+        FinanceTopBar(
+            currentSelectedOption = currentSelectedOption,
+            onSelectOption = { newOption -> currentSelectedOption = newOption })
+      },
+      bottomBar = {
+        if (currentSelectedOption == FinanceOption.EXPENSES) {
+          FinanceBottomBar(expenseList)
         }
-
-    }
+      },
+      floatingActionButton = {
+        if (currentSelectedOption == FinanceOption.EXPENSES &&
+            SessionManager.getCurrentUser()!!.role != Role.VIEWER) {
+          FloatingActionButton(
+              modifier = Modifier.testTag("financeFloatingActionButton"),
+              onClick = { navigationActions.navigateTo(Route.CREATE_EXPENSE) },
+              containerColor = MaterialTheme.colorScheme.primary,
+              shape = RoundedCornerShape(50.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    Icons.Default.Add.name,
+                    modifier = Modifier.size(35.dp),
+                    tint = Color.White)
+              }
+        }
+      }) {
+          // Content
+          innerPadding ->
+        when (currentSelectedOption) {
+          FinanceOption.EXPENSES -> {
+            ExpensesContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() })
+          }
+          FinanceOption.CATEGORIES -> {
+            CategoryContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() })
+          }
+          FinanceOption.DEBTS -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+              Text(
+                  modifier = Modifier.align(Alignment.Center),
+                  text = "Not available yet. ",
+              )
+            }
+          }
+        }
+      }
 }

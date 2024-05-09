@@ -30,23 +30,24 @@ fun FinancePieChart(
     expenses: List<Expense>,
     radiusOuter: Dp = 100.dp,
     chartBandWidth: Dp = 20.dp,
-    totalValueDisplayIsEnabled : Boolean = false
+    totalValueDisplayIsEnabled: Boolean = false
 ) {
 
-    val totalExpense = expenses.sumOf { it.amount }
-    val pieChartData = expenses
-        .groupBy { it.category }
-        .mapValues { (_, expenses) -> expenses.sumOf { it.amount / totalExpense * 360 }.toFloat() }
+  val totalExpense = expenses.sumOf { it.amount }
+  val pieChartData =
+      expenses
+          .groupBy { it.category }
+          .mapValues { (_, expenses) ->
+            expenses.sumOf { it.amount / totalExpense * 360 }.toFloat()
+          }
 
   var lastValue = -90f
 
   Box(
-      modifier =
-          Modifier.size(radiusOuter * 2f + chartBandWidth)
-              .testTag("FinancePieChart"),
+      modifier = Modifier.size(radiusOuter * 2f + chartBandWidth).testTag("FinancePieChart"),
       contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.size(radiusOuter * 2f).testTag("canvasPieChart")) {
-          pieChartData.forEach { (category,relativeCost) ->
+          pieChartData.forEach { (category, relativeCost) ->
             drawArc(
                 color = category.color,
                 startAngle = lastValue,
@@ -56,11 +57,10 @@ fun FinancePieChart(
             lastValue += relativeCost
           }
         }
-        if(totalValueDisplayIsEnabled){
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
+        if (totalValueDisplayIsEnabled) {
+          Column(
+              verticalArrangement = Arrangement.Center,
+              horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Total Value",
                     style = MaterialTheme.typography.bodyMedium,
@@ -71,7 +71,7 @@ fun FinancePieChart(
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary,
                 )
-            }
+              }
         }
       }
 }
