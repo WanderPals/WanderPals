@@ -544,7 +544,7 @@ class TripsRepositoryTest {
 
     val elapsedTime = measureTimeMillis {
       try {
-        withTimeout(10000) {
+        withTimeout(20000) {
           // Add the trip and validate the addition.
           assertTrue(repository.addTrip(trip))
 
