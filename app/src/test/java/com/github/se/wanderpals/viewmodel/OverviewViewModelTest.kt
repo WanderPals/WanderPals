@@ -1,3 +1,5 @@
+package com.github.se.wanderpals.viewmodel
+
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -128,6 +130,7 @@ class OverviewViewModelTest {
         assertFalse(viewModel.canSend.value)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun tearDown() {
         // Reset the main dispatcher to the original Main dispatcher after tests
