@@ -413,8 +413,7 @@ open class TripsRepository(
           val uniqueID = UUID.randomUUID().toString()
           val firebaseExpense =
               FirestoreExpense.fromExpense(
-                  expense.copy(
-                      expenseId = uniqueID)) // we already know who creates the Expense
+                  expense.copy(expenseId = uniqueID)) // we already know who creates the Expense
           val expenseDocument =
               tripsCollection
                   .document(tripId)

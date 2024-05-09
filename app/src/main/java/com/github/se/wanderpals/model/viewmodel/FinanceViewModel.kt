@@ -25,6 +25,12 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  private val _showDeleteDialog = MutableStateFlow(false)
+  open val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
+
+  private val _selectedExpense = MutableStateFlow<Expense?>(null)
+  open val selectedExpense: StateFlow<Expense?> = _selectedExpense.asStateFlow()
+
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
     viewModelScope.launch {
@@ -43,10 +49,23 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   /** Adds an expense to the trip. */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking {
-      tripsRepository.addExpenseToTrip(tripId, expense)
-    }
+    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
     viewModelScope.launch { updateStateLists() }
+  }
+
+  open fun deleteExpense(expense: Expense) {
+    runBlocking { tripsRepository.removeExpenseFromTrip(tripId, expense.expenseId) }
+    viewModelScope.launch { updateStateLists() }
+    hideDeleteDialog()
+  }
+
+  open fun showDeleteDialog(expense: Expense) {
+    _selectedExpense.value = expense
+    _showDeleteDialog.value = true
+  }
+
+  open fun hideDeleteDialog() {
+    _showDeleteDialog.value = false
   }
 
   class FinanceViewModelFactory(

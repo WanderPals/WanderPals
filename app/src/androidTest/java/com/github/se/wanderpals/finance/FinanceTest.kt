@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.finance
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -90,6 +91,11 @@ class FinanceViewModelTest :
 
       _isLoading.value = false
     }
+  }
+
+  override fun deleteExpense(expense: Expense) {
+    _expenseStateList.value = _expenseStateList.value.filter { it.expenseId != expense.expenseId }
+    hideDeleteDialog()
   }
 }
 
@@ -210,5 +216,27 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("FoodTotalAmount").assertTextEquals("150.00 CHF")
 
     composeTestRule.onNodeWithTag("OtherTotalAmount").assertTextEquals("0.00 CHF")
+  }
+
+  @Test
+  fun expensesDeletesCorrectly() = run {
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("expenseItem1").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("confirmDeleteExpenseButton").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertDoesNotExist()
+      composeTestRule.onNodeWithTag("expenseItem1").assertDoesNotExist()
+    }
+  }
+
+  @Test
+  fun expensesDeletesCancel() = run {
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("expenseItem1").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("cancelDeleteExpenseButton").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertDoesNotExist()
+      composeTestRule.onNodeWithTag("expenseItem1").assertIsDisplayed()
+    }
   }
 }
