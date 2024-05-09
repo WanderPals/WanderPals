@@ -35,7 +35,7 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
  * Composable function to display information about expenses that have been made during the trip
  *
  * A pie-chart is displayed to compare the amount of expenses in each category relative to the
- * others the number of transaction and the total amount for each category is also displayed as
+ * others. The number of transaction and the total amount for each category is also displayed as
  * items below the pie-chart.
  *
  * @param innerPadding Padding values for the inner content
