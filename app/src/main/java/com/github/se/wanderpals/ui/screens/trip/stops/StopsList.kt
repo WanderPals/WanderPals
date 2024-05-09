@@ -124,7 +124,8 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
                                         verticalAlignment = Alignment.CenterVertically) {
                                           DisplayDate(
                                               date = date,
-                                              color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                              color =
+                                                  MaterialTheme.colorScheme.onSecondaryContainer)
                                         }
                                   },
                                   contentAlignment = Alignment.CenterStart)

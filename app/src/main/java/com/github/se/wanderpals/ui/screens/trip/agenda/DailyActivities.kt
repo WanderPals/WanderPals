@@ -44,7 +44,6 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.github.se.wanderpals.ui.theme.outlineVariantLight
-import com.github.se.wanderpals.ui.theme.secondaryLight
 import kotlinx.coroutines.Dispatchers
 
 @Preview(showBackground = true)
@@ -187,7 +186,9 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
-                      tint = if (stopHasLocation) secondaryLight else Color.LightGray,
+                      tint =
+                          if (stopHasLocation) MaterialTheme.colorScheme.primary
+                          else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                       contentDescription = null // Provide an appropriate content description
                       )
                 }
