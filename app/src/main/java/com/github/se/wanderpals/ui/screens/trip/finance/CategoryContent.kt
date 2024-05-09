@@ -23,6 +23,7 @@ import com.github.se.wanderpals.model.data.Expense
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -97,13 +98,16 @@ fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>,onRe
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding)
-                    .padding(horizontal = 25.dp, vertical = 10.dp),
+                    .padding(horizontal = 25.dp, vertical = 10.dp)
+                    .testTag("categoryOptionLazyColumn")
+
             ) {
                 // Pie chart
                 item {
                     Surface(
                         shape = RoundedCornerShape(20.dp),
                         color = MaterialTheme.colorScheme.secondaryContainer,
+                        modifier = Modifier.testTag("categoryOptionPieChart"),
                     ) {
                         Column(
                             modifier = Modifier
@@ -187,7 +191,8 @@ fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .height(60.dp),
+            .height(60.dp)
+            .testTag(category.nameToDisplay+"InfoItem"),
         shape = RoundedCornerShape(10.dp),
         color = MaterialTheme.colorScheme.secondaryContainer,
     ) {
@@ -217,7 +222,8 @@ fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount
                         color = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        modifier = Modifier.padding(start = 10.dp),
+                        modifier = Modifier.padding(start = 10.dp)
+                            .testTag(category.nameToDisplay+"NbTransactions"),
                         text = "$nbTransaction transactions" ,
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.Gray,
@@ -226,7 +232,7 @@ fun CategoryInfoItem(category : Category,nbTransaction : Int,totalCategoryAmount
             }
 
             Text(
-                modifier = Modifier.padding(end = 15.dp),
+                modifier = Modifier.padding(end = 15.dp).testTag(category.nameToDisplay+"TotalAmount"),
                 text = "%.2f CHF".format(totalCategoryAmount),
                 style =  MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                 color = MaterialTheme.colorScheme.primary,
