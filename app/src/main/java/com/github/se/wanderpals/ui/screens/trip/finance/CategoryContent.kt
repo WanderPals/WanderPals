@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Category
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import java.time.LocalDate
 
 fun createExpenses(): List<Expense> {
@@ -76,11 +77,11 @@ fun createExpenses(): List<Expense> {
 @Composable
 fun CategoryContentPreview() {
     val expenses = createExpenses()
-    CategoryContent(innerPadding = PaddingValues(16.dp), expenseList = expenses)
+    CategoryContent(innerPadding = PaddingValues(16.dp), expenseList = expenses,onRefresh = {})
 }
 
 @Composable
-fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
+fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>,onRefresh : () -> Unit) {
 
     val categoryTransactionMap = expenseList.groupBy { it.category }
         .mapValues { (_, expenses) ->
@@ -90,67 +91,75 @@ fun CategoryContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
         }
         .withDefault { _ -> Pair(0, 0.0) }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(innerPadding)
-            .padding(horizontal = 25.dp, vertical = 10.dp),
-    ) {
-        // Pie chart
-        item{
-            Surface(
-                shape = RoundedCornerShape(20.dp),
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    FinancePieChart(
-                        expenses = expenseList,
-                        radiusOuter = 80.dp,
-                        totalValueDisplayIsEnabled = true)
+    val lazyColumn =
+        @Composable {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(innerPadding)
+                    .padding(horizontal = 25.dp, vertical = 10.dp),
+            ) {
+                // Pie chart
+                item {
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            FinancePieChart(
+                                expenses = expenseList,
+                                radiusOuter = 80.dp,
+                                totalValueDisplayIsEnabled = true
+                            )
 
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+
+                                PieChartCategoryText(category = Category.TRANSPORT)
+
+                                PieChartCategoryText(category = Category.ACCOMMODATION)
+
+                                PieChartCategoryText(category = Category.ACTIVITIES)
+
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+
+                                PieChartCategoryText(category = Category.FOOD)
+
+                                PieChartCategoryText(category = Category.OTHER)
+                            }
+                        }
+
+                    }
+                }
+
+                items(Category.values()) { category ->
+                    val categoryInfo = categoryTransactionMap.getValue(category)
                     Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ){
-
-                        PieChartCategoryText(category = Category.TRANSPORT)
-
-                        PieChartCategoryText(category = Category.ACCOMMODATION)
-
-                        PieChartCategoryText(category = Category.ACTIVITIES)
-
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ){
-
-                        PieChartCategoryText(category = Category.FOOD)
-
-                        PieChartCategoryText(category = Category.OTHER)
-                    }
+                    CategoryInfoItem(
+                        category = category,
+                        nbTransaction = categoryInfo.first,
+                        totalCategoryAmount = categoryInfo.second
+                    )
                 }
 
             }
         }
+        PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
 
-        items(Category.values()){ category ->
-            val categoryInfo = categoryTransactionMap.getValue(category)
-            Spacer(modifier = Modifier.height(20.dp))
-            CategoryInfoItem(
-                category = category,
-                nbTransaction = categoryInfo.first,
-                totalCategoryAmount = categoryInfo.second)
-        }
-
-    }
 
 }
 

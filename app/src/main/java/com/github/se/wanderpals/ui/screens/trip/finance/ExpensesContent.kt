@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +39,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import java.time.format.DateTimeFormatter
 
 /**
@@ -45,32 +50,50 @@ import java.time.format.DateTimeFormatter
  * @param expenseList List of expenses to display.
  */
 @Composable
-fun ExpensesContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
-  if (expenseList.isEmpty()) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      Text(
-          modifier = Modifier.align(Alignment.Center).testTag("noExpensesTripText"),
-          text = "Looks like you have no expenses. ",
-          style =
-              TextStyle(
-                  fontSize = 18.sp,
-                  lineHeight = 20.sp,
-                  fontWeight = FontWeight(500),
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                  textAlign = TextAlign.Center,
-              ),
-      )
-    }
-  } else {
-    LazyColumn(
-        modifier = Modifier.padding(innerPadding).fillMaxHeight().testTag("expensesContent")) {
-          items(expenseList) { expense ->
-            HorizontalDivider(
-                color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-            ExpenseItem(expense = expense) {}
-          }
+fun ExpensesContent(
+    innerPadding: PaddingValues,
+    expenseList: List<Expense>,
+    onRefresh: () -> Unit
+) {
+    if (expenseList.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .testTag("noExpensesTripText"),
+                text = "Looks like you have no expenses. ",
+                style =
+                TextStyle(
+                    fontSize = 18.sp,
+                    lineHeight = 20.sp,
+                    fontWeight = FontWeight(500),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                ),
+            )
+            IconButton(
+                onClick = { onRefresh() },
+                modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+                content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh expense list") })
         }
-  }
+    } else {
+        val lazyColumn = @Composable {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxHeight()
+                    .testTag("expensesContent")
+            ) {
+                items(expenseList) { expense ->
+                    HorizontalDivider(
+                        color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth()
+                    )
+                    ExpenseItem(expense = expense) {}
+                }
+            }
+        }
+        PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
+    }
 }
 
 /**
@@ -81,76 +104,93 @@ fun ExpensesContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
  */
 @Composable
 fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
-  Box(modifier = Modifier.fillMaxWidth().height(90.dp)) {
-    Button(
-        onClick = {},
-        shape = RectangleShape,
-        colors =
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(90.dp)
+    ) {
+        Button(
+            onClick = {},
+            shape = RectangleShape,
+            colors =
             ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent, disabledContainerColor = Color.Transparent),
-        enabled = false // not implemented for this sprint
+                containerColor = Color.Transparent, disabledContainerColor = Color.Transparent
+            ),
+            enabled = false // not implemented for this sprint
         ) {
-          Row(
-              modifier = Modifier.fillMaxSize(),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(
-                    modifier = Modifier.fillMaxHeight().weight(1f),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f),
                     verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.Start) {
-                      // Expense Title
-                      Text(
-                          text = expense.title,
-                          style = TextStyle(fontSize = 18.sp),
-                          color = Color.Black,
-                          textAlign = TextAlign.Start,
-                          overflow = TextOverflow.Ellipsis,
-                          maxLines = 1)
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    // Expense Title
+                    Text(
+                        text = expense.title,
+                        style = TextStyle(fontSize = 18.sp),
+                        color = Color.Black,
+                        textAlign = TextAlign.Start,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
 
-                      // User that paid the expense
-                      Text(
-                          text =
-                              buildAnnotatedString {
-                                append("Paid by ")
-                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                  append(expense.userName)
-                                }
-                              },
-                          style =
-                              TextStyle(
-                                  fontSize = 14.sp,
-                                  color = Color.Gray,
-                                  textAlign = TextAlign.Start),
-                          overflow = TextOverflow.Ellipsis,
-                          maxLines = 1)
-                      // Expense category
-                      Text(
-                          text = expense.category.name,
-                          style =
-                              TextStyle(
-                                  fontSize = 14.sp,
-                                  color = Color.Gray,
-                                  textAlign = TextAlign.Start))
-                    }
+                    // User that paid the expense
+                    Text(
+                        text =
+                        buildAnnotatedString {
+                            append("Paid by ")
+                            withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append(expense.userName)
+                            }
+                        },
+                        style =
+                        TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Start
+                        ),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1
+                    )
+                    // Expense category
+                    Text(
+                        text = expense.category.name,
+                        style =
+                        TextStyle(
+                            fontSize = 14.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Start
+                        )
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Column(
                     modifier = Modifier.fillMaxHeight(),
                     verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.End) {
-                      // Expense amount
-                      Text(
-                          text = "%.2f CHF".format(expense.amount),
-                          style = TextStyle(fontSize = 14.sp, color = Color.Gray))
+                    horizontalAlignment = Alignment.End
+                ) {
+                    // Expense amount
+                    Text(
+                        text = "%.2f CHF".format(expense.amount),
+                        style = TextStyle(fontSize = 14.sp, color = Color.Gray)
+                    )
 
-                      // Expense date
-                      Text(
-                          text =
-                              expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                          style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-                    }
-              }
+                    // Expense date
+                    Text(
+                        text =
+                        expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        style = TextStyle(fontSize = 14.sp, color = Color.Gray)
+                    )
+                }
+            }
         }
-  }
+    }
 }
