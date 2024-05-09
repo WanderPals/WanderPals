@@ -2,7 +2,6 @@ package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,7 +13,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -66,6 +63,11 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
   val expenseList by financeViewModel.expenseStateList.collectAsState()
   val users by financeViewModel.users.collectAsState()
 
+  LaunchedEffect(Unit) {
+    financeViewModel.updateStateLists()
+    financeViewModel.loadMembers(navigationActions.variables.currentTrip)
+  }
+
   Scaffold(
       modifier = Modifier.testTag("financeScreen"),
       topBar = {
@@ -96,21 +98,18 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
-        LaunchedEffect(Unit) {
-          financeViewModel.updateStateLists()
-          financeViewModel.loadMembers(navigationActions.variables.currentTrip)
-        }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
-            ExpensesContent(innerPadding = innerPadding, expenseList = expenseList)
+            ExpensesContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.CATEGORIES -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-              Text(
-                  modifier = Modifier.align(Alignment.Center),
-                  text = "Not available yet. ",
-              )
-            }
+            CategoryContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.DEBTS -> {
             Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {

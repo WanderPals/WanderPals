@@ -24,6 +24,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
 import java.util.UUID
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -37,7 +39,7 @@ import kotlinx.coroutines.withContext
  *   in short)
  */
 open class TripsRepository(
-    val uid: String,
+    var uid: String,
     private val dispatcher: CoroutineDispatcher // Inject dispatcher
 ) {
 
@@ -1353,8 +1355,35 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteTrip: Deleting trip")
-          removeTripId(tripId) // remove the trip from the user
-          tripsCollection.document(tripId).delete().await() // delete a given trip by its tripId
+
+          val trip = getTrip(tripId)
+          if (trip == null) {
+            Log.d("TripsRepository", "deleteTrip: No trip found with ID $tripId")
+            return@withContext false
+          }
+
+          coroutineScope {
+            // Concurrently delete all components of the trip
+
+            launch { setNotificationList(tripId, emptyList()) }
+            trip.stops.forEach { stopId -> launch { removeStopFromTrip(tripId, stopId) } }
+            trip.suggestions.forEach { suggestionId ->
+              launch { removeSuggestionFromTrip(tripId, suggestionId) }
+            }
+            trip.announcements.forEach { announcementId ->
+              launch { removeAnnouncementFromTrip(tripId, announcementId) }
+            }
+            trip.expenses.forEach { expenseId ->
+              launch { removeExpenseFromTrip(tripId, expenseId) }
+            }
+            launch { setBalances(tripId, emptyMap()) }
+            launch { removeTripId(tripId) }
+            trip.users.forEach { userId -> launch { removeUserFromTrip(tripId, userId) } }
+
+            launch { tripsCollection.document(tripId).delete().await() }
+          }
+
+          // delete a given trip by its tripId
           Log.d("TripsRepository", "deleteTrip: Trip deleted successfully for ID $tripId.")
           true
         } catch (e: Exception) {
@@ -1451,6 +1480,8 @@ open class TripsRepository(
             email = currentUser.email,
             nickname = currentUser.nickname,
             role = role,
+            lastPosition = currentUser.geoCords,
+            profilePictureURL = currentUser.profilePhoto,
             notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
   }
@@ -1570,13 +1601,13 @@ open class TripsRepository(
                           "TripsRepository",
                           "removeTripId: Successfully removed trip ID $tripId from user $uid's document.")
 
-                      true // Indicate success
+                      // Indicate success
                     } else {
                       Log.d(
                           "TripsRepository",
-                          "removeTripId: Failed to removed trip ID $tripId from user $uid's document. (it didn't exist)")
-                      false
+                          "removeTripId: trip ID $tripId from user $uid's document doesn't exist.")
                     } // No change needed
+                    true
                   }
                   .await()
           transactionResult

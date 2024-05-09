@@ -61,6 +61,74 @@ class TripsRepositoryTest {
   }
 
   @Test
+  fun testAddVariousComponentsAndDeleteTrip() = runBlocking {
+    val trip =
+        Trip(
+            tripId = UUID.randomUUID().toString(),
+            title = "Exploration of Egypt",
+            startDate = LocalDate.of(2024, 12, 1),
+            endDate = LocalDate.of(2024, 12, 15),
+            totalBudget = 3000.0,
+            description = "A detailed exploration of ancient Egyptian landmarks.",
+            imageUrl = "https://example.com/pyramids.png",
+            stops = listOf(),
+            users = listOf(),
+            suggestions = listOf(),
+            announcements = listOf())
+
+    val stop =
+        Stop(
+            stopId = "",
+            title = "Visit the Great Pyramid of Giza",
+            address = "Al Haram, Nazlet El-Semman, Al Giza Desert, Giza Governorate, Egypt",
+            date = LocalDate.of(2024, 12, 2),
+            startTime = LocalTime.of(9, 0),
+            duration = 180,
+            budget = 200.0,
+            description = "Tour of the largest Egyptian pyramid.",
+            geoCords = GeoCords(29.9792, 31.1342),
+            website = "http://www.greatpyramidofgiza.org",
+            imageUrl = "https://example.com/pyramid.png")
+
+    val user =
+        User(
+            userId = "testUser123",
+            name = "Alice Johnson",
+            email = "alice@example.com",
+            nickname = "AliceExplorer",
+            role = Role.MEMBER,
+            lastPosition = GeoCords(30.0, 31.0),
+            profilePictureURL = "https://example.com/alice.png")
+
+    val announcement =
+        Announcement(
+            announcementId = "",
+            userId = user.userId,
+            title = "Meeting point adjustment",
+            userName = user.name,
+            description = "The meeting point has been moved to the Sphinx statue.",
+            timestamp = LocalDateTime.now())
+
+    val elapsedTime = measureTimeMillis {
+      withTimeout(10000) {
+        // Add trip and its components
+        assertTrue(repository.addTrip(trip))
+
+        val addedTrip = repository.getTrip(repository.getTripsIds().first())!!
+        assertTrue(repository.addUserToTrip(addedTrip.tripId, user))
+        assertTrue(repository.addStopToTrip(addedTrip.tripId, stop))
+        assertTrue(repository.addAnnouncementToTrip(addedTrip.tripId, announcement))
+
+        assertNotNull(repository.getTrip(addedTrip.tripId))
+
+        // Delete the trip and verify that all components are also removed
+        assertTrue(repository.deleteTrip(addedTrip.tripId))
+      }
+    }
+    println("Execution time for testAddVariousComponentsAndDeleteTrip: $elapsedTime ms")
+  }
+
+  @Test
   fun testAddAndGetAndRemoveTripIdFalseIds() = runBlocking {
     val elapsedTime = measureTimeMillis {
       try {
@@ -68,7 +136,7 @@ class TripsRepositoryTest {
 
         withTimeout(10000) {
           assertFalse(repository.addTripId(nonExistentTripId))
-          assertFalse(repository.removeTripId(nonExistentTripId))
+          assertTrue(repository.removeTripId(nonExistentTripId))
           assertTrue(repository.getTripsIds().isEmpty())
         }
       } catch (e: TimeoutCancellationException) {

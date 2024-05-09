@@ -183,7 +183,6 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                   Log.d("Admin", "Image URL: ${currentUser?.profilePhoto}")
                 }
               }
-          adminViewModel.modifyCurrentUserProfilePhoto(selectedImages[0].toString())
           AsyncImage( // Icon for the admin screen
               model = currentUser?.profilePhoto!!,
               contentDescription = "Admin Icon",
