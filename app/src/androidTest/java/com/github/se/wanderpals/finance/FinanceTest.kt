@@ -1,11 +1,16 @@
 package com.github.se.wanderpals.finance
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.lifecycle.viewModelScope
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Role
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.screens.FinanceScreen
@@ -70,6 +75,9 @@ class FinanceViewModelTest :
   private val _expenseStateList = MutableStateFlow(listOf(expense1, expense2, expense3))
   override val expenseStateList: StateFlow<List<Expense>> = _expenseStateList
 
+  private val _users = MutableStateFlow(listOf<User>())
+  override val users: StateFlow<List<User>> = _users.asStateFlow()
+
   private val _isLoading = MutableStateFlow(true)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -84,6 +92,16 @@ class FinanceViewModelTest :
       _expenseStateList.value = listOf(expense1, expense2, expense3)
 
       _isLoading.value = false
+    }
+  }
+
+  override fun loadMembers(tripId: String) {
+    viewModelScope.launch {
+      _users.value =
+          listOf(
+              User("user001", "Alice", ""),
+              User("user002", "Bob", ""),
+              User("user003", "Charlie", ""))
     }
   }
 }
@@ -152,6 +170,86 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       categoriesButton { performClick() }
       expensesButton { performClick() }
       financeFloatingActionButton { assertIsNotDisplayed() }
+    }
+  }
+
+  @Test
+  fun debtScreenDisplaysProperly() = run {
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      debtsButton { performClick() }
+      composeTestRule.onNodeWithTag("debtsContent").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("defaultDebtContent").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtAlice").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
+
+      composeTestRule
+          .onNodeWithTag("startAlice", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("-8.33 CHF")
+      composeTestRule
+          .onNodeWithTag("endAlice", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("Alice")
+
+      composeTestRule
+          .onNodeWithTag("startBob", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("-33.33 CHF")
+      composeTestRule
+          .onNodeWithTag("endBob", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("Bob")
+
+      composeTestRule
+          .onNodeWithTag("startCharlie", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("Charlie")
+      composeTestRule
+          .onNodeWithTag("endCharlie", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("+41.67 CHF")
+    }
+  }
+
+  @Test
+  fun debtScreenDisplaysDetails() = run {
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      debtsButton { performClick() }
+      composeTestRule.onNodeWithTag("debtAlice").performClick()
+      composeTestRule.onNodeWithTag("debtDetails").assertIsDisplayed()
+      composeTestRule
+          .onNodeWithTag("detailsAlice")
+          .assertIsDisplayed()
+          .assertTextContains("Details for Alice")
+      composeTestRule.onNodeWithTag("debtAlice").assertDoesNotExist()
+      composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
+
+      composeTestRule
+          .onNodeWithTag("startBob", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("Bob")
+      composeTestRule
+          .onNodeWithTag("endBob", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("+8.33 CHF")
+
+      composeTestRule
+          .onNodeWithTag("startCharlie", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("-16.67 CHF")
+      composeTestRule
+          .onNodeWithTag("endCharlie", useUnmergedTree = true)
+          .assertIsDisplayed()
+          .assertTextContains("Charlie")
+
+      composeTestRule.onNodeWithTag("detailsBack").performClick()
+      composeTestRule.onNodeWithTag("debtDetails").assertDoesNotExist()
+      composeTestRule.onNodeWithTag("defaultDebtContent").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtAlice").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
     }
   }
 }

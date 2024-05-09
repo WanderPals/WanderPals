@@ -1,13 +1,16 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -61,7 +64,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
   var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
-    val users by financeViewModel.users.collectAsState()
+  val users by financeViewModel.users.collectAsState()
 
   Scaffold(
       modifier = Modifier.testTag("financeScreen"),
@@ -93,7 +96,10 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
-        LaunchedEffect(Unit) { financeViewModel.updateStateLists(); financeViewModel.loadMembers(navigationActions.variables.currentTrip) }
+        LaunchedEffect(Unit) {
+          financeViewModel.updateStateLists()
+          financeViewModel.loadMembers(navigationActions.variables.currentTrip)
+        }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
             ExpensesContent(innerPadding = innerPadding, expenseList = expenseList)
@@ -107,7 +113,9 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             }
           }
           FinanceOption.DEBTS -> {
-            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
+              HorizontalDivider()
+              Spacer(modifier = Modifier.height(10.dp))
               DebtContent(expenses = expenseList, users = users)
             }
           }
