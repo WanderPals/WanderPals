@@ -1,6 +1,11 @@
 package com.github.se.wanderpals.finance
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.lifecycle.viewModelScope
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Category
@@ -153,5 +158,57 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       expensesButton { performClick() }
       financeFloatingActionButton { assertIsNotDisplayed() }
     }
+  }
+
+  @Test
+  fun categoryContentDisplaysEverythingCorrectly() = run {
+    composeTestRule.onNodeWithTag("CategoriesButton").performClick()
+    composeTestRule.onNodeWithTag("categoryOptionPieChart").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("FinancePieChart").assertIsDisplayed()
+
+    Category.values().forEach { category ->
+      composeTestRule
+          .onNodeWithTag("categoryOptionLazyColumn")
+          .performScrollToIndex(category.ordinal + 1)
+      composeTestRule.onNodeWithTag("${category.nameToDisplay}InfoItem").assertExists()
+    }
+  }
+
+  @Test
+  fun categoryItemsDisplayCorrectNumberOfTransactionsForEachCategory() = run {
+    composeTestRule.onNodeWithTag("CategoriesButton").performClick()
+
+    composeTestRule
+        .onNodeWithTag("categoryOptionLazyColumn")
+        .performScrollToIndex(Category.values().size)
+
+    composeTestRule.onNodeWithTag("TransportNbTransactions").assertTextEquals("1 transaction")
+
+    composeTestRule.onNodeWithTag("AccommodationNbTransactions").assertTextEquals("0 transactions")
+
+    composeTestRule.onNodeWithTag("ActivitiesNbTransactions").assertTextEquals("0 transactions")
+
+    composeTestRule.onNodeWithTag("FoodNbTransactions").assertTextEquals("2 transactions")
+
+    composeTestRule.onNodeWithTag("OtherNbTransactions").assertTextEquals("0 transactions")
+  }
+
+  @Test
+  fun categoryItemsDisplayCorrectTotalAmountForEachCategory() = run {
+    composeTestRule.onNodeWithTag("CategoriesButton").performClick()
+
+    composeTestRule
+        .onNodeWithTag("categoryOptionLazyColumn")
+        .performScrollToIndex(Category.values().size)
+
+    composeTestRule.onNodeWithTag("TransportTotalAmount").assertTextEquals("25.00 CHF")
+
+    composeTestRule.onNodeWithTag("AccommodationTotalAmount").assertTextEquals("0.00 CHF")
+
+    composeTestRule.onNodeWithTag("ActivitiesTotalAmount").assertTextEquals("0.00 CHF")
+
+    composeTestRule.onNodeWithTag("FoodTotalAmount").assertTextEquals("150.00 CHF")
+
+    composeTestRule.onNodeWithTag("OtherTotalAmount").assertTextEquals("0.00 CHF")
   }
 }

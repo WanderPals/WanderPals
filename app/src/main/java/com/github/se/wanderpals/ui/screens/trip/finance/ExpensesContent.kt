@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +39,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import java.time.format.DateTimeFormatter
 
 /**
@@ -43,9 +48,14 @@ import java.time.format.DateTimeFormatter
  *
  * @param innerPadding Padding values for the inner content.
  * @param expenseList List of expenses to display.
+ * @param onRefresh Callback function for handling refresh action
  */
 @Composable
-fun ExpensesContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
+fun ExpensesContent(
+    innerPadding: PaddingValues,
+    expenseList: List<Expense>,
+    onRefresh: () -> Unit
+) {
   if (expenseList.isEmpty()) {
     Box(modifier = Modifier.fillMaxSize()) {
       Text(
@@ -60,16 +70,25 @@ fun ExpensesContent(innerPadding: PaddingValues, expenseList: List<Expense>) {
                   textAlign = TextAlign.Center,
               ),
       )
+      IconButton(
+          onClick = { onRefresh() },
+          modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+          content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh expense list") })
     }
   } else {
-    LazyColumn(
-        modifier = Modifier.padding(innerPadding).fillMaxHeight().testTag("expensesContent")) {
-          items(expenseList) { expense ->
-            HorizontalDivider(
-                color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-            ExpenseItem(expense = expense) {}
-          }
+    val lazyColumn =
+        @Composable {
+          LazyColumn(
+              modifier =
+                  Modifier.padding(innerPadding).fillMaxHeight().testTag("expensesContent")) {
+                items(expenseList) { expense ->
+                  HorizontalDivider(
+                      color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+                  ExpenseItem(expense = expense) {}
+                }
+              }
         }
+    PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
   }
 }
 

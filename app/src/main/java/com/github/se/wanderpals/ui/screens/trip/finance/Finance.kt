@@ -61,6 +61,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
 
+  LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
+
   Scaffold(
       modifier = Modifier.testTag("financeScreen"),
       topBar = {
@@ -91,18 +93,18 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
-        LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
-            ExpensesContent(innerPadding = innerPadding, expenseList = expenseList)
+            ExpensesContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.CATEGORIES -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-              Text(
-                  modifier = Modifier.align(Alignment.Center),
-                  text = "Not available yet. ",
-              )
-            }
+            CategoryContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.DEBTS -> {
             Box(modifier = Modifier.fillMaxSize()) {
