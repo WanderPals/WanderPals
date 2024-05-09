@@ -312,14 +312,12 @@ fun ContentItem( //todo: cont from here
 
   // Apply clickable only if the date is not empty.
   val finalModifier =
-      if (!isEmptyDate) {
+      (if (!isEmptyDate) {
         baseModifier.clickable { onClickListener(date) }
-      } else baseModifier
+      } else baseModifier)
+          .padding(10.dp)
 
-
-
-    Box(modifier = finalModifier
-        .padding(10.dp)) {
+    Box(modifier = finalModifier) {
         if(!isEmptyDate) {
             Text(
                 text = date.dayOfMonth,
