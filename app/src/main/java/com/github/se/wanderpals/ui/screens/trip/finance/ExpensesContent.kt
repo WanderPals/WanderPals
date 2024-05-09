@@ -48,6 +48,7 @@ import java.time.format.DateTimeFormatter
  *
  * @param innerPadding Padding values for the inner content.
  * @param expenseList List of expenses to display.
+ * @param onRefresh Callback function for handling refresh action
  */
 @Composable
 fun ExpensesContent(

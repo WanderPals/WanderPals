@@ -66,10 +66,8 @@ fun CategoryContent(
       @Composable {
         LazyColumn(
             modifier =
-                Modifier.fillMaxWidth()
-                    .padding(innerPadding)
-                    .padding(horizontal = 25.dp, vertical = 10.dp)
-                    .testTag("categoryOptionLazyColumn")) {
+                Modifier.fillMaxWidth().padding(innerPadding).testTag("categoryOptionLazyColumn"),
+            contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp)) {
 
               // Pie chart
               item {

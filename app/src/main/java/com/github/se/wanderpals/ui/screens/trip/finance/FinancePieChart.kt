@@ -24,6 +24,8 @@ import com.github.se.wanderpals.model.data.Expense
  * @param expenses The list of expenses to display in the pie chart.
  * @param radiusOuter The outer radius of the pie chart.
  * @param chartBandWidth The width of the pie chart bands.
+ * @param totalValueDisplayIsEnabled boolean value to indicate if the total value of the expenses
+ *   has to be displayed at the center of the pie-chart.
  */
 @Composable
 fun FinancePieChart(
