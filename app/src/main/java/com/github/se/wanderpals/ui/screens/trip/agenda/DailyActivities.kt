@@ -161,7 +161,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                                 lineHeight = 20.sp,
                                 fontWeight = FontWeight(500),
                                 letterSpacing = 0.16.sp),
-                        color = secondaryLight,
+                        color = MaterialTheme.colorScheme.secondary,
                         modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
                                 .testTag("ActivityAddress" + stop.stopId))

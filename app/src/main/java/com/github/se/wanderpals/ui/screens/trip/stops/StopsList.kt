@@ -1,10 +1,12 @@
 package com.github.se.wanderpals.ui.screens.trip.stops
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,9 +16,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -80,7 +82,10 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
             navigationIcon = {
               IconButton(
                   onClick = { navigationActions.goBack() },
-                  modifier = Modifier.testTag("BackButton")) {
+                  modifier = Modifier.testTag("BackButton"),
+                  colors =
+                      IconButtonDefaults.iconButtonColors(
+                          contentColor = MaterialTheme.colorScheme.onPrimaryContainer)) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                   }
             },
@@ -107,15 +112,22 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
                         content = {
                           dates.forEach { date ->
                             item {
-                              Row(
-                                  modifier = Modifier.padding(16.dp),
-                                  verticalAlignment = Alignment.CenterVertically) {
-                                    DisplayDate(
-                                        date = date, color = MaterialTheme.colorScheme.tertiary)
-                                  }
-                              HorizontalDivider(
-                                  thickness = 1.dp,
-                                  color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.5f))
+                              Box(
+                                  modifier =
+                                      Modifier.fillMaxWidth()
+                                          .weight(1f)
+                                          .testTag("DateBox")
+                                          .background(MaterialTheme.colorScheme.tertiaryContainer),
+                                  content = {
+                                    Row(
+                                        modifier = Modifier.padding(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically) {
+                                          DisplayDate(
+                                              date = date,
+                                              color = MaterialTheme.colorScheme.onTertiaryContainer)
+                                        }
+                                  },
+                                  contentAlignment = Alignment.CenterStart)
                             }
                             items(
                                 stops
