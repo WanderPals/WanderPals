@@ -168,7 +168,12 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("TransportInfoItem").assertIsDisplayed()
     composeTestRule.onNodeWithTag("AccommodationInfoItem").assertIsDisplayed()
     composeTestRule.onNodeWithTag("ActivitiesInfoItem").assertIsDisplayed()
+
+    composeTestRule
+        .onNodeWithTag("categoryOptionLazyColumn")
+        .performScrollToIndex(Category.FOOD.ordinal + 1)
     composeTestRule.onNodeWithTag("FoodInfoItem").assertIsDisplayed()
+
     composeTestRule
         .onNodeWithTag("categoryOptionLazyColumn")
         .performScrollToIndex(Category.OTHER.ordinal + 1)
@@ -180,11 +185,15 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("CategoriesButton").performClick()
     composeTestRule.onNodeWithTag("categoryOptionPieChart").assertIsDisplayed()
 
-    composeTestRule.onNodeWithTag("TransportNbTransactions").assertTextEquals("1 transactions")
+    composeTestRule.onNodeWithTag("TransportNbTransactions").assertTextEquals("1 transaction")
 
     composeTestRule.onNodeWithTag("AccommodationNbTransactions").assertTextEquals("0 transactions")
 
     composeTestRule.onNodeWithTag("ActivitiesNbTransactions").assertTextEquals("0 transactions")
+
+    composeTestRule
+        .onNodeWithTag("categoryOptionLazyColumn")
+        .performScrollToIndex(Category.FOOD.ordinal + 1)
 
     composeTestRule.onNodeWithTag("FoodNbTransactions").assertTextEquals("2 transactions")
 
@@ -205,6 +214,10 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("AccommodationTotalAmount").assertTextEquals("0.00 CHF")
 
     composeTestRule.onNodeWithTag("ActivitiesTotalAmount").assertTextEquals("0.00 CHF")
+
+    composeTestRule
+        .onNodeWithTag("categoryOptionLazyColumn")
+        .performScrollToIndex(Category.FOOD.ordinal + 1)
 
     composeTestRule.onNodeWithTag("FoodTotalAmount").assertTextEquals("150.00 CHF")
 

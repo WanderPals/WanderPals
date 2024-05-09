@@ -184,7 +184,9 @@ fun CategoryInfoItem(category: Category, nbTransaction: Int, totalCategoryAmount
                       modifier =
                           Modifier.padding(start = 10.dp)
                               .testTag(category.nameToDisplay + "NbTransactions"),
-                      text = "$nbTransaction transactions",
+                      text =
+                          if (nbTransaction == 1) "$nbTransaction transaction"
+                          else "$nbTransaction transactions",
                       style = MaterialTheme.typography.bodyMedium,
                       color = Color.Gray,
                   )
