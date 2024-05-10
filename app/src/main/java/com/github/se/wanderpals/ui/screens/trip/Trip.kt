@@ -2,6 +2,7 @@ package com.github.se.wanderpals.ui.screens.trip
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,6 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -37,6 +40,7 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionHistoryFeedContent
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.github.se.wanderpals.ui.screens.trip.finance.CreateExpense
 import com.github.se.wanderpals.ui.screens.trip.finance.Finance
@@ -61,146 +65,166 @@ fun Trip(
     mapManager: MapManager?,
 ) {
 
-  // update the SessionManagers Users Role, from the User In the Trip Object
-  val sessionViewModel: SessionViewModel =
-      viewModel(
-          factory = SessionViewModel.SessionViewModelFactory(tripsRepository), key = "Session")
-  LaunchedEffect(key1 = tripId) { sessionViewModel.updateUserForCurrentUser(tripId) }
+    // update the SessionManagers Users Role, from the User In the Trip Object
+    val sessionViewModel: SessionViewModel =
+        viewModel(
+            factory = SessionViewModel.SessionViewModelFactory(tripsRepository), key = "Session")
+    LaunchedEffect(key1 = tripId) { sessionViewModel.updateUserForCurrentUser(tripId) }
 
-  Scaffold(
-      modifier = Modifier.testTag("tripScreen"),
-      topBar = {},
-      bottomBar = { BottomBar(oldNavActions) }) { innerPadding ->
+    Scaffold(
+        modifier = Modifier.testTag("tripScreen"),
+        topBar = {},
+        bottomBar = { BottomBar(oldNavActions) }) { innerPadding ->
         oldNavActions.tripNavigation.setNavController(rememberNavController())
         NavHost(
             oldNavActions.tripNavigation.getNavController,
             startDestination = Route.TRIP,
             route = Route.ROOT_ROUTE,
             modifier = Modifier.padding(innerPadding)) {
-              navigation(
-                  startDestination = oldNavActions.tripNavigation.getStartDestination(),
-                  route = Route.TRIP) {
-                    composable(Route.DASHBOARD) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.DASHBOARD)
-                      val dashboardViewModel: DashboardViewModel =
-                          viewModel(
-                              factory =
-                                  DashboardViewModel.DashboardViewModelFactory(
-                                      tripsRepository, tripId),
-                              key = "Dashboard")
-                      Dashboard(tripId, dashboardViewModel, oldNavActions)
-                    }
-                    composable(Route.AGENDA) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.AGENDA)
-                      val agendaViewModel: AgendaViewModel =
-                          viewModel(
-                              factory =
-                                  AgendaViewModel.AgendaViewModelFactory(tripId, tripsRepository),
-                              key = "Agenda")
-                      Agenda(agendaViewModel)
-                    }
-                    composable(Route.SUGGESTION) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION)
-                      val suggestionsViewModel: SuggestionsViewModel =
-                          viewModel(
-                              factory =
-                                  SuggestionsViewModel.SuggestionsViewModelFactory(
-                                      tripsRepository, tripId),
-                              key = "SuggestionsViewModel")
-                      Suggestion(
-                          oldNavActions,
-                          tripId,
-                          suggestionsViewModel,
-                          onSuggestionClick = {
+            navigation(
+                startDestination = oldNavActions.tripNavigation.getStartDestination(),
+                route = Route.TRIP) {
+                composable(Route.DASHBOARD) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.DASHBOARD)
+                    val dashboardViewModel: DashboardViewModel =
+                        viewModel(
+                            factory =
+                            DashboardViewModel.DashboardViewModelFactory(
+                                tripsRepository, tripId),
+                            key = "Dashboard")
+                    Dashboard(tripId, dashboardViewModel, oldNavActions)
+                }
+                composable(Route.AGENDA) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.AGENDA)
+                    val agendaViewModel: AgendaViewModel =
+                        viewModel(
+                            factory =
+                            AgendaViewModel.AgendaViewModelFactory(tripId, tripsRepository),
+                            key = "Agenda")
+                    Agenda(agendaViewModel)
+                }
+                composable(Route.SUGGESTION) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION)
+                    val suggestionsViewModel: SuggestionsViewModel =
+                        viewModel(
+                            factory =
+                            SuggestionsViewModel.SuggestionsViewModelFactory(
+                                tripsRepository, tripId),
+                            key = "SuggestionsViewModel")
+                    Suggestion(
+                        oldNavActions,
+                        tripId,
+                        suggestionsViewModel,
+                        onSuggestionClick = {
                             oldNavActions.setVariablesSuggestion(
                                 com.github.se.wanderpals.model.data.Suggestion())
                             oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
-                          })
-                    }
-                    composable(Route.MAP) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.MAP)
-                      val mapViewModel: MapViewModel =
-                          viewModel(
-                              factory = MapViewModel.MapViewModelFactory(tripsRepository, tripId))
-                      if (mapManager != null) {
+                        })
+                }
+                composable(Route.MAP) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.MAP)
+                    val mapViewModel: MapViewModel =
+                        viewModel(
+                            factory = MapViewModel.MapViewModelFactory(tripsRepository, tripId))
+                    if (mapManager != null) {
                         if (oldNavActions.variables.currentAddress == "") {
-                          Log.d("NAVIGATION", "Navigating to map with empty address")
+                            Log.d("NAVIGATION", "Navigating to map with empty address")
                         } else {
-                          Log.d("NAVIGATION", "Navigating to map with address")
-                          mapManager.changeStartingLocation(
-                              LatLng(
-                                  oldNavActions.variables.currentGeoCords.latitude,
-                                  oldNavActions.variables.currentGeoCords.longitude))
+                            Log.d("NAVIGATION", "Navigating to map with address")
+                            mapManager.changeStartingLocation(
+                                LatLng(
+                                    oldNavActions.variables.currentGeoCords.latitude,
+                                    oldNavActions.variables.currentGeoCords.longitude))
                         }
                         Map(oldNavActions, mapViewModel, mapManager)
-                      }
                     }
-                    composable(Route.NOTIFICATION) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.NOTIFICATION)
-                      val notificationsViewModel: NotificationsViewModel =
-                          viewModel(
-                              factory =
-                                  NotificationsViewModel.NotificationsViewModelFactory(
-                                      tripsRepository, tripId),
-                              key = "NotificationsViewModel")
-                      Notification(notificationsViewModel, oldNavActions)
-                    }
-                    composable(Route.CREATE_ANNOUNCEMENT) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_ANNOUNCEMENT)
-                      val notificationsViewModel: NotificationsViewModel =
-                          viewModel(
-                              factory =
-                                  NotificationsViewModel.NotificationsViewModelFactory(
-                                      tripsRepository, tripId),
-                              key = "NotificationsViewModel")
-                      CreateAnnouncement(
-                          notificationsViewModel, onNavigationBack = { oldNavActions.goBack() })
-                    }
+                }
+                composable(Route.NOTIFICATION) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.NOTIFICATION)
+                    val notificationsViewModel: NotificationsViewModel =
+                        viewModel(
+                            factory =
+                            NotificationsViewModel.NotificationsViewModelFactory(
+                                tripsRepository, tripId),
+                            key = "NotificationsViewModel")
+                    Notification(notificationsViewModel, oldNavActions)
+                }
+                composable(Route.CREATE_ANNOUNCEMENT) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_ANNOUNCEMENT)
+                    val notificationsViewModel: NotificationsViewModel =
+                        viewModel(
+                            factory =
+                            NotificationsViewModel.NotificationsViewModelFactory(
+                                tripsRepository, tripId),
+                            key = "NotificationsViewModel")
+                    CreateAnnouncement(
+                        notificationsViewModel, onNavigationBack = { oldNavActions.goBack() })
+                }
 
-                    composable(Route.SUGGESTION_DETAIL) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION_DETAIL)
-                      Log.d(
-                          "SuggestionDetail",
-                          "SuggestionDetail: ${oldNavActions.variables.suggestionId}")
+                composable(Route.SUGGESTION_DETAIL) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION_DETAIL)
+                    Log.d(
+                        "SuggestionDetail",
+                        "SuggestionDetail: ${oldNavActions.variables.suggestionId}")
 
-                      val suggestionsViewModel: SuggestionsViewModel =
-                          viewModel(
-                              factory =
-                                  SuggestionsViewModel.SuggestionsViewModelFactory(
-                                      tripsRepository, oldNavActions.variables.currentTrip),
-                              key = "SuggestionsViewModel")
-                      suggestionsViewModel.setSelectedSuggestion(
-                          oldNavActions.variables.currentSuggestion)
-                      SuggestionDetail(
-                          suggestionId = oldNavActions.variables.suggestionId,
-                          viewModel = suggestionsViewModel,
-                          navActions = oldNavActions)
-                    }
-                    composable(Route.FINANCE) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
-                      val viewModel: FinanceViewModel =
-                          viewModel(
-                              factory =
-                                  FinanceViewModel.FinanceViewModelFactory(
-                                      tripsRepository, oldNavActions.variables.currentTrip),
-                              key = "FinanceViewModel")
-                      Finance(financeViewModel = viewModel, navigationActions = oldNavActions)
-                    }
-                    composable(Route.CREATE_EXPENSE) {
-                      oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_EXPENSE)
-                      val viewModel: FinanceViewModel =
-                          viewModel(
-                              factory =
-                                  FinanceViewModel.FinanceViewModelFactory(
-                                      tripsRepository, oldNavActions.variables.currentTrip),
-                              key = "FinanceViewModel")
-                      CreateExpense(tripId, viewModel, oldNavActions) {
+                    val suggestionsViewModel: SuggestionsViewModel =
+                        viewModel(
+                            factory =
+                            SuggestionsViewModel.SuggestionsViewModelFactory(
+                                tripsRepository, oldNavActions.variables.currentTrip),
+                            key = "SuggestionsViewModel")
+                    suggestionsViewModel.setSelectedSuggestion(
+                        oldNavActions.variables.currentSuggestion)
+                    SuggestionDetail(
+                        suggestionId = oldNavActions.variables.suggestionId,
+                        viewModel = suggestionsViewModel,
+                        navActions = oldNavActions)
+                }
+                composable(Route.FINANCE) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
+                    val viewModel: FinanceViewModel =
+                        viewModel(
+                            factory =
+                            FinanceViewModel.FinanceViewModelFactory(
+                                tripsRepository, oldNavActions.variables.currentTrip),
+                            key = "FinanceViewModel")
+                    Finance(financeViewModel = viewModel, navigationActions = oldNavActions)
+                }
+                composable(Route.CREATE_EXPENSE) {
+                    oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_EXPENSE)
+                    val viewModel: FinanceViewModel =
+                        viewModel(
+                            factory =
+                            FinanceViewModel.FinanceViewModelFactory(
+                                tripsRepository, oldNavActions.variables.currentTrip),
+                            key = "FinanceViewModel")
+                    CreateExpense(tripId, viewModel, oldNavActions) {
                         viewModel.updateStateLists()
-                      }
                     }
-                  }
+                }
+                composable(Route.SUGGESTION_HISTORY){
+                    oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION_HISTORY)
+                    val suggestionsViewModel: SuggestionsViewModel = viewModel(
+                        factory = SuggestionsViewModel.SuggestionsViewModelFactory(tripsRepository, tripId),
+                        key = "SuggestionsHistoryViewModel"
+                    )
+                    // Assuming you have a method to fetch history or passing it via navArgs
+                    val suggestionList by suggestionsViewModel.historyState.collectAsState(initial = emptyList())
+                    val searchSuggestionText by remember { mutableStateOf("") }
+
+                    SuggestionHistoryFeedContent(
+                        innerPadding = PaddingValues(all = 8.dp),
+                        suggestionList = suggestionList,
+                        searchSuggestionText = searchSuggestionText,
+                        tripId = tripId,
+                        suggestionsViewModel = suggestionsViewModel,
+                        navigationActions = oldNavActions
+                    )
+                }
+
             }
-      }
+        }
+    }
 }
 
 /**
@@ -210,22 +234,26 @@ fun Trip(
  */
 @Composable
 fun BottomBar(navActions: NavigationActions) {
-  val currentRoute by navActions.currentRouteTrip.collectAsState()
+    val currentRoute by navActions.currentRouteTrip.collectAsState()
 
-  NavigationBar(
-      modifier = Modifier.testTag("bottomNav").height(56.dp),
-      containerColor = NavigationBarDefaults.containerColor,
-      contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
-      tonalElevation = NavigationBarDefaults.Elevation,
-      windowInsets = NavigationBarDefaults.windowInsets,
-  ) {
-    TRIP_BOTTOM_BAR.forEach { destination ->
-      NavigationBarItem(
-          modifier = Modifier.testTag(destination.text).size(56.dp),
-          selected = currentRoute == destination.route,
-          onClick = { navActions.navigateTo(destination.route) },
-          icon = { Image(imageVector = destination.icon, contentDescription = null) },
-      )
+    NavigationBar(
+        modifier = Modifier
+            .testTag("bottomNav")
+            .height(56.dp),
+        containerColor = NavigationBarDefaults.containerColor,
+        contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
+        tonalElevation = NavigationBarDefaults.Elevation,
+        windowInsets = NavigationBarDefaults.windowInsets,
+    ) {
+        TRIP_BOTTOM_BAR.forEach { destination ->
+            NavigationBarItem(
+                modifier = Modifier
+                    .testTag(destination.text)
+                    .size(56.dp),
+                selected = currentRoute == destination.route,
+                onClick = { navActions.navigateTo(destination.route) },
+                icon = { Image(imageVector = destination.icon, contentDescription = null) },
+            )
+        }
     }
-  }
 }
