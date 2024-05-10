@@ -111,7 +111,7 @@ fun StopsList(stopsListViewModel: StopsListViewModel) {
               // Sort the LocalDate objects in ascending order
               dates = localDates.sortedBy { it }
 
-                // Display the stops in a LazyColumn
+              // Display the stops in a LazyColumn
               val stopsLazyColumn =
                   @Composable {
                     LazyColumn(
@@ -159,7 +159,10 @@ fun StopsList(stopsListViewModel: StopsListViewModel) {
                             .align(Alignment.Center))
                 IconButton(
                     onClick = { stopsListViewModel.loadStops() },
-                    modifier = Modifier.align(Alignment.Center).padding(top = 60.dp).testTag("RefreshButton"),
+                    modifier =
+                        Modifier.align(Alignment.Center)
+                            .padding(top = 60.dp)
+                            .testTag("RefreshButton"),
                     content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
               }
             }
