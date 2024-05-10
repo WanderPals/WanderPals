@@ -324,7 +324,7 @@ fun ContentItem(
       if (date.stopStatus !=
           CalendarUiState.StopStatus
               .NONE) { // I use "not equal to the NONE status" here, because we might have more
-                       // statuses in the future
+        // statuses in the future
         Box(
             modifier =
                 Modifier.align(

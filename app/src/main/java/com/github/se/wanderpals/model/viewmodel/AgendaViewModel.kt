@@ -70,7 +70,7 @@ open class AgendaViewModel(
 
   /** Loads the stops information for the trip, marking all existing stops as ADDED. */
   private suspend fun loadStopsInfo() { // a suspend function is asynchronous and can be called from
-                                        // a coroutine
+    // a coroutine
     // Fetch all stops related to a specific trip from the repository
     val stops = tripsRepository?.getAllStopsFromTrip(tripId) ?: listOf()
 
