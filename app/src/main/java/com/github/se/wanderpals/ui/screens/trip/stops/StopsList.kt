@@ -99,8 +99,8 @@ fun StopsList(stopsListViewModel: StopsListViewModel) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary),
         )
-      }) { it ->
-        Column(modifier = Modifier.padding(it)) {
+      }) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
           if (!isLoading) {
             if (stops.isNotEmpty()) {
               var dates = stops.map { stop -> stop.date }.distinct()
