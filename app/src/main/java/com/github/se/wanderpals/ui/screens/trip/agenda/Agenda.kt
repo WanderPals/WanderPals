@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,7 +69,6 @@ fun AgendaPreview() {
 fun Agenda(agendaViewModel: AgendaViewModel) {
   val uiState by agendaViewModel.uiState.collectAsState()
   val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
-    val stopsInfo by agendaViewModel.stopsInfo.collectAsState()  // Collecting stops info here
 
   var isDrawerExpanded by remember { mutableStateOf(false) }
 
@@ -97,9 +95,7 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
                     onNextMonthButtonClicked = { nextMonth ->
                       agendaViewModel.toNextMonth(nextMonth)
                     },
-                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) },
-                    stopsInfo = stopsInfo, // Pass the stops info here
-                )
+                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
               }
           Spacer(modifier = Modifier.padding(1.dp))
         }
@@ -142,15 +138,13 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
  * @param onDateClickListener A lambda function to be called when the user selects a date.
  */
 @Composable
-fun CalendarWidget( //here to add the marker
+fun CalendarWidget(
     days: Array<String>,
     yearMonth: YearMonth,
     dates: List<CalendarUiState.Date>,
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
-    onDateClickListener: (CalendarUiState.Date) -> Unit,
-    stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>, // Add this parameter
-
+    onDateClickListener: (CalendarUiState.Date) -> Unit
 ) {
   Column(modifier = Modifier.padding(16.dp).background(Color.White)) {
     Row {
@@ -293,11 +287,12 @@ fun ContentItem(
   // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
   val isEmptyDate = date.dayOfMonth.isEmpty()
 
-    // Set the marker color based on the stop status
-    val markerColor = when (date.stopStatus) {
+  // Set the marker color based on the stop status
+  val markerColor =
+      when (date.stopStatus) {
         CalendarUiState.StopStatus.ADDED -> Color.Cyan // Stop added
         else -> Color.Transparent // No stop
-    }
+      }
 
   val baseModifier =
       modifier
@@ -316,30 +311,31 @@ fun ContentItem(
   // Apply clickable only if the date is not empty.
   val finalModifier =
       (if (!isEmptyDate) {
-        baseModifier.clickable { onClickListener(date) }
-            .padding(10.dp)
+        baseModifier.clickable { onClickListener(date) }.padding(10.dp)
       } else baseModifier)
 
-    Box(modifier = finalModifier) {
-        if(!isEmptyDate) {
-            Text(
-                text = date.dayOfMonth,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.align(Alignment.TopCenter)
+  Box(modifier = finalModifier) {
+    if (!isEmptyDate) {
+      Text(
+          text = date.dayOfMonth,
+          style = MaterialTheme.typography.bodyMedium,
+          modifier = Modifier.align(Alignment.TopCenter))
+      // Displaying the status dot below the date
+      if (date.stopStatus !=
+          CalendarUiState.StopStatus
+              .NONE) { // I use "not equal to the NONE status" here, because we might have more
+                       // statuses in the future
+        Box(
+            modifier =
+                Modifier.align(
+                        Alignment.BottomCenter) // Center the dot at the bottom of the date cell
+                    .size(8.dp) // Size of the dot
+                    .clip(CircleShape) // Make it circular
+                    .background(markerColor) // Set the appropriate color
+                    .padding(bottom = 4.dp) // Add some padding to the bottom
+                    .testTag("MarkerADDED") // Add test tag here
             )
-            // Displaying the status dot below the date
-            if (date.stopStatus != CalendarUiState.StopStatus.NONE) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)  // Center the dot at the bottom of the date cell
-                        .size(8.dp)  // Size of the dot
-                        .clip(CircleShape)  // Make it circular
-                        .background(markerColor)  // Set the appropriate color
-                        .padding(bottom = 4.dp)  // Add some padding to the bottom
-                )
-            }
-        }
-
-
+      }
     }
+  }
 }

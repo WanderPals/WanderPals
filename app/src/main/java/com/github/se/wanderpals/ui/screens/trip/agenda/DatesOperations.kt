@@ -34,15 +34,18 @@ data class CalendarUiState(
     val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
   }
 
-    /**
-     * Enum class representing the status of the stop addition.
-     * @property ADDED Stop was added to the trip.
-     * @property NONE Stop was not added, it is still a suggestion of the trip.
-     */
-    enum class StopStatus { ADDED, NONE }
+  /**
+   * Enum class representing the status of the stop addition.
+   *
+   * @property ADDED Stop was added to the trip.
+   * @property NONE Stop was not added, it is still a suggestion of the trip.
+   */
+  enum class StopStatus {
+    ADDED,
+    NONE
+  }
 
-
-    /**
+  /**
    * Data class representing a single date in the calendar. Includes information about the day of
    * the month, the corresponding year and month, and whether the date is selected.
    *
@@ -77,19 +80,23 @@ class CalendarDataSource {
    *
    * @param yearMonth The year and month for which to generate the date list.
    * @param selectedDate An optional `LocalDate` representing the currently selected date.
-   * @param stopsInfo A map of `LocalDate` to `CalendarUiState.StopStatus` representing the status of stops.
+   * @param stopsInfo A map of `LocalDate` to `CalendarUiState.StopStatus` representing the status
+   *   of stops.
    * @return A list of `CalendarUiState.Date` objects representing the dates of the specified month.
    */
-  fun getDates(yearMonth: YearMonth, selectedDate: LocalDate?, stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>): List<CalendarUiState.Date> {
-      return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
+  fun getDates(
+      yearMonth: YearMonth,
+      selectedDate: LocalDate?,
+      stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>
+  ): List<CalendarUiState.Date> {
+    return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
       val isSelected = date == selectedDate && date.monthValue == yearMonth.monthValue
       CalendarUiState.Date(
           dayOfMonth = if (date.monthValue == yearMonth.monthValue) "${date.dayOfMonth}" else "",
           yearMonth = yearMonth,
           year = Year.of(date.year),
           isSelected = isSelected,
-          stopStatus = stopsInfo[date] ?: CalendarUiState.StopStatus.NONE
-      )
+          stopStatus = stopsInfo[date] ?: CalendarUiState.StopStatus.NONE)
     }
   }
 }

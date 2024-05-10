@@ -43,45 +43,46 @@ open class AgendaViewModel(
 
   open var selectedDate: LocalDate? = LocalDate.now()
 
-  private val _stopsInfo = MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>>(emptyMap())
+  open val _stopsInfo = MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>>(emptyMap())
 
   /** Exposed read-only state flow of stops info. */
-  val stopsInfo: StateFlow<Map<LocalDate, CalendarUiState.StopStatus>> = _stopsInfo.asStateFlow()
-
+  //  val stopsInfo: StateFlow<Map<LocalDate, CalendarUiState.StopStatus>> =
+  // _stopsInfo.asStateFlow()
 
   /**
    * Initializes the UI state of the agenda by fetching the dates for the current month and updating
    * the UI state accordingly.
    */
   init {
-    viewModelScope.launch {//after the data is loaded,
-      // the stops info is loaded and the UI state is updated with the dates for the current month, in a synchronous manner.
-      loadStopsInfo()  // Load stops info when ViewModel initializes
+    viewModelScope.launch { // after the data is loaded,
+      // the stops info is loaded and the UI state is updated with the dates for the current month,
+      // in a synchronous manner.
+      loadStopsInfo() // Load stops info when ViewModel initializes
 
       _uiState.update { currentState ->
-        currentState.copy(dates = dataSource.getDates(currentState.yearMonth, LocalDate.now(), stopsInfo = _stopsInfo.value))
+        currentState.copy(
+            dates =
+                dataSource.getDates(
+                    currentState.yearMonth, LocalDate.now(), stopsInfo = _stopsInfo.value))
       }
     }
   }
 
+  /** Loads the stops information for the trip, marking all existing stops as ADDED. */
+  private suspend fun loadStopsInfo() { // a suspend function is asynchronous and can be called from
+                                        // a coroutine
+    // Fetch all stops related to a specific trip from the repository
+    val stops = tripsRepository?.getAllStopsFromTrip(tripId) ?: listOf()
 
-  /**
-   * Loads the stops information for the trip, marking all existing stops as ADDED.
-   */
-  private suspend fun loadStopsInfo() { // a suspend function is asynchronous and can be called from a coroutine
-      // Fetch all stops related to a specific trip from the repository
-      val stops = tripsRepository?.getAllStopsFromTrip(tripId) ?: listOf()
+    // Create a map with the date of each stop and mark it as ADDED
+    // Continue if the list is not empty
+    if (stops.isNotEmpty()) {
+      val statusMap =
+          stops.associateBy(
+              keySelector = { it.date }, valueTransform = { CalendarUiState.StopStatus.ADDED })
 
-      // Create a map with the date of each stop and mark it as ADDED
-      // Continue if the list is not empty
-      if (stops.isNotEmpty()) {
-        val statusMap = stops.associateBy(
-          keySelector = { it.date },
-          valueTransform = { CalendarUiState.StopStatus.ADDED }
-        )
-
-        _stopsInfo.value = statusMap
-      }
+      _stopsInfo.value = statusMap
+    }
   }
 
   /**

@@ -33,7 +33,8 @@ data class FirestoreSuggestion(
     val comments: List<FirestoreComment> =
         emptyList(), // Using Firestore-compatible Comment objects
     val userLikes: List<String> = emptyList(),
-    val stopStatus: String = CalendarUiState.StopStatus.NONE.name // Convert enum to string for Firestore
+    val stopStatus: String =
+        CalendarUiState.StopStatus.NONE.name // Convert enum to string for Firestore
 ) {
   companion object {
     /**
@@ -61,7 +62,7 @@ data class FirestoreSuggestion(
               }, // Convert each Comment to FirestoreComment
           userLikes = suggestion.userLikes,
           stopStatus = suggestion.stopStatus.name // Convert enum to string for Firestore
-      )
+          )
     }
   }
 
@@ -87,6 +88,6 @@ data class FirestoreSuggestion(
         comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
         userLikes = userLikes,
         stopStatus = CalendarUiState.StopStatus.valueOf(stopStatus) // Convert string back to enum
-    )
+        )
   }
 }
