@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-//todo: cont from step3
 /**
  * ViewModel for managing the agenda of a trip, handling UI state and data interactions for a
  * calendar view.
@@ -55,11 +54,34 @@ open class AgendaViewModel(
    * the UI state accordingly.
    */
   init {
-    viewModelScope.launch {
+    viewModelScope.launch {//after the data is loaded,
+      // the stops info is loaded and the UI state is updated with the dates for the current month, in a synchronous manner.
+      loadStopsInfo()  // Load stops info when ViewModel initializes
+
       _uiState.update { currentState ->
         currentState.copy(dates = dataSource.getDates(currentState.yearMonth, LocalDate.now(), stopsInfo = _stopsInfo.value))
       }
     }
+  }
+
+
+  /**
+   * Loads the stops information for the trip, marking all existing stops as ADDED.
+   */
+  private suspend fun loadStopsInfo() { // a suspend function is asynchronous and can be called from a coroutine
+      // Fetch all stops related to a specific trip from the repository
+      val stops = tripsRepository?.getAllStopsFromTrip(tripId) ?: listOf()
+
+      // Create a map with the date of each stop and mark it as ADDED
+      // Continue if the list is not empty
+      if (stops.isNotEmpty()) {
+        val statusMap = stops.associateBy(
+          keySelector = { it.date },
+          valueTransform = { CalendarUiState.StopStatus.ADDED }
+        )
+
+        _stopsInfo.value = statusMap
+      }
   }
 
   /**

@@ -36,11 +36,10 @@ data class CalendarUiState(
 
     /**
      * Enum class representing the status of the stop addition.
-     * @property RECENT Stop was added recently.
-     * @property EARLIER Stop was added earlier.
-     * @property NONE Stop was not added.
+     * @property ADDED Stop was added to the trip.
+     * @property NONE Stop was not added, it is still a suggestion of the trip.
      */
-    enum class StopStatus { RECENT, EARLIER, NONE }
+    enum class StopStatus { ADDED, NONE }
 
 
     /**
@@ -82,7 +81,7 @@ class CalendarDataSource {
    * @return A list of `CalendarUiState.Date` objects representing the dates of the specified month.
    */
   fun getDates(yearMonth: YearMonth, selectedDate: LocalDate?, stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>): List<CalendarUiState.Date> {
-    return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
+      return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
       val isSelected = date == selectedDate && date.monthValue == yearMonth.monthValue
       CalendarUiState.Date(
           dayOfMonth = if (date.monthValue == yearMonth.monthValue) "${date.dayOfMonth}" else "",

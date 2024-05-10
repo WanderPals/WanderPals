@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,6 +70,7 @@ fun AgendaPreview() {
 fun Agenda(agendaViewModel: AgendaViewModel) {
   val uiState by agendaViewModel.uiState.collectAsState()
   val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
+    val stopsInfo by agendaViewModel.stopsInfo.collectAsState()  // Collecting stops info here
 
   var isDrawerExpanded by remember { mutableStateOf(false) }
 
@@ -95,7 +97,9 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
                     onNextMonthButtonClicked = { nextMonth ->
                       agendaViewModel.toNextMonth(nextMonth)
                     },
-                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) },
+                    stopsInfo = stopsInfo, // Pass the stops info here
+                )
               }
           Spacer(modifier = Modifier.padding(1.dp))
         }
@@ -145,6 +149,8 @@ fun CalendarWidget( //here to add the marker
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
+    stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>, // Add this parameter
+
 ) {
   Column(modifier = Modifier.padding(16.dp).background(Color.White)) {
     Row {
@@ -278,10 +284,8 @@ fun Content(
  * @param onClickListener A lambda function to be called when this date item is clicked.
  * @param modifier A `Modifier` to be applied to this Composable for styling and layout purposes.
  */
-
-///*
 @Composable
-fun ContentItem( //todo: cont from here
+fun ContentItem(
     date: CalendarUiState.Date,
     onClickListener: (CalendarUiState.Date) -> Unit,
     modifier: Modifier = Modifier
@@ -291,8 +295,7 @@ fun ContentItem( //todo: cont from here
 
     // Set the marker color based on the stop status
     val markerColor = when (date.stopStatus) {
-        CalendarUiState.StopStatus.RECENT -> Color.Green  // Most recent stop
-        CalendarUiState.StopStatus.EARLIER ->  MaterialTheme.colorScheme.secondaryContainer // Color.Blue  // Earlier stops
+        CalendarUiState.StopStatus.ADDED -> Color.Cyan // Stop added
         else -> Color.Transparent // No stop
     }
 
@@ -314,8 +317,8 @@ fun ContentItem( //todo: cont from here
   val finalModifier =
       (if (!isEmptyDate) {
         baseModifier.clickable { onClickListener(date) }
+            .padding(10.dp)
       } else baseModifier)
-          .padding(10.dp)
 
     Box(modifier = finalModifier) {
         if(!isEmptyDate) {
@@ -340,4 +343,3 @@ fun ContentItem( //todo: cont from here
 
     }
 }
-//*/
