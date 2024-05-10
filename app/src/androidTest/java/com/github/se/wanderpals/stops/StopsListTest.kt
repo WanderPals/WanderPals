@@ -38,7 +38,7 @@ val stop3 = Stop("stopId3", "stop3", "stop3 address", LocalDate.of(2024, 5, 12))
 val stop4 = Stop("stopId4", "stop4", "stop4 address", LocalDate.of(2024, 5, 13))
 
 // Fake ViewModel for testing
-class FakeStopsListViewModel : StopsListViewModel(mockk(relaxed = true), "tripId") {
+class FakeStopsListViewModel : StopsListViewModel(mockk(relaxed = true)) {
   private val _stops = MutableStateFlow(emptyList<Stop>())
   override var stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 
@@ -47,7 +47,7 @@ class FakeStopsListViewModel : StopsListViewModel(mockk(relaxed = true), "tripId
 
   var allowDataLoading = true
 
-  override fun loadStops() {
+  override fun loadStops(tripId: String) {
     if (allowDataLoading) {
       viewModelScope.launch {
         _isLoading.value = true
@@ -59,10 +59,6 @@ class FakeStopsListViewModel : StopsListViewModel(mockk(relaxed = true), "tripId
 
   fun clearStops() {
     _stops.value = emptyList()
-  }
-
-  fun allowDataLoading() {
-    allowDataLoading = true
   }
 }
 
@@ -92,11 +88,11 @@ class StopsListTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     // Load stops accordingly
     if (!useEmptyList) {
       (stopsListViewModel as FakeStopsListViewModel).allowDataLoading = true
-      stopsListViewModel.loadStops()
+      stopsListViewModel.loadStops("tripId")
     }
 
     // Set up Compose UI content
-    composeTestRule.setContent { StopsList(stopsListViewModel) }
+    composeTestRule.setContent { StopsList(stopsListViewModel, "tripId") }
   }
 
   @Test
@@ -152,23 +148,6 @@ class StopsListTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithText("stop2").assertIsDisplayed()
     composeTestRule.onNodeWithText("stop3").assertIsDisplayed()
     composeTestRule.onNodeWithText("stop4").assertIsDisplayed()
-  }
-
-  private fun ComposeTestRule.waitForNodeToDisappear(tag: String, timeoutMillis: Long = 5000) {
-    val startTime = System.currentTimeMillis()
-    while (System.currentTimeMillis() - startTime < timeoutMillis) {
-      val nodeExists =
-          try {
-            onNodeWithTag(tag, useUnmergedTree = true).assertExists()
-            true
-          } catch (e: AssertionError) {
-            false
-          }
-      if (!nodeExists) return // Node has disappeared, test can proceed
-
-      runBlocking { delay(100) } // Wait a bit before trying again
-    }
-    fail("Node with tag '$tag' did not disappear within $timeoutMillis milliseconds.")
   }
 
   private fun ComposeTestRule.waitForNodeToAppear(tag: String, timeoutMillis: Long = 5000) {

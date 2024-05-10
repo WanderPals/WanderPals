@@ -205,10 +205,9 @@ fun Trip(
                       val viewModel: StopsListViewModel =
                           viewModel(
                               factory =
-                                  StopsListViewModel.StopsListViewModelFactory(
-                                      tripsRepository, oldNavActions.variables.currentTrip),
+                                  StopsListViewModel.StopsListViewModelFactory(tripsRepository),
                               key = "StopsListViewModel")
-                      StopsList(viewModel)
+                      StopsList(viewModel, tripId)
                     }
                   }
             }

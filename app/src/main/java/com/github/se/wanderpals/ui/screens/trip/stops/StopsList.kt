@@ -54,7 +54,7 @@ import java.time.LocalDate
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "WeekBasedYear")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StopsList(stopsListViewModel: StopsListViewModel) {
+fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
 
   var isStopPressed by remember { mutableStateOf(false) }
   var selectedStopId by remember { mutableStateOf("") }
@@ -69,7 +69,7 @@ fun StopsList(stopsListViewModel: StopsListViewModel) {
 
   val stops by stopsListViewModel.stops.collectAsState()
 
-  LaunchedEffect(Unit) { stopsListViewModel.loadStops() }
+  LaunchedEffect(Unit) { stopsListViewModel.loadStops(tripId) }
 
   Scaffold(
       topBar = {
@@ -146,7 +146,8 @@ fun StopsList(stopsListViewModel: StopsListViewModel) {
                         })
                   }
               PullToRefreshLazyColumn(
-                  inputLazyColumn = stopsLazyColumn, onRefresh = { stopsListViewModel.loadStops() })
+                  inputLazyColumn = stopsLazyColumn,
+                  onRefresh = { stopsListViewModel.loadStops(tripId) })
             } else { // Display a message if there are no stops
               Box(modifier = Modifier.fillMaxSize()) {
                 Text(
@@ -158,7 +159,7 @@ fun StopsList(stopsListViewModel: StopsListViewModel) {
                             .testTag("NoActivitiesMessage")
                             .align(Alignment.Center))
                 IconButton(
-                    onClick = { stopsListViewModel.loadStops() },
+                    onClick = { stopsListViewModel.loadStops(tripId) },
                     modifier =
                         Modifier.align(Alignment.Center)
                             .padding(top = 60.dp)
