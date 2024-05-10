@@ -218,6 +218,11 @@ dependencies {
     // ---------------       Junit     -------------
     testImplementation(libs.junit)
 
+    testImplementation(libs.mockk)
+
+    // Coroutines test
+    testImplementation(libs.kotlinx.coroutines.test)
+
     // Dependency for using Intents in instrumented tests
     androidTestImplementation(libs.androidx.espresso.intents)
 

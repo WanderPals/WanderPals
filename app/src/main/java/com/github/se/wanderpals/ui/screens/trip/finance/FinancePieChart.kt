@@ -1,16 +1,19 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Expense
@@ -21,51 +24,56 @@ import com.github.se.wanderpals.model.data.Expense
  * @param expenses The list of expenses to display in the pie chart.
  * @param radiusOuter The outer radius of the pie chart.
  * @param chartBandWidth The width of the pie chart bands.
+ * @param totalValueDisplayIsEnabled boolean value to indicate if the total value of the expenses
+ *   has to be displayed at the center of the pie-chart.
  */
 @Composable
 fun FinancePieChart(
     expenses: List<Expense>,
     radiusOuter: Dp = 100.dp,
     chartBandWidth: Dp = 20.dp,
+    totalValueDisplayIsEnabled: Boolean = false
 ) {
+
+  val totalExpense = expenses.sumOf { it.amount }
   val pieChartData =
       expenses
           .groupBy { it.category }
-          .map { (category, expenses) -> category to expenses.sumOf { it.amount } }
-          .toMap()
-
-  val totalExpense = pieChartData.values.sum()
-  val pieChartValues =
-      pieChartData.values.toList().map { 360f * it.toFloat() / totalExpense.toFloat() }
-
-  val colors =
-      listOf(
-          Color(0xFFFFC09F),
-          Color(0xFF2E5EAA),
-          Color(0xFFCF4D6F),
-          Color(0xFFA5F8D3),
-          Color(
-              0xFF30BCED)) // Need to change this to prettier color but i don't know if hard coding
-  // is the best way to do it
+          .mapValues { (_, expenses) ->
+            expenses.sumOf { it.amount / totalExpense * 360 }.toFloat()
+          }
 
   var lastValue = -90f
 
   Box(
-      modifier =
-          Modifier.size(radiusOuter * 2f + chartBandWidth)
-              .testTag("FinancePieChart")
-              .background(Color.White),
+      modifier = Modifier.size(radiusOuter * 2f + chartBandWidth).testTag("FinancePieChart"),
       contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.size(radiusOuter * 2f).testTag("canvasPieChart")) {
-          pieChartValues.forEachIndexed { index, fl ->
+          pieChartData.forEach { (category, relativeCost) ->
             drawArc(
-                color = colors[index],
+                color = category.color,
                 startAngle = lastValue,
-                sweepAngle = fl - 2,
+                sweepAngle = relativeCost - 2,
                 useCenter = false,
                 style = Stroke(width = chartBandWidth.toPx(), cap = StrokeCap.Butt))
-            lastValue += fl
+            lastValue += relativeCost
           }
+        }
+        if (totalValueDisplayIsEnabled) {
+          Column(
+              verticalArrangement = Arrangement.Center,
+              horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Total Value",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+                Text(
+                    text = "$totalExpense CHF",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.primary,
+                )
+              }
         }
       }
 }
