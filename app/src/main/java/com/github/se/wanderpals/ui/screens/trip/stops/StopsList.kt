@@ -46,10 +46,15 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.DisplayDate
 import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import java.time.LocalDate
 
+/**
+ * Composable function that displays the list of stops for a trip.
+ *
+ * @param stopsListViewModel The view model that provides the data for the stops list.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "WeekBasedYear")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StopsList(stopsListviewModel: StopsListViewModel) {
+fun StopsList(stopsListViewModel: StopsListViewModel) {
 
   var isStopPressed by remember { mutableStateOf(false) }
   var selectedStopId by remember { mutableStateOf("") }
@@ -60,11 +65,11 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
   }
 
   // State for managing the loading state
-  val isLoading by stopsListviewModel.isLoading.collectAsState()
+  val isLoading by stopsListViewModel.isLoading.collectAsState()
 
-  val stops by stopsListviewModel.stops.collectAsState()
+  val stops by stopsListViewModel.stops.collectAsState()
 
-  LaunchedEffect(Unit) { stopsListviewModel.loadStops() }
+  LaunchedEffect(Unit) { stopsListViewModel.loadStops() }
 
   Scaffold(
       topBar = {
@@ -106,6 +111,7 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
               // Sort the LocalDate objects in ascending order
               dates = localDates.sortedBy { it }
 
+                // Display the stops in a LazyColumn
               val stopsLazyColumn =
                   @Composable {
                     LazyColumn(
@@ -140,8 +146,8 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
                         })
                   }
               PullToRefreshLazyColumn(
-                  inputLazyColumn = stopsLazyColumn, onRefresh = { stopsListviewModel.loadStops() })
-            } else {
+                  inputLazyColumn = stopsLazyColumn, onRefresh = { stopsListViewModel.loadStops() })
+            } else { // Display a message if there are no stops
               Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     text = "No stops for this trip",
@@ -152,12 +158,12 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
                             .testTag("NoActivitiesMessage")
                             .align(Alignment.Center))
                 IconButton(
-                    onClick = { stopsListviewModel.loadStops() },
-                    modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+                    onClick = { stopsListViewModel.loadStops() },
+                    modifier = Modifier.align(Alignment.Center).padding(top = 60.dp).testTag("RefreshButton"),
                     content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
               }
             }
-          } else {
+          } else { // Display a loading indicator while the data is being fetched
             Box(modifier = Modifier.fillMaxSize()) {
               CircularProgressIndicator(
                   modifier = Modifier.align(Alignment.Center).testTag("Loading").size(50.dp),
@@ -166,7 +172,7 @@ fun StopsList(stopsListviewModel: StopsListViewModel) {
           }
         }
       }
-  if (isStopPressed) {
+  if (isStopPressed) { // Display the stop information dialog
     val selectedStop = stops.find { stop -> stop.stopId == selectedStopId }!!
     StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
   }
