@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,17 +27,33 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.github.se.wanderpals.ui.theme.primaryLight
 import com.github.se.wanderpals.ui.theme.scrimLight
+import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 
+
+@Preview(showBackground = true)
+@Composable
+fun SuggestionHistoryPreview(){
+    WanderPalsTheme {
+        SuggestionHistoryFeedContent(
+            innerPadding = PaddingValues(0.dp),
+            suggestionList = emptyList(),
+            searchSuggestionText = "",
+            tripId = "",
+            suggestionsViewModel = SuggestionsViewModel(TripsRepository("", Dispatchers.IO), ""),
+            navigationActions = NavigationActions()
+        )
+    }
+}
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
  * selected.
@@ -61,7 +78,9 @@ fun SuggestionHistoryFeedContent(
         LocalDateTime.of(it.createdAt, it.createdAtTime)
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(innerPadding)) {
 
         // Title for the list of suggestions
         Text(
@@ -81,7 +100,8 @@ fun SuggestionHistoryFeedContent(
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     modifier =
-                    Modifier.width(260.dp)
+                    Modifier
+                        .width(260.dp)
                         .height(55.dp)
                         .align(Alignment.Center)
                         .testTag("noSuggestionsForUserText"),
@@ -93,11 +113,13 @@ fun SuggestionHistoryFeedContent(
                         fontSize = 18.sp,
                         fontWeight = FontWeight(500),
                         textAlign = TextAlign.Center,
-                        color = scrimLight),
+                        color = MaterialTheme.colorScheme.scrim),
                 )
                 IconButton(
                     onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-                    modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 60.dp),
                     content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History") })
             }
         } else {
@@ -116,7 +138,7 @@ fun SuggestionHistoryFeedContent(
                                     suggestion = suggestion,
                                     onClick = {
                                         navigationActions.setVariablesSuggestion(suggestion)
-                                        navigationActions.navigateTo(Route.SUGGESTION_HISTORY)
+                                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
                                     }, // This lambda is passed to the SuggestionItem composable
                                     modifier = Modifier.testTag("suggestion${index + 1}"),
                                     tripId = tripId,

@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,6 +12,7 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,7 +26,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.ui.theme.onSurfaceVariantLight
+import com.github.se.wanderpals.R
+import androidx.compose.ui.res.painterResource
+
 
 /**
  * Composable function that represents the top bar for suggestion feed screen. Displays a search bar
@@ -37,57 +41,70 @@ import com.github.se.wanderpals.ui.theme.onSurfaceVariantLight
 @Composable
 fun SuggestionTopBar(
     searchSuggestionText: String,
-    onSearchSuggestionTextChanged: (String) -> Unit
+    onSearchSuggestionTextChanged: (String) -> Unit,
+    onHistoryClick: () -> Unit  // Add this parameter for navigation action
 ) {
 
-  // Constant for empty search text
-  val EMPTY_SEARCH = ""
+    // Constant for empty search text
+    val EMPTY_SEARCH = ""
 
-  // State to track search bar activation
-  var active by remember { mutableStateOf(false) }
+    // State to track search bar activation
+    var active by remember { mutableStateOf(false) }
 
-  Box(modifier = Modifier.fillMaxWidth()) {
-    // DockedSearchBar component
-    DockedSearchBar(
-        modifier =
-            Modifier.align(Alignment.Center).padding(top = 16.dp).testTag("suggestionSearchBar"),
-        query = searchSuggestionText,
-        onQueryChange = { newText -> onSearchSuggestionTextChanged(newText) },
-        onSearch = {},
-        active = false,
-        onActiveChange = { active = it },
-        placeholder = {
-          Text(
-              text = "Search a suggestion",
-              style =
-                  TextStyle(
-                      fontSize = 16.sp,
-                      lineHeight = 24.sp,
-                      fontWeight = FontWeight(400),
-                      color = onSurfaceVariantLight,
-                      letterSpacing = 0.5.sp,
-                  ))
-        },
-        trailingIcon = {
-          // Show search icon if search text is empty, otherwise show clear icon
-          if (searchSuggestionText.isNotEmpty()) {
-            IconButton(
-                modifier = Modifier.testTag("clearSuggestionSearchButton"),
-                onClick = { onSearchSuggestionTextChanged(EMPTY_SEARCH) }) {
-                  Icon(
-                      imageVector = Icons.Default.Clear,
-                      contentDescription = Icons.Default.Clear.name,
-                      modifier = Modifier.size(24.dp),
-                      tint = onSurfaceVariantLight)
-                }
-          }
-        },
-        leadingIcon = {
-          Icon(
-              imageVector = Icons.Default.Search,
-              contentDescription = Icons.Default.Search.name,
-              modifier = Modifier.size(24.dp),
-              tint = onSurfaceVariantLight)
-        }) {}
-  }
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            // DockedSearchBar component
+            DockedSearchBar(
+                modifier =
+                Modifier.padding(top = 16.dp, start = 4.dp).testTag("suggestionSearchBar"),
+                query = searchSuggestionText,
+                onQueryChange = { newText -> onSearchSuggestionTextChanged(newText) },
+                onSearch = {},
+                active = false,
+                onActiveChange = { active = it },
+                placeholder = {
+                    Text(
+                        text = "Search a suggestion",
+                        style =
+                        TextStyle(
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                            fontWeight = FontWeight(400),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            letterSpacing = 0.5.sp,
+                        ))
+                },
+                trailingIcon = {
+                    // Show search icon if search text is empty, otherwise show clear icon
+                    if (searchSuggestionText.isNotEmpty()) {
+                        IconButton(
+                            modifier = Modifier.testTag("clearSuggestionSearchButton"),
+                            onClick = { onSearchSuggestionTextChanged(EMPTY_SEARCH) }) {
+                            Icon(
+                                imageVector = Icons.Default.Clear,
+                                contentDescription = Icons.Default.Clear.name,
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = Icons.Default.Search.name,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }) {}
+
+            IconButton(onClick = { onHistoryClick()}) {
+                Icon(
+                    painter = painterResource(R.drawable.history),
+                    contentDescription = "History",
+                    modifier = Modifier.padding(top=16.dp).size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
 }
