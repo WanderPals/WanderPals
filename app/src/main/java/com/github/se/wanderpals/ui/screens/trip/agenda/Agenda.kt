@@ -201,7 +201,7 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
               modifier = Modifier.testTag("AllStopsButton"),
               content = {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_event_note_24),
+                    painter = painterResource(id = R.drawable.stops_list_icon),
                     contentDescription = "Open Stops",
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
