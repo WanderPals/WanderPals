@@ -116,7 +116,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    modifier = Modifier.align(Alignment.Top),
+                    modifier = Modifier.align(Alignment.Top).testTag("expenseInfoBackButton"),
                     onClick = { navigationActions.goBack()}
                 ) {
                     Icon(
@@ -152,7 +152,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
             )
 
             Text(
-                modifier = Modifier.padding(top = 10.dp),
+                modifier = Modifier.padding(top = 10.dp).testTag("expenseAmount"+expense.expenseId),
                 text = String.format("%.2f CHF", expense.amount),
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
@@ -218,7 +218,7 @@ fun ExpenseParticipantsInfo(expense: Expense) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).testTag(userName+expense.expenseId),
                         text = userName,
                         style = MaterialTheme.typography.bodyLarge,
                         maxLines = 1,
