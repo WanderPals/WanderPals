@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -41,6 +42,11 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   private val _selectedAnnouncementId = MutableStateFlow("")
   val selectedAnnouncementID: StateFlow<String> = _selectedAnnouncementId.asStateFlow()
 
+  private val _currentSuggestion = MutableStateFlow<Suggestion?>(null)
+  val currentSuggestion: StateFlow<Suggestion?> = _currentSuggestion.asStateFlow()
+
+  private val _isLoadingSuggestion = MutableStateFlow(true)
+  val isLoadingSuggestion: StateFlow<Boolean> = _isLoadingSuggestion
   /**
    * Updates the state lists of notifications and announcements by launching a coroutine within the
    * viewModel scope.
@@ -51,16 +57,20 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
       _isLoading.value = true
       // Fetch all trips from the repository
       _announcementStateList.value = tripsRepository.getAllAnnouncementsFromTrip(tripId).reversed()
+      Log.d("NotificationsViewModel", "_${_announcementStateList.value}")
+
       _notifStateList.value = tripsRepository.getNotificationList(tripId)
+      Log.d("NotificationsViewModel", "_${_notifStateList.value}")
       // Set loading state to false after data is fetched
       _isLoading.value = false
     }
   }
 
-  open fun getSuggestion(suggestionId: String): Suggestion {
-    var suggestion: Suggestion
-    runBlocking { suggestion = tripsRepository.getSuggestionFromTrip(tripId, suggestionId)!! }
-    return suggestion
+  open fun getSuggestion(suggestionId: String) {
+    viewModelScope.launch {
+      val suggestion = tripsRepository.getSuggestionFromTrip(tripId, suggestionId)
+      _currentSuggestion.value = suggestion
+    }
   }
 
   /**

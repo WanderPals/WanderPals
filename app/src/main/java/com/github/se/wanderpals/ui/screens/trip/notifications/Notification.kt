@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -79,6 +80,16 @@ fun Notification(
   val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
 
   val isLoading by notificationsViewModel.isLoading.collectAsState()
+
+  val suggestion by notificationsViewModel.currentSuggestion.collectAsState()
+  val isLoadingSuggestion by notificationsViewModel.isLoadingSuggestion.collectAsState()
+
+  LaunchedEffect(suggestion) {
+    if (suggestion != null && !isLoadingSuggestion) {
+      navigationActions.variables.currentSuggestion = suggestion as Suggestion
+      navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
+    }
+  }
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
     if (announcementItemPressed) {
@@ -177,9 +188,9 @@ fun Notification(
                                 navigationActions.deserializeNavigationVariables(
                                     item.navActionVariables)
                                 if (item.route == Route.SUGGESTION_DETAIL) {
-                                  navigationActions.variables.currentSuggestion =
-                                      notificationsViewModel.getSuggestion(
-                                          navigationActions.variables.suggestionId)
+                                  // navigationActions.variables.currentSuggestion =
+                                  notificationsViewModel.getSuggestion(
+                                      navigationActions.variables.suggestionId)
                                 }
                               }
                               navigationActions.navigateTo(item.route)
