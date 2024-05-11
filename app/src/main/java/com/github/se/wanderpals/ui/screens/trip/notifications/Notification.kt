@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -79,6 +80,18 @@ fun Notification(
   val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
 
   val isLoading by notificationsViewModel.isLoading.collectAsState()
+
+  val suggestion by notificationsViewModel.currentSuggestion.collectAsState()
+  val isLoadingSuggestion by notificationsViewModel.isSuggestionReady.collectAsState()
+
+  // navigation to suggestion fix
+  LaunchedEffect(isLoadingSuggestion) {
+    if (isLoadingSuggestion) {
+      navigationActions.variables.currentSuggestion = suggestion as Suggestion
+      navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
+      notificationsViewModel.resetIsLoadingSuggestion()
+    }
+  }
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
     if (announcementItemPressed) {
@@ -177,12 +190,13 @@ fun Notification(
                                 navigationActions.deserializeNavigationVariables(
                                     item.navActionVariables)
                                 if (item.route == Route.SUGGESTION_DETAIL) {
-                                  navigationActions.variables.currentSuggestion =
-                                      notificationsViewModel.getSuggestion(
-                                          navigationActions.variables.suggestionId)
+                                  // Load suggestion for navigation
+                                  notificationsViewModel.getSuggestion(
+                                      navigationActions.variables.suggestionId)
                                 }
+                              } else if (item.route != Route.SUGGESTION_DETAIL) {
+                                navigationActions.navigateTo(item.route)
                               }
-                              navigationActions.navigateTo(item.route)
                             }
                           })
                     }
