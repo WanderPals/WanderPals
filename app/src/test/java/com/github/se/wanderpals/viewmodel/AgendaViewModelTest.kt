@@ -40,7 +40,7 @@ class AgendaViewModelTest {
    * is updated correctly. The method should fetch the stops for the trip and update the stopsInfo.
    */
   @Test
-  fun `loadStopsInfo updates stopsInfo state`() = runTest {
+  fun `loadStopsInfo updates stopsInfo state`() = runBlockingTest {
     // Prepare mock response
     val mockStops =
         listOf(
@@ -87,9 +87,9 @@ class AgendaViewModelTest {
     assertEquals(CalendarUiState.StopStatus.ADDED, viewModel._stopsInfo.value[mockStops[1].date])
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @After
   fun tearDown() {
-    // Reset main dispatcher after tests
-    Dispatchers.resetMain()
+    Dispatchers.resetMain() // Reset the main dispatcher to the original Main dispatcher
   }
 }
