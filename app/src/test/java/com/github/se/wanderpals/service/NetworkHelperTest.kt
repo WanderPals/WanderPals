@@ -46,7 +46,7 @@ class NetworkHelperTest {
     slot.captured.onAvailable(mockNetwork)
 
     verify { repository.isNetworkEnabled = true }
-    assertTrue(SessionManager.isNetworkAvailable)
+    assertTrue(SessionManager.getIsNetworkAvailable())
   }
 
   @Test
@@ -56,6 +56,6 @@ class NetworkHelperTest {
     slot.captured.onLost(mockNetwork)
 
     verify { repository.isNetworkEnabled = false }
-    assertFalse(SessionManager.isNetworkAvailable)
+    assertFalse(SessionManager.getIsNetworkAvailable())
   }
 }

@@ -26,13 +26,13 @@ class NetworkHelper(context: Context, private val repository: TripsRepository) {
         object : ConnectivityManager.NetworkCallback() {
           override fun onAvailable(network: Network) {
             repository.isNetworkEnabled = true
-            SessionManager.isNetworkAvailable = true
+            SessionManager.setIsNetworkAvailable(true)
             Log.d("NetworkHelper", "Network is available.")
           }
 
           override fun onLost(network: Network) {
             repository.isNetworkEnabled = false
-            SessionManager.isNetworkAvailable = false
+            SessionManager.setIsNetworkAvailable(false)
 
             Log.d("NetworkHelper", "Network is lost.")
           }

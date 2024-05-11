@@ -82,13 +82,14 @@ fun Notification(
   val isLoading by notificationsViewModel.isLoading.collectAsState()
 
   val suggestion by notificationsViewModel.currentSuggestion.collectAsState()
-  val isLoadingSuggestion by notificationsViewModel.isLoadingSuggestion.collectAsState()
+  val isLoadingSuggestion by notificationsViewModel.isSuggestionReady.collectAsState()
 
   // navigation to suggestion fix
-  LaunchedEffect(suggestion) {
-    if (suggestion != null && !isLoadingSuggestion) {
+  LaunchedEffect(isLoadingSuggestion) {
+    if (isLoadingSuggestion) {
       navigationActions.variables.currentSuggestion = suggestion as Suggestion
       navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
+      notificationsViewModel.resetIsLoadingSuggestion()
     }
   }
 
@@ -193,8 +194,9 @@ fun Notification(
                                   notificationsViewModel.getSuggestion(
                                       navigationActions.variables.suggestionId)
                                 }
+                              } else if (item.route != Route.SUGGESTION_DETAIL) {
+                                navigationActions.navigateTo(item.route)
                               }
-                              navigationActions.navigateTo(item.route)
                             }
                           })
                     }
