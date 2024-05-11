@@ -192,7 +192,6 @@ data class NavigationActions(
     variables.currentAddress = suggestion.stop.address
   }
 
-
   /**
    * Set the variables for the navigation actions.
    *

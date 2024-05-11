@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,9 +45,9 @@ import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
 /**
- * Composable function for displaying detailed information about an expense, including :
- * the title,cost,date and participants related to this expense.
- * If user has permission higher than viewer, the user can delete the expense.
+ * Composable function for displaying detailed information about an expense, including : the
+ * title,cost,date and participants related to this expense. If user has permission higher than
+ * viewer, the user can delete the expense.
  *
  * This composable takes a [FinanceViewModel] as a parameter to interact with expense data.
  *
@@ -56,217 +55,171 @@ import java.time.format.DateTimeFormatter
  */
 @Composable
 fun ExpenseInfo(financeViewModel: FinanceViewModel) {
-    val selectedExpense by financeViewModel.selectedExpense.collectAsState()
-    val expense = selectedExpense!!
+  val selectedExpense by financeViewModel.selectedExpense.collectAsState()
+  val expense = selectedExpense!!
 
-    val showDeleteDialog by financeViewModel.showDeleteDialog.collectAsState()
+  val showDeleteDialog by financeViewModel.showDeleteDialog.collectAsState()
 
-    // Dialog for deleting expense
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { financeViewModel.setShowDeleteDialogState(false) },
-            title = { Text("Confirm Deletion") },
-            text = {
-                Text("Are you sure you want to delete this expense?")
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        financeViewModel.deleteExpense(expense)
-                        navigationActions.navigateTo(Route.FINANCE)
-                              },
-                    modifier = Modifier.testTag("confirmDeleteExpenseButton")) {
-                    Text("Confirm", color = Color.Red)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { financeViewModel.setShowDeleteDialogState(false) },
-                    modifier = Modifier.testTag("cancelDeleteExpenseButton")) {
-                    Text("Cancel")
-                }
-            },
-            modifier = Modifier.testTag("deleteExpenseDialog"))
-    }
+  // Dialog for deleting expense
+  if (showDeleteDialog) {
+    AlertDialog(
+        onDismissRequest = { financeViewModel.setShowDeleteDialogState(false) },
+        title = { Text("Confirm Deletion") },
+        text = { Text("Are you sure you want to delete this expense?") },
+        confirmButton = {
+          TextButton(
+              onClick = {
+                financeViewModel.deleteExpense(expense)
+                navigationActions.navigateTo(Route.FINANCE)
+              },
+              modifier = Modifier.testTag("confirmDeleteExpenseButton")) {
+                Text("Confirm", color = Color.Red)
+              }
+        },
+        dismissButton = {
+          TextButton(
+              onClick = { financeViewModel.setShowDeleteDialogState(false) },
+              modifier = Modifier.testTag("cancelDeleteExpenseButton")) {
+                Text("Cancel")
+              }
+        },
+        modifier = Modifier.testTag("deleteExpenseDialog"))
+  }
 
-    Column(
-        modifier = Modifier.fillMaxWidth().testTag("expenseInfo"),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+  Column(
+      modifier = Modifier.fillMaxWidth().testTag("expenseInfo"),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally) {
         // Top information of the expenses
-        ExpenseTopInfo(expense = expense) {
-            financeViewModel.setShowDeleteDialogState(true)
-        }
+        ExpenseTopInfo(expense = expense) { financeViewModel.setShowDeleteDialogState(true) }
 
         // Display of the list of participant related to the expense
         ExpenseParticipantsInfo(expense = expense)
-    }
+      }
 }
 
 /**
  * Composable function for displaying top information about an expense.
  *
  * @param expense The expense object containing information to be displayed.
- * @param onDeleteExpenseClick Callback function invoked when the delete expense action is triggered.
+ * @param onDeleteExpenseClick Callback function invoked when the delete expense action is
+ *   triggered.
  */
 @Composable
-fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
-    val userIsViewer = SessionManager.getCurrentUser()!!.role == Role.VIEWER
+fun ExpenseTopInfo(expense: Expense, onDeleteExpenseClick: () -> Unit) {
+  val userIsViewer = SessionManager.getCurrentUser()!!.role == Role.VIEWER
 
-    Surface(
-        color = MaterialTheme.colorScheme.primary,
-        contentColor = Color.White
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 5.dp, end = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+  Surface(color = MaterialTheme.colorScheme.primary, contentColor = Color.White) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
+          Row(
+              modifier = Modifier.fillMaxWidth().padding(top = 5.dp, end = 10.dp),
+              horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically) {
                 // Go-back button
                 IconButton(
                     modifier = Modifier.align(Alignment.Top).testTag("expenseInfoBackButton"),
-                    onClick = { navigationActions.goBack()}
-                ) {
-                    Icon(
-                        modifier = Modifier.size(35.dp),
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back",
-                    )
-                }
+                    onClick = { navigationActions.goBack() }) {
+                      Icon(
+                          modifier = Modifier.size(35.dp),
+                          imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                          contentDescription = "Back",
+                      )
+                    }
                 // Delete text (clickable)
                 ClickableText(
                     modifier = Modifier.testTag("deleteTextButton"),
-                    onClick = { if(!userIsViewer){
+                    onClick = {
+                      if (!userIsViewer) {
                         onDeleteExpenseClick()
-                    } },
-
-                    text = AnnotatedString(
-                        text = "DELETE",
-                        spanStyle = SpanStyle(
-                            fontSize = 16.sp,
-                            color = if (userIsViewer) Color.LightGray else Color.White)
-                    ),
+                      }
+                    },
+                    text =
+                        AnnotatedString(
+                            text = "DELETE",
+                            spanStyle =
+                                SpanStyle(
+                                    fontSize = 16.sp,
+                                    color = if (userIsViewer) Color.LightGray else Color.White)),
                 )
-            }
+              }
 
-            // Expense title
-            Text(
-                text = expense.title,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.White,
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
+          // Expense title
+          Text(
+              text = expense.title,
+              style =
+                  MaterialTheme.typography.bodyLarge.copy(
+                      color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold),
+              overflow = TextOverflow.Ellipsis,
+              maxLines = 1)
 
-            //Expense amount
-            Text(
-                modifier = Modifier.padding(top = 10.dp).testTag("expenseAmount"+expense.expenseId),
-                text = String.format("%.2f CHF", expense.amount),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            )
-            // Username and local date
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 15.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+          // Expense amount
+          Text(
+              modifier = Modifier.padding(top = 10.dp).testTag("expenseAmount" + expense.expenseId),
+              text = String.format("%.2f CHF", expense.amount),
+              style =
+                  MaterialTheme.typography.bodyLarge.copy(
+                      color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold))
+          // Username and local date
+          Row(
+              modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+              horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     modifier = Modifier.weight(1f),
                     text = "Paid by ${expense.userName}",
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
-                    ),
+                    style =
+                        MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White,
+                        ),
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
-                )
+                    maxLines = 1)
                 Text(
                     modifier = Modifier.padding(horizontal = 10.dp),
                     text = expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,
-                    ),
-                    maxLines = 1
-                )
-            }
-            Text(
-                modifier = Modifier
-                    .padding(bottom = 10.dp)
-                    .align(Alignment.Start),
-                text = "For ${expense.participantsIds.size} participant(s) :",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                ),
-                textAlign = TextAlign.Start
-            )
-
+                    style =
+                        MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White,
+                        ),
+                    maxLines = 1)
+              }
+          Text(
+              modifier = Modifier.padding(bottom = 10.dp).align(Alignment.Start),
+              text = "For ${expense.participantsIds.size} participant(s) :",
+              style =
+                  MaterialTheme.typography.bodyLarge.copy(
+                      color = Color.White, fontWeight = FontWeight.Bold),
+              textAlign = TextAlign.Start)
         }
-    }
+  }
 }
 
 /**
- * Composable function for displaying information about participants involved in an expense.
- * Show their name and the amount they have been paid.
+ * Composable function for displaying information about participants involved in an expense. Show
+ * their name and the amount they have been paid.
  *
  * @param expense The expense object containing participant information.
  */
 @Composable
 fun ExpenseParticipantsInfo(expense: Expense) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        items(expense.names) { userName ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)
-                    .padding(horizontal = 15.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f).testTag(userName+expense.expenseId),
-                        text = userName,
-                        style = MaterialTheme.typography.bodyLarge,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = String.format(
-                            "%.2f CHF",
-                            expense.amount / expense.participantsIds.size
-                        ),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-            HorizontalDivider(
-                color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth()
-            )
-
+  LazyColumn(modifier = Modifier.fillMaxSize()) {
+    items(expense.names) { userName ->
+      Box(modifier = Modifier.fillMaxWidth().height(80.dp).padding(horizontal = 15.dp)) {
+        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
+          Text(
+              modifier = Modifier.weight(1f).testTag(userName + expense.expenseId),
+              text = userName,
+              style = MaterialTheme.typography.bodyLarge,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis)
+          Text(
+              text = String.format("%.2f CHF", expense.amount / expense.participantsIds.size),
+              style = MaterialTheme.typography.bodyLarge)
         }
+      }
+      HorizontalDivider(color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
     }
+  }
 }
-
-

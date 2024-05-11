@@ -2,7 +2,6 @@ package com.github.se.wanderpals.finance
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -35,9 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -89,7 +86,6 @@ class FinanceViewModelTest :
   private val _selectedExpense = MutableStateFlow(expense1)
   override val selectedExpense: StateFlow<Expense?> = _selectedExpense.asStateFlow()
 
-
   fun removeExpenseList() {
     _expenseStateList.value = listOf()
   }
@@ -121,7 +117,6 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   private val financeViewModelTest = FinanceViewModelTest()
 
-
   private fun setUpFinanceTest(role: Role = Role.OWNER) {
     SessionManager.setUserSession()
     SessionManager.setRole(role)
@@ -131,13 +126,11 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     }
   }
 
-  private fun setUpExpenseInfoTest(role : Role = Role.OWNER){
-      SessionManager.setUserSession()
-      SessionManager.setRole(role)
-      navigationActions = mockNavActions
-      composeTestRule.setContent {
-          ExpenseInfo(financeViewModel = financeViewModelTest)
-      }
+  private fun setUpExpenseInfoTest(role: Role = Role.OWNER) {
+    SessionManager.setUserSession()
+    SessionManager.setRole(role)
+    navigationActions = mockNavActions
+    composeTestRule.setContent { ExpenseInfo(financeViewModel = financeViewModelTest) }
   }
 
   @Test
@@ -243,25 +236,25 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("OtherTotalAmount").assertTextEquals("0.00 CHF")
   }
 
-
   @Test
   fun expenseInfoDisplaysCorrectly() = run {
-      setUpExpenseInfoTest()
-      composeTestRule.onNodeWithTag("expenseInfo").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("expenseAmount1").assertIsDisplayed()
-      financeViewModelTest.expenseStateList.value.first().names.forEach {name ->
-          composeTestRule.onNodeWithTag(name + "1").assertTextEquals(name)
-      }
-  }
-    @Test
-    fun expenseInfoGoBackToFinanceRouteWhenClickingOnBackButton() = run{
-        setUpExpenseInfoTest()
-        composeTestRule.onNodeWithTag("expenseInfoBackButton").performClick()
-        verify { mockNavActions.goBack() }
-        confirmVerified(mockNavActions)
+    setUpExpenseInfoTest()
+    composeTestRule.onNodeWithTag("expenseInfo").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("expenseAmount1").assertIsDisplayed()
+    financeViewModelTest.expenseStateList.value.first().names.forEach { name ->
+      composeTestRule.onNodeWithTag(name + "1").assertTextEquals(name)
     }
+  }
 
-    @Test
+  @Test
+  fun expenseInfoGoBackToFinanceRouteWhenClickingOnBackButton() = run {
+    setUpExpenseInfoTest()
+    composeTestRule.onNodeWithTag("expenseInfoBackButton").performClick()
+    verify { mockNavActions.goBack() }
+    confirmVerified(mockNavActions)
+  }
+
+  @Test
   fun expensesDeletesCorrectly() = run {
     setUpExpenseInfoTest()
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
@@ -272,9 +265,9 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       confirmVerified(mockNavActions)
       composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
       assert(financeViewModelTest.expenseStateList.value.size == 2)
-
     }
   }
+
   @Test
   fun expensesDeletesCancel() = run {
     setUpExpenseInfoTest()
@@ -286,10 +279,11 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       composeTestRule.onNodeWithTag("expenseInfo").assertIsDisplayed()
     }
   }
+
   @Test
   fun viewerCantDeleteExpense() = run {
     setUpExpenseInfoTest(Role.VIEWER)
     composeTestRule.onNodeWithTag("deleteTextButton").performClick()
     composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
-    }
+  }
 }

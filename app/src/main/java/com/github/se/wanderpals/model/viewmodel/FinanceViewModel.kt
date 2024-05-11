@@ -59,15 +59,13 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     setShowDeleteDialogState(false)
   }
 
-  open fun setShowDeleteDialogState(value : Boolean){
+  open fun setShowDeleteDialogState(value: Boolean) {
     _showDeleteDialog.value = value
   }
 
-
-  open fun setSelectedExpense(expense : Expense){
+  open fun setSelectedExpense(expense: Expense) {
     _selectedExpense.value = expense
   }
-
 
   class FinanceViewModelFactory(
       private val tripsRepository: TripsRepository,

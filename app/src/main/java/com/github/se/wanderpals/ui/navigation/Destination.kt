@@ -52,5 +52,4 @@ val TRIP_DESTINATIONS =
         Destination(
             route = Route.CREATE_EXPENSE, icon = Icons.Default.Create, text = "Create Expense"),
         Destination(route = Route.STOPS_LIST, icon = Icons.Default.Menu, text = "Stops List"),
-        Destination(route = Route.EXPENSE_INFO, icon = Icons.Default.Create, text = "Expense info")
-    )
+        Destination(route = Route.EXPENSE_INFO, icon = Icons.Default.Create, text = "Expense info"))

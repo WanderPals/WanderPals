@@ -187,7 +187,8 @@ fun Trip(
                                   FinanceViewModel.FinanceViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
-                      Finance(financeViewModel = financeViewModel, navigationActions = oldNavActions)
+                      Finance(
+                          financeViewModel = financeViewModel, navigationActions = oldNavActions)
                     }
                     composable(Route.CREATE_EXPENSE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_EXPENSE)
@@ -201,21 +202,20 @@ fun Trip(
                         financeViewModel.updateStateLists()
                       }
                     }
-                  composable(Route.EXPENSE_INFO) {
+                    composable(Route.EXPENSE_INFO) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.EXPENSE_INFO)
                       val financeViewModel: FinanceViewModel =
                           viewModel(
                               factory =
-                              FinanceViewModel.FinanceViewModelFactory(
-                                  tripsRepository, oldNavActions.variables.currentTrip),
+                                  FinanceViewModel.FinanceViewModelFactory(
+                                      tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
 
                       financeViewModel.setSelectedExpense(oldNavActions.variables.expense)
                       ExpenseInfo(
                           financeViewModel = financeViewModel,
                       )
-
-                  }
+                    }
                     composable(Route.STOPS_LIST) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.STOPS_LIST)
                       val viewModel: StopsListViewModel =
@@ -240,9 +240,7 @@ fun BottomBar(navActions: NavigationActions) {
   val currentRoute by navActions.currentRouteTrip.collectAsState()
 
   NavigationBar(
-      modifier = Modifier
-          .testTag("bottomNav")
-          .height(56.dp),
+      modifier = Modifier.testTag("bottomNav").height(56.dp),
       containerColor = NavigationBarDefaults.containerColor,
       contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
       tonalElevation = NavigationBarDefaults.Elevation,
@@ -250,9 +248,7 @@ fun BottomBar(navActions: NavigationActions) {
   ) {
     TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
-          modifier = Modifier
-              .testTag(destination.text)
-              .size(56.dp),
+          modifier = Modifier.testTag(destination.text).size(56.dp),
           selected = currentRoute == destination.route,
           onClick = { navActions.navigateTo(destination.route) },
           icon = { Image(imageVector = destination.icon, contentDescription = null) },

@@ -17,12 +17,12 @@ import java.time.LocalDate
  */
 data class Expense(
     val expenseId: String = "",
-    val title: String= "",
+    val title: String = "",
     val amount: Double = 0.0,
     val category: Category = Category.OTHER,
     val userId: String = "",
     val userName: String = "",
     val participantsIds: List<String> = emptyList(),
     val names: List<String> = emptyList(),
-    val localDate: LocalDate= LocalDate.of(0, 1, 1)
+    val localDate: LocalDate = LocalDate.of(0, 1, 1)
 )
