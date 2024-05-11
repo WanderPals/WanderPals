@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.viewmodel.StopsListViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
-import com.github.se.wanderpals.ui.screens.trip.agenda.ActivityItem
+import com.github.se.wanderpals.ui.screens.trip.agenda.StopItem
 import com.github.se.wanderpals.ui.screens.trip.agenda.DisplayDate
 import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import java.time.LocalDate
@@ -140,7 +140,7 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
                                 stops
                                     .filter { stop -> stop.date == date }
                                     .sortedBy { it.startTime }) { stop ->
-                                  ActivityItem(stop, onActivityItemClick)
+                                  StopItem(stop, onActivityItemClick)
                                 }
                           }
                         })
