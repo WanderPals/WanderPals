@@ -212,8 +212,8 @@ fun Trip(
 
                       financeViewModel.setSelectedExpense(oldNavActions.variables.expense)
                       ExpenseInfo(
-                          /*financeViewModel = financeViewModel,
-                          navigationActions = oldNavActions*/
+                          financeViewModel = financeViewModel,
+                          navigationActions = oldNavActions
                       )
 
                   }

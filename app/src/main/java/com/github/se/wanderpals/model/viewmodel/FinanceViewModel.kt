@@ -59,8 +59,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     hideDeleteDialog()
   }
 
-  open fun showDeleteDialog(expense: Expense) {
-    _selectedExpense.value = expense
+  open fun showDeleteDialog() {
     _showDeleteDialog.value = true
   }
 

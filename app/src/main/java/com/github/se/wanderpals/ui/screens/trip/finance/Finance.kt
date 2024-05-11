@@ -63,9 +63,6 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
 
-  val showDeleteDialog by financeViewModel.showDeleteDialog.collectAsState()
-  val selectedExpense by financeViewModel.selectedExpense.collectAsState()
-
   LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
 
   Scaffold(
@@ -123,30 +120,6 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
               )
             }
           }
-        }
-
-        if (showDeleteDialog) {
-          AlertDialog(
-              onDismissRequest = { financeViewModel.hideDeleteDialog() },
-              title = { Text("Confirm Deletion") },
-              text = {
-                Text("Are you sure you want to delete this expense? \"${selectedExpense!!.title}\"")
-              },
-              confirmButton = {
-                TextButton(
-                    onClick = { financeViewModel.deleteExpense(selectedExpense!!) },
-                    modifier = Modifier.testTag("confirmDeleteExpenseButton")) {
-                      Text("Confirm", color = Color.Red)
-                    }
-              },
-              dismissButton = {
-                TextButton(
-                    onClick = { financeViewModel.hideDeleteDialog() },
-                    modifier = Modifier.testTag("cancelDeleteExpenseButton")) {
-                      Text("Cancel")
-                    }
-              },
-              modifier = Modifier.testTag("deleteExpenseDialog"))
         }
       }
 }
