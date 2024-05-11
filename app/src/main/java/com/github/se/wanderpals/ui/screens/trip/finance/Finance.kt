@@ -104,7 +104,10 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                 innerPadding = innerPadding,
                 expenseList = expenseList,
                 onRefresh = { financeViewModel.updateStateLists() },
-                onExpenseItemClick = { financeViewModel.showDeleteDialog(it) })
+                onExpenseItemClick = {
+                    navigationActions.setVariablesExpense(it)
+                    navigationActions.navigateTo(Route.EXPENSE_INFO)
+                })
           }
           FinanceOption.CATEGORIES -> {
             CategoryContent(

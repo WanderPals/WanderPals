@@ -40,6 +40,7 @@ import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.github.se.wanderpals.ui.screens.trip.finance.CreateExpense
+import com.github.se.wanderpals.ui.screens.trip.finance.ExpenseInfo
 import com.github.se.wanderpals.ui.screens.trip.finance.Finance
 import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
@@ -180,26 +181,42 @@ fun Trip(
                     }
                     composable(Route.FINANCE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
-                      val viewModel: FinanceViewModel =
+                      val financeViewModel: FinanceViewModel =
                           viewModel(
                               factory =
                                   FinanceViewModel.FinanceViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
-                      Finance(financeViewModel = viewModel, navigationActions = oldNavActions)
+                      Finance(financeViewModel = financeViewModel, navigationActions = oldNavActions)
                     }
                     composable(Route.CREATE_EXPENSE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_EXPENSE)
-                      val viewModel: FinanceViewModel =
+                      val financeViewModel: FinanceViewModel =
                           viewModel(
                               factory =
                                   FinanceViewModel.FinanceViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
-                      CreateExpense(tripId, viewModel, oldNavActions) {
-                        viewModel.updateStateLists()
+                      CreateExpense(tripId, financeViewModel, oldNavActions) {
+                        financeViewModel.updateStateLists()
                       }
                     }
+                  composable(Route.EXPENSE_INFO) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.EXPENSE_INFO)
+                      val financeViewModel: FinanceViewModel =
+                          viewModel(
+                              factory =
+                              FinanceViewModel.FinanceViewModelFactory(
+                                  tripsRepository, oldNavActions.variables.currentTrip),
+                              key = "FinanceViewModel")
+
+                      financeViewModel.setSelectedExpense(oldNavActions.variables.expense)
+                      ExpenseInfo(
+                          financeViewModel = financeViewModel,
+                          navigationActions = oldNavActions
+                      )
+
+                  }
                     composable(Route.STOPS_LIST) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.STOPS_LIST)
                       val viewModel: StopsListViewModel =
@@ -224,7 +241,9 @@ fun BottomBar(navActions: NavigationActions) {
   val currentRoute by navActions.currentRouteTrip.collectAsState()
 
   NavigationBar(
-      modifier = Modifier.testTag("bottomNav").height(56.dp),
+      modifier = Modifier
+          .testTag("bottomNav")
+          .height(56.dp),
       containerColor = NavigationBarDefaults.containerColor,
       contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
       tonalElevation = NavigationBarDefaults.Elevation,
@@ -232,7 +251,9 @@ fun BottomBar(navActions: NavigationActions) {
   ) {
     TRIP_BOTTOM_BAR.forEach { destination ->
       NavigationBarItem(
-          modifier = Modifier.testTag(destination.text).size(56.dp),
+          modifier = Modifier
+              .testTag(destination.text)
+              .size(56.dp),
           selected = currentRoute == destination.route,
           onClick = { navActions.navigateTo(destination.route) },
           icon = { Image(imageVector = destination.icon, contentDescription = null) },

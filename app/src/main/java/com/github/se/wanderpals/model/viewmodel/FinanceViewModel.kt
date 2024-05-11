@@ -68,6 +68,11 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     _showDeleteDialog.value = false
   }
 
+  open fun setSelectedExpense(expense : Expense){
+    _selectedExpense.value = expense
+  }
+
+
   class FinanceViewModelFactory(
       private val tripsRepository: TripsRepository,
       private val tripId: String
