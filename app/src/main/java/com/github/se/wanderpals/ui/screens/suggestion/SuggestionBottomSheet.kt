@@ -137,7 +137,7 @@ fun SuggestionBottomSheet(
           TextButton(
               onClick = { viewModel.confirmDeleteSuggestion(selectedSuggestion!!) },
               modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
-                Text("Confirm", color = Color.Red)
+                Text("Confirm", color = MaterialTheme.colorScheme.error)
               }
         },
         dismissButton = {

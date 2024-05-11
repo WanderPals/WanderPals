@@ -15,7 +15,7 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.ui.screens.trip.agenda.ActivityItem
+import com.github.se.wanderpals.ui.screens.trip.agenda.StopItem
 import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import java.time.LocalDate
@@ -101,7 +101,7 @@ class DailyActivitiesTest {
   fun verifyActivityItemsContent() {
     // Set the content once with a composable that includes all test items
     composeTestRule.setContent {
-      Column { testActivities.forEach { stop -> ActivityItem(stop = stop, onActivityClick = {}) } }
+      Column { testActivities.forEach { stop -> StopItem(stop = stop, onActivityClick = {}) } }
     }
 
     // Loop through each test activity and assert its details
@@ -158,7 +158,7 @@ class DailyActivitiesTest {
         var selectedStopId by remember { mutableStateOf("") }
 
         testActivities.forEach { stop ->
-          ActivityItem(
+          StopItem(
               stop = stop,
               onActivityClick = { stopId ->
                 isStopPressed = true
