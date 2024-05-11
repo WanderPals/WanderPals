@@ -1,11 +1,10 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
-import android.graphics.Paint.Align
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,7 +20,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,25 +32,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.navigationActions
-import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun ExpenseInfo(financeViewModel: FinanceViewModel,navigationActions : NavigationActions) {
+fun ExpenseInfo(financeViewModel: FinanceViewModel) {
     val selectedExpense by financeViewModel.selectedExpense.collectAsState()
     val expense = selectedExpense!!
 
@@ -85,7 +78,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel,navigationActions : Navigatio
             modifier = Modifier.testTag("deleteExpenseDialog"))
     }
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("expenseInfo"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -129,6 +122,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                     )
                 }
                 ClickableText(
+                    modifier = Modifier.testTag("deleteTextButton"),
                     onClick = { onDeleteExpenseClick() },
 
                     text = AnnotatedString(
@@ -185,7 +179,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
             }
             Text(
                 modifier = Modifier
-                    .padding(bottom = 5.dp)
+                    .padding(bottom = 10.dp)
                     .align(Alignment.Start),
                 text = "For ${expense.participantsIds.size} participant(s) :",
                 style = MaterialTheme.typography.bodyLarge.copy(
