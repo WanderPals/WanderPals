@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,9 +59,11 @@ fun SuggestionHistoryFeedContent(
     suggestionsViewModel: SuggestionsViewModel,
     navigationActions: NavigationActions
 ) {
-    // Combine date and time into LocalDateTime and sort the list in descending order
-    val sortedSuggestionHistoryList = suggestionList.sortedByDescending {
-        LocalDateTime.of(it.createdAt, it.createdAtTime)
+
+    val suggestionList = suggestionsViewModel.historyState.collectAsState().value
+
+    LaunchedEffect(key1 = true) {
+        suggestionsViewModel.loadSuggestion(tripId)
     }
 
     Column(modifier = Modifier
@@ -81,7 +84,7 @@ fun SuggestionHistoryFeedContent(
             textAlign = TextAlign.Center)
 
         // If suggestion list is empty, display a message
-        if (sortedSuggestionHistoryList.isEmpty()) {
+        if (suggestionList.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     modifier =
@@ -112,7 +115,7 @@ fun SuggestionHistoryFeedContent(
             val lazyColumn =
                 @Composable {
                     LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
-                        itemsIndexed(sortedSuggestionHistoryList) { index, suggestion ->
+                        itemsIndexed(suggestionList) { index, suggestion ->
                             // Only render items that have not been added to stops
                             val addedToStops =
                                 suggestionsViewModel.addedSuggestionsToStops.collectAsState().value

@@ -104,8 +104,8 @@ open class SuggestionsViewModel(
       // Fetch all trips from the repository
       delay(1000)
       val allSuggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
-      allSuggestions.filter { it.stopStatus == CalendarUiState.StopStatus.ADDED }
-      _historyState.value = allSuggestions // this is a list of all suggestions that have been added as stops
+      val filteredSuggestions = allSuggestions.filter { it.stopStatus == CalendarUiState.StopStatus.ADDED }
+      _historyState.value = filteredSuggestions // this is a list of all suggestions that have been added as stops
 
       _isLoading.value = false
     }
@@ -128,6 +128,9 @@ open class SuggestionsViewModel(
 
       _likedSuggestions.value =
         _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
+
+      val addedSuggestions = suggestions.filter { it.stopStatus == CalendarUiState.StopStatus.ADDED }
+      _historyState.value = addedSuggestions // Update the state flow with the filtered list
 
       // Fetch all users from the trip once, before the loop
       val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
