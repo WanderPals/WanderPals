@@ -332,7 +332,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun suggestionSearchBar_ExistsAndIsDisplayed() {
     composeTestRule.setContent {
-      SuggestionTopBar(searchSuggestionText = "", onSearchSuggestionTextChanged = {})
+      SuggestionTopBar(searchSuggestionText = "", onSearchSuggestionTextChanged = {}, onHistoryClick = {})
     }
 
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
@@ -347,7 +347,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun clearSuggestionSearchButton_ExistsAndIsDisplayedAndPerformsClick() {
     composeTestRule.setContent {
-      SuggestionTopBar(searchSuggestionText = "test", onSearchSuggestionTextChanged = {})
+      SuggestionTopBar(searchSuggestionText = "test", onSearchSuggestionTextChanged = {}, onHistoryClick = {})
     }
 
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
