@@ -57,10 +57,7 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
       _isLoading.value = true
       // Fetch all trips from the repository
       _announcementStateList.value = tripsRepository.getAllAnnouncementsFromTrip(tripId).reversed()
-      Log.d("NotificationsViewModel", "_${_announcementStateList.value}")
-
       _notifStateList.value = tripsRepository.getNotificationList(tripId)
-      Log.d("NotificationsViewModel", "_${_notifStateList.value}")
       // Set loading state to false after data is fetched
       _isLoading.value = false
     }
