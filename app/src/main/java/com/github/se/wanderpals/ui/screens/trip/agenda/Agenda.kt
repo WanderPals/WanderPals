@@ -312,7 +312,7 @@ fun ContentItem(
   // Set the marker color based on the stop status
   val markerColor =
       when (date.stopStatus) {
-        CalendarUiState.StopStatus.ADDED -> Color.Cyan // Stop added
+        CalendarUiState.StopStatus.ADDED -> Color.Blue // Stop added
         else -> Color.Transparent // No stop
       }
 
