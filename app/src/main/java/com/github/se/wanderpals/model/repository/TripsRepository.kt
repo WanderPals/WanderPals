@@ -88,9 +88,20 @@ open class TripsRepository(
     NotificationsManager.initNotificationsManager(this)
   }
 
-  // method to get data from specified source
+  /**
+   * Retrieves the appropriate Firestore data source based on network availability: Source.DEFAULT
+   * if online, Source.CACHE if offline.
+   *
+   * @return Source The data source setting, either DEFAULT for online or CACHE for offline access.
+   */
   private fun getSource(): Source = if (isNetworkEnabled) Source.DEFAULT else Source.CACHE
 
+  /**
+   * Checks network availability and logs if the device is offline, useful for aborting operations
+   * when no network.
+   *
+   * @return Boolean True if network is available, false if offline.
+   */
   private fun checkNetworkIsValidAndLog(): Boolean {
     if (!isNetworkEnabled) {
       Log.d("FirebaseRepository", "Operation is aborted, device is offline")

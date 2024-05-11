@@ -68,8 +68,10 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
 
   open fun getSuggestion(suggestionId: String) {
     viewModelScope.launch {
+      _isLoadingSuggestion.value = true
       val suggestion = tripsRepository.getSuggestionFromTrip(tripId, suggestionId)
       _currentSuggestion.value = suggestion
+      _isLoadingSuggestion.value = false
     }
   }
 
