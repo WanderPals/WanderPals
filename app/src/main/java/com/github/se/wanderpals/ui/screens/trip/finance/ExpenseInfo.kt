@@ -38,8 +38,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
@@ -93,6 +95,8 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
 
 @Composable
 fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
+    val userIsViewer = SessionManager.getCurrentUser()!!.role == Role.VIEWER
+
     Surface(
         color = MaterialTheme.colorScheme.primary,
         contentColor = Color.White
@@ -113,7 +117,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
             ) {
                 IconButton(
                     modifier = Modifier.align(Alignment.Top),
-                    onClick = { navigationActions.goBack()},
+                    onClick = { navigationActions.goBack()}
                 ) {
                     Icon(
                         modifier = Modifier.size(35.dp),
@@ -123,11 +127,15 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                 }
                 ClickableText(
                     modifier = Modifier.testTag("deleteTextButton"),
-                    onClick = { onDeleteExpenseClick() },
+                    onClick = { if(!userIsViewer){
+                        onDeleteExpenseClick()
+                    } },
 
                     text = AnnotatedString(
                         text = "DELETE",
-                        spanStyle = SpanStyle(fontSize = 16.sp, color = Color.White)
+                        spanStyle = SpanStyle(
+                            fontSize = 16.sp,
+                            color = if (userIsViewer) Color.LightGray else Color.White)
                     ),
                 )
             }
