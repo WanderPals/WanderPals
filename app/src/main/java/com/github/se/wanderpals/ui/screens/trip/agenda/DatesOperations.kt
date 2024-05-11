@@ -37,8 +37,8 @@ data class CalendarUiState(
   /**
    * Enum class representing the status of the stop addition.
    *
-   * @property ADDED Stop was added to the trip.
-   * @property NONE Stop was not added, it is still a suggestion of the trip.
+   * @property ADDED Suggestion was added to the trip, it is a stop of the trip now.
+   * @property NONE Suggestion has not been added, it is still a suggestion of the trip.
    */
   enum class StopStatus {
     ADDED,
