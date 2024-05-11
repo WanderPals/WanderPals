@@ -37,7 +37,7 @@ class AgendaViewModelTest {
 
   /**
    * Test the loadStopsInfo method of the AgendaViewModel class to ensure that the stopsInfo state
-   * is updated correctly.
+   * is updated correctly. The method should fetch the stops for the trip and update the stopsInfo.
    */
   @Test
   fun `loadStopsInfo updates stopsInfo state`() = runTest {
