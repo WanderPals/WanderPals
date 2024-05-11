@@ -1,14 +1,22 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
+
 import android.graphics.Paint.Align
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,9 +51,9 @@ import java.time.format.DateTimeFormatter
 
 @Preview
 @Composable
-fun ExpenseInfo(/*financeViewModel: FinanceViewModel,navigationActions : NavigationActions*/){
+fun ExpenseInfo(/*financeViewModel: FinanceViewModel,navigationActions : NavigationActions*/) {
     //val selectedExpense by financeViewModel.selectedExpense.collectAsState()
-    val expense =  Expense(
+    val expense = Expense(
         expenseId = "3",
         title = "Museum tickets",
         amount = 25.0,
@@ -56,6 +64,7 @@ fun ExpenseInfo(/*financeViewModel: FinanceViewModel,navigationActions : Navigat
         names = listOf("John", "Bob"),
         localDate = LocalDate.now()
     )
+    val expenseList = listOf(expense, expense, expense)
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
@@ -64,30 +73,62 @@ fun ExpenseInfo(/*financeViewModel: FinanceViewModel,navigationActions : Navigat
 
         ExpenseTopInfo(expense)
 
+        LazyColumn(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(expense.names) { userName ->
+                Box(modifier = Modifier.fillMaxWidth().height(80.dp).padding(horizontal = 15.dp)){
+                    Row(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = userName,
+                            style = MaterialTheme.typography.bodyLarge,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = String.format("%.2f CHF", expense.amount / expense.participantsIds.size),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+                HorizontalDivider(
+                    color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
 
+
+            }
+        }
     }
+
+
 }
 
+
 @Composable
-fun ExpenseTopInfo(expense : Expense){
+fun ExpenseTopInfo(expense: Expense) {
     Surface(
         color = MaterialTheme.colorScheme.primary,
         contentColor = Color.White
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 15.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth().padding(top = 5.dp,end = 10.dp),
+                    .fillMaxWidth()
+                    .padding(top = 5.dp, end = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
                     modifier = Modifier.align(Alignment.Top),
-                    onClick = { /*navigationActions.navigateTo(Route.FINANCE) */},
+                    onClick = { /*navigationActions.navigateTo(Route.FINANCE) */ },
                 ) {
                     Icon(
                         modifier = Modifier.size(35.dp),
@@ -100,7 +141,8 @@ fun ExpenseTopInfo(expense : Expense){
 
                     text = AnnotatedString(
                         text = "Delete",
-                        spanStyle = SpanStyle(fontSize = 18.sp, color = Color.White)),
+                        spanStyle = SpanStyle(fontSize = 18.sp, color = Color.White)
+                    ),
                 )
             }
             Text(
@@ -109,7 +151,8 @@ fun ExpenseTopInfo(expense : Expense){
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
                     fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold),
+                    fontWeight = FontWeight.Bold
+                ),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1
             )
@@ -120,7 +163,8 @@ fun ExpenseTopInfo(expense : Expense){
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold)
+                    fontWeight = FontWeight.Bold
+                )
             )
             Row(
                 modifier = Modifier
@@ -133,7 +177,8 @@ fun ExpenseTopInfo(expense : Expense){
                     modifier = Modifier.weight(1f),
                     text = "Paid by ${expense.userName}",
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,),
+                        color = Color.White,
+                    ),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
@@ -141,16 +186,20 @@ fun ExpenseTopInfo(expense : Expense){
                     modifier = Modifier.padding(horizontal = 10.dp),
                     text = expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                     style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White,),
+                        color = Color.White,
+                    ),
                     maxLines = 1
                 )
             }
             Text(
-                modifier = Modifier.padding(bottom = 5.dp).align(Alignment.Start),
+                modifier = Modifier
+                    .padding(bottom = 5.dp)
+                    .align(Alignment.Start),
                 text = "For ${expense.participantsIds.size} participant(s) :",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
-                    fontWeight = FontWeight.Bold),
+                    fontWeight = FontWeight.Bold
+                ),
                 textAlign = TextAlign.Start
             )
 
