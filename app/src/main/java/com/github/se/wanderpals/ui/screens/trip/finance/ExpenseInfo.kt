@@ -45,7 +45,15 @@ import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.format.DateTimeFormatter
 
-
+/**
+ * Composable function for displaying detailed information about an expense, including :
+ * the title,cost,date and participants related to this expense.
+ * If user has permission higher than viewer, the user can delete the expense.
+ *
+ * This composable takes a [FinanceViewModel] as a parameter to interact with expense data.
+ *
+ * @param financeViewModel The view model containing the expense data and related actions.
+ */
 @Composable
 fun ExpenseInfo(financeViewModel: FinanceViewModel) {
     val selectedExpense by financeViewModel.selectedExpense.collectAsState()
@@ -53,6 +61,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
 
     val showDeleteDialog by financeViewModel.showDeleteDialog.collectAsState()
 
+    // Dialog for deleting expense
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { financeViewModel.setShowDeleteDialogState(false) },
@@ -79,20 +88,28 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
             },
             modifier = Modifier.testTag("deleteExpenseDialog"))
     }
+
     Column(
         modifier = Modifier.fillMaxWidth().testTag("expenseInfo"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        ExpenseTopInfo(expense) {
+        // Top information of the expenses
+        ExpenseTopInfo(expense = expense) {
             financeViewModel.setShowDeleteDialogState(true)
         }
 
+        // Display of the list of participant related to the expense
         ExpenseParticipantsInfo(expense = expense)
     }
 }
 
+/**
+ * Composable function for displaying top information about an expense.
+ *
+ * @param expense The expense object containing information to be displayed.
+ * @param onDeleteExpenseClick Callback function invoked when the delete expense action is triggered.
+ */
 @Composable
 fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
     val userIsViewer = SessionManager.getCurrentUser()!!.role == Role.VIEWER
@@ -115,6 +132,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Go-back button
                 IconButton(
                     modifier = Modifier.align(Alignment.Top).testTag("expenseInfoBackButton"),
                     onClick = { navigationActions.goBack()}
@@ -125,6 +143,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                         contentDescription = "Back",
                     )
                 }
+                // Delete text (clickable)
                 ClickableText(
                     modifier = Modifier.testTag("deleteTextButton"),
                     onClick = { if(!userIsViewer){
@@ -139,8 +158,9 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                     ),
                 )
             }
-            Text(
 
+            // Expense title
+            Text(
                 text = expense.title,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.White,
@@ -151,6 +171,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                 maxLines = 1
             )
 
+            //Expense amount
             Text(
                 modifier = Modifier.padding(top = 10.dp).testTag("expenseAmount"+expense.expenseId),
                 text = String.format("%.2f CHF", expense.amount),
@@ -160,6 +181,7 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
             )
+            // Username and local date
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -201,6 +223,12 @@ fun ExpenseTopInfo(expense: Expense,onDeleteExpenseClick : () -> Unit) {
     }
 }
 
+/**
+ * Composable function for displaying information about participants involved in an expense.
+ * Show their name and the amount they have been paid.
+ *
+ * @param expense The expense object containing participant information.
+ */
 @Composable
 fun ExpenseParticipantsInfo(expense: Expense) {
     LazyColumn(
