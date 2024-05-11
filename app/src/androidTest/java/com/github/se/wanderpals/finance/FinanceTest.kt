@@ -95,7 +95,7 @@ class FinanceViewModelTest :
 
   override fun deleteExpense(expense: Expense) {
     _expenseStateList.value = _expenseStateList.value.filter { it.expenseId != expense.expenseId }
-    hideDeleteDialog()
+    setShowDeleteDialogState(false)
   }
 }
 

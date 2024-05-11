@@ -60,7 +60,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel,navigationActions : Navigatio
 
     if (showDeleteDialog) {
         AlertDialog(
-            onDismissRequest = { financeViewModel.hideDeleteDialog() },
+            onDismissRequest = { financeViewModel.setShowDeleteDialogState(false) },
             title = { Text("Confirm Deletion") },
             text = {
                 Text("Are you sure you want to delete this expense?")
@@ -77,7 +77,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel,navigationActions : Navigatio
             },
             dismissButton = {
                 TextButton(
-                    onClick = { financeViewModel.hideDeleteDialog() },
+                    onClick = { financeViewModel.setShowDeleteDialogState(false) },
                     modifier = Modifier.testTag("cancelDeleteExpenseButton")) {
                     Text("Cancel")
                 }
@@ -91,7 +91,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel,navigationActions : Navigatio
     ) {
 
         ExpenseTopInfo(expense) {
-            financeViewModel.showDeleteDialog()
+            financeViewModel.setShowDeleteDialogState(true)
         }
 
         ExpenseParticipantsInfo(expense = expense)
