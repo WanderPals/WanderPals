@@ -39,28 +39,13 @@ import com.github.se.wanderpals.ui.theme.scrimLight
 import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 
-
-@Preview(showBackground = true)
-@Composable
-fun SuggestionHistoryPreview(){
-    WanderPalsTheme {
-        SuggestionHistoryFeedContent(
-            innerPadding = PaddingValues(0.dp),
-            suggestionList = emptyList(),
-            searchSuggestionText = "",
-            tripId = "",
-            suggestionsViewModel = SuggestionsViewModel(TripsRepository("", Dispatchers.IO), ""),
-            navigationActions = NavigationActions()
-        )
-    }
-}
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
  * selected.
  *
  * @param innerPadding The padding values for the content. view.
  * @param suggestionList The list of suggestions of a trip to be displayed.
- * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
+// * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  * @param tripId The ID of the trip.
  * @param suggestionsViewModel The ViewModel for managing suggestions.
  */
@@ -68,7 +53,7 @@ fun SuggestionHistoryPreview(){
 fun SuggestionHistoryFeedContent(
     innerPadding: PaddingValues,
     suggestionList: List<Suggestion>,
-    searchSuggestionText: String,
+//    searchSuggestionText: String,
     tripId: String,
     suggestionsViewModel: SuggestionsViewModel,
     navigationActions: NavigationActions
@@ -91,7 +76,7 @@ fun SuggestionHistoryFeedContent(
                 fontSize = 20.sp,
                 lineHeight = 24.sp,
                 fontWeight = FontWeight(500),
-                color = primaryLight,
+                color = MaterialTheme.colorScheme.primary,
                 letterSpacing = 0.2.sp),
             textAlign = TextAlign.Center)
 

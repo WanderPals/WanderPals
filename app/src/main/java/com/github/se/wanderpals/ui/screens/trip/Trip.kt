@@ -210,12 +210,12 @@ fun Trip(
                     )
                     // Assuming you have a method to fetch history or passing it via navArgs
                     val suggestionList by suggestionsViewModel.historyState.collectAsState(initial = emptyList())
-                    val searchSuggestionText by remember { mutableStateOf("") }
+//                    val searchSuggestionText by remember { mutableStateOf("") }
 
                     SuggestionHistoryFeedContent(
                         innerPadding = PaddingValues(all = 8.dp),
                         suggestionList = suggestionList,
-                        searchSuggestionText = searchSuggestionText,
+//                        searchSuggestionText = searchSuggestionText,
                         tripId = tripId,
                         suggestionsViewModel = suggestionsViewModel,
                         navigationActions = oldNavActions

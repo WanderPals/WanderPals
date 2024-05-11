@@ -50,4 +50,7 @@ val TRIP_DESTINATIONS =
             text = "CreateAnnouncement"),
         Destination(route = Route.FINANCE, icon = Icons.Default.Menu, text = "finance"),
         Destination(
-            route = Route.CREATE_EXPENSE, icon = Icons.Default.Create, text = "Create Expense"))
+            route = Route.CREATE_EXPENSE, icon = Icons.Default.Create, text = "Create Expense"),
+        Destination(
+            route = Route.SUGGESTION_HISTORY, icon = Icons.Default.Menu, text = "Suggestion History")
+        )
