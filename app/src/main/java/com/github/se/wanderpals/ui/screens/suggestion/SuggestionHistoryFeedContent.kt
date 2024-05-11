@@ -90,7 +90,7 @@ fun SuggestionHistoryFeedContent(
                         .height(55.dp)
                         .align(Alignment.Center)
                         .testTag("noSuggestionsForUserText"),
-                    text = "Looks like there is no suggestion history yet. ",
+                    text = "Looks like there are no added stops yet. ",
                     style =
                     TextStyle(
                         lineHeight = 20.sp,
@@ -108,8 +108,7 @@ fun SuggestionHistoryFeedContent(
                     content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History") })
             }
         } else {
-            // LazyColumn to display the list of suggestions with sorting and search filtering
-            // (Note: can only have one LazyColumn in a composable function)
+            // this lazycolumn has all the suggestions that are added to stops
             val lazyColumn =
                 @Composable {
                     LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
@@ -123,7 +122,7 @@ fun SuggestionHistoryFeedContent(
                                     suggestion = suggestion,
                                     onClick = {
                                         navigationActions.setVariablesSuggestion(suggestion)
-                                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
+                                        navigationActions.navigateTo(Route.SUGGESTION_HISTORY)
                                     }, // This lambda is passed to the SuggestionItem composable
                                     modifier = Modifier.testTag("suggestion${index + 1}"),
                                     tripId = tripId,
