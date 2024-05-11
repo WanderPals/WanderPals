@@ -140,8 +140,8 @@ fun ExpenseTopInfo(expense: Expense) {
                     onClick = { /* Action à exécuter lors du clic sur le texte "Modify" */ },
 
                     text = AnnotatedString(
-                        text = "Delete",
-                        spanStyle = SpanStyle(fontSize = 18.sp, color = Color.White)
+                        text = "DELETE",
+                        spanStyle = SpanStyle(fontSize = 16.sp, color = Color.White)
                     ),
                 )
             }
@@ -169,7 +169,7 @@ fun ExpenseTopInfo(expense: Expense) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 5.dp),
+                    .padding(vertical = 15.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
