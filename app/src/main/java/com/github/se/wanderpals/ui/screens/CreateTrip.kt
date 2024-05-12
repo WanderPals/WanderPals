@@ -99,7 +99,7 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
   LaunchedEffect(createTripFinished) {
     if (createTripFinished) {
       nav.navigateTo(Route.OVERVIEW) // navigate to overview, after add trip is done
-      overviewViewModel.resetCreateTripFinished() // Reset the flag after handling it
+      overviewViewModel.setCreateTripFinished(false) // Reset the flag after handling it
     }
   }
 

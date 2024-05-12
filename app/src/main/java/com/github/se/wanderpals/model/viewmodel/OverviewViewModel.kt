@@ -44,11 +44,11 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
 
   // signal that the trip was added successfully
   private val _createTripFinished = MutableStateFlow(false)
-  val createTripFinished: StateFlow<Boolean> = _createTripFinished.asStateFlow()
+  open val createTripFinished: StateFlow<Boolean> = _createTripFinished.asStateFlow()
 
   // don't add a trip twice
   private val _isAddingTrip = MutableStateFlow(false)
-  val isAddingTrip: StateFlow<Boolean> = _isAddingTrip.asStateFlow()
+  open val isAddingTrip: StateFlow<Boolean> = _isAddingTrip.asStateFlow()
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
@@ -84,8 +84,8 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   }
 
   /** Resets the CreateTripFinished flag */
-  fun resetCreateTripFinished() {
-    _createTripFinished.value = false
+  fun setCreateTripFinished(value: Boolean) {
+    _createTripFinished.value = value
   }
 
   /**
