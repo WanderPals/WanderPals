@@ -425,80 +425,9 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     }
   }
 
-  @Test
-  fun saveTripWorks() = run {
-    ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
-      val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-      composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
-      step("Open trip screen") {
-        inputTitle {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Title")
-          assertTextContains("Name the trip")
-
-          performTextClearance()
-          performTextInput("My trip")
-        }
-        titleLengthText {
-          assertIsDisplayed()
-          assertTextEquals("7/35")
-        }
-
-        inputBudget {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Budget")
-
-          performTextClearance()
-          performTextInput("500")
-        }
-
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Describe")
-          assertTextContains("Describe the trip")
-
-          performTextClearance()
-          performTextInput("My description")
-        }
-
-        inputStartDate {
-          assertIsDisplayed()
-
-          assertTextContains("dd/mm/yyyy")
-          performTextClearance()
-
-          performTextInput("05/03/2024")
-        }
-
-        inputEndDate {
-          assertIsDisplayed()
-
-          assertTextContains("dd/mm/yyyy")
-          performTextClearance()
-
-          performTextInput("10/03/2024")
-        }
-
-        saveButton {
-          assertIsDisplayed()
-          performClick()
-        }
-
-        verify { mockNavActions.navigateTo(Route.OVERVIEW) }
-        confirmVerified(mockNavActions)
-      }
-    }
-  }
-
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun SaveTripWorks() = runBlockingTest {
+  fun saveTripWorks() = runBlockingTest {
 
     // Spy on the actual ViewModel rather than completely mocking it
     val overviewViewModel =
