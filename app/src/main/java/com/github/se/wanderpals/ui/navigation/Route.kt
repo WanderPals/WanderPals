@@ -19,4 +19,5 @@ object Route {
   const val FINANCE = "finance"
   const val CREATE_EXPENSE = "createExpense"
   const val STOPS_LIST = "stopsList"
+  const val EXPENSE_INFO = "expenseInfo"
 }
