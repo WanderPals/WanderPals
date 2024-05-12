@@ -42,6 +42,14 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   private var _currentUser = MutableStateFlow(SessionManager.getCurrentUser())
   open val currentUser: StateFlow<SessionUser?> = _currentUser.asStateFlow()
 
+  // signal that the trip was added successfully
+  private val _createTripFinished = MutableStateFlow(false)
+  val createTripFinished: StateFlow<Boolean> = _createTripFinished.asStateFlow()
+
+  // don't add a trip twice
+  private val _isAddingTrip = MutableStateFlow(false)
+  val isAddingTrip: StateFlow<Boolean> = _isAddingTrip.asStateFlow()
+
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
     viewModelScope.launch {
@@ -61,11 +69,23 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
    * @param trip The trip to add in the repository.
    */
   open fun createTrip(trip: Trip) {
-    runBlocking {
-      tripsRepository.addTrip(trip)
-      val newTripId = tripsRepository.getAllTrips().last().tripId
-      NotificationsManager.addJoinTripNotification(newTripId)
+    viewModelScope.launch {
+      if (!isAddingTrip.value) {
+
+        _isAddingTrip.value = true
+        tripsRepository.addTrip(trip)
+        val newTripId = tripsRepository.getAllTrips().last().tripId
+        NotificationsManager.addJoinTripNotification(newTripId)
+
+        _isAddingTrip.value = false
+        _createTripFinished.value = true // Signal that operation is finished
+      }
     }
+  }
+
+  /** Resets the CreateTripFinished flag */
+  fun resetCreateTripFinished() {
+    _createTripFinished.value = false
   }
 
   /**

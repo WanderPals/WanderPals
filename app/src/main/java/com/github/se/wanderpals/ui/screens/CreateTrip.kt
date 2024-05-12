@@ -27,6 +27,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,6 +92,16 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
+
+  val createTripFinished by overviewViewModel.createTripFinished.collectAsState()
+
+  // Effect to react to the createTripFinished state change
+  LaunchedEffect(createTripFinished) {
+    if (createTripFinished) {
+      nav.navigateTo(Route.OVERVIEW) // navigate to overview, after add trip is done
+      overviewViewModel.resetCreateTripFinished() // Reset the flag after handling it
+    }
+  }
 
   val MAX_TITLE_LENGTH = 35
 
@@ -238,7 +250,7 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                               users = emptyList(),
                               suggestions = emptyList())
                       overviewViewModel.createTrip(trip)
-                      nav.navigateTo(Route.OVERVIEW)
+                      // navigation handled by the launched effects
                     }
                   },
               ) {
