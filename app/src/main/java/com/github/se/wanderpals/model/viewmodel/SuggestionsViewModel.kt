@@ -100,14 +100,14 @@ open class SuggestionsViewModel(
       // Fetch all trips from the repository
       delay(1000)
       val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
-      _state.value = suggestions//.distinctBy { it.suggestionId } // to not have duplication of suggestions (distinct by suggestionId)
-      Log.d("Fetched Suggestions", _state.value.toString())
+      _state.value = suggestions
+//      Log.d("Fetched Suggestions", _state.value.toString())
 
       _likedSuggestions.value =
         _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
 
       // Fetch all users from the trip once, before the loop
-      val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
+//      val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
 
       // After loading, check if any suggestions have already reached the majority.
       // If so, add them as stops and remove them from the suggestions list. This is done

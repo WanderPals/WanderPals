@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -34,6 +35,7 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.github.se.wanderpals.ui.theme.primaryLight
 import com.github.se.wanderpals.ui.theme.scrimLight
@@ -44,31 +46,28 @@ import java.time.LocalDateTime
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
  * selected.
  *
- * @param innerPadding The padding values for the content. view.
- * @param suggestionList The list of suggestions of a trip to be displayed.
-// * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  * @param tripId The ID of the trip.
  * @param suggestionsViewModel The ViewModel for managing suggestions.
+ * @param navigationActions The navigation actions for the screen.
  */
 @Composable
 fun SuggestionHistoryFeedContent(
-    innerPadding: PaddingValues,
-    suggestionList: List<Suggestion>,
-//    searchSuggestionText: String,
     tripId: String,
     suggestionsViewModel: SuggestionsViewModel,
     navigationActions: NavigationActions
 ) {
 
-    val suggestionList = suggestionsViewModel.historyState.collectAsState().value
+    // Observe the state of the suggestions list from the ViewModel
+    val suggestions = suggestionsViewModel.state.collectAsState().value
+    println("suggestions: $suggestions")
 
-    LaunchedEffect(key1 = true) {
-        suggestionsViewModel.loadSuggestion(tripId)
+    // Filter suggestions that have been added as stops
+    val addedSuggestions = suggestions.filter {
+        it.stopStatus == CalendarUiState.StopStatus.ADDED
     }
 
     Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(innerPadding)) {
+        .fillMaxWidth()) {
 
         // Title for the list of suggestions
         Text(
@@ -83,8 +82,41 @@ fun SuggestionHistoryFeedContent(
                 letterSpacing = 0.2.sp),
             textAlign = TextAlign.Center)
 
+        // Trigger data fetch when selectedDate changes
+        LaunchedEffect(tripId) { suggestionsViewModel.loadSuggestion(tripId) }
+
+        // While waiting for the data to load, display a loading spinner:
+        val isLoading by suggestionsViewModel.isLoading.collectAsState()
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    modifier =
+                    Modifier
+                        .width(260.dp)
+                        .height(55.dp)
+                        .align(Alignment.Center)
+                        .testTag("suggestionHistoryLoading"),
+                    text = "Loading...",
+                    style =
+                    TextStyle(
+                        lineHeight = 20.sp,
+                        letterSpacing = 0.5.sp,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight(500),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.scrim),
+                )
+                IconButton(
+                    onClick = { suggestionsViewModel.loadSuggestion(tripId) },
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(top = 60.dp),
+                    content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History") })
+            }
+        }
+
         // If suggestion list is empty, display a message
-        if (suggestionList.isEmpty()) {
+        if (addedSuggestions.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text(
                     modifier =
@@ -93,7 +125,7 @@ fun SuggestionHistoryFeedContent(
                         .height(55.dp)
                         .align(Alignment.Center)
                         .testTag("noSuggestionsForUserText"),
-                    text = "Looks like there are no added stops yet. ",
+                    text = "No added stops yet. ",
                     style =
                     TextStyle(
                         lineHeight = 20.sp,
@@ -115,21 +147,20 @@ fun SuggestionHistoryFeedContent(
             val lazyColumn =
                 @Composable {
                     LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
-                        itemsIndexed(suggestionList) { index, suggestion ->
-                            // Only render items that have not been added to stops
-                            val addedToStops =
-                                suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
-                            val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-                            if (isSuggestionAddedToStop) {
+                        println("i'm here")
+                        itemsIndexed(addedSuggestions) { index, suggestion ->
+                            if (suggestion.stopStatus== CalendarUiState.StopStatus.ADDED) {
+
                                 SuggestionItem(
                                     suggestion = suggestion,
                                     onClick = {
                                         navigationActions.setVariablesSuggestion(suggestion)
-                                        navigationActions.navigateTo(Route.SUGGESTION_HISTORY)
+                                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL) // Navigate to the suggestion detail screen
                                     }, // This lambda is passed to the SuggestionItem composable
                                     modifier = Modifier.testTag("suggestion${index + 1}"),
                                     tripId = tripId,
-                                    viewModel = suggestionsViewModel)
+                                    viewModel = suggestionsViewModel
+                                )
                             }
                         }
                     }
