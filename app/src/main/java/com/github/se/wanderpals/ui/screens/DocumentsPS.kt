@@ -59,8 +59,6 @@ fun DocumentsPS(
   var selectedDocument by remember { mutableStateOf("") }
   var selectedImagesLocal by remember { mutableStateOf<List<Uri?>>(emptyList()) }
 
-  var expanded by remember { mutableStateOf(false) }
-
   // get all the documents from the trip
 
   LaunchedEffect(Unit) {
