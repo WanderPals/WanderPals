@@ -148,7 +148,7 @@ fun SuggestionFeedContent(
                 val addedToStops =
                     suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
                 val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-                if (!isSuggestionAddedToStop) {
+                if (!isSuggestionAddedToStop && suggestion.stopStatus == CalendarUiState.StopStatus.NONE) { // if the suggestion is not added to a stop (stopStatus is NONE)
                   SuggestionItem(
                       suggestion = suggestion,
                       onClick = {
