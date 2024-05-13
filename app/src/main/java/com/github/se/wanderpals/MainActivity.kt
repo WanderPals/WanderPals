@@ -2,6 +2,7 @@ package com.github.se.wanderpals
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -21,6 +22,7 @@ import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.NetworkHelper
 import com.github.se.wanderpals.service.SessionManager
@@ -48,12 +50,11 @@ import com.google.firebase.storage.storage
 const val EMPTY_CODE = ""
 
 lateinit var navigationActions: NavigationActions
+lateinit var mapManager: MapManager
 
 class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
-
-  private lateinit var mapManager: MapManager
 
   private lateinit var context: Context
 
@@ -148,6 +149,18 @@ class MainActivity : ComponentActivity() {
     mapManager = MapManager(this)
     mapManager.initClients()
     mapManager.setPermissionRequest(locationPermissionRequest)
+    mapManager.setLocationIntentStart {
+      Intent(applicationContext, LocationService::class.java).apply {
+        action = LocationService.ACTION_START
+        startService(this)
+      }
+    }
+    mapManager.setLocationIntentStop {
+      Intent(applicationContext, LocationService::class.java).apply {
+        action = LocationService.ACTION_STOP
+        startService(this)
+      }
+    }
 
     setContent {
       WanderPalsTheme {
