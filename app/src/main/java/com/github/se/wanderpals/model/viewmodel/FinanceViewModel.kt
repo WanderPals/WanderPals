@@ -62,7 +62,9 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   open fun deleteExpense(expense: Expense) {
     runBlocking { tripsRepository.removeExpenseFromTrip(tripId, expense.expenseId) }
-    viewModelScope.launch { updateStateLists() }
+    viewModelScope.launch {
+      NotificationsManager.removeExpensePath(tripId,expense.expenseId)
+      updateStateLists() }
     setShowDeleteDialogState(false)
   }
 

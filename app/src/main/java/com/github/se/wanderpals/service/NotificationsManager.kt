@@ -60,6 +60,25 @@ object NotificationsManager {
   }
 
   /**
+   * Removes the path from a notification containing the provided expense ID.
+   *
+   * @param tripId The ID of the trip containing the notification.
+   * @param expenseId The expense for which the notification path should be removed.
+   */
+  suspend fun removeExpensePath(tripId: String, expenseId: String) {
+    val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+
+    notifList.replaceAll {
+      if (it.navActionVariables.contains("expenseId: $expenseId")) {
+        it.copy(route = "", navActionVariables = "")
+      } else {
+        it
+      }
+    }
+    tripsRepository.setNotificationList(tripId, notifList.toList())
+  }
+
+  /**
    * Adds a notification indicating that a user has joined a trip.
    *
    * @param tripId The ID of the trip for which the notification is added.
