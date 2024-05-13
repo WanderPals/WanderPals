@@ -43,5 +43,6 @@ data class Trip(
     val tokenIds: List<String> = emptyList(),
     val suggestions: List<String> = emptyList(),
     val announcements: List<String> = emptyList(),
-    val expenses: List<String> = emptyList()
+    val expenses: List<String> = emptyList(),
+    val documentsURL: List<String> = emptyList()
 )

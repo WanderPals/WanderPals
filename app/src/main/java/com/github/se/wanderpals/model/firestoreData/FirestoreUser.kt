@@ -16,6 +16,7 @@ import com.github.se.wanderpals.model.data.User
  * @param lastPosition GeoCords representation of geographic coordinates.
  * @param profilePictureURL URL to the user's profile picture.
  * @param notificationTokenId Token ID used for managing notifications specific to the user.
+ * @param documentsURL List of URLs to the user's documents.
  */
 data class FirestoreUser(
     val userId: String = "",
@@ -26,7 +27,8 @@ data class FirestoreUser(
     val lastPosition: GeoCords =
         GeoCords(0.0, 0.0), // or consider a different representation if more suitable
     val profilePictureURL: String = "",
-    val notificationTokenId: String = ""
+    val notificationTokenId: String = "",
+    val documentsURL: List<String> = emptyList()
 ) {
   companion object {
     /**
@@ -44,7 +46,8 @@ data class FirestoreUser(
           nickname = user.nickname,
           role = user.role.name, // Convert enum to String
           lastPosition = user.lastPosition, // Convert GeoCords to String
-          profilePictureURL = user.profilePictureURL)
+          profilePictureURL = user.profilePictureURL,
+          documentsURL = user.documentsURL)
     }
   }
 
@@ -62,6 +65,7 @@ data class FirestoreUser(
         nickname = this.nickname,
         role = Role.valueOf(this.role), // Convert String back to enum
         lastPosition = this.lastPosition, // Convert String back to GeoCords
-        profilePictureURL = this.profilePictureURL)
+        profilePictureURL = this.profilePictureURL,
+        documentsURL = this.documentsURL)
   }
 }

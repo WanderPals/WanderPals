@@ -48,6 +48,7 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.dashboard.DashboardDocumentWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardFinanceWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
 import kotlinx.coroutines.CoroutineScope
@@ -110,6 +111,10 @@ fun Dashboard(
                 DashboardFinanceWidget(
                     viewModel = dashboardViewModel,
                     onClick = { navActions.navigateTo(Route.FINANCE) })
+
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                DashboardDocumentWidget(onClick = { navActions.navigateTo(Route.DOCUMENT) })
               }
             }
       }
