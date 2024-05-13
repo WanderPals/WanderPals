@@ -7,6 +7,8 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 /** Singleton object responsible for managing trip notifications. */
 object NotificationsManager {
@@ -126,14 +128,13 @@ object NotificationsManager {
     val navActions = navigationActions.copy()
     var route = ""
     var navActionVariables = ""
-    if (stop.address.isNotEmpty()) {
-      navActions.setVariablesLocation(geoCords = stop.geoCords, address = stop.address)
-      route = Route.MAP
-      navActionVariables = navActions.serializeNavigationVariable()
-    }
+    route = Route.STOPS_LIST
+
     val newNotif =
         TripNotification(
-            "A new stop has been added ", route, LocalDateTime.now(), navActionVariables)
+            "A new stop has been added for ${stop.date.format(
+              DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(
+                Locale.getDefault()))}", route, LocalDateTime.now(), navActionVariables)
     addNewNotification(notifList, newNotif)
     tripsRepository.setNotificationList(tripId, notifList.toList())
   }
