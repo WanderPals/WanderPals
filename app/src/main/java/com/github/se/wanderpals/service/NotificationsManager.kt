@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.service
 
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -115,6 +116,29 @@ object NotificationsManager {
         TripNotification(
             "A new stop has been added ", route, LocalDateTime.now(), navActionVariables)
     addNewNotification(notifList, newNotif)
+    tripsRepository.setNotificationList(tripId, notifList.toList())
+  }
+
+  /**
+   * Adds a notification for a new expense to the notification list of a trip.
+   *
+   * @param tripId The ID of the trip to which to add the notification.
+   * @param expense The added expense  for which to create the notification.
+   */
+  suspend fun addExpenseNotification(tripId: String, expense: Expense) {
+    val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+    val navActions = navigationActions.copy()
+    var route = Route.EXPENSE_INFO
+
+    navActions.setVariablesExpense(expense)
+
+    var navActionVariables = navActions.serializeNavigationVariable()
+
+    val newNotif =
+      TripNotification(
+        "A new expense has been created", route, LocalDateTime.now(), navActionVariables)
+    addNewNotification(notifList, newNotif)
+
     tripsRepository.setNotificationList(tripId, notifList.toList())
   }
 }
