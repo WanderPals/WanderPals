@@ -114,7 +114,7 @@ fun SuggestionFeedContent(
     SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
     // If suggestion list is empty, display a message
-    if (suggestionList.isEmpty() || suggestionList.filter { it.stopStatus == CalendarUiState.StopStatus.NONE}.isEmpty()) { // if there are no suggestions or if all suggestions are added to stops
+    if (suggestionList.isEmpty() || suggestionList.none { it.stopStatus == CalendarUiState.StopStatus.NONE }) { // if there are no suggestions or if all suggestions are added to stops
       Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier =
