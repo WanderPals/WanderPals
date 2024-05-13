@@ -34,6 +34,7 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.github.se.wanderpals.ui.theme.onSurfaceLight
 import com.github.se.wanderpals.ui.theme.primaryLight
 import com.github.se.wanderpals.ui.theme.scrimLight
@@ -113,7 +114,7 @@ fun SuggestionFeedContent(
     SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
     // If suggestion list is empty, display a message
-    if (suggestionList.isEmpty()) {
+    if (suggestionList.isEmpty() || suggestionList.filter { it.stopStatus == CalendarUiState.StopStatus.NONE}.isEmpty()) { // if there are no suggestions or if all suggestions are added to stops
       Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier =
