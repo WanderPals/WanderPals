@@ -59,7 +59,6 @@ fun SuggestionHistoryFeedContent(
 
     // Observe the state of the suggestions list from the ViewModel
     val suggestions = suggestionsViewModel.state.collectAsState().value
-    println("suggestions: $suggestions")
 
     // Filter suggestions that have been added as stops
     val addedSuggestions = suggestions.filter {
@@ -147,7 +146,6 @@ fun SuggestionHistoryFeedContent(
             val lazyColumn =
                 @Composable {
                     LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
-                        println("i'm here")
                         itemsIndexed(addedSuggestions) { index, suggestion ->
                             if (suggestion.stopStatus== CalendarUiState.StopStatus.ADDED) {
 
