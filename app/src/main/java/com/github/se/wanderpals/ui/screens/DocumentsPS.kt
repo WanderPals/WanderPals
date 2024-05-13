@@ -8,13 +8,13 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -59,11 +59,13 @@ fun DocumentsPS(
   var selectedDocument by remember { mutableStateOf("") }
   var selectedImagesLocal by remember { mutableStateOf<List<Uri?>>(emptyList()) }
 
+  var expanded by remember { mutableStateOf(false) }
+
   // get all the documents from the trip
-  if (state == 1) {
-    LaunchedEffect(Unit) { viewModel.getAllDocumentsFromTrip() }
-  } else {
-    LaunchedEffect(Unit) { viewModel.getAllDocumentsFromCurrentUser() }
+
+  LaunchedEffect(Unit) {
+    viewModel.getAllDocumentsFromTrip()
+    viewModel.getAllDocumentsFromCurrentUser()
   }
 
   val singlePhotoPickerLauncher =
@@ -98,9 +100,9 @@ fun DocumentsPS(
                   contentDescription = "Add document",
               )
             }
-      }) {
+      }) { it ->
         if (state == 1) {
-          LazyColumn {
+          LazyColumn(modifier = Modifier.padding(it)) {
             items(documentslistURL.size) {
               Text(
                   "Document $it",
@@ -116,7 +118,7 @@ fun DocumentsPS(
           }
         } else {
 
-          LazyColumn {
+          LazyColumn(modifier = Modifier.padding(it)) {
             items(documentslistUserURL.size) {
               Text(
                   "Document $it",
@@ -168,7 +170,7 @@ fun DocumentsPS(
             // empty the list
             selectedImagesLocal = emptyList()
             Log.d("Admin", "Image URL: ${task.result}")
-          } else {
+          } else if (task.isSuccessful && state == 1) {
             viewModel.addDocumentToTrip(task.result.toString(), tripId)
             // empty the list
             selectedImagesLocal = emptyList()
@@ -178,6 +180,11 @@ fun DocumentsPS(
   }
 
   if (isDisplayed) {
-    Card { AsyncImage(model = selectedDocument, contentDescription = "Document") }
+    Box(modifier = Modifier.fillMaxSize().clickable(onClick = { isDisplayed = false })) {
+      AsyncImage(
+          model = selectedDocument,
+          contentDescription = "Document",
+          modifier = Modifier.fillMaxSize())
+    }
   }
 }
