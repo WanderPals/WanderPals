@@ -1039,7 +1039,6 @@ open class TripsRepository(
    * @param user The `User` object containing the user's details.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-
   open suspend fun addUserToTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
