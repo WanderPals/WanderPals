@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.trip.map
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
@@ -38,6 +40,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
@@ -118,6 +121,10 @@ fun Map(
 
   // Location Variables
 
+  // is the location being tracked
+  val isTracking by mapManager.isTracking.collectAsState(initial = false)
+  // tracking the position of the user
+  val positionFromServices by mapManager.position.collectAsState(initial = LatLng(0.0, 0.0))
   // final location of the searched location, also the camera position
   var finalLocation by remember { mutableStateOf(mapManager.getStartingLocation()) }
   // name of the searched location
@@ -142,11 +149,26 @@ fun Map(
 
   val context = LocalContext.current
 
+  // Camera
+  val cameraPositionState =
+      rememberSaveable(key = "camera", saver = CameraPositionState.Saver) {
+        CameraPositionState(position = CameraPosition(finalLocation, 10f, 0f, 0f))
+      }
+
   // Launch Effects
 
   LaunchedEffect(Unit) {
     mapManager.askLocationPermission()
     mapViewModel.refreshData()
+  }
+
+  LaunchedEffect(key1 = finalLocation) {
+    cameraPositionState.position =
+        CameraPosition(
+            finalLocation,
+            cameraPositionState.position.zoom,
+            cameraPositionState.position.tilt,
+            cameraPositionState.position.bearing)
   }
 
   LaunchedEffect(key1 = bottomSheetExpanded) {
@@ -174,6 +196,13 @@ fun Map(
             Log.d("Prediction", "Failed")
             expandedSearchBar = false
           })
+    }
+  }
+
+  LaunchedEffect(key1 = positionFromServices) {
+    Log.d("MapManager", "Position: $positionFromServices")
+    if (positionFromServices != LatLng(0.0, 0.0)) {
+      mapViewModel.updateLastPosition(positionFromServices)
     }
   }
 
@@ -272,8 +301,7 @@ fun Map(
                 mapType = MapType.NORMAL,
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style)),
         uiSettings = uiSettings.copy(zoomControlsEnabled = false),
-        cameraPositionState =
-            CameraPositionState(position = CameraPosition(finalLocation, 10f, 0f, 0f))) {
+        cameraPositionState = cameraPositionState) {
 
           // display current location on the map
           if (seeCurrentLocation) {
@@ -389,6 +417,20 @@ fun Map(
                       modifier = Modifier.size(24.dp))
                 }
           }
+
+          Button(
+              onClick = {
+                if (!isTracking) mapManager.executeLocationIntent()
+                else mapManager.executeLocationIntentStop()
+              }) {
+                Image(
+                    painterResource(
+                        id =
+                            if (!isTracking) R.drawable.tracking_enabled
+                            else R.drawable.tracking_disabled),
+                    contentDescription = "Tracking",
+                    modifier = Modifier.size(24.dp))
+              }
 
           Button(
               onClick = {
