@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -46,6 +47,13 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
 
   private val _isSuggestionReady = MutableStateFlow(false)
   val isSuggestionReady: StateFlow<Boolean> = _isSuggestionReady.asStateFlow()
+
+  private val _currentExpense = MutableStateFlow<Expense?>(null)
+  val currentExpense: StateFlow<Expense?> = _currentExpense.asStateFlow()
+
+  private val _isExpenseReady = MutableStateFlow(false)
+  val isExpenseReady: StateFlow<Boolean> = _isExpenseReady.asStateFlow()
+
   /**
    * Updates the state lists of notifications and announcements by launching a coroutine within the
    * viewModel scope.
@@ -73,6 +81,21 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   open fun resetIsLoadingSuggestion() {
     _isSuggestionReady.value = false
   }
+
+
+  open fun getExpense(expenseID : String) {
+    viewModelScope.launch {
+      val expense= tripsRepository.getExpenseFromTrip(tripId,expenseID)
+      _currentExpense.value = expense
+      _isExpenseReady.value = true
+    }
+  }
+
+  open fun resetIsLoadingExpense() {
+    _isExpenseReady.value = false
+  }
+
+
 
   /**
    * Adds a Announcement by the administrator to a trip.

@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
+import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
@@ -84,13 +85,21 @@ fun Notification(
   val suggestion by notificationsViewModel.currentSuggestion.collectAsState()
   val isLoadingSuggestion by notificationsViewModel.isSuggestionReady.collectAsState()
 
+  val expense by notificationsViewModel.currentExpense.collectAsState()
+  val isLoadingExpense by notificationsViewModel.isExpenseReady.collectAsState()
+
   // navigation to suggestion fix
-  LaunchedEffect(isLoadingSuggestion) {
+  LaunchedEffect(isLoadingSuggestion,isLoadingExpense) {
     if (isLoadingSuggestion) {
       navigationActions.variables.currentSuggestion = suggestion as Suggestion
       navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
       notificationsViewModel.resetIsLoadingSuggestion()
     }
+    if (isLoadingExpense) {
+          navigationActions.variables.expense = expense as Expense
+          navigationActions.navigateTo(Route.EXPENSE_INFO)
+          notificationsViewModel.resetIsLoadingExpense()
+      }
   }
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
@@ -194,7 +203,12 @@ fun Notification(
                                   notificationsViewModel.getSuggestion(
                                       navigationActions.variables.suggestionId)
                                 }
-                              } else if (item.route != Route.SUGGESTION_DETAIL) {
+                                if(item.route == Route.EXPENSE_INFO){
+                                    notificationsViewModel.getExpense(
+                                        navigationActions.variables.expense.expenseId)
+                                }
+                              }
+                              else if (item.route != Route.SUGGESTION_DETAIL && item.route != Route.EXPENSE_INFO) {
                                 navigationActions.navigateTo(item.route)
                               }
                             }

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.NotificationsManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,9 +50,15 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   /** Adds an expense to the trip. */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
-    viewModelScope.launch { updateStateLists() }
+    runBlocking {
+      tripsRepository.addExpenseToTrip(tripId, expense)}
+        viewModelScope.launch {
+          val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
+          NotificationsManager.addExpenseNotification(tripId,newExpense)
+          updateStateLists()
+        }
   }
+
 
   open fun deleteExpense(expense: Expense) {
     runBlocking { tripsRepository.removeExpenseFromTrip(tripId, expense.expenseId) }
