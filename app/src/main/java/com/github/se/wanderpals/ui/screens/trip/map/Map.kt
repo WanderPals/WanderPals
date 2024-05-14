@@ -419,6 +419,11 @@ fun Map(
           }
 
           Button(
+              modifier =
+                  Modifier.testTag(
+                      (if (!isTracking) R.drawable.tracking_enabled
+                          else R.drawable.tracking_disabled)
+                          .toString()),
               onClick = {
                 if (!isTracking) mapManager.executeLocationIntent()
                 else mapManager.executeLocationIntentStop()
