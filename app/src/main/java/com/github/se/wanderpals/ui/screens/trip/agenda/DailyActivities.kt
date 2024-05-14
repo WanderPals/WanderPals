@@ -49,7 +49,7 @@ import kotlinx.coroutines.Dispatchers
 @Preview(showBackground = true)
 @Composable
 fun DailyActivitiesPreview() {
-    WanderPalsTheme { DailyActivities(AgendaViewModel("", TripsRepository("", Dispatchers.IO))) {} }
+  WanderPalsTheme { DailyActivities(AgendaViewModel("", TripsRepository("", Dispatchers.IO))) {} }
 }
 
 /**
@@ -60,44 +60,44 @@ fun DailyActivitiesPreview() {
  */
 @Composable
 fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (String) -> Unit) {
-    val uiState by agendaViewModel.uiState.collectAsState()
-    val selectedDate = uiState.selectedDate
+  val uiState by agendaViewModel.uiState.collectAsState()
+  val selectedDate = uiState.selectedDate
 
-    // Observe the daily activities StateFlow
-    val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
+  // Observe the daily activities StateFlow
+  val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
 
-    val refreshFunction = { selectedDate?.let { agendaViewModel.fetchDailyActivities(it) } }
+  val refreshFunction = { selectedDate?.let { agendaViewModel.fetchDailyActivities(it) } }
 
-    // Trigger data fetch when selectedDate changes
-    LaunchedEffect(selectedDate) { refreshFunction() }
+  // Trigger data fetch when selectedDate changes
+  LaunchedEffect(selectedDate) { refreshFunction() }
 
-    // Display daily activities here, using dailyActivities
-    // If dailyActivities is empty, display a message
-    if (dailyActivities.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Text(
-                text = "No activities for this date",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(16.dp).testTag("NoActivitiesMessage").align(Alignment.Center))
-            IconButton(
-                onClick = { refreshFunction() },
-                modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
-                content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
-        }
-    } else {
-        // Display the activities for the selected date
-        val lazyColumn =
-            @Composable {
-                LazyColumn(
-                    content = {
-                        items(dailyActivities.sortedBy { it.startTime }) { stop ->
-                            ActivityItem(stop, onActivityItemClick)
-                        }
-                    })
-            }
-        PullToRefreshLazyColumn(lazyColumn, { refreshFunction() })
+  // Display daily activities here, using dailyActivities
+  // If dailyActivities is empty, display a message
+  if (dailyActivities.isEmpty()) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      Text(
+          text = "No activities for this date",
+          style = MaterialTheme.typography.bodyLarge,
+          color = MaterialTheme.colorScheme.secondary,
+          modifier = Modifier.padding(16.dp).testTag("NoActivitiesMessage").align(Alignment.Center))
+      IconButton(
+          onClick = { refreshFunction() },
+          modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+          content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
     }
+  } else {
+    // Display the activities for the selected date
+    val lazyColumn =
+        @Composable {
+          LazyColumn(
+              content = {
+                items(dailyActivities.sortedBy { it.startTime }) { stop ->
+                  ActivityItem(stop, onActivityItemClick)
+                }
+              })
+        }
+    PullToRefreshLazyColumn(lazyColumn, { refreshFunction() })
+  }
 }
 
 /**
@@ -108,23 +108,22 @@ fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (Stri
  */
 @Composable
 fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
-    val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
-    Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
-        Button(
-            onClick = { onActivityClick(stop.stopId) },
-            shape = RectangleShape,
-            modifier =
+  val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
+  Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
+    Button(
+        onClick = { onActivityClick(stop.stopId) },
+        shape = RectangleShape,
+        modifier =
             Modifier.height(100.dp).fillMaxWidth().testTag("activityItemButton" + stop.stopId),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-            Row(modifier = Modifier.fillMaxSize()) {
-                // Texts Column
-                Column(
-                    modifier =
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+          Row(modifier = Modifier.fillMaxSize()) {
+            // Texts Column
+            Column(
+                modifier =
                     Modifier.weight(
-                        1f) // Takes up all available space, pushing the IconButton to the right
+                            1f) // Takes up all available space, pushing the IconButton to the right
                         .align(Alignment.CenterVertically) // Vertically center the column content
                         .fillMaxSize(), // Fill the available space
-
                 verticalArrangement = Arrangement.SpaceEvenly) {
                   Text(
                       text = stop.title,
@@ -152,10 +151,10 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTime" + stop.stopId))
-                    if (stopHasLocation) {
-                        Text(
-                            text = stop.address,
-                            style =
+                  if (stopHasLocation) {
+                    Text(
+                        text = stop.address,
+                        style =
                             TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 20.sp,
@@ -165,25 +164,25 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                         modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
                                 .testTag("ActivityAddress" + stop.stopId))
-                    }
+                  }
                 }
 
-                // Icon Button at the far right, centered vertically
-                IconButton(
-                    onClick = {
-                        if (stopHasLocation) {
-                            navigationActions.setVariablesLocation(stop.geoCords, stop.address)
-                            navigationActions.navigateTo(Route.MAP)
-                        }
-                    },
-                    modifier =
+            // Icon Button at the far right, centered vertically
+            IconButton(
+                onClick = {
+                  if (stopHasLocation) {
+                    navigationActions.setVariablesLocation(stop.geoCords, stop.address)
+                    navigationActions.navigateTo(Route.MAP)
+                  }
+                },
+                modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
                         .align(Alignment.CenterVertically)
                         .testTag(
                             "navigationToMapButton" +
-                                    stop.stopId), // Center the IconButton vertically within the
-                    enabled = stopHasLocation
-                    // Row
+                                stop.stopId), // Center the IconButton vertically within the
+                enabled = stopHasLocation
+                // Row
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
@@ -193,19 +192,19 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                       contentDescription = null // Provide an appropriate content description
                       )
                 }
-            }
+          }
         }
-    }
+  }
 
-    // the horizontal divider
-    Box(
-        modifier =
-        Modifier.fillMaxWidth(), // This ensures the box takes the full width of its container
-        contentAlignment = Alignment.Center // This will center the content inside the box
-    ) {
+  // the horizontal divider
+  Box(
+      modifier =
+          Modifier.fillMaxWidth(), // This ensures the box takes the full width of its container
+      contentAlignment = Alignment.Center // This will center the content inside the box
+      ) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(), // Customize this width as needed
             thickness = 1.dp,
             color = outlineVariantLight)
-    }
+      }
 }

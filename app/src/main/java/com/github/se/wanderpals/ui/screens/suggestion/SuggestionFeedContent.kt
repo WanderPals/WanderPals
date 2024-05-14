@@ -114,7 +114,10 @@ fun SuggestionFeedContent(
     SuggestionFilterOptions { selectedCriteria -> selectedFilterCriteria = selectedCriteria }
 
     // If suggestion list is empty, display a message
-    if (suggestionList.isEmpty() || suggestionList.none { it.stopStatus == CalendarUiState.StopStatus.NONE }) { // if there are no suggestions or if all suggestions are added to stops
+    if (suggestionList.isEmpty() ||
+        suggestionList.none {
+          it.stopStatus == CalendarUiState.StopStatus.NONE
+        }) { // if there are no suggestions or if all suggestions are added to stops
       Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier =
@@ -148,7 +151,11 @@ fun SuggestionFeedContent(
                 val addedToStops =
                     suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
                 val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-                if (!isSuggestionAddedToStop && suggestion.stopStatus == CalendarUiState.StopStatus.NONE) { // if the suggestion is not added to a stop (stopStatus is NONE)
+                if (!isSuggestionAddedToStop &&
+                    suggestion.stopStatus ==
+                        CalendarUiState.StopStatus
+                            .NONE) { // if the suggestion is not added to a stop (stopStatus is
+                                     // NONE)
                   SuggestionItem(
                       suggestion = suggestion,
                       onClick = {

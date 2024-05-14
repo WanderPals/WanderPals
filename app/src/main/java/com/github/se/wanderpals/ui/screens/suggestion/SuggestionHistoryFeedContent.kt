@@ -25,21 +25,11 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
-import com.github.se.wanderpals.ui.navigation.NavigationActions
-import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
-import com.github.se.wanderpals.ui.theme.WanderPalsTheme
-import com.github.se.wanderpals.ui.theme.primaryLight
-import com.github.se.wanderpals.ui.theme.scrimLight
-import kotlinx.coroutines.Dispatchers
-import java.time.LocalDateTime
 
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
@@ -47,119 +37,108 @@ import java.time.LocalDateTime
  *
  * @param tripId The ID of the trip.
  * @param suggestionsViewModel The ViewModel for managing suggestions.
- * @param navigationActions The navigation actions for the screen.
  */
 @Composable
-fun SuggestionHistoryFeedContent(
-    tripId: String,
-    suggestionsViewModel: SuggestionsViewModel,
-    navigationActions: NavigationActions
-) {
+fun SuggestionHistoryFeedContent(tripId: String, suggestionsViewModel: SuggestionsViewModel) {
 
-    // Observe the state of the suggestions list from the ViewModel
-    val suggestions = suggestionsViewModel.state.collectAsState().value
+  // Observe the state of the suggestions list from the ViewModel
+  val suggestions = suggestionsViewModel.state.collectAsState().value
 
-    // Filter suggestions that have been added as stops
-    val addedSuggestions = suggestions.filter {
-        it.stopStatus == CalendarUiState.StopStatus.ADDED
-    }
+  // Filter suggestions that have been added as stops
+  val addedSuggestions = suggestions.filter { it.stopStatus == CalendarUiState.StopStatus.ADDED }
 
-    Column(modifier = Modifier
-        .fillMaxWidth()) {
+  Column(modifier = Modifier.fillMaxWidth()) {
 
-        // Title for the list of suggestions
-        Text(
-            text = "Suggestion History",
-            modifier = Modifier.padding(start = 27.dp, top = 15.dp),
-            style =
+    // Title for the list of suggestions
+    Text(
+        text = "Suggestion History",
+        modifier = Modifier.padding(start = 27.dp, top = 15.dp),
+        style =
             TextStyle(
                 fontSize = 20.sp,
                 lineHeight = 24.sp,
                 fontWeight = FontWeight(500),
                 color = MaterialTheme.colorScheme.primary,
                 letterSpacing = 0.2.sp),
-            textAlign = TextAlign.Center)
+        textAlign = TextAlign.Center)
 
-        // Trigger data fetch when selectedDate changes
-        LaunchedEffect(tripId) { suggestionsViewModel.loadSuggestion(tripId) }
+    // Trigger data fetch when selectedDate changes
+    LaunchedEffect(tripId) { suggestionsViewModel.loadSuggestion(tripId) }
 
-        // While waiting for the data to load, display a loading spinner:
-        val isLoading by suggestionsViewModel.isLoading.collectAsState()
-        if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    modifier =
-                    Modifier
-                        .width(260.dp)
-                        .height(55.dp)
-                        .align(Alignment.Center)
-                        .testTag("suggestionHistoryLoading"),
-                    text = "Loading...",
-                    style =
-                    TextStyle(
-                        lineHeight = 20.sp,
-                        letterSpacing = 0.5.sp,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight(500),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.scrim),
-                )
-                IconButton(
-                    onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(top = 60.dp),
-                    content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History") })
-            }
-        }
-
-        // If suggestion list is empty, display a message
-        if (addedSuggestions.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Text(
-                    modifier =
-                    Modifier
-                        .width(260.dp)
-                        .height(55.dp)
-                        .align(Alignment.Center)
-                        .testTag("noSuggestionsForUserText"),
-                    text = "No added stops yet. ",
-                    style =
-                    TextStyle(
-                        lineHeight = 20.sp,
-                        letterSpacing = 0.5.sp,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight(500),
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.scrim),
-                )
-                IconButton(
-                    onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(top = 60.dp),
-                    content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History") })
-            }
-        } else {
-            // this lazycolumn has all the suggestions that are added to stops
-            val lazyColumn =
-                @Composable {
-                    LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
-                        itemsIndexed(addedSuggestions) { index, suggestion ->
-                            if (suggestion.stopStatus== CalendarUiState.StopStatus.ADDED) {
-
-                                SuggestionHistoryItem(
-                                    suggestion = suggestion,
-                                    modifier = Modifier.testTag("suggestion${index + 1}"),
-                                    tripId = tripId,
-                                    viewModel = suggestionsViewModel
-                                )
-                            }
-                        }
-                    }
-                }
-            PullToRefreshLazyColumn(
-                inputLazyColumn = lazyColumn, onRefresh = { suggestionsViewModel.loadSuggestion(tripId) })
-        }
+    // While waiting for the data to load, display a loading spinner:
+    val isLoading by suggestionsViewModel.isLoading.collectAsState()
+    if (isLoading) {
+      Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            modifier =
+                Modifier.width(260.dp)
+                    .height(55.dp)
+                    .align(Alignment.Center)
+                    .testTag("suggestionHistoryLoading"),
+            text = "Loading...",
+            style =
+                TextStyle(
+                    lineHeight = 20.sp,
+                    letterSpacing = 0.5.sp,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(500),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.scrim),
+        )
+        IconButton(
+            onClick = { suggestionsViewModel.loadSuggestion(tripId) },
+            modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+            content = {
+              Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History")
+            })
+      }
     }
+
+    // If suggestion list is empty, display a message
+    if (addedSuggestions.isEmpty()) {
+      Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            modifier =
+                Modifier.width(260.dp)
+                    .height(55.dp)
+                    .align(Alignment.Center)
+                    .testTag("noSuggestionsHistoryToDisplay"),
+            text = "No added stops yet. ",
+            style =
+                TextStyle(
+                    lineHeight = 20.sp,
+                    letterSpacing = 0.5.sp,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight(500),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.scrim),
+        )
+        IconButton(
+            onClick = { suggestionsViewModel.loadSuggestion(tripId) },
+            modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+            content = {
+              Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History")
+            })
+      }
+    } else {
+      // this lazycolumn has all the suggestions that are added to stops
+      val lazyColumn =
+          @Composable {
+            LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
+              itemsIndexed(addedSuggestions) { index, suggestion ->
+                if (suggestion.stopStatus == CalendarUiState.StopStatus.ADDED) {
+
+                  SuggestionHistoryItem(
+                      suggestion = suggestion,
+                      modifier = Modifier.testTag("suggestionHistory${index + 1}"),
+                      tripId = tripId,
+                      viewModel = suggestionsViewModel)
+                }
+              }
+            }
+          }
+      PullToRefreshLazyColumn(
+          inputLazyColumn = lazyColumn, onRefresh = { suggestionsViewModel.loadSuggestion(tripId) })
+    }
+  }
 }

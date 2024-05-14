@@ -39,45 +39,45 @@ fun Suggestion(
     onSuggestionClick: () -> Unit
 ) {
 
-    LaunchedEffect(Unit) {
-        // Fetch all suggestions for the trip
-        suggestionsViewModel.loadSuggestion(tripId)
-    }
+  LaunchedEffect(Unit) {
+    // Fetch all suggestions for the trip
+    suggestionsViewModel.loadSuggestion(tripId)
+  }
 
-    // get the suggestion list from the firebase database
-    val suggestionList by suggestionsViewModel.state.collectAsState()
+  // get the suggestion list from the firebase database
+  val suggestionList by suggestionsViewModel.state.collectAsState()
 
-    // State for managing search suggestion text (the filter)
-    var searchSuggestionText by remember { mutableStateOf("") }
+  // State for managing search suggestion text (the filter)
+  var searchSuggestionText by remember { mutableStateOf("") }
 
-    // State for managing the loading state
-    val isLoading by suggestionsViewModel.isLoading.collectAsState()
+  // State for managing the loading state
+  val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
-    Scaffold(
-        modifier = Modifier.testTag("suggestionFeedScreen"),
-        topBar = {
-            // Top bar with search functionality based on the title of the trips
-            SuggestionTopBar(
-                searchSuggestionText = searchSuggestionText,
-                onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-                    searchSuggestionText = newSearchSuggestionText
-                },
-                onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
-        },
-        bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding ->
+  Scaffold(
+      modifier = Modifier.testTag("suggestionFeedScreen"),
+      topBar = {
+        // Top bar with search functionality based on the title of the trips
+        SuggestionTopBar(
+            searchSuggestionText = searchSuggestionText,
+            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+              searchSuggestionText = newSearchSuggestionText
+            },
+            onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
+      },
+      bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding ->
         if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
-            }
+          Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+          }
         } else {
-            SuggestionFeedContent(
-                innerPadding = innerPadding,
-                suggestionList = suggestionList,
-                searchSuggestionText = searchSuggestionText,
-                tripId = tripId,
-                suggestionsViewModel = suggestionsViewModel,
-                navigationActions = oldNavActions)
+          SuggestionFeedContent(
+              innerPadding = innerPadding,
+              suggestionList = suggestionList,
+              searchSuggestionText = searchSuggestionText,
+              tripId = tripId,
+              suggestionsViewModel = suggestionsViewModel,
+              navigationActions = oldNavActions)
         }
-    }
+      }
 }

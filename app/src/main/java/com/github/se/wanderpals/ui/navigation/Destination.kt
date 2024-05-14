@@ -54,5 +54,6 @@ val TRIP_DESTINATIONS =
         Destination(route = Route.STOPS_LIST, icon = Icons.Default.Menu, text = "Stops List"),
         Destination(route = Route.EXPENSE_INFO, icon = Icons.Default.Create, text = "Expense info"),
         Destination(
-            route = Route.SUGGESTION_HISTORY, icon = Icons.Default.Menu, text = "Suggestion History")
-    )
+            route = Route.SUGGESTION_HISTORY,
+            icon = Icons.Default.Menu,
+            text = "Suggestion History"))

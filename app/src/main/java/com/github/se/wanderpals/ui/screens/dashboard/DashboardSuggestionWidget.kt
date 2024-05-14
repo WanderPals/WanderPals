@@ -94,7 +94,10 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
 
           Spacer(modifier = Modifier.padding(6.dp))
 
-          if (sortedSuggestion.isEmpty() || sortedSuggestion.none { it.stopStatus == CalendarUiState.StopStatus.NONE }) { // if there are no suggestions or if all suggestions are added to stops
+          if (sortedSuggestion.isEmpty() ||
+              sortedSuggestion.none {
+                it.stopStatus == CalendarUiState.StopStatus.NONE
+              }) { // if there are no suggestions or if all suggestions are added to stops
             Column(
                 modifier =
                     Modifier.fillMaxWidth()
@@ -109,14 +112,15 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
                       modifier = Modifier.testTag("noSuggestions"))
                 }
           } else {
-              sortedSuggestion.filter { it.stopStatus == CalendarUiState.StopStatus.NONE }
-                  .take(DISPLAY_COUNT)
-                  .forEachIndexed { index, suggestion ->
-                      SuggestionItem(suggestion = suggestion)
-                      if (index < DISPLAY_COUNT - 1) {
-                          Spacer(modifier = Modifier.height(8.dp))  // Add space between items
-                      }
+            sortedSuggestion
+                .filter { it.stopStatus == CalendarUiState.StopStatus.NONE }
+                .take(DISPLAY_COUNT)
+                .forEachIndexed { index, suggestion ->
+                  SuggestionItem(suggestion = suggestion)
+                  if (index < DISPLAY_COUNT - 1) {
+                    Spacer(modifier = Modifier.height(8.dp)) // Add space between items
                   }
+                }
           }
         }
       }
