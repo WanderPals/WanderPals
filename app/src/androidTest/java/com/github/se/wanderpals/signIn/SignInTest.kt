@@ -1,6 +1,8 @@
 package com.github.se.wanderpals.signIn
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.MainActivity
@@ -36,7 +38,7 @@ class LoginTest : TestCase() {
         performClick()
       }
 
-      // intended(toPackage("com.google.android.gms"))
+      intended(toPackage("com.google.android.gms"))
     }
   }
 }
