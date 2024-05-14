@@ -41,6 +41,7 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.config.GservicesValue.isInitialized
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -127,6 +128,13 @@ class MainActivity : ComponentActivity() {
           }
         }
       }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    if (::mapManager.isInitialized) {
+      mapManager.executeLocationIntentStop()
+    }
+  }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
