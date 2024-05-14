@@ -1,6 +1,7 @@
 package com.github.se.wanderpals
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ContentValues.TAG
@@ -49,7 +50,6 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.config.GservicesValue.isInitialized
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
@@ -62,7 +62,7 @@ import kotlinx.coroutines.runBlocking
 const val EMPTY_CODE = ""
 
 lateinit var navigationActions: NavigationActions
-lateinit var mapManager: MapManager
+@SuppressLint("StaticFieldLeak") lateinit var mapManager: MapManager
 
 class MainActivity : ComponentActivity() {
 
@@ -205,7 +205,6 @@ class MainActivity : ComponentActivity() {
 
                     Log.d(TAG, token)
                   })
-          // showNotification()
 
           navigationActions =
               NavigationActions(
@@ -243,7 +242,6 @@ class MainActivity : ComponentActivity() {
                         FirebaseAuth.getInstance()
                             .signInAnonymously()
                             .addOnSuccessListener { result ->
-                              Log.d("Auth2", result.credential.toString())
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
                               networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
