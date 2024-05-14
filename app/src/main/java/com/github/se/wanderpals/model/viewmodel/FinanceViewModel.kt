@@ -48,7 +48,12 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     viewModelScope.launch { _users.value = tripsRepository.getAllUsersFromTrip(tripId) }
   }
 
-  /** Adds an expense to the trip. */
+  /**
+   * Adds an expense to a specified trip.
+   *
+   * @param tripId The ID of the trip to which to add the expense.
+   * @param expense The Expense object to add.
+   */
   open fun addExpense(tripId: String, expense: Expense) {
     runBlocking {
       tripsRepository.addExpenseToTrip(tripId, expense)}
@@ -59,7 +64,11 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
         }
   }
 
-
+  /**
+   * Deletes a specific expense from a trip.
+   *
+   * @param expense The Expense object to delete.
+   */
   open fun deleteExpense(expense: Expense) {
     runBlocking { tripsRepository.removeExpenseFromTrip(tripId, expense.expenseId) }
     viewModelScope.launch {
@@ -68,6 +77,8 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     setShowDeleteDialogState(false)
   }
 
+
+  /** Setter functions*/
   open fun setShowDeleteDialogState(value: Boolean) {
     _showDeleteDialog.value = value
   }
