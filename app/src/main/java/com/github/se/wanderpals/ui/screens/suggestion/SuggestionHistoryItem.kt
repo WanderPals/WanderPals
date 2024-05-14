@@ -209,7 +209,8 @@ fun SuggestionHistoryItem(
                               .padding(
                                   end = 4.dp) // 4.dp is the space between the icon and the text
                               .testTag(
-                                  "staticCommentIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
+                                  "staticCommentIconSuggestionHistoryFeedScreen" +
+                                      suggestion.suggestionId))
 
                   Text(
                       text = "${suggestion.comments.size}",

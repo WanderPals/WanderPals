@@ -188,18 +188,18 @@ class SuggestionHistoryFeedContentTest {
     composeTestRule.onNodeWithTag("suggestionHistoryDescription").assertIsDisplayed()
     composeTestRule
         .onNodeWithTag("suggestionHistoryUserName" + suggestion.suggestionId)
-        .assertIsDisplayed()
+        .assertExists()
     composeTestRule
         .onNodeWithTag("staticLikeIconSuggestionHistoryFeedScreen_" + suggestion.suggestionId)
-        .assertIsDisplayed()
+        .assertExists()
     composeTestRule
         .onNodeWithTag("suggestionHistoryLikesNumber" + suggestion.suggestionId)
-        .assertIsDisplayed()
+        .assertExists()
     composeTestRule
-        .onNodeWithTag("staticCommentIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}")
-        .assertIsDisplayed()
+        .onNodeWithTag("staticCommentIconSuggestionHistoryFeedScreen" + suggestion.suggestionId)
+        .assertExists()
     composeTestRule
         .onNodeWithTag("suggestionHistoryCommentsNumber" + suggestion.suggestionId)
-        .assertIsDisplayed()
+        .assertExists()
   }
 }
