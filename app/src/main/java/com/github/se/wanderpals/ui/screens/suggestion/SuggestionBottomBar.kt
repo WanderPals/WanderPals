@@ -39,7 +39,7 @@ fun SuggestionBottomBar(
               modifier =
                   Modifier.padding(start = 27.dp) // Add padding to the start of the screen
                       .height(64.dp) // Set the height to 56.dp to make it a square
-                      .testTag("suggestionButtonExists"),
+                      .testTag("suggestionHistoryButtonExists"),
               shape = RoundedCornerShape(size = 16.dp),
               colors =
                   ButtonDefaults.buttonColors(
