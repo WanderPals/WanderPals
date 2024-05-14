@@ -195,22 +195,21 @@ fun Notification(
                           notification = item,
                           onNotificationItemClick = {
                             if (item.route.isNotEmpty()) {
-                              if (item.navActionVariables.isNotEmpty()) {
-                                navigationActions.deserializeNavigationVariables(
-                                    item.navActionVariables)
-                                if (item.route == Route.SUGGESTION_DETAIL) {
-                                  // Load suggestion for navigation
-                                  notificationsViewModel.getSuggestion(
-                                      navigationActions.variables.suggestionId)
+                                if (item.navActionVariables.isNotEmpty()) {
+                                    navigationActions.deserializeNavigationVariables(
+                                        item.navActionVariables)
+                                    when (item.route) {
+                                        Route.SUGGESTION_DETAIL -> notificationsViewModel.getSuggestion(
+                                            navigationActions.variables.suggestionId
+                                        )
+
+                                        Route.EXPENSE_INFO -> notificationsViewModel.getExpense(
+                                            navigationActions.variables.expense.expenseId
+                                        )
+                                    }
+                                }else{
+                                    navigationActions.navigateTo(item.route)
                                 }
-                                if(item.route == Route.EXPENSE_INFO){
-                                    notificationsViewModel.getExpense(
-                                        navigationActions.variables.expense.expenseId)
-                                }
-                              }
-                              else if (item.route != Route.SUGGESTION_DETAIL && item.route != Route.EXPENSE_INFO) {
-                                navigationActions.navigateTo(item.route)
-                              }
                             }
                           })
                     }
