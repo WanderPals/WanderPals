@@ -7,7 +7,6 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.NotificationsManager
-import com.github.se.wanderpals.ui.navigation.NavigationActions
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,7 +30,6 @@ class FinanceViewModelTest {
   private lateinit var mockTripsRepository: TripsRepository
   private val testDispatcher = StandardTestDispatcher()
   private val tripId = "tripId"
-
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Before
