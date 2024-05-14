@@ -203,6 +203,7 @@ fun Map(
     Log.d("MapManager", "Position: $positionFromServices")
     if (positionFromServices != LatLng(0.0, 0.0)) {
       mapViewModel.updateLastPosition(positionFromServices)
+      mapViewModel.getAllUsersPositions()
     }
   }
 
