@@ -127,7 +127,6 @@ object NotificationsManager {
     val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
     val navActionVariables = ""
     val route = Route.STOPS_LIST
-
     val newNotif =
         TripNotification(
             "A new stop has been added for ${stop.date.format(
