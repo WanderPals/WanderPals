@@ -41,6 +41,11 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   private val _selectedAnnouncementId = MutableStateFlow("")
   val selectedAnnouncementID: StateFlow<String> = _selectedAnnouncementId.asStateFlow()
 
+  private val _currentSuggestion = MutableStateFlow<Suggestion?>(null)
+  val currentSuggestion: StateFlow<Suggestion?> = _currentSuggestion.asStateFlow()
+
+  private val _isSuggestionReady = MutableStateFlow(false)
+  val isSuggestionReady: StateFlow<Boolean> = _isSuggestionReady.asStateFlow()
   /**
    * Updates the state lists of notifications and announcements by launching a coroutine within the
    * viewModel scope.
@@ -57,10 +62,16 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     }
   }
 
-  open fun getSuggestion(suggestionId: String): Suggestion {
-    var suggestion: Suggestion
-    runBlocking { suggestion = tripsRepository.getSuggestionFromTrip(tripId, suggestionId)!! }
-    return suggestion
+  open fun getSuggestion(suggestionId: String) {
+    viewModelScope.launch {
+      val suggestion = tripsRepository.getSuggestionFromTrip(tripId, suggestionId)
+      _currentSuggestion.value = suggestion
+      _isSuggestionReady.value = true
+    }
+  }
+
+  open fun resetIsLoadingSuggestion() {
+    _isSuggestionReady.value = false
   }
 
   /**

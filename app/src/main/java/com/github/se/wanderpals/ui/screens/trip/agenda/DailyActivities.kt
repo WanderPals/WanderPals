@@ -160,8 +160,8 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                                 lineHeight = 20.sp,
                                 fontWeight = FontWeight(500),
                                 letterSpacing = 0.16.sp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier =
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
                                 .testTag("ActivityAddress" + stop.stopId))
                     }
@@ -184,13 +184,13 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                     enabled = stopHasLocation
                     // Row
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        tint =
-                        if (stopHasLocation) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                        contentDescription = null // Provide an appropriate content description
-                    )
+                  Icon(
+                      imageVector = Icons.Default.LocationOn,
+                      tint =
+                          if (stopHasLocation) MaterialTheme.colorScheme.primary
+                          else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                      contentDescription = null // Provide an appropriate content description
+                      )
                 }
             }
         }

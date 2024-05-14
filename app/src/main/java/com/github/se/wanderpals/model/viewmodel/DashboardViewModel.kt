@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 open class DashboardViewModel(
     private val tripsRepository: TripsRepository,
@@ -51,7 +50,7 @@ open class DashboardViewModel(
 
   open fun loadTripTitle(tripId: String) {
     // Get the title of the trip
-    runBlocking { _tripTitle.value = tripsRepository.getTrip(tripId)?.title ?: "" }
+    viewModelScope.launch { _tripTitle.value = tripsRepository.getTrip(tripId)?.title ?: "" }
   }
 
   open fun deleteTrip() {

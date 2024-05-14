@@ -6,13 +6,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -63,9 +61,6 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
 
-  val showDeleteDialog by financeViewModel.showDeleteDialog.collectAsState()
-  val selectedExpense by financeViewModel.selectedExpense.collectAsState()
-
   LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
 
   Scaffold(
@@ -104,7 +99,10 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                 innerPadding = innerPadding,
                 expenseList = expenseList,
                 onRefresh = { financeViewModel.updateStateLists() },
-                onExpenseItemClick = { financeViewModel.showDeleteDialog(it) })
+                onExpenseItemClick = {
+                  navigationActions.setVariablesExpense(it)
+                  navigationActions.navigateTo(Route.EXPENSE_INFO)
+                })
           }
           FinanceOption.CATEGORIES -> {
             CategoryContent(
@@ -120,30 +118,6 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
               )
             }
           }
-        }
-
-        if (showDeleteDialog) {
-          AlertDialog(
-              onDismissRequest = { financeViewModel.hideDeleteDialog() },
-              title = { Text("Confirm Deletion") },
-              text = {
-                Text("Are you sure you want to delete this expense? \"${selectedExpense!!.title}\"")
-              },
-              confirmButton = {
-                TextButton(
-                    onClick = { financeViewModel.deleteExpense(selectedExpense!!) },
-                    modifier = Modifier.testTag("confirmDeleteExpenseButton")) {
-                      Text("Confirm", color = Color.Red)
-                    }
-              },
-              dismissButton = {
-                TextButton(
-                    onClick = { financeViewModel.hideDeleteDialog() },
-                    modifier = Modifier.testTag("cancelDeleteExpenseButton")) {
-                      Text("Cancel")
-                    }
-              },
-              modifier = Modifier.testTag("deleteExpenseDialog"))
         }
       }
 }
