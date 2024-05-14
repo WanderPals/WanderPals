@@ -2,7 +2,6 @@ package com.github.se.wanderpals.ui.screens.suggestion
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -149,12 +148,8 @@ fun SuggestionHistoryFeedContent(
                         itemsIndexed(addedSuggestions) { index, suggestion ->
                             if (suggestion.stopStatus== CalendarUiState.StopStatus.ADDED) {
 
-                                SuggestionItem(
+                                SuggestionHistoryItem(
                                     suggestion = suggestion,
-                                    onClick = {
-                                        navigationActions.setVariablesSuggestion(suggestion)
-                                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL) // Navigate to the suggestion detail screen
-                                    }, // This lambda is passed to the SuggestionItem composable
                                     modifier = Modifier.testTag("suggestion${index + 1}"),
                                     tripId = tripId,
                                     viewModel = suggestionsViewModel
