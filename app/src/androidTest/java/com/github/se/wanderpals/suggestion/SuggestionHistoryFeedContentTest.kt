@@ -10,8 +10,11 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionHistoryFeedContent
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionHistoryItem
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
+import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
+import java.time.LocalTime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.Before
@@ -134,5 +137,69 @@ class SuggestionHistoryFeedContentTest {
     }
 
     composeTestRule.onNodeWithTag("noSuggestionsHistoryToDisplay").assertIsDisplayed()
+  }
+
+  /**
+   * A test to verify that the SuggestionHistoryItem composable displays the correct information for
+   * a suggestion history item.
+   */
+  @Test
+  fun testSuggestionHistoryItem_DisplaysCorrectData() {
+    val stop =
+        Stop(
+            stopId = "stop1",
+            title = "First Stop",
+            description = "Description for first stop",
+            geoCords = GeoCords(37.7749, -122.4194),
+            date = LocalDate.of(2024, 4, 16),
+            startTime = LocalTime.of(12, 0),
+            duration = 60)
+
+    val suggestion =
+        Suggestion(
+            suggestionId = "sugg1",
+            userName = "User1",
+            stop = stop,
+            createdAt = LocalDate.now(),
+            stopStatus = CalendarUiState.StopStatus.ADDED)
+
+    val fakeViewModel =
+        FakeSuggestionsViewModel().apply { updateSuggestionList(listOf(suggestion)) }
+
+    composeTestRule.setContent {
+      WanderPalsTheme {
+        SuggestionHistoryItem(
+            suggestion = suggestion,
+            tripId = "dummyTripId",
+            viewModel = fakeViewModel,
+            modifier = androidx.compose.ui.Modifier)
+      }
+    }
+
+    composeTestRule.onNodeWithTag("suggestionHistory").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("suggestionHistoryTitle").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("suggestionHistoryCreatedAt").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionHistoryStart" + suggestion.suggestionId)
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionHistoryEnd" + suggestion.suggestionId)
+        .assertIsDisplayed()
+    composeTestRule.onNodeWithTag("suggestionHistoryDescription").assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionHistoryUserName" + suggestion.suggestionId)
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("staticLikeIconSuggestionHistoryFeedScreen_" + suggestion.suggestionId)
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionHistoryLikesNumber" + suggestion.suggestionId)
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("staticCommentIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}")
+        .assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("suggestionHistoryCommentsNumber" + suggestion.suggestionId)
+        .assertIsDisplayed()
   }
 }

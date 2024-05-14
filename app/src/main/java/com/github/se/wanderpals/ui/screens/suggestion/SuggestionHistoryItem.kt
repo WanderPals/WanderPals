@@ -65,7 +65,8 @@ fun SuggestionHistoryItem(
               .padding(start = 27.dp, end = 27.dp, top = 16.dp, bottom = 16.dp)
               .fillMaxWidth()
               .height(166.dp)
-              .border(width = 1.dp, color = surfaceVariantLight, shape = RoundedCornerShape(10.dp)),
+              .border(width = 1.dp, color = surfaceVariantLight, shape = RoundedCornerShape(10.dp))
+              .testTag("suggestionHistory"),
       colors = cardColors) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
           Row(modifier = Modifier.fillMaxWidth()) {
@@ -79,7 +80,8 @@ fun SuggestionHistoryItem(
                           fontWeight = FontWeight(500),
                           color = primaryLight,
                           letterSpacing = 0.15.sp,
-                      ))
+                      ),
+                  modifier = Modifier.testTag("suggestionHistoryTitle"))
               Spacer(modifier = Modifier.height(4.dp))
               Text(
                   text = suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
@@ -90,7 +92,8 @@ fun SuggestionHistoryItem(
                           fontWeight = FontWeight(500),
                           color = secondaryLight,
                           letterSpacing = 0.14.sp,
-                      ))
+                      ),
+                  modifier = Modifier.testTag("suggestionHistoryCreatedAt"))
             }
             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
               val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
@@ -128,7 +131,8 @@ fun SuggestionHistoryItem(
                   Modifier.fillMaxWidth()
                       .height(55.dp)
                       .background(backgroundLight, RoundedCornerShape(10.dp))
-                      .padding(8.dp)) {
+                      .padding(8.dp)
+                      .testTag("suggestionHistoryDescription")) {
                 Text(
                     text = suggestion.stop.description,
                     style =
@@ -159,7 +163,9 @@ fun SuggestionHistoryItem(
                             fontWeight = FontWeight(500),
                             color = tertiaryLight,
                             letterSpacing = 0.14.sp,
-                        ))
+                        ),
+                    modifier =
+                        Modifier.testTag("suggestionHistoryUserName" + suggestion.suggestionId))
 
                 Spacer(Modifier.weight(1f)) // push the icons to the right
 
@@ -184,7 +190,10 @@ fun SuggestionHistoryItem(
                               fontWeight = FontWeight(500),
                               color = tertiaryLight,
                               letterSpacing = 0.14.sp,
-                          ))
+                          ),
+                      modifier =
+                          Modifier.testTag(
+                              "suggestionHistoryLikesNumber" + suggestion.suggestionId))
 
                   Spacer(
                       modifier =
@@ -199,7 +208,8 @@ fun SuggestionHistoryItem(
                           Modifier.size(18.dp)
                               .padding(
                                   end = 4.dp) // 4.dp is the space between the icon and the text
-                      )
+                              .testTag(
+                                  "staticCommentIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
 
                   Text(
                       text = "${suggestion.comments.size}",
@@ -210,7 +220,10 @@ fun SuggestionHistoryItem(
                               fontWeight = FontWeight(500),
                               color = tertiaryLight,
                               letterSpacing = 0.14.sp,
-                          ))
+                          ),
+                      modifier =
+                          Modifier.testTag(
+                              "suggestionHistoryCommentsNumber" + suggestion.suggestionId))
                 }
               }
         }
