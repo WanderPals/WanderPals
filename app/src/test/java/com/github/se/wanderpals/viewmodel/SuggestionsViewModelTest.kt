@@ -238,6 +238,9 @@ class SuggestionsViewModelTest {
         assertEquals(!initialLikeStatus, viewModel.getIsLiked(suggestion.suggestionId))
       }
 
+  /**
+   * Test the toggle like suggestion method with a majority check with the stop status set to ADDED.
+   */
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun testToggleLikeSuggestionWithMajorityCheck() =
