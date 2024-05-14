@@ -57,7 +57,7 @@ fun SuggestionBottomBar(
               onClick = { onSuggestionClick() },
               modifier =
                   Modifier // .align(Alignment.BottomEnd) // Align the button to the bottom end of
-                           // the screen
+                      // the screen
                       .padding(end = 27.dp) // Add padding to the end of the screen
                       .height(64.dp) // Set the height to 56.dp to make it a square
                       .testTag("suggestionButtonExists"),
