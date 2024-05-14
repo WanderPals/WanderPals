@@ -290,7 +290,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun suggestionButtonExists_isDisplayed() {
     composeTestRule.setContent {
       // Place the SuggestionBottomBar composable within the test context
-      SuggestionBottomBar(onSuggestionClick = {})
+      SuggestionBottomBar(onSuggestionClick = {}, onHistoryClick = {})
     }
 
     // Now check if the button with the testTag "suggestionButtonExists" is displayed
@@ -332,8 +332,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun suggestionSearchBar_ExistsAndIsDisplayed() {
     composeTestRule.setContent {
-      SuggestionTopBar(
-          searchSuggestionText = "", onSearchSuggestionTextChanged = {}, onHistoryClick = {})
+      SuggestionTopBar(searchSuggestionText = "", onSearchSuggestionTextChanged = {})
     }
 
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
@@ -348,8 +347,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun clearSuggestionSearchButton_ExistsAndIsDisplayedAndPerformsClick() {
     composeTestRule.setContent {
-      SuggestionTopBar(
-          searchSuggestionText = "test", onSearchSuggestionTextChanged = {}, onHistoryClick = {})
+      SuggestionTopBar(searchSuggestionText = "test", onSearchSuggestionTextChanged = {})
     }
 
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {

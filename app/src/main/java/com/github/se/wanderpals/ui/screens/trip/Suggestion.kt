@@ -61,10 +61,13 @@ fun Suggestion(
             searchSuggestionText = searchSuggestionText,
             onSearchSuggestionTextChanged = { newSearchSuggestionText ->
               searchSuggestionText = newSearchSuggestionText
-            },
-            onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
+            })
       },
-      bottomBar = { SuggestionBottomBar(onSuggestionClick = onSuggestionClick) }) { innerPadding ->
+      bottomBar = {
+        SuggestionBottomBar(
+            onSuggestionClick = onSuggestionClick,
+            onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
+      }) { innerPadding ->
         if (isLoading) {
           Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(

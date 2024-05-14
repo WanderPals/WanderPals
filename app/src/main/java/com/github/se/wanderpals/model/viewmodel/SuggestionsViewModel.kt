@@ -312,10 +312,7 @@ open class SuggestionsViewModel(
           suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)
 
           // Remove the suggestion from the trip's suggestion list
-          _state.value =
-              _state.value.filterNot {
-                it.suggestionId == suggestion.suggestionId
-              } // fixme: test three other combo
+          _state.value = _state.value.filterNot { it.suggestionId == suggestion.suggestionId }
           // Add the suggestion ID to the list of added stops
           _addedSuggestionsToStops.value += suggestion.suggestionId
 

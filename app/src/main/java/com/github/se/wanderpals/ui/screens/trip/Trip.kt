@@ -236,8 +236,7 @@ fun Trip(
                             SuggestionsViewModel.SuggestionsViewModelFactory(
                                 tripsRepository, tripId),
                         key = "SuggestionsHistoryViewModel")
-                SuggestionHistoryFeedContent(
-                    tripId = tripId, suggestionsViewModel = suggestionsViewModel)
+                SuggestionHistoryFeedContent(suggestionsViewModel)
               }
             }
       }

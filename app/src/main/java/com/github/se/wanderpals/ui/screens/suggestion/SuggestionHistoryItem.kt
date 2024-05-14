@@ -52,7 +52,6 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun SuggestionHistoryItem(
     suggestion: Suggestion,
-    tripId: String,
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier
 ) {

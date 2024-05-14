@@ -97,7 +97,7 @@ class SuggestionHistoryFeedContentTest {
         }
 
     composeTestRule.setContent {
-      SuggestionHistoryFeedContent(tripId = "dummyTripId", suggestionsViewModel = fakeViewModel)
+      SuggestionHistoryFeedContent(suggestionsViewModel = fakeViewModel)
     }
 
     composeTestRule.onNodeWithTag("suggestionHistoryFeedContentList").assertIsDisplayed()
@@ -114,10 +114,10 @@ class SuggestionHistoryFeedContentTest {
     val fakeViewModel = FakeSuggestionsViewModelForHistory().apply { setLoadingState(true) }
 
     composeTestRule.setContent {
-      SuggestionHistoryFeedContent(tripId = "dummyTripId", suggestionsViewModel = fakeViewModel)
+      SuggestionHistoryFeedContent(suggestionsViewModel = fakeViewModel)
     }
 
-    composeTestRule.onNodeWithTag("suggestionHistoryLoading").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("suggestionHistoryLoadingSpinner").assertIsDisplayed()
   }
 
   /**
@@ -133,7 +133,7 @@ class SuggestionHistoryFeedContentTest {
         }
 
     composeTestRule.setContent {
-      SuggestionHistoryFeedContent(tripId = "dummyTripId", suggestionsViewModel = fakeViewModel)
+      SuggestionHistoryFeedContent(suggestionsViewModel = fakeViewModel)
     }
 
     composeTestRule.onNodeWithTag("noSuggestionsHistoryToDisplay").assertIsDisplayed()
@@ -170,7 +170,6 @@ class SuggestionHistoryFeedContentTest {
       WanderPalsTheme {
         SuggestionHistoryItem(
             suggestion = suggestion,
-            tripId = "dummyTripId",
             viewModel = fakeViewModel,
             modifier = androidx.compose.ui.Modifier)
       }
