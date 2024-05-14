@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.notifications
 
-
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Announcement
