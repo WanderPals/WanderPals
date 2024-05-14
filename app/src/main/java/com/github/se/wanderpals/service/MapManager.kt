@@ -7,7 +7,6 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Looper
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.result.ActivityResultLauncher
 import com.github.se.wanderpals.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -43,7 +42,7 @@ import kotlinx.coroutines.tasks.await
  *
  * @param context The context of the activity.
  */
-class MapManager(private val context: ComponentActivity) {
+class MapManager(private val context: Context) {
 
   private val _position = MutableStateFlow(LatLng(0.0, 0.0))
   val position: Flow<LatLng> = _position.asStateFlow()
