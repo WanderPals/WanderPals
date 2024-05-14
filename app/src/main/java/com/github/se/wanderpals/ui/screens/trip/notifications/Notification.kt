@@ -88,7 +88,7 @@ fun Notification(
   val expense by notificationsViewModel.currentExpense.collectAsState()
   val isLoadingExpense by notificationsViewModel.isExpenseReady.collectAsState()
 
-  // navigation to suggestion fix
+
   LaunchedEffect(isLoadingSuggestion,isLoadingExpense) {
     if (isLoadingSuggestion) {
       navigationActions.variables.currentSuggestion = suggestion as Suggestion
