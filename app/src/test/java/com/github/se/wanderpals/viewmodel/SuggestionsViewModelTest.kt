@@ -265,7 +265,7 @@ class SuggestionsViewModelTest {
         // Set viewModel state before accessing it
         viewModel.loadSuggestion(
             tripId) // Ensure this method properly populates the state or directly set it for
-                    // testing:
+        // testing:
         coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns listOf(suggestion)
 
         // Trigger loading to ensure state is populated

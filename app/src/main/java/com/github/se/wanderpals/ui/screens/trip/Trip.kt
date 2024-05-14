@@ -228,9 +228,8 @@ fun Trip(
                   }
               composable(Route.SUGGESTION_HISTORY) {
                 oldNavActions.updateCurrentRouteOfTrip(
-                    Route
-                        .SUGGESTION_HISTORY) // Update the current route of the trip to
-                                             // SUGGESTION_HISTORY
+                    Route.SUGGESTION_HISTORY) // Update the current route of the trip to
+                // SUGGESTION_HISTORY
                 val suggestionsViewModel: SuggestionsViewModel =
                     viewModel(
                         factory =

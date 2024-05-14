@@ -155,7 +155,7 @@ fun SuggestionFeedContent(
                     suggestion.stopStatus ==
                         CalendarUiState.StopStatus
                             .NONE) { // if the suggestion is not added to a stop (stopStatus is
-                                     // NONE)
+                  // NONE)
                   SuggestionItem(
                       suggestion = suggestion,
                       onClick = {

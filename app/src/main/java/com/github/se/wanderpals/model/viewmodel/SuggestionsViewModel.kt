@@ -296,7 +296,7 @@ open class SuggestionsViewModel(
           !_addedSuggestionsToStops.value.contains(
               suggestion
                   .suggestionId)) { // If the suggestion has reached the majority of likes and has
-                                    // not been added as a stop yet
+        // not been added as a stop yet
 
         val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, suggestion.stop) ?: false
         if (wasStopAdded) {
