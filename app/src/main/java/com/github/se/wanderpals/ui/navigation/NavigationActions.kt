@@ -213,7 +213,8 @@ data class NavigationActions(
             "latitude: ${variables.currentGeoCords.latitude}",
             "longitude: ${variables.currentGeoCords.longitude}",
             "currentAddress: ${variables.currentAddress}",
-            "suggestionId: ${variables.suggestionId}")
+            "suggestionId: ${variables.suggestionId}",
+            "expenseId: ${variables.expense.expenseId}")
 
     return navActionsVariablesToString.joinToString("|")
   }
@@ -237,6 +238,7 @@ data class NavigationActions(
                 variables.currentGeoCords.copy(longitude = argVal.toDouble())
         "currentAddress" -> variables.currentAddress = argVal
         "suggestionId" -> variables.suggestionId = argVal
+        "expenseId" -> variables.expense = Expense(expenseId = argVal)
       }
     }
     this.variables = variables
