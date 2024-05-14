@@ -159,7 +159,7 @@ suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
 
   // Define the FCM access token
   val ACCESS_TOKEN =
-      "ya29.a0AXooCgtvi30CFhBmnuH_j0C5_ha1esYEfN_DC_N6WgP6OjUFIfxhC4Keujn9P7eaJTcBnINYURI0TMwducH_9u3wRX_VA0UpP--haui9eVamRocGrok9uZP26fIs2QGeEihLFZ6sDHuIQibeGueee-6h3JZfEg6gKNoNaCgYKAY8SARESFQHGX2Mi0uJdX0LYIbisre-c31uqiA0171"
+      "ya29.a0AXooCgsn9SLrWcXFvPQLm4a5114soLNIFriJxD9Z1xU9g9RxieMvlwKiDGBliKqvvIGrh4SaqazreeMsh7w9kwYfv4B6uRX28pZvx-bu3Fa0aTl8vgfF4bemeuUMzlagnbSWGV0FLSkVT5l8EuRIyis1X77pkWbKwIqAaCgYKAaQSARESFQHGX2MiL0Sbdsyxr34UF_M44syD4g0171"
 
   // Create the notification payload
   val notificationPayload =
@@ -197,5 +197,3 @@ suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
     println(response.body?.string())
   }
 }
-
-private fun getAccessToken() {}
