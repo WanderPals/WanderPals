@@ -170,6 +170,7 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
 
                             isError = false
                             tripCode = EMPTY_CODE
+
                             closeDialogueAction()
                           } else {
                             isError = true

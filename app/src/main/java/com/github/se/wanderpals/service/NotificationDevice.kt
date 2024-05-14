@@ -32,31 +32,36 @@ import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.firebase.messaging.messaging
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 
-
-const val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/your-project-id/messages:send"
-
+/** Class responsible for handling notifications on the device. */
 class NotificationDevice : FirebaseMessagingService() {
   override fun onNewToken(token: String) {
     super.onNewToken(token)
     // send to the token to the server
     Log.d("New_Token", token)
+    SessionManager.setNotificationToken(token)
   }
 
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     super.onMessageReceived(remoteMessage)
-    Log.d("Message", remoteMessage.data.toString())
+    Log.d("Message", remoteMessage.notification?.body.toString())
 
     val channelId = "1234"
-    val description = "Test Notification"
-
+    val description = "Trip Notification"
     // handle the message with NotificationCompat
     val notification =
         NotificationCompat.Builder(this, channelId)
-            .setContentTitle(remoteMessage.data["title"])
-            .setContentText(remoteMessage.data["message"])
+            .setContentTitle(remoteMessage.notification?.title)
+            .setContentText(remoteMessage.notification?.body)
             .setAutoCancel(true)
-            .setSmallIcon(R.drawable.logo_nsa)
+            .setSmallIcon(R.drawable.logo_email)
 
     val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -146,37 +151,51 @@ fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Contex
   }
 }
 
-//create a notification to send by the FCM REST API
-fun createNotification(title: String, message: String, context: Context) {
-    val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/your-project-id/messages:send"
-
-    //val notification =
-
-    try {
-        Log.d("Firebase", "Sending message to Trip_$title")
-        //Firebase.messaging.send(notification)
-    } catch (e: Exception) {
-        Log.d("Firebase", "Failed to send message to Trip_$title")
-        Toast.makeText(context, "Failed to send message to Trip_$title", Toast.LENGTH_SHORT).show()
-    }
-}
-
 // function to send message to a topic from a client app
 
-/*@Composable
-fun sendMessageToListOfUsers(deviceTokens: List<String>, tripName: String, message: String) {
-    val notification = RemoteMessage.Builder("Trip_$tripName")
-        .setMessageId("Trip_$tripName")
-        .addData("title", title)
-        .addData("message", message)
-        .build()
+suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
+  // Define the FCM endpoint
+  val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/wanderpals/messages:send"
 
-    try {
-        Firebase.messaging
-    } catch (e: Exception) {
-        Log.d("Firebase", "Failed to send message to Trip_$title")
-    }
+  // Define the FCM access token
+  val ACCESS_TOKEN =
+      "ya29.a0AXooCgtvi30CFhBmnuH_j0C5_ha1esYEfN_DC_N6WgP6OjUFIfxhC4Keujn9P7eaJTcBnINYURI0TMwducH_9u3wRX_VA0UpP--haui9eVamRocGrok9uZP26fIs2QGeEihLFZ6sDHuIQibeGueee-6h3JZfEg6gKNoNaCgYKAY8SARESFQHGX2Mi0uJdX0LYIbisre-c31uqiA0171"
 
+  // Create the notification payload
+  val notificationPayload =
+      mapOf(
+          "message" to
+              mapOf(
+                  "token" to deviceToken,
+                  "notification" to mapOf("body" to message, "title" to "Wanderpals")))
 
+  // Convert the payload to JSON
+  val gson = Gson()
+  val jsonPayload = gson.toJson(notificationPayload)
 
-}*/
+  // Create an OkHttpClient instance
+  val client = OkHttpClient()
+
+  // Create a request body with JSON content type
+  val requestBody = jsonPayload.toRequestBody("application/json; charset=utf-8".toMediaType())
+
+  return withContext(Dispatchers.IO) {
+    // Create a POST request to the FCM endpoint
+    val request =
+        Request.Builder()
+            .url(FCM_ENDPOINT)
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Authorization", "Bearer $ACCESS_TOKEN")
+            .post(requestBody)
+            .build()
+    Log.d("FCM", "Sending message to $deviceToken")
+
+    // Execute the request
+    val response = client.newCall(request).execute()
+
+    // Print the response
+    println(response.body?.string())
+  }
+}
+
+private fun getAccessToken() {}

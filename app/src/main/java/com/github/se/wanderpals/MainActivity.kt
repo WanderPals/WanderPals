@@ -1,6 +1,7 @@
 package com.github.se.wanderpals
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ContentValues.TAG
@@ -31,8 +32,7 @@ import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
-import com.github.se.wanderpals.service.createNotification
-import com.github.se.wanderpals.service.firebaseSuscribedForGroupNotifications
+import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -54,6 +54,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.runBlocking
 
 const val EMPTY_CODE = ""
 
@@ -133,6 +134,7 @@ class MainActivity : ComponentActivity() {
         }
       }
 
+  @SuppressLint("SuspiciousIndentation")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val storage = Firebase.storage
@@ -163,7 +165,6 @@ class MainActivity : ComponentActivity() {
 
           Log.d("Hello", "Hello")
 
-
           FirebaseMessaging.getInstance()
               .token
               .addOnCompleteListener(
@@ -176,11 +177,11 @@ class MainActivity : ComponentActivity() {
                     // Send the token to the server
                     val token = task.result
                     SessionManager.setNotificationToken(task.result)
-                      SessionManager.setListOfTokensTrip(listOfTokens = mutableListOf(token))
+                    // SessionManager.setListOfTokensTrip(listOfTokens = mutableListOf(token))
 
                     Log.d(TAG, token)
                   })
-          showNotification()
+          // showNotification()
 
           navigationActions =
               NavigationActions(
@@ -199,6 +200,7 @@ class MainActivity : ComponentActivity() {
                         FirebaseAuth.getInstance()
                             .signInAnonymously()
                             .addOnSuccessListener { result ->
+                              Log.d("Auth2", result.credential.toString())
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
                               SessionManager.setUserSession(
@@ -236,6 +238,9 @@ class MainActivity : ComponentActivity() {
                                   }
                             }
                       })
+                  runBlocking {
+                    sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
+                  }
                 }
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
@@ -254,19 +259,17 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
-                    //suscribe to a topic
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
                           factory =
                               OverviewViewModel.OverviewViewModelFactory(
                                   viewModel.getTripsRepository()),
                           key = "Overview")
-                    createNotification("Trip_hello", "message", context)
-                    Log.d("CREATE_TRIP", "Create Trip")
+                  Log.d("CREATE_TRIP", "Create Trip")
 
-                    CreateTrip(overviewViewModel, navigationActions)
-                    //create notification to send to the list of tokens
-                    //iterate on the list of tokens and send the notification
+                  CreateTrip(overviewViewModel, navigationActions)
+                  // create notification to send to the list of tokens
+                  // iterate on the list of tokens and send the notification
 
                 }
 
