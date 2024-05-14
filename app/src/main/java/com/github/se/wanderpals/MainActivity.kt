@@ -1,14 +1,13 @@
 package com.github.se.wanderpals
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -31,8 +30,8 @@ import com.github.se.wanderpals.model.viewmodel.MainViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
-import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.NetworkHelper
+import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.github.se.wanderpals.service.sendMessageToListOfUsers
@@ -50,8 +49,8 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.common.config.GservicesValue.isInitialized
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -140,7 +139,6 @@ class MainActivity : ComponentActivity() {
           }
         }
       }
-
 
   override fun onDestroy() {
     super.onDestroy()

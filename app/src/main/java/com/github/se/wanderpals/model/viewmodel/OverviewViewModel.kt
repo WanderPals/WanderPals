@@ -7,8 +7,8 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
-import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.github.se.wanderpals.service.SessionUser
+import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
