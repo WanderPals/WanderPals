@@ -125,16 +125,17 @@ object NotificationsManager {
    */
   suspend fun addStopNotification(tripId: String, stop: Stop) {
     val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
-    val navActions = navigationActions.copy()
-    var route = ""
-    var navActionVariables = ""
-    route = Route.STOPS_LIST
+    val navActionVariables = ""
+    val route = Route.STOPS_LIST
 
     val newNotif =
         TripNotification(
             "A new stop has been added for ${stop.date.format(
               DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(
-                Locale.getDefault()))}", route, LocalDateTime.now(), navActionVariables)
+                Locale.getDefault()))}",
+            route,
+            LocalDateTime.now(),
+            navActionVariables)
     addNewNotification(notifList, newNotif)
     tripsRepository.setNotificationList(tripId, notifList.toList())
   }
@@ -143,20 +144,20 @@ object NotificationsManager {
    * Adds a notification for a new expense to the notification list of a trip.
    *
    * @param tripId The ID of the trip to which to add the notification.
-   * @param expense The added expense  for which to create the notification.
+   * @param expense The added expense for which to create the notification.
    */
   suspend fun addExpenseNotification(tripId: String, expense: Expense) {
     val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
     val navActions = navigationActions.copy()
-    var route = Route.EXPENSE_INFO
+    val route = Route.EXPENSE_INFO
 
     navActions.setVariablesExpense(expense)
 
-    var navActionVariables = navActions.serializeNavigationVariable()
+    val navActionVariables = navActions.serializeNavigationVariable()
 
     val newNotif =
-      TripNotification(
-        "A new expense has been created", route, LocalDateTime.now(), navActionVariables)
+        TripNotification(
+            "A new expense has been created", route, LocalDateTime.now(), navActionVariables)
     addNewNotification(notifList, newNotif)
 
     tripsRepository.setNotificationList(tripId, notifList.toList())

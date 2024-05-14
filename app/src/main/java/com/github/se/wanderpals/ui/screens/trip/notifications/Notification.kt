@@ -88,18 +88,17 @@ fun Notification(
   val expense by notificationsViewModel.currentExpense.collectAsState()
   val isLoadingExpense by notificationsViewModel.isExpenseReady.collectAsState()
 
-
-  LaunchedEffect(isLoadingSuggestion,isLoadingExpense) {
+  LaunchedEffect(isLoadingSuggestion, isLoadingExpense) {
     if (isLoadingSuggestion) {
       navigationActions.variables.currentSuggestion = suggestion as Suggestion
       navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
       notificationsViewModel.resetIsLoadingSuggestion()
     }
     if (isLoadingExpense) {
-          navigationActions.variables.expense = expense as Expense
-          navigationActions.navigateTo(Route.EXPENSE_INFO)
-          notificationsViewModel.resetIsLoadingExpense()
-      }
+      navigationActions.variables.expense = expense as Expense
+      navigationActions.navigateTo(Route.EXPENSE_INFO)
+      notificationsViewModel.resetIsLoadingExpense()
+    }
   }
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
@@ -195,21 +194,20 @@ fun Notification(
                           notification = item,
                           onNotificationItemClick = {
                             if (item.route.isNotEmpty()) {
-                                if (item.navActionVariables.isNotEmpty()) {
-                                    navigationActions.deserializeNavigationVariables(
-                                        item.navActionVariables)
-                                    when (item.route) {
-                                        Route.SUGGESTION_DETAIL -> notificationsViewModel.getSuggestion(
-                                            navigationActions.variables.suggestionId
-                                        )
-
-                                        Route.EXPENSE_INFO -> notificationsViewModel.getExpense(
-                                            navigationActions.variables.expense.expenseId
-                                        )
-                                    }
-                                }else{
-                                    navigationActions.navigateTo(item.route)
+                              if (item.navActionVariables.isNotEmpty()) {
+                                navigationActions.deserializeNavigationVariables(
+                                    item.navActionVariables)
+                                when (item.route) {
+                                  Route.SUGGESTION_DETAIL ->
+                                      notificationsViewModel.getSuggestion(
+                                          navigationActions.variables.suggestionId)
+                                  Route.EXPENSE_INFO ->
+                                      notificationsViewModel.getExpense(
+                                          navigationActions.variables.expense.expenseId)
                                 }
+                              } else {
+                                navigationActions.navigateTo(item.route)
+                              }
                             }
                           })
                     }

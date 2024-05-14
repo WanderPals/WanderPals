@@ -51,7 +51,6 @@ fun NotificationItem(notification: TripNotification, onNotificationItemClick: ()
                 textAlign = TextAlign.Start,
                 maxLines = 2)
 
-
             // Spacer
             Spacer(modifier = Modifier.width(16.dp))
 

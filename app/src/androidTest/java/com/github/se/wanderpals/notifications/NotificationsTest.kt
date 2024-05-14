@@ -1,11 +1,7 @@
 package com.github.se.wanderpals.notifications
 
-import androidx.compose.ui.test.assertIsDisplayed
+
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollToIndex
-import androidx.compose.ui.test.printToLog
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.Role
@@ -39,38 +35,31 @@ private val notification1 =
     TripNotification(
         title = "Username1 joined the trip",
         route = Route.ADMIN_PAGE,
-        timestamp = LocalDateTime.now()
-    )
+        timestamp = LocalDateTime.now())
 
 private val notification2 =
     TripNotification(
-        title = "A new suggestion has been created",
-        route = "",
-        timestamp = LocalDateTime.now()
-    )
+        title = "A new suggestion has been created", route = "", timestamp = LocalDateTime.now())
 
 private val notification3 =
     TripNotification(
         title = "A new stop has been added",
         route = Route.STOPS_LIST,
-        timestamp = LocalDateTime.now()
-    )
+        timestamp = LocalDateTime.now())
 
 private val notification4 =
     TripNotification(
         title = "A new suggestion has been created",
         route = Route.SUGGESTION_DETAIL,
         timestamp = LocalDateTime.now(),
-        "currentTrip: 1 |latitude: 0.0|longitude: 0.0|currentAddress: |suggestionId: |expenseId: 0"
-    )
+        "currentTrip: 1 |latitude: 0.0|longitude: 0.0|currentAddress: |suggestionId: |expenseId: 0")
 
 private val notification5 =
     TripNotification(
         title = "A new Expense has been created",
         route = Route.EXPENSE_INFO,
         timestamp = LocalDateTime.now(),
-        "currentTrip: 1 |latitude: 0.0|longitude: 0.0|currentAddress: |suggestionId: |expenseId: 1"
-    )
+        "currentTrip: 1 |latitude: 0.0|longitude: 0.0|currentAddress: |suggestionId: |expenseId: 1")
 
 private val announcement1 =
     Announcement(
@@ -80,7 +69,7 @@ private val announcement1 =
         userName = "John Doe", // Replace with actual user name
         description = "This is a new announcement!",
         timestamp = LocalDateTime.now() // Replace with actual timestamp
-    )
+        )
 private val announcement2 =
     Announcement(
         announcementId = "2", // Replace with actual announcement ID
@@ -89,189 +78,185 @@ private val announcement2 =
         userName = "Jane", // Replace with actual user name
         description = "This is a second announcement!",
         timestamp = LocalDateTime.now() // Replace with actual timestamp
-    )
+        )
 
 class NotificationsViewModelTest :
     NotificationsViewModel(TripsRepository("-1", dispatcher = Dispatchers.IO), "-1") {
 
-    private val _notifStateList =
-        MutableStateFlow(listOf(notification1, notification2, notification3, notification4))
-    override val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
+  private val _notifStateList =
+      MutableStateFlow(listOf(notification1, notification2, notification3, notification4))
+  override val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
 
-    private val _announcementStateList = MutableStateFlow(listOf(announcement1))
-    override val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
+  private val _announcementStateList = MutableStateFlow(listOf(announcement1))
+  override val announcementStateList: StateFlow<List<Announcement>> = _announcementStateList
 
-    private val _isLoading = MutableStateFlow(false)
-    override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+  private val _isLoading = MutableStateFlow(false)
+  override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    override fun getSuggestion(suggestionId: String) {
-        _isLoading.value = true
-    }
+  override fun getSuggestion(suggestionId: String) {
+    _isLoading.value = true
+  }
 
-    override fun getExpense(expenseID: String) {
-        _isLoading.value = true
-    }
+  override fun getExpense(expenseID: String) {
+    _isLoading.value = true
+  }
 
-    override fun updateStateLists() {
-        _notifStateList.value = listOf(notification1, notification2, notification3, notification4,
-            notification5)
-        _announcementStateList.value = listOf(announcement1)
-    }
+  override fun updateStateLists() {
+    _notifStateList.value =
+        listOf(notification1, notification2, notification3, notification4, notification5)
+    _announcementStateList.value = listOf(announcement1)
+  }
 
-    override fun addAnnouncement(announcement: Announcement) {
-        _announcementStateList.value =
-            _announcementStateList.value.toMutableList().apply { add(announcement2) }
-    }
+  override fun addAnnouncement(announcement: Announcement) {
+    _announcementStateList.value =
+        _announcementStateList.value.toMutableList().apply { add(announcement2) }
+  }
 
-    override fun removeAnnouncement(announcementId: String) {
-        _announcementStateList.value =
-            _announcementStateList.value.toMutableList().apply {
-                removeIf { it.announcementId == announcementId }
-            }
-    }
+  override fun removeAnnouncement(announcementId: String) {
+    _announcementStateList.value =
+        _announcementStateList.value.toMutableList().apply {
+          removeIf { it.announcementId == announcementId }
+        }
+  }
 }
 
 @RunWith(AndroidJUnit4::class)
 class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+  @get:Rule val composeTestRule = createComposeRule()
 
-    @get:Rule
-    val mockkRule = MockKRule(this)
+  @get:Rule val mockkRule = MockKRule(this)
 
-    @RelaxedMockK
-    lateinit var mockNavActions: NavigationActions
+  @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
-    private val notificationsViewModelTest = NotificationsViewModelTest()
+  private val notificationsViewModelTest = NotificationsViewModelTest()
 
-    @Before
-    fun testSetup() {
-        SessionManager.setUserSession()
-        SessionManager.setRole(Role.OWNER)
-        composeTestRule.setContent {
-            Notification(
-                notificationsViewModel = notificationsViewModelTest,
-                navigationActions = mockNavActions
-            )
-        }
+  @Before
+  fun testSetup() {
+    SessionManager.setUserSession()
+    SessionManager.setRole(Role.OWNER)
+    composeTestRule.setContent {
+      Notification(
+          notificationsViewModel = notificationsViewModelTest, navigationActions = mockNavActions)
     }
+  }
 
-    @Test
-    fun notifJoinTripNavigatesToAdmin() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            notifJoinTripItemButton {
-                assertIsDisplayed()
-                performClick()
-            }
-            verify { mockNavActions.navigateTo(Route.ADMIN_PAGE) }
-            confirmVerified(mockNavActions)
-        }
+  @Test
+  fun notifJoinTripNavigatesToAdmin() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifJoinTripItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      verify { mockNavActions.navigateTo(Route.ADMIN_PAGE) }
+      confirmVerified(mockNavActions)
     }
+  }
 
-    @Test
-    fun notifStopNavigatesToStopList() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            notifStopItemButton {
-                assertIsDisplayed()
-                performClick()
-            }
-            verify { mockNavActions.navigateTo(Route.STOPS_LIST) }
-            confirmVerified(mockNavActions)
-        }
+  @Test
+  fun notifStopNavigatesToStopList() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifStopItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      verify { mockNavActions.navigateTo(Route.STOPS_LIST) }
+      confirmVerified(mockNavActions)
     }
-    @Test
-    fun notifSuggestionNavigatesToSuggestionDetail() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            notifSuggestionItemButton{
-                assertIsDisplayed()
-                performClick()
-            }
-            assert(notificationsViewModelTest.isLoading.value)
-        }
-    }
-    @Test
-    fun notifSuggestionNavigatesToExpenseInfo() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            notifExpenseItemButton {
-                assertIsDisplayed()
-                performClick()
-            }
-            assert(notificationsViewModelTest.isLoading.value)
-        }
-    }
+  }
 
-
-    @Test
-    fun notifItemWithNoPathDoesNothing() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            notifItemButtonWithoutPath {
-                assertIsDisplayed()
-                performClick()
-            }
-            verify(exactly = 0) { mockNavActions.navigateTo(any()) }
-            confirmVerified(mockNavActions)
-        }
+  @Test
+  fun notifSuggestionNavigatesToSuggestionDetail() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifSuggestionItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      assert(notificationsViewModelTest.isLoading.value)
     }
+  }
 
-    @Test
-    fun createAnnouncementButtonIsNotDisplayedIfUserHasNotPermission() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            notificationButton { assertIsDisplayed() }
-            announcementButton { assertIsDisplayed() }
-            announcementButton { performClick() }
-            SessionManager.setRole(Role.VIEWER)
-            createAnnouncementButton { assertIsNotDisplayed() }
-            SessionManager.setRole(Role.MEMBER)
-            createAnnouncementButton { assertIsNotDisplayed() }
-        }
+  @Test
+  fun notifSuggestionNavigatesToExpenseInfo() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifExpenseItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      assert(notificationsViewModelTest.isLoading.value)
     }
+  }
 
-    @Test
-    fun viewerOrMemberCanReadAnnouncementInfoOnClick() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            SessionManager.setRole(Role.VIEWER)
-            notificationButton { assertIsDisplayed() }
-            announcementButton { assertIsDisplayed() }
-            announcementButton { performClick() }
-            announcementItemButton1 { performClick() }
-            announcementDialog { assertIsDisplayed() }
-            deleteAnnouncementButton { assertIsNotDisplayed() }
-            deleteAnnouncementButton { assertIsNotDisplayed() }
-        }
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            SessionManager.setRole(Role.MEMBER)
-            notificationButton { assertIsDisplayed() }
-            announcementButton { assertIsDisplayed() }
-            announcementButton { performClick() }
-            announcementItemButton1 { performClick() }
-            announcementDialog { assertIsDisplayed() }
-            deleteAnnouncementButton { assertIsNotDisplayed() }
-            deleteAnnouncementButton { assertIsNotDisplayed() }
-        }
+  @Test
+  fun notifItemWithNoPathDoesNothing() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifItemButtonWithoutPath {
+        assertIsDisplayed()
+        performClick()
+      }
+      verify(exactly = 0) { mockNavActions.navigateTo(any()) }
+      confirmVerified(mockNavActions)
     }
+  }
 
-    @Test
-    fun emptyTextIsDisplayedIfNoAnnouncementAreThere() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            notificationsViewModelTest.removeAnnouncement("1")
-            notificationButton { assertIsDisplayed() }
-            announcementButton { assertIsDisplayed() }
-            announcementButton { performClick() }
-            noItemsText { assertIsDisplayed() }
-        }
+  @Test
+  fun createAnnouncementButtonIsNotDisplayedIfUserHasNotPermission() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notificationButton { assertIsDisplayed() }
+      announcementButton { assertIsDisplayed() }
+      announcementButton { performClick() }
+      SessionManager.setRole(Role.VIEWER)
+      createAnnouncementButton { assertIsNotDisplayed() }
+      SessionManager.setRole(Role.MEMBER)
+      createAnnouncementButton { assertIsNotDisplayed() }
     }
+  }
 
-    @Test
-    fun userWithPermissionsCanDeleteAnnouncement() = run {
-        ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-            announcementButton { performClick() }
-            announcementItemButton1 { performClick() }
-            announcementDialog { assertIsDisplayed() }
-            deleteAnnouncementButton { performClick() }
-            deleteAnnouncementDialog { assertIsDisplayed() }
-            confirmDeleteAnnouncementButton { performClick() }
-            noItemsText { assertIsDisplayed() }
-        }
+  @Test
+  fun viewerOrMemberCanReadAnnouncementInfoOnClick() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      SessionManager.setRole(Role.VIEWER)
+      notificationButton { assertIsDisplayed() }
+      announcementButton { assertIsDisplayed() }
+      announcementButton { performClick() }
+      announcementItemButton1 { performClick() }
+      announcementDialog { assertIsDisplayed() }
+      deleteAnnouncementButton { assertIsNotDisplayed() }
+      deleteAnnouncementButton { assertIsNotDisplayed() }
     }
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      SessionManager.setRole(Role.MEMBER)
+      notificationButton { assertIsDisplayed() }
+      announcementButton { assertIsDisplayed() }
+      announcementButton { performClick() }
+      announcementItemButton1 { performClick() }
+      announcementDialog { assertIsDisplayed() }
+      deleteAnnouncementButton { assertIsNotDisplayed() }
+      deleteAnnouncementButton { assertIsNotDisplayed() }
+    }
+  }
+
+  @Test
+  fun emptyTextIsDisplayedIfNoAnnouncementAreThere() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notificationsViewModelTest.removeAnnouncement("1")
+      notificationButton { assertIsDisplayed() }
+      announcementButton { assertIsDisplayed() }
+      announcementButton { performClick() }
+      noItemsText { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun userWithPermissionsCanDeleteAnnouncement() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      announcementButton { performClick() }
+      announcementItemButton1 { performClick() }
+      announcementDialog { assertIsDisplayed() }
+      deleteAnnouncementButton { performClick() }
+      deleteAnnouncementDialog { assertIsDisplayed() }
+      confirmDeleteAnnouncementButton { performClick() }
+      noItemsText { assertIsDisplayed() }
+    }
+  }
 }

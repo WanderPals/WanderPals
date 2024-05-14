@@ -29,7 +29,9 @@ class NotificationScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
 
   val notifStopItemButton: KNode = onNode { hasTestTag("notifItemButton" + Route.STOPS_LIST) }
 
-  val notifSuggestionItemButton: KNode = onNode { hasTestTag("notifItemButton" + Route.SUGGESTION_DETAIL) }
+  val notifSuggestionItemButton: KNode = onNode {
+    hasTestTag("notifItemButton" + Route.SUGGESTION_DETAIL)
+  }
 
   val notifExpenseItemButton: KNode = onNode { hasTestTag("notifItemButton" + Route.EXPENSE_INFO) }
   val notifItemButtonWithoutPath: KNode = onNode { hasTestTag("notifItemButton") }

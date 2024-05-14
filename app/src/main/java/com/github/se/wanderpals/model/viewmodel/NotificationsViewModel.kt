@@ -88,23 +88,22 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
    *
    * @param expenseID The ID of the expense to retrieve.
    */
-  open fun getExpense(expenseID : String) {
+  open fun getExpense(expenseID: String) {
     viewModelScope.launch {
-      val expense= tripsRepository.getExpenseFromTrip(tripId,expenseID)
+      val expense = tripsRepository.getExpenseFromTrip(tripId, expenseID)
       _currentExpense.value = expense
       _isExpenseReady.value = true
     }
   }
 
-  /** Methods for reset the loading state for suggestion or expense retrieval*/
+  /** Methods for reset the loading state for suggestion or expense retrieval */
   open fun resetIsLoadingSuggestion() {
     _isSuggestionReady.value = false
   }
+
   open fun resetIsLoadingExpense() {
     _isExpenseReady.value = false
   }
-
-
 
   /**
    * Adds a Announcement by the administrator to a trip.

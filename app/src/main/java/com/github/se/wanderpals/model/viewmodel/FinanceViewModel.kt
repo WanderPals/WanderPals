@@ -55,13 +55,12 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
    * @param expense The Expense object to add.
    */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking {
-      tripsRepository.addExpenseToTrip(tripId, expense)}
-        viewModelScope.launch {
-          val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
-          NotificationsManager.addExpenseNotification(tripId,newExpense)
-          updateStateLists()
-        }
+    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
+    viewModelScope.launch {
+      val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
+      NotificationsManager.addExpenseNotification(tripId, newExpense)
+      updateStateLists()
+    }
   }
 
   /**
@@ -72,13 +71,13 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   open fun deleteExpense(expense: Expense) {
     runBlocking { tripsRepository.removeExpenseFromTrip(tripId, expense.expenseId) }
     viewModelScope.launch {
-      NotificationsManager.removeExpensePath(tripId,expense.expenseId)
-      updateStateLists() }
+      NotificationsManager.removeExpensePath(tripId, expense.expenseId)
+      updateStateLists()
+    }
     setShowDeleteDialogState(false)
   }
 
-
-  /** Setter functions*/
+  /** Setter functions */
   open fun setShowDeleteDialogState(value: Boolean) {
     _showDeleteDialog.value = value
   }
