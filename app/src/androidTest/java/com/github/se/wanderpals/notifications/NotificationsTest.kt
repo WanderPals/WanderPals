@@ -38,9 +38,22 @@ val notification1 =
 
 val notification2 =
     TripNotification(
-        title = "Username1 joined the trip",
+        title = "A new suggestion has been created",
         route = "",
-        timestamp = LocalDateTime.now().minusDays(1))
+        timestamp = LocalDateTime.now())
+
+val notification3 =
+    TripNotification(
+        title = "A new stop has been added",
+        route = Route.STOPS_LIST,
+        timestamp = LocalDateTime.now())
+
+val notification4 =
+    TripNotification(
+        title = "A new suggestion has been created",
+        route = Route.STOPS_LIST,
+        timestamp = LocalDateTime.now())
+
 val announcement1 =
     Announcement(
         announcementId = "1", // Replace with actual announcement ID
@@ -63,7 +76,7 @@ val announcement2 =
 class NotificationsViewModelTest :
     NotificationsViewModel(TripsRepository("-1", dispatcher = Dispatchers.IO), "-1") {
 
-  private val _notifStateList = MutableStateFlow(listOf(notification1, notification2))
+  private val _notifStateList = MutableStateFlow(listOf(notification1, notification2,notification3,notification4))
   override val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
 
   private val _announcementStateList = MutableStateFlow(listOf(announcement1))
@@ -112,7 +125,7 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   }
 
   @Test
-  fun notifItemWithPathNavigatesOnClick() = run {
+  fun notifJoinTripNavigatesToAdmin() = run {
     ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
       notifItemButtonWithPath {
         assertIsDisplayed()
