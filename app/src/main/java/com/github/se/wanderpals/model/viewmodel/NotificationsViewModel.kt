@@ -70,6 +70,11 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     }
   }
 
+  /**
+   * Retrieves a suggestion for the specified suggestion ID from the trip's repository.
+   *
+   * @param suggestionId The ID of the suggestion to retrieve.
+   */
   open fun getSuggestion(suggestionId: String) {
     viewModelScope.launch {
       val suggestion = tripsRepository.getSuggestionFromTrip(tripId, suggestionId)
@@ -78,11 +83,11 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     }
   }
 
-  open fun resetIsLoadingSuggestion() {
-    _isSuggestionReady.value = false
-  }
-
-
+  /**
+   * Retrieves an expense for the specified expense ID from the trip's repository.
+   *
+   * @param expenseID The ID of the expense to retrieve.
+   */
   open fun getExpense(expenseID : String) {
     viewModelScope.launch {
       val expense= tripsRepository.getExpenseFromTrip(tripId,expenseID)
@@ -91,6 +96,10 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
     }
   }
 
+  /** Methods for reset the loading state for suggestion or expense retrieval*/
+  open fun resetIsLoadingSuggestion() {
+    _isSuggestionReady.value = false
+  }
   open fun resetIsLoadingExpense() {
     _isExpenseReady.value = false
   }
