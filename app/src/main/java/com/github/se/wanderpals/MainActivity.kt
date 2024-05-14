@@ -22,6 +22,7 @@ import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.MapManager
+import com.github.se.wanderpals.service.NetworkHelper
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -56,6 +57,8 @@ class MainActivity : ComponentActivity() {
 
   private lateinit var context: Context
 
+  private lateinit var networkHelper: NetworkHelper
+
   private val viewModel: MainViewModel by viewModels {
     MainViewModel.MainViewModelFactory(application)
   }
@@ -75,6 +78,8 @@ class MainActivity : ComponentActivity() {
                       val uid = it.result?.user?.uid ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
                       viewModel.initRepository(uid)
+                      networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
+
                       Log.d("MainActivity", "Firebase Initialized")
                       Log.d("SignIn", "Login result " + account.displayName)
 
@@ -158,6 +163,7 @@ class MainActivity : ComponentActivity() {
           if (currentUser != null) {
             Log.d("MainActivity", "User is already signed in")
             viewModel.initRepository(currentUser.uid)
+            networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
 
             SessionManager.setUserSession(
                 userId = currentUser.uid,
@@ -185,6 +191,7 @@ class MainActivity : ComponentActivity() {
                             .addOnSuccessListener { result ->
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
+                              networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
                               SessionManager.setUserSession(
                                   userId = uid,
                                   name = "Anonymous User",
@@ -201,6 +208,8 @@ class MainActivity : ComponentActivity() {
                         val onSucess = { result: AuthResult ->
                           val uid = result.user?.uid ?: ""
                           viewModel.initRepository(uid)
+                          networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
+
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.email?.substringBefore("@") ?: "",
