@@ -131,7 +131,7 @@ class MainActivity : ComponentActivity() {
 
   override fun onDestroy() {
     super.onDestroy()
-    if (::mapManager.isInitialized) {
+    if (isMapManagerInitialized()) {
       mapManager.executeLocationIntentStop()
     }
   }
@@ -314,4 +314,9 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
+}
+
+/** Checks if the map manager is initialized. */
+fun isMapManagerInitialized(): Boolean {
+  return ::mapManager.isInitialized
 }
