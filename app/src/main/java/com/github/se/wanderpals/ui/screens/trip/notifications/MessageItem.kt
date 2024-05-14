@@ -48,7 +48,8 @@ fun NotificationItem(notification: TripNotification, onNotificationItemClick: ()
                 style = TextStyle(fontSize = 16.sp),
                 color = if (notification.route.isNotEmpty()) Color.Black else Color.Gray,
                 modifier = Modifier.weight(1f).fillMaxWidth().align(Alignment.CenterVertically),
-                textAlign = TextAlign.Start)
+                textAlign = TextAlign.Start,
+                maxLines = 2)
 
             // Spacer
             Spacer(modifier = Modifier.width(16.dp))

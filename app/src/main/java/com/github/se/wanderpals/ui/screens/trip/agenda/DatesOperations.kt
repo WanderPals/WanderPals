@@ -1,14 +1,15 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
@@ -129,19 +130,29 @@ fun YearMonth.getDisplayName(): String {
  * @param date The selected date to display.
  */
 @Composable
-fun DisplayDate(date: LocalDate?) {
-
+fun DisplayDate(date: LocalDate?, color: Color) {
   // Define a formatter
   val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(Locale.getDefault())
 
   // Format the selected date using the formatter
-  val formattedDate = date?.format(formatter) ?: "No date selected"
+  val formattedDate =
+      date?.format(formatter)?.let { it ->
+        it.split(", ").joinToString(", ") { part ->
+          part.split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar {
+              if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            }
+          }
+        }
+      } ?: "No date selected"
 
   // Display the formatted date
   Text(
       text = formattedDate,
-      style = MaterialTheme.typography.bodyLarge,
-      color = Color.White,
+      style =
+          androidx.compose.ui.text.TextStyle(
+              color = color, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+      color = color,
       textAlign = TextAlign.Center,
       modifier = Modifier.padding(8.dp).testTag("displayDateText"))
 }

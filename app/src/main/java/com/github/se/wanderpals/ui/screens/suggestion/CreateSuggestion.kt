@@ -7,14 +7,17 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,8 +27,12 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -36,6 +43,9 @@ import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
+import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
+import com.github.se.wanderpals.ui.theme.primaryContainerLight
+import com.github.se.wanderpals.ui.theme.primaryLight
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -67,6 +77,9 @@ fun CreateSuggestion(
     onFailure: () -> Unit = {},
     onCancel: () -> Unit = {}
 ) {
+  // Remembering scroll state for the vertical scroll of the main Column
+  val scrollState = rememberScrollState()
+
   var description by remember { mutableStateOf(suggestion.stop.description) }
   var address by remember { mutableStateOf(suggestion.stop.address) }
   var _website by remember { mutableStateOf(suggestion.stop.website) }
@@ -117,42 +130,87 @@ fun CreateSuggestion(
   //  val websiteRegexPattern =
   // """^(http|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[a-zA-Z0-9.-]*)*$"""
 
-  Surface(modifier = Modifier.padding(12.dp)) {
+  Surface(modifier = Modifier) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier =
+            Modifier.fillMaxSize()
+                .verticalScroll(scrollState), // Add vertical scroll to the main Column
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
-          Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(modifier = Modifier.testTag("goBackButton"), onClick = { onCancel() }) {
-              Icon(
-                  imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                  contentDescription = "Back",
+          Column(
+              horizontalAlignment = Alignment.Start,
+              modifier = Modifier.fillMaxWidth().background(primaryLight)) {
+                IconButton(modifier = Modifier.testTag("goBackButton"), onClick = { onCancel() }) {
+                  Icon(
+                      imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                      contentDescription = "Back",
+                      tint = Color.White)
+                }
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "Create a new suggestion",
+                    style =
+                        TextStyle(
+                            fontSize = 24.sp,
+                            lineHeight = 32.sp,
+                            fontWeight = FontWeight(400),
+                            color = Color.White),
+                    modifier = Modifier.padding(start = 16.dp))
+                Spacer(Modifier.height(20.dp))
+              }
+          // After the header, the rest of the content:
+
+          Spacer(Modifier.height(24.dp))
+          // title
+          OutlinedTextField(
+              value = suggestionText,
+              onValueChange = { suggestionText = it },
+              label = { Text("Suggestion Title*") },
+              modifier =
+                  Modifier.fillMaxWidth()
+                      .padding(start = 28.dp, end = 28.dp)
+                      .testTag("inputSuggestionTitle"),
+              isError = title_err,
+              singleLine = true // i.e. one line
               )
-            }
-          }
-          Row {
-            OutlinedTextField(
-                value = suggestionText,
-                onValueChange = { suggestionText = it },
-                label = { Text("Suggestion Title*") },
-                modifier = Modifier.weight(3f).testTag("inputSuggestionTitle"),
-                isError = title_err,
-                singleLine = true)
-            Spacer(modifier = Modifier.width(12.dp))
-            OutlinedTextField(
-                value = _budget,
-                onValueChange = { _budget = it },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                label = { Text("Budget") },
-                modifier = Modifier.weight(1.5f).testTag("inputSuggestionBudget"),
-                isError = budget_err,
-                singleLine = true,
-                placeholder = { Text("Budget") })
-          }
 
-          Spacer(modifier = Modifier.height(12.dp))
+          Spacer(Modifier.height(24.dp))
 
-          Row(modifier = Modifier.fillMaxWidth()) {
+          // description
+          OutlinedTextField(
+              value = description,
+              onValueChange = { description = it },
+              label = { Text("Suggestion Description*") },
+              modifier =
+                  Modifier.testTag("inputSuggestionDescription")
+                      .fillMaxWidth()
+                      .height(150.dp)
+                      .padding(start = 28.dp, end = 28.dp)
+                      .scrollable(rememberScrollState(), Orientation.Vertical),
+              isError = desc_err,
+              singleLine = false, // can be multiple lines
+              placeholder = { Text("Describe the suggestion") })
+
+          Spacer(Modifier.height(24.dp))
+
+          // budget
+          OutlinedTextField(
+              value = _budget,
+              onValueChange = { _budget = it },
+              keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+              label = { Text("Budget") },
+              modifier =
+                  Modifier.fillMaxWidth()
+                      .padding(start = 28.dp, end = 28.dp)
+                      .testTag("inputSuggestionBudget"),
+              isError = budget_err,
+              singleLine = true,
+              placeholder = { Text("Budget") })
+
+          Spacer(Modifier.height(24.dp))
+
+          Row(modifier = Modifier.fillMaxWidth().padding(start = 28.dp, end = 28.dp)) {
+            // start date and time
             OutlinedTextField(
                 value = startDate,
                 onValueChange = { startDate = it },
@@ -177,9 +235,10 @@ fun CreateSuggestion(
                 interactionSource = DateInteractionSource { showTimePickerStart = true })
           }
 
-          Spacer(modifier = Modifier.height(12.dp))
+          Spacer(Modifier.height(24.dp))
 
-          Row(modifier = Modifier.fillMaxWidth()) {
+          Row(modifier = Modifier.fillMaxWidth().padding(start = 28.dp, end = 28.dp)) {
+            // end date and time
             OutlinedTextField(
                 value = endDate,
                 onValueChange = { endDate = it },
@@ -230,24 +289,11 @@ fun CreateSuggestion(
                 onTimeSelected = { endTime = it }, onDismiss = { showTimePickerEnd = false })
           }
 
-          Spacer(modifier = Modifier.height(8.dp))
-
-          OutlinedTextField(
-              value = description,
-              onValueChange = { description = it },
-              label = { Text("Suggestion Description*") },
-              modifier =
-                  Modifier.testTag("inputSuggestionDescription")
-                      .fillMaxWidth()
-                      .height(150.dp)
-                      .padding(bottom = 12.dp)
-                      .scrollable(rememberScrollState(), Orientation.Vertical),
-              isError = desc_err,
-              singleLine = false,
-              placeholder = { Text("Describe the suggestion") })
+          Spacer(Modifier.height(24.dp))
 
           if (suggestion.stop.address.isNotEmpty()) {
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth().padding(start = 28.dp, end = 28.dp)) {
+              // address
               OutlinedTextField(
                   value = address,
                   onValueChange = { address = it },
@@ -262,9 +308,10 @@ fun CreateSuggestion(
                   enabled = false)
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(Modifier.height(24.dp))
           }
 
+          // website
           OutlinedTextField(
               value = _website,
               onValueChange = { _website = it },
@@ -272,19 +319,26 @@ fun CreateSuggestion(
               modifier =
                   Modifier.testTag("inputSuggestionWebsite")
                       .fillMaxWidth()
+                      .padding(start = 28.dp, end = 28.dp)
                       .horizontalScroll(state = rememberScrollState(0), enabled = true),
               singleLine = true,
               placeholder = { Text("Website") })
 
-          Spacer(modifier = Modifier.height(12.dp))
+          Spacer(
+              modifier = Modifier.height(24.dp)) // the space between the last field and the button
 
           Button(
-              modifier = Modifier.testTag("createSuggestionButton"),
+              modifier =
+                  Modifier.padding(0.5.dp)
+                      .width(300.dp)
+                      .height(60.dp)
+                      .testTag("createSuggestionButton"),
+              colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight),
+              shape = RoundedCornerShape(size = 100.dp),
               onClick = {
                 title_err = suggestionText.trim().isEmpty()
                 budget_err = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
                 desc_err = description.trim().isEmpty()
-                // addr_err = address.isEmpty()
                 start_d_err = !isStringInFormat(startDate, dateRegexPattern)
                 start_t_err = !isStringInFormat(startTime, timeRegexPattern)
                 end_d_err = !isStringInFormat(endDate, dateRegexPattern)
@@ -355,9 +409,18 @@ fun CreateSuggestion(
                 }
               }) {
                 Text(
-                    if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
-                    else "Edit Suggestion",
-                    fontSize = 24.sp)
+                    text =
+                        if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
+                        else "Edit Suggestion",
+                    style =
+                        TextStyle(
+                            fontSize = 20.sp,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight(500),
+                            color = onPrimaryContainerLight,
+                            textAlign = TextAlign.Center,
+                            letterSpacing = 0.1.sp,
+                        ))
               }
         }
   }

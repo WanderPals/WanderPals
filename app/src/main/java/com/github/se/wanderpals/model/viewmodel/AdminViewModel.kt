@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -7,6 +8,8 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.SessionManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -63,6 +66,10 @@ open class AdminViewModel(
     val user = listOfUsers.value.find { it.userId == currentUser.value?.userId }
     if (user != null) {
       modifyUser(user.copy(profilePictureURL = profilePhoto))
+      FirebaseAuth.getInstance()
+          .currentUser
+          ?.updateProfile(
+              UserProfileChangeRequest.Builder().setPhotoUri(Uri.parse(profilePhoto)).build())
     }
   }
   // Send a a Uri to the repository to upload the image

@@ -27,8 +27,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    * @param userId The unique identifier for the user, used to initialize the repository.
    */
   fun initRepository(userId: String) {
-    tripsRepository = TripsRepository(userId, Dispatchers.IO)
-    tripsRepository.initFirestore()
+    Log.d("MainViewModel", "initRepository: $userId")
+    if (::tripsRepository.isInitialized) {
+      tripsRepository.uid = userId
+    } else {
+      tripsRepository = TripsRepository(userId, Dispatchers.IO)
+      tripsRepository.initFirestore()
+    }
   }
 
   /**

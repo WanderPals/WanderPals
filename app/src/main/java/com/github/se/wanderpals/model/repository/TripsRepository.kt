@@ -21,9 +21,14 @@ import com.github.se.wanderpals.service.SessionManager
 import com.google.firebase.FirebaseApp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.toObject
 import java.util.UUID
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
@@ -37,7 +42,7 @@ import kotlinx.coroutines.withContext
  *   in short)
  */
 open class TripsRepository(
-    val uid: String,
+    var uid: String,
     private val dispatcher: CoroutineDispatcher // Inject dispatcher
 ) {
 
@@ -52,6 +57,7 @@ open class TripsRepository(
   private val notificationsId = "Notifications"
   private val balancesId = "Balances"
 
+  var isNetworkEnabled = false // by default we consider that this is false
   /**
    * (Currently used only for unit tests)
    *
@@ -83,6 +89,27 @@ open class TripsRepository(
   }
 
   /**
+   * Retrieves the appropriate Firestore data source based on network availability: Source.DEFAULT
+   * if online, Source.CACHE if offline.
+   *
+   * @return Source The data source setting, either DEFAULT for online or CACHE for offline access.
+   */
+  private fun getSource(): Source = if (isNetworkEnabled) Source.DEFAULT else Source.CACHE
+
+  /**
+   * Checks network availability and logs if the device is offline, useful for aborting operations
+   * when no network.
+   *
+   * @return Boolean True if network is available, false if offline.
+   */
+  private fun checkNetworkIsValidAndLog(): Boolean {
+    if (!isNetworkEnabled) {
+      Log.d("FirebaseRepository", "Operation is aborted, device is offline")
+    }
+    return isNetworkEnabled
+  }
+
+  /**
    * Retrieves the email associated with a specific username from Firestore. This method queries the
    * Firestore 'usernameCollection' for a document matching the provided username. If the document
    * exists, it retrieves the 'email' field from the document.
@@ -94,7 +121,7 @@ open class TripsRepository(
   open suspend fun getUserEmail(username: String): String? =
       withContext(dispatcher) {
         try {
-          val documentSnapshot = usernameCollection.document(username).get().await()
+          val documentSnapshot = usernameCollection.document(username).get(getSource()).await()
           // Attempt to retrieve the list using the correct type information
           documentSnapshot.data?.get("email") as? String
         } catch (e: Exception) {
@@ -118,8 +145,11 @@ open class TripsRepository(
   open suspend fun addEmailToUsername(username: String, email: String): Boolean =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val documentRef = usernameCollection.document(username)
-          val snapshot = documentRef.get().await()
+          val snapshot = documentRef.get(getSource()).await()
 
           if (snapshot.exists()) {
             Log.e("TripsRepository", "addEmailToUsername: Username $username already exists.")
@@ -150,8 +180,11 @@ open class TripsRepository(
   open suspend fun deleteEmailByUsername(username: String): Boolean =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val documentRef = usernameCollection.document(username)
-          val snapshot = documentRef.get().await()
+          val snapshot = documentRef.get(getSource()).await()
 
           // Check if the document exists. If it does not, log for information but return true
           // anyway.
@@ -192,7 +225,7 @@ open class TripsRepository(
                   .document(tripId)
                   .collection(FirebaseCollections.TRIP_BALANCES_SUBCOLLECTION.path)
                   .document(balancesId)
-                  .get()
+                  .get(getSource())
                   .await()
           @Suppress("UNCHECKED_CAST")
           (documentSnapshot.data as? Map<String, Double>) ?: emptyMap()
@@ -216,6 +249,9 @@ open class TripsRepository(
    */
   open suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
       withContext(dispatcher) {
+        if (!checkNetworkIsValidAndLog()) {
+          return@withContext false
+        }
         try {
           val balanceDocument =
               tripsCollection
@@ -255,7 +291,7 @@ open class TripsRepository(
                   .document(tripId)
                   .collection(FirebaseCollections.TRIP_NOTIFICATIONS_SUBCOLLECTION.path)
                   .document(notificationsId)
-                  .get()
+                  .get(getSource())
                   .await()
           // Attempt to retrieve the list using the correct type information
           val data = documentSnapshot.data
@@ -300,6 +336,9 @@ open class TripsRepository(
   ): Boolean =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
 
           val notificationDocument =
               tripsCollection
@@ -344,7 +383,7 @@ open class TripsRepository(
                   .document(tripId)
                   .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
                   .document(expenseId)
-                  .get()
+                  .get(getSource())
                   .await()
           val firestoreExpense = documentSnapshot.toObject<FirestoreExpense>()
           if (firestoreExpense != null) {
@@ -408,12 +447,13 @@ open class TripsRepository(
   open suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext ""
+          }
           val uniqueID = UUID.randomUUID().toString()
           val firebaseExpense =
               FirestoreExpense.fromExpense(
-                  expense.copy(
-                      expenseId = uniqueID,
-                      userId = uid)) // we already know who creates the Expense
+                  expense.copy(expenseId = uniqueID)) // we already know who creates the Expense
           val expenseDocument =
               tripsCollection
                   .document(tripId)
@@ -459,6 +499,9 @@ open class TripsRepository(
           Log.d(
               "TripsRepository",
               "removeExpenseFromTrip: removing Expense $expenseId from trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           tripsCollection
               .document(tripId)
               .collection(FirebaseCollections.TRIP_EXPENSES_SUBCOLLECTION.path)
@@ -501,6 +544,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateExpenseInTrip: Updating a Expense in trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val firestoreExpense = FirestoreExpense.fromExpense(expense)
           tripsCollection
               .document(tripId)
@@ -539,7 +585,7 @@ open class TripsRepository(
                   .document(tripId)
                   .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
                   .document(announcementId)
-                  .get()
+                  .get(getSource())
                   .await()
           val firestoreAnnouncement = documentSnapshot.toObject<FirestoreAnnouncement>()
           if (firestoreAnnouncement != null) {
@@ -575,9 +621,15 @@ open class TripsRepository(
           val trip = getTrip(tripId)
 
           if (trip != null) {
-            val announcementIds = trip.announcements
-            announcementIds.mapNotNull { announcementId ->
-              getAnnouncementFromTrip(tripId, announcementId)
+            coroutineScope { // Create a new coroutine scope to manage child jobs
+              trip.announcements
+                  .map { announcementId ->
+                    async { // Launch a new coroutine for each announcement fetch
+                      getAnnouncementFromTrip(tripId, announcementId)
+                    }
+                  }
+                  .awaitAll()
+                  .filterNotNull() // Wait for all fetches to complete and filter out null results
             }
           } else {
             Log.e("TripsRepository", "getAllAnnouncementsFromTrip: Trip not found with ID $tripId.")
@@ -607,6 +659,9 @@ open class TripsRepository(
   open suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val uniqueID = UUID.randomUUID().toString()
           val firebaseAnnouncement =
               FirestoreAnnouncement.fromAnnouncement(
@@ -664,6 +719,9 @@ open class TripsRepository(
           Log.d(
               "TripsRepository",
               "removeAnnouncementFromTrip: removing Announcement $announcementId from trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           tripsCollection
               .document(tripId)
               .collection(FirebaseCollections.ANNOUNCEMENTS_SUBCOLLECTION.path)
@@ -708,6 +766,9 @@ open class TripsRepository(
           Log.d(
               "TripsRepository",
               "updateAnnouncementInTrip: Updating a Announcement in trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val firestoreAnnouncement = FirestoreAnnouncement.fromAnnouncement(announcement)
           tripsCollection
               .document(tripId)
@@ -746,7 +807,7 @@ open class TripsRepository(
                   .document(tripId)
                   .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
                   .document(suggestionId)
-                  .get()
+                  .get(getSource())
                   .await()
           val firestoreSuggestion = documentSnapshot.toObject<FirestoreSuggestion>()
           if (firestoreSuggestion != null) {
@@ -811,6 +872,9 @@ open class TripsRepository(
   open suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val uniqueID = UUID.randomUUID().toString()
           val firebaseSuggestion =
               FirestoreSuggestion.fromSuggestion(
@@ -864,6 +928,9 @@ open class TripsRepository(
           Log.d(
               "TripsRepository",
               "removeSuggestionFromTrip: removing Suggestion $suggestionId from trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           tripsCollection
               .document(tripId)
               .collection(FirebaseCollections.SUGGESTIONS_SUBCOLLECTION.path)
@@ -909,6 +976,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateSuggestionInTrip: Updating a Suggestion in trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val firestoreSuggestion = FirestoreSuggestion.fromSuggestion(suggestion)
           tripsCollection
               .document(tripId)
@@ -945,7 +1015,7 @@ open class TripsRepository(
                   .document(tripId)
                   .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
                   .document(userId)
-                  .get()
+                  .get(getSource())
                   .await()
 
           val firestoreUser = documentSnapshot.toObject<FirestoreUser>()
@@ -1001,6 +1071,9 @@ open class TripsRepository(
   open suspend fun addUserToTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           // for users, there IDs are google ids currently no need to gen a new one
           val firestoreUser = FirestoreUser.fromUser(user.copy(userId = uid))
           val userDocument =
@@ -1046,6 +1119,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateUserInTrip: Updating a user in trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val firestoreUser = FirestoreUser.fromUser(user)
           tripsCollection
               .document(tripId)
@@ -1078,6 +1154,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "removeUserFromTrip: Deleting user $userId from trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           tripsCollection
               .document(tripId)
               .collection(FirebaseCollections.USERS_SUBCOLLECTION.path)
@@ -1121,7 +1200,7 @@ open class TripsRepository(
                   .document(tripId)
                   .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
                   .document(stopId)
-                  .get()
+                  .get(getSource())
                   .await()
           val firestoreStop = documentSnapshot.toObject<FirestoreStop>()
           if (firestoreStop != null) {
@@ -1160,6 +1239,9 @@ open class TripsRepository(
   open suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val uniqueID = UUID.randomUUID().toString() + "," + stop.stopId
           val firebaseStop = FirestoreStop.fromStop(stop.copy(stopId = uniqueID))
           val stopDocument =
@@ -1193,6 +1275,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteStopFromTrip: Deleting stop $stopId from trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           tripsCollection
               .document(tripId)
               .collection(FirebaseCollections.STOPS_SUBCOLLECTION.path)
@@ -1226,6 +1311,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateStopInTrip: Updating a stop in trip $tripId")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val firestoreStop = FirestoreStop.fromStop(stop)
           tripsCollection
               .document(tripId)
@@ -1256,7 +1344,7 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTrip: Retrieving trip with ID $tripId.")
-          val documentSnapshot = tripsCollection.document(tripId).get().await()
+          val documentSnapshot = tripsCollection.document(tripId).get(getSource()).await()
           val firestoreTrip =
               documentSnapshot.toObject<
                   FirestoreTrip>() // Converts Firestore document to FirestoreTrip DTO
@@ -1296,6 +1384,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "addTrip: Adding a trip")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
 
           // Generate a unique ID for the trip
           val uniqueID = UUID.randomUUID().toString()
@@ -1327,6 +1418,9 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateTrip: Updating a trip")
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
           val firestoreTrip =
               FirestoreTrip.fromTrip(trip) // Converts Trip data model to FirestoreTrip DTO
           // Assuming tripId is already set in the trip object.
@@ -1353,8 +1447,38 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteTrip: Deleting trip")
-          removeTripId(tripId) // remove the trip from the user
-          tripsCollection.document(tripId).delete().await() // delete a given trip by its tripId
+          if (!checkNetworkIsValidAndLog()) {
+            return@withContext false
+          }
+
+          val trip = getTrip(tripId)
+          if (trip == null) {
+            Log.d("TripsRepository", "deleteTrip: No trip found with ID $tripId")
+            return@withContext false
+          }
+
+          coroutineScope {
+            // Concurrently delete all components of the trip
+
+            launch { setNotificationList(tripId, emptyList()) }
+            trip.stops.forEach { stopId -> launch { removeStopFromTrip(tripId, stopId) } }
+            trip.suggestions.forEach { suggestionId ->
+              launch { removeSuggestionFromTrip(tripId, suggestionId) }
+            }
+            trip.announcements.forEach { announcementId ->
+              launch { removeAnnouncementFromTrip(tripId, announcementId) }
+            }
+            trip.expenses.forEach { expenseId ->
+              launch { removeExpenseFromTrip(tripId, expenseId) }
+            }
+            launch { setBalances(tripId, emptyMap()) }
+            launch { removeTripId(tripId) }
+            trip.users.forEach { userId -> launch { removeUserFromTrip(tripId, userId) } }
+
+            launch { tripsCollection.document(tripId).delete().await() }
+          }
+
+          // delete a given trip by its tripId
           Log.d("TripsRepository", "deleteTrip: Trip deleted successfully for ID $tripId.")
           true
         } catch (e: Exception) {
@@ -1375,7 +1499,7 @@ open class TripsRepository(
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTripsIds: Getting Trips linked to user")
-          val document = usersCollection.document(uid).get().await()
+          val document = usersCollection.document(uid).get(getSource()).await()
           if (document.exists()) {
             // Attempts to cast the retrieved 'tripIds' field to a List<String>.
             // If 'tripIds' does not exist or is not a list, returns an empty list.
@@ -1415,7 +1539,7 @@ open class TripsRepository(
   private suspend fun isTripIdValid(tripId: String): Boolean =
       withContext(dispatcher) {
         try {
-          val document = tripsCollection.document(tripId).get().await()
+          val document = tripsCollection.document(tripId).get(getSource()).await()
           if (document.exists()) {
             Log.d("TripsRepository", "isTripIdValid: tripId $tripId exists.")
             true
@@ -1451,6 +1575,8 @@ open class TripsRepository(
             email = currentUser.email,
             nickname = currentUser.nickname,
             role = role,
+            lastPosition = currentUser.geoCords,
+            profilePictureURL = currentUser.profilePhoto,
             notificationTokenId = SessionManager.getNotificationToken())
     addUserToTrip(tripId, user)
   }
@@ -1468,6 +1594,9 @@ open class TripsRepository(
   open suspend fun addTripId(tripId: String, isOwner: Boolean = false): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
+        if (!checkNetworkIsValidAndLog()) {
+          return@withContext false
+        }
 
         if (!isTripIdValid(tripId)) {
           Log.d("TripsRepository", "addTripId: isTripIdValid returned false")
@@ -1478,7 +1607,7 @@ open class TripsRepository(
 
         // Ensure the user's document exists before attempting to modify it.
         // If the document does not exist, create it with an initial empty list of tripIds.
-        val userDoc = userDocumentRef.get().await()
+        val userDoc = userDocumentRef.get(getSource()).await()
         if (!userDoc.exists()) {
           // Initialize the document with an empty tripIds list.
           userDocumentRef.set(mapOf("tripIds" to listOf<String>())).await()
@@ -1544,6 +1673,9 @@ open class TripsRepository(
   open suspend fun removeTripId(tripId: String, userId: String = uid): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "removeTripId: Removing tripId from user")
+        if (!checkNetworkIsValidAndLog()) {
+          return@withContext false
+        }
 
         val userDocumentRef = usersCollection.document(userId)
 
@@ -1570,13 +1702,13 @@ open class TripsRepository(
                           "TripsRepository",
                           "removeTripId: Successfully removed trip ID $tripId from user $uid's document.")
 
-                      true // Indicate success
+                      // Indicate success
                     } else {
                       Log.d(
                           "TripsRepository",
-                          "removeTripId: Failed to removed trip ID $tripId from user $uid's document. (it didn't exist)")
-                      false
+                          "removeTripId: trip ID $tripId from user $uid's document doesn't exist.")
                     } // No change needed
+                    true
                   }
                   .await()
           transactionResult

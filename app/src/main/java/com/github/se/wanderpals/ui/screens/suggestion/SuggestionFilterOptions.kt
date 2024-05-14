@@ -29,7 +29,8 @@ fun SuggestionFilterOptions(onFilterSelected: (String) -> Unit) {
   Row(
       modifier =
           Modifier.fillMaxWidth()
-              .padding(horizontal = 16.dp, vertical = 8.dp)
+              .padding(start = 27.dp, end = 27.dp)
+              .padding(vertical = 16.dp)
               .testTag("suggestionSortingOptions"),
       horizontalArrangement = Arrangement.SpaceBetween) {
         sortOptions.forEach { filter ->

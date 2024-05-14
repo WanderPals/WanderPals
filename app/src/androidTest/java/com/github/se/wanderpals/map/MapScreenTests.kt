@@ -1,10 +1,15 @@
 package com.github.se.wanderpals.map
 
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -89,6 +94,8 @@ class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val mapManager = MapManager(context)
     mapManager.initClients()
+    mapManager.setLocationIntentStart {}
+    mapManager.setLocationIntentStop {}
     composeTestRule.setContent { Map(mockNavActions, mapViewModel = FakeMapViewModel, mapManager) }
   }
 
@@ -175,6 +182,35 @@ class MapScreenTests : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     ComposeScreen.onComposeScreen<MapScreen>(composeTestRule) {
       FakeMapViewModel.listOfTempPlaceData.value = listOf(PlaceData(placeName = "Paris"))
       clearMarkersButton { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun trackingButtonIsDisplayed() {
+    ComposeScreen.onComposeScreen<MapScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag(R.drawable.tracking_enabled.toString()).assertIsDisplayed()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_disabled.toString()).assertIsNotDisplayed()
+    }
+  }
+
+  @Test
+  fun trackingButtonChanges() {
+    ComposeScreen.onComposeScreen<MapScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag(R.drawable.tracking_enabled.toString()).performClick()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_enabled.toString()).assertIsNotDisplayed()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_disabled.toString()).assertIsDisplayed()
+    }
+  }
+
+  @Test
+  fun trackingButtonChangesBack() {
+    ComposeScreen.onComposeScreen<MapScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag(R.drawable.tracking_enabled.toString()).performClick()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_enabled.toString()).assertIsNotDisplayed()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_disabled.toString()).assertIsDisplayed()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_disabled.toString()).performClick()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_enabled.toString()).assertIsDisplayed()
+      composeTestRule.onNodeWithTag(R.drawable.tracking_disabled.toString()).assertIsNotDisplayed()
     }
   }
 }

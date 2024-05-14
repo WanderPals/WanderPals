@@ -34,4 +34,8 @@ class OverviewScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
 
   val dialog: KNode = onNode { hasTestTag("dialog") }
   val emailDialog: KNode = onNode { hasTestTag("emailDialog") }
+  val logoutDialog: KNode = onNode { hasTestTag("logoutDialog") }
+  val confirmLogoutButton: KNode = onNode { hasTestTag("confirmLogoutButton") }
+  val cancelLogoutButton: KNode = onNode { hasTestTag("cancelLogoutButton") }
+  val profilePhoto: KNode = onNode { hasTestTag("profilePhoto") }
 }

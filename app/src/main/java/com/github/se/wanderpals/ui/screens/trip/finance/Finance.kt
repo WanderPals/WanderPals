@@ -61,6 +61,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
 
+  LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
+
   Scaffold(
       modifier = Modifier.testTag("financeScreen"),
       topBar = {
@@ -70,7 +72,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       },
       bottomBar = {
         if (currentSelectedOption == FinanceOption.EXPENSES) {
-          FinanceBottomBar(expenseList, financeViewModel.trip)
+          FinanceBottomBar(expenseList)
         }
       },
       floatingActionButton = {
@@ -91,21 +93,22 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
-        LaunchedEffect(Unit) {
-          financeViewModel.updateStateLists()
-          financeViewModel.getTrip()
-        }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
-            ExpensesContent(innerPadding = innerPadding, expenseList = expenseList)
+            ExpensesContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() },
+                onExpenseItemClick = {
+                  navigationActions.setVariablesExpense(it)
+                  navigationActions.navigateTo(Route.EXPENSE_INFO)
+                })
           }
           FinanceOption.CATEGORIES -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-              Text(
-                  modifier = Modifier.align(Alignment.Center),
-                  text = "Not available yet. ",
-              )
-            }
+            CategoryContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.DEBTS -> {
             Box(modifier = Modifier.fillMaxSize()) {

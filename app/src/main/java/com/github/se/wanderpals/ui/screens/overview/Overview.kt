@@ -33,6 +33,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.github.se.wanderpals.isMapManagerInitialized
+import com.github.se.wanderpals.mapManager
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -51,6 +53,9 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
   LaunchedEffect(
       Unit) { // This ensures getAllTrips is called once per composition, not on every recomposition
         overviewViewModel.getAllTrips()
+        if (isMapManagerInitialized()) {
+          mapManager.executeLocationIntentStop()
+        }
       }
   // Collecting trips list and loading state from view model
   val tripsList by overviewViewModel.state.collectAsState()
@@ -82,6 +87,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
         topBar = {
           // Top bar with search functionality based on the title of the trips
           OverviewTopBar(
+              overviewViewModel = overviewViewModel,
               searchText = searchText,
               onSearchTextChanged = { newSearchText -> searchText = newSearchText })
         },

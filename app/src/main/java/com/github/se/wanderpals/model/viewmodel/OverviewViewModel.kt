@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.sendMessageToListOfUsers
+import com.github.se.wanderpals.service.SessionUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +39,18 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   private val _userToSend = MutableStateFlow("")
   open val userToSend: StateFlow<String> = _userToSend.asStateFlow()
 
+  // State flow to hold the current user
+  private var _currentUser = MutableStateFlow(SessionManager.getCurrentUser())
+  open val currentUser: StateFlow<SessionUser?> = _currentUser.asStateFlow()
+
+  // signal that the trip was added successfully
+  private val _createTripFinished = MutableStateFlow(false)
+  open val createTripFinished: StateFlow<Boolean> = _createTripFinished.asStateFlow()
+
+  // don't add a trip twice
+  private val _isAddingTrip = MutableStateFlow(false)
+  open val isAddingTrip: StateFlow<Boolean> = _isAddingTrip.asStateFlow()
+
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
     viewModelScope.launch {
@@ -47,6 +60,8 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
       _state.value = tripsRepository.getAllTrips()
       // Set loading state to false after data is fetched
       _isLoading.value = false
+      // Update the current user
+      _currentUser.value = SessionManager.getCurrentUser()
     }
   }
   /**
@@ -55,11 +70,23 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
    * @param trip The trip to add in the repository.
    */
   open fun createTrip(trip: Trip) {
-    runBlocking {
-      tripsRepository.addTrip(trip)
-      val newTripId = tripsRepository.getAllTrips().last().tripId
-      NotificationsManager.addJoinTripNotification(newTripId)
+    viewModelScope.launch {
+      if (!isAddingTrip.value) {
+
+        _isAddingTrip.value = true
+        tripsRepository.addTrip(trip)
+        val newTripId = tripsRepository.getAllTrips().last().tripId
+        NotificationsManager.addJoinTripNotification(newTripId)
+
+        _isAddingTrip.value = false
+        _createTripFinished.value = true // Signal that operation is finished
+      }
     }
+  }
+
+  /** Resets the CreateTripFinished flag */
+  fun setCreateTripFinished(value: Boolean) {
+    _createTripFinished.value = value
   }
 
   /**

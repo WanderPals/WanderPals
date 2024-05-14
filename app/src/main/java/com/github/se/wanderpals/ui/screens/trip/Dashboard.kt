@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -28,6 +30,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,9 +43,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardFinanceWidget
@@ -70,15 +78,18 @@ fun Dashboard(
     // Fetch the suggestions for the trip every time the screen is displayed
     dashboardViewModel.loadSuggestion(tripId)
     dashboardViewModel.loadExpenses(tripId)
+    dashboardViewModel.loadTripTitle(tripId)
   }
 
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
   val scope = rememberCoroutineScope()
   val isLoading by dashboardViewModel.isLoading.collectAsState()
+  val tripTitle by dashboardViewModel.tripTitle.collectAsState()
+  val showDeleteDialog by dashboardViewModel.showDeleteDialog.collectAsState()
 
   ModalNavigationDrawer(
       drawerState = drawerState,
-      drawerContent = { Menu(scope, drawerState, navActions) },
+      drawerContent = { Menu(scope, drawerState, navActions, dashboardViewModel) },
   ) {
     Text(modifier = Modifier.testTag("dashboardScreen"), text = " ")
     if (isLoading) {
@@ -88,7 +99,7 @@ fun Dashboard(
       }
     } else {
       Scaffold(
-          topBar = { TopDashboardBar(scope, drawerState) },
+          topBar = { TopDashboardBar(scope, drawerState, tripTitle) },
       ) { contentPadding ->
         Surface(
             modifier =
@@ -107,6 +118,31 @@ fun Dashboard(
                     onClick = { navActions.navigateTo(Route.FINANCE) })
               }
             }
+
+        if (showDeleteDialog) {
+          AlertDialog(
+              onDismissRequest = { dashboardViewModel.hideDeleteDialog() },
+              title = { Text("Confirm Deletion") },
+              text = { Text("Are you sure you want to delete this Trip?") },
+              confirmButton = {
+                TextButton(
+                    onClick = {
+                      dashboardViewModel.confirmDeleteTrip()
+                      navActions.navigateTo(Route.OVERVIEW)
+                    },
+                    modifier = Modifier.testTag("confirmDeleteTripButton")) {
+                      Text("Confirm", color = Color.Red)
+                    }
+              },
+              dismissButton = {
+                TextButton(
+                    onClick = { dashboardViewModel.hideDeleteDialog() },
+                    modifier = Modifier.testTag("cancelDeleteTripButton")) {
+                      Text("Cancel")
+                    }
+              },
+              modifier = Modifier.testTag("deleteTripDialog"))
+        }
       }
     }
   }
@@ -123,7 +159,12 @@ fun Dashboard(
  * oldNavActions is used to navigate back to the overview screen.
  */
 @Composable
-fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: NavigationActions) {
+fun Menu(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    navActions: NavigationActions,
+    dashboardViewModel: DashboardViewModel
+) {
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
@@ -179,6 +220,26 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
             navActions.navigateTo(Route.FINANCE)
           }
         })
+
+    if (SessionManager.getCurrentUser()!!.role == Role.OWNER) {
+      ElevatedButton(
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("deleteTripButton"),
+          content = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+              Icon(
+                  Icons.Default.Delete,
+                  contentDescription = "Delete",
+                  modifier = Modifier.clip(CircleShape).size(25.dp))
+              Text(text = "Delete Trip", modifier = Modifier.padding(start = 20.dp))
+            }
+          },
+          onClick = {
+            scope.launch {
+              drawerState.close()
+              dashboardViewModel.deleteTrip()
+            }
+          })
+    }
   }
 }
 
@@ -192,14 +253,33 @@ fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: Navigation
  * Contains a menu button to open the drawer.
  */
 @Composable
-fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState) {
+fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: String) {
   Column(modifier = Modifier.padding(8.dp).testTag("dashboardTopBar")) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-      ElevatedButton(
-          modifier = Modifier.testTag("menuButton"),
-          content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
-          onClick = { scope.launch { drawerState.apply { if (isClosed) open() else close() } } })
-    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment =
+            Alignment.CenterVertically // This aligns all children vertically centered in the Row
+        ) {
+          ElevatedButton(
+              modifier = Modifier.testTag("menuButton"),
+              content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
+              onClick = {
+                scope.launch { drawerState.apply { if (isClosed) open() else close() } }
+              })
+          Text(
+              text = tripTitle,
+              modifier =
+                  Modifier.padding(8.dp)
+                      .testTag("tripTitle")
+                      .weight(1f), // This makes the text expand and fill the space
+              color = MaterialTheme.colorScheme.primary,
+              fontWeight = FontWeight.Bold, // This makes the text bold
+              fontSize = 24.sp, // This sets the font size to 24sp
+              maxLines = 1, // This makes the text to be displayed in a single line
+              overflow =
+                  TextOverflow.Ellipsis // This makes the text to be ellipsized if it overflows
+              )
+        }
     HorizontalDivider(modifier = Modifier.padding(8.dp))
   }
 }
