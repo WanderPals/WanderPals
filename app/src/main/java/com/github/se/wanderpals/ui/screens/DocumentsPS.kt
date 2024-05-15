@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.github.se.wanderpals.model.viewmodel.DocumentPSViewModel
@@ -72,7 +73,7 @@ fun DocumentsPS(
           onResult = { uri -> selectedImagesLocal = listOf(uri) })
 
   Scaffold(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.fillMaxSize().testTag("documentsScreen"),
 
       // make a topBar to switch between shared and personal documents
       // make a list of documents
@@ -80,7 +81,7 @@ fun DocumentsPS(
         SecondaryTabRow(selectedTabIndex = state) {
           titles.forEachIndexed { index, title ->
             Tab(
-                modifier = Modifier.height(70.dp),
+                modifier = Modifier.height(70.dp).testTag("tab$title"),
                 text = { Text(title) },
                 selected = state == index,
                 onClick = { state = index })
@@ -92,6 +93,7 @@ fun DocumentsPS(
 
       floatingActionButton = {
         FloatingActionButton(
+            modifier = Modifier.testTag("addDocumentButton"),
             onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) }) {
               Icon(
                   imageVector = Icons.Default.Add,
@@ -110,7 +112,8 @@ fun DocumentsPS(
                               onClick = {
                                 isDisplayed = true
                                 selectedDocument = documentslistURL[it]
-                              }))
+                              })
+                          .testTag("document$it"))
               Log.d("Docs", "Document $it")
             }
           }
@@ -126,7 +129,8 @@ fun DocumentsPS(
                               onClick = {
                                 isDisplayed = true
                                 selectedDocument = documentslistUserURL[it]
-                              }))
+                              })
+                          .testTag("documentUser$it"))
               Log.d("Docs", "Document $it")
             }
           }
@@ -178,11 +182,15 @@ fun DocumentsPS(
   }
 
   if (isDisplayed) {
-    Box(modifier = Modifier.fillMaxSize().clickable(onClick = { isDisplayed = false })) {
-      AsyncImage(
-          model = selectedDocument,
-          contentDescription = "Document",
-          modifier = Modifier.fillMaxSize())
-    }
+    Box(
+        modifier =
+            Modifier.fillMaxSize()
+                .clickable(onClick = { isDisplayed = false })
+                .testTag("documentImageBox")) {
+          AsyncImage(
+              model = selectedDocument,
+              contentDescription = "Document",
+              modifier = Modifier.fillMaxSize().testTag("documentImage"))
+        }
   }
 }
