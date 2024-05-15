@@ -8,6 +8,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+/**
+    * ViewModel for a stop item in a trip.
+    * @param stopId the id of the stop
+    * @param tripsRepository the repository for trips
+    * @param tripId the id of the trip
+ */
 class StopItemViewModel(
     private val stopId: String,
     private val tripsRepository: TripsRepository,
