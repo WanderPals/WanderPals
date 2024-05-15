@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.model.data
 
-import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -37,5 +36,4 @@ data class Suggestion(
     val stop: Stop = Stop(), // Embed the Stop object directly
     val comments: List<Comment> = emptyList(),
     val userLikes: List<String> = emptyList(),
-    val stopStatus: CalendarUiState.StopStatus = CalendarUiState.StopStatus.NONE // Default value
 )

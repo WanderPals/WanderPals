@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.model.firestoreData
 
 import com.github.se.wanderpals.model.data.Suggestion
-import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -20,7 +19,6 @@ import java.time.format.DateTimeFormatter
  * @property stop Detailed proposed Stop, in a Firestore-compatible format.
  * @property comments List of comments on the suggestion, in Firestore-compatible formats.
  * @property userLikes List of user IDs who liked the suggestion.
- * @property stopStatus Status of the stop addition, converted to String for Firestore.
  */
 data class FirestoreSuggestion(
     val suggestionId: String = "",
@@ -32,9 +30,7 @@ data class FirestoreSuggestion(
     val stop: FirestoreStop = FirestoreStop(), // Using Firestore-compatible Stop object
     val comments: List<FirestoreComment> =
         emptyList(), // Using Firestore-compatible Comment objects
-    val userLikes: List<String> = emptyList(),
-    val stopStatus: String =
-        CalendarUiState.StopStatus.NONE.name // Convert enum to string for Firestore
+    val userLikes: List<String> = emptyList()
 ) {
   companion object {
     /**
@@ -60,9 +56,7 @@ data class FirestoreSuggestion(
               suggestion.comments.map {
                 FirestoreComment.fromComment(it)
               }, // Convert each Comment to FirestoreComment
-          userLikes = suggestion.userLikes,
-          stopStatus = suggestion.stopStatus.name // Convert enum to string for Firestore
-          )
+          userLikes = suggestion.userLikes)
     }
   }
 
@@ -86,8 +80,6 @@ data class FirestoreSuggestion(
             LocalTime.parse(createdAtTime, timeFormatter), // Parse time string back into LocalTime
         stop = stop.toStop(), // Convert FirestoreStop back to Stop
         comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
-        userLikes = userLikes,
-        stopStatus = CalendarUiState.StopStatus.valueOf(stopStatus) // Convert string back to enum
-        )
+        userLikes = userLikes)
   }
 }
