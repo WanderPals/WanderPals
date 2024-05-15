@@ -2,6 +2,7 @@ package com.github.se.wanderpals
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -21,7 +22,9 @@ import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
+import com.github.se.wanderpals.service.NetworkHelper
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -38,6 +41,7 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.config.GservicesValue.isInitialized
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -47,14 +51,15 @@ import com.google.firebase.storage.storage
 const val EMPTY_CODE = ""
 
 lateinit var navigationActions: NavigationActions
+lateinit var mapManager: MapManager
 
 class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
 
-  private lateinit var mapManager: MapManager
-
   private lateinit var context: Context
+
+  private lateinit var networkHelper: NetworkHelper
 
   private val viewModel: MainViewModel by viewModels {
     MainViewModel.MainViewModelFactory(application)
@@ -75,6 +80,8 @@ class MainActivity : ComponentActivity() {
                       val uid = it.result?.user?.uid ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
                       viewModel.initRepository(uid)
+                      networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
+
                       Log.d("MainActivity", "Firebase Initialized")
                       Log.d("SignIn", "Login result " + account.displayName)
 
@@ -122,6 +129,13 @@ class MainActivity : ComponentActivity() {
         }
       }
 
+  override fun onDestroy() {
+    super.onDestroy()
+    if (isMapManagerInitialized()) {
+      mapManager.executeLocationIntentStop()
+    }
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val storage = Firebase.storage
@@ -143,6 +157,18 @@ class MainActivity : ComponentActivity() {
     mapManager = MapManager(this)
     mapManager.initClients()
     mapManager.setPermissionRequest(locationPermissionRequest)
+    mapManager.setLocationIntentStart {
+      Intent(applicationContext, LocationService::class.java).apply {
+        action = LocationService.ACTION_START
+        startService(this)
+      }
+    }
+    mapManager.setLocationIntentStop {
+      Intent(applicationContext, LocationService::class.java).apply {
+        action = LocationService.ACTION_STOP
+        startService(this)
+      }
+    }
 
     setContent {
       WanderPalsTheme {
@@ -158,6 +184,7 @@ class MainActivity : ComponentActivity() {
           if (currentUser != null) {
             Log.d("MainActivity", "User is already signed in")
             viewModel.initRepository(currentUser.uid)
+            networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
 
             SessionManager.setUserSession(
                 userId = currentUser.uid,
@@ -185,6 +212,7 @@ class MainActivity : ComponentActivity() {
                             .addOnSuccessListener { result ->
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
+                              networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
                               SessionManager.setUserSession(
                                   userId = uid,
                                   name = "Anonymous User",
@@ -201,6 +229,8 @@ class MainActivity : ComponentActivity() {
                         val onSucess = { result: AuthResult ->
                           val uid = result.user?.uid ?: ""
                           viewModel.initRepository(uid)
+                          networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
+
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.email?.substringBefore("@") ?: "",
@@ -284,4 +314,9 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
+}
+
+/** Checks if the map manager is initialized. */
+fun isMapManagerInitialized(): Boolean {
+  return ::mapManager.isInitialized
 }
