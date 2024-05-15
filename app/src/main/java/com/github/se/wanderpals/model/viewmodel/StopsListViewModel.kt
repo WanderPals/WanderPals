@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 
 open class StopsListViewModel(
     private val tripsRepository: TripsRepository,
+  private val tripId: String,
 ) : ViewModel() {
 
   private val _stops = MutableStateFlow(emptyList<Stop>())
@@ -21,7 +22,7 @@ open class StopsListViewModel(
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
   /** Fetches all stops from the trip and updates the state flow accordingly. */
-  open fun loadStops(tripId: String) {
+  open fun loadStops() {
     viewModelScope.launch {
       _isLoading.value = true
       _stops.value = tripsRepository.getAllStopsFromTrip(tripId)
@@ -32,11 +33,12 @@ open class StopsListViewModel(
   /** Factory for creating StopsListViewModel instances. */
   class StopsListViewModelFactory(
       private val tripsRepository: TripsRepository,
+    private val tripId: String,
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(StopsListViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST") return StopsListViewModel(tripsRepository) as T
+        @Suppress("UNCHECKED_CAST") return StopsListViewModel(tripsRepository, tripId) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }

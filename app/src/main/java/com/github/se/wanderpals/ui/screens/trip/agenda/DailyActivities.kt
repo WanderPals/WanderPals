@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
@@ -31,7 +32,7 @@ import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
  * @param onActivityItemClick Callback function triggered when an activity item is clicked,
  */
 @Composable
-fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (String) -> Unit) {
+fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (String) -> Unit, tripId: String, tripsRepository: TripsRepository) {
   val uiState by agendaViewModel.uiState.collectAsState()
   val selectedDate = uiState.selectedDate
 
@@ -64,7 +65,7 @@ fun DailyActivities(agendaViewModel: AgendaViewModel, onActivityItemClick: (Stri
           LazyColumn(
               content = {
                 items(dailyActivities.sortedBy { it.startTime }) { stop ->
-                  StopItem(stop, onActivityItemClick)
+                  StopItem(stop, onActivityItemClick, tripId, tripsRepository,{refreshFunction()})
                 }
               })
         }

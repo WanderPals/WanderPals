@@ -100,7 +100,7 @@ fun Trip(
                               factory =
                                   AgendaViewModel.AgendaViewModelFactory(tripId, tripsRepository),
                               key = "Agenda")
-                      Agenda(agendaViewModel)
+                      Agenda(agendaViewModel, tripId, tripsRepository)
                     }
                     composable(Route.SUGGESTION) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION)
@@ -221,9 +221,9 @@ fun Trip(
                       val viewModel: StopsListViewModel =
                           viewModel(
                               factory =
-                                  StopsListViewModel.StopsListViewModelFactory(tripsRepository),
+                                  StopsListViewModel.StopsListViewModelFactory(tripsRepository, tripId),
                               key = "StopsListViewModel")
-                      StopsList(viewModel, tripId)
+                      StopsList(viewModel, tripId, tripsRepository)
                     }
                   }
             }
