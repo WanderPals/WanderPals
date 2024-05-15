@@ -38,7 +38,7 @@ val stop3 = Stop("stopId3", "stop3", "stop3 address", LocalDate.of(2024, 5, 12))
 val stop4 = Stop("stopId4", "stop4", "stop4 address", LocalDate.of(2024, 5, 13))
 
 // Fake ViewModel for testing
-class FakeStopsListViewModel : StopsListViewModel(mockk(relaxed = true)) {
+class FakeStopsListViewModel : StopsListViewModel(mockk(relaxed = true), tripId = "tripId") {
   private val _stops = MutableStateFlow(emptyList<Stop>())
   override var stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 
@@ -47,7 +47,7 @@ class FakeStopsListViewModel : StopsListViewModel(mockk(relaxed = true)) {
 
   var allowDataLoading = true
 
-  override fun loadStops(tripId: String) {
+  override fun loadStops() {
     if (allowDataLoading) {
       viewModelScope.launch {
         _isLoading.value = true
@@ -88,11 +88,13 @@ class StopsListTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     // Load stops accordingly
     if (!useEmptyList) {
       (stopsListViewModel as FakeStopsListViewModel).allowDataLoading = true
-      stopsListViewModel.loadStops("tripId")
+      stopsListViewModel.loadStops()
     }
 
     // Set up Compose UI content
-    composeTestRule.setContent { StopsList(stopsListViewModel, "tripId") }
+    composeTestRule.setContent {
+      StopsList(stopsListViewModel, tripId = "tripId", mockk(relaxed = true))
+    }
   }
 
   @Test

@@ -54,7 +54,11 @@ import java.time.LocalDate
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "WeekBasedYear")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String, tripsRepository: TripsRepository) {
+fun StopsList(
+    stopsListViewModel: StopsListViewModel,
+    tripId: String,
+    tripsRepository: TripsRepository
+) {
 
   var isStopPressed by remember { mutableStateOf(false) }
   var selectedStopId by remember { mutableStateOf("") }
@@ -69,7 +73,7 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String, tripsRepos
 
   val stops by stopsListViewModel.stops.collectAsState()
 
-  val  refreshFunction = { stopsListViewModel.loadStops() }
+  val refreshFunction = { stopsListViewModel.loadStops() }
 
   LaunchedEffect(Unit) { refreshFunction() }
 
@@ -142,14 +146,18 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String, tripsRepos
                                 stops
                                     .filter { stop -> stop.date == date }
                                     .sortedBy { it.startTime }) { stop ->
-                                  StopItem(stop, onActivityItemClick, tripId, tripsRepository, refreshFunction)
+                                  StopItem(
+                                      stop,
+                                      onActivityItemClick,
+                                      tripId,
+                                      tripsRepository,
+                                      refreshFunction)
                                 }
                           }
                         })
                   }
               PullToRefreshLazyColumn(
-                  inputLazyColumn = stopsLazyColumn,
-                  onRefresh = { stopsListViewModel.loadStops() })
+                  inputLazyColumn = stopsLazyColumn, onRefresh = { stopsListViewModel.loadStops() })
             } else { // Display a message if there are no stops
               Box(modifier = Modifier.fillMaxSize()) {
                 Text(

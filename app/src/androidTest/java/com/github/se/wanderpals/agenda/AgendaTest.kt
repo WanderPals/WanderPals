@@ -77,7 +77,12 @@ class AgendaTest {
     val testYearMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
 
-    composeTestRule.setContent { Agenda(agendaViewModel = fakeViewModel) }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     composeTestRule.waitForIdle()
 
@@ -93,7 +98,14 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      WanderPalsTheme {
+        Agenda(
+            agendaViewModel = fakeViewModel,
+            tripId = "",
+            tripsRepository = TripsRepository("", Dispatchers.IO))
+      }
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -110,7 +122,14 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      WanderPalsTheme {
+        Agenda(
+            agendaViewModel = fakeViewModel,
+            tripId = "",
+            tripsRepository = TripsRepository("", Dispatchers.IO))
+      }
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -131,7 +150,14 @@ class AgendaTest {
           // Initial state setup to ensure "15" is present and not selected.
         }
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      WanderPalsTheme {
+        Agenda(
+            agendaViewModel = fakeViewModel,
+            tripId = "",
+            tripsRepository = TripsRepository("", Dispatchers.IO))
+      }
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -152,7 +178,12 @@ class AgendaTest {
   fun checkBannerIsDisplayed() {
     val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
-    composeTestRule.setContent { Agenda(agendaViewModel = testViewModel) }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = testViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     composeTestRule.waitForIdle()
 

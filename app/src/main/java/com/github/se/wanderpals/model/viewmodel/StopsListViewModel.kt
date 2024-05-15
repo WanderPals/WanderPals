@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 
 open class StopsListViewModel(
     private val tripsRepository: TripsRepository,
-  private val tripId: String,
+    private val tripId: String,
 ) : ViewModel() {
 
   private val _stops = MutableStateFlow(emptyList<Stop>())
@@ -33,7 +33,7 @@ open class StopsListViewModel(
   /** Factory for creating StopsListViewModel instances. */
   class StopsListViewModelFactory(
       private val tripsRepository: TripsRepository,
-    private val tripId: String,
+      private val tripId: String,
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
