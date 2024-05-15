@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,6 +56,7 @@ fun SuggestionHistoryItem(
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier
 ) {
+  val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
   val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
   val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
 
@@ -170,9 +172,10 @@ fun SuggestionHistoryItem(
 
                 Row {
                   Icon(
-                      imageVector = Icons.Filled.Favorite,
+                      imageVector =
+                          if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
                       contentDescription = "Like",
-                      tint = Color.Red,
+                      tint = if (isLiked) Color.Red else tertiaryLight,
                       modifier =
                           Modifier.size(18.dp)
                               .padding(

@@ -40,7 +40,6 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
  * selected.
  *
- * @param tripId The ID of the trip.
  * @param suggestionsViewModel The ViewModel for managing suggestions.
  */
 @Composable

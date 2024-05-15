@@ -361,12 +361,24 @@ open class SuggestionsViewModel(
     _editingComment.value = false
   }
 
+  /** Transforms a suggestion to a stop and updates the backend and local state accordingly. */
   open fun transformToStop(suggestion: Suggestion) {
     viewModelScope.launch {
       suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
       NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
       NotificationsManager.addStopNotification(tripId, suggestion.stop)
-      suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
+
+      // Update suggestion with ADDED stopStatus
+      val updatedSuggestion = suggestion.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+
+      // Insert the updated suggestion at the beginning of the list
+      _state.value =
+          listOf(updatedSuggestion) +
+              _state.value.filter { it.suggestionId != suggestion.suggestionId }
+
+      suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)
+      // Add the suggestion ID to the list of added stops
+      _addedSuggestionsToStops.value += suggestion.suggestionId
     }
     loadSuggestion(tripId)
     hideBottomSheet()
