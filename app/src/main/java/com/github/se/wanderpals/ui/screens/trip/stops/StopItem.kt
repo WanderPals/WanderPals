@@ -57,192 +57,191 @@ import com.github.se.wanderpals.ui.theme.outlineVariantLight
  * @param onActivityClick Callback function triggered when the activity item is clicked,
  */
 @Composable
-fun StopItem(stop: Stop, onActivityClick: (String) -> Unit, tripId: String, tripsRepository: TripsRepository, onRefresh: () -> Unit) {
+fun StopItem(
+    stop: Stop,
+    onActivityClick: (String) -> Unit,
+    tripId: String,
+    tripsRepository: TripsRepository,
+    onRefresh: () -> Unit
+) {
 
-    val stopItemViewModel: StopItemViewModel = viewModel(
-        factory = StopItemViewModel.StopItemViewModelFactory(
-            stopId = stop.stopId,
-            tripsRepository = tripsRepository,
-            tripId = tripId
-        )
-    )
+  val stopItemViewModel: StopItemViewModel =
+      viewModel(
+          factory =
+              StopItemViewModel.StopItemViewModelFactory(
+                  stopId = stop.stopId, tripsRepository = tripsRepository, tripId = tripId))
 
-    // State to handle the visibility of the confirmation dialog
-    var showDeleteConfirmDialog by remember { mutableStateOf(false) }
-    var showNoRightsToast by remember { mutableStateOf(false) }
+  // State to handle the visibility of the confirmation dialog
+  var showDeleteConfirmDialog by remember { mutableStateOf(false) }
+  var showNoRightsToast by remember { mutableStateOf(false) }
 
-    if (showNoRightsToast) {
-        ShowToast("You do not have the rights to delete this stop")
-        showNoRightsToast = false
+  if (showNoRightsToast) {
+    ShowToast("You do not have the rights to delete this stop")
+    showNoRightsToast = false
+  }
+
+  val isDeleted by stopItemViewModel.isDeleted.collectAsState()
+
+  LaunchedEffect(isDeleted) {
+    if (isDeleted) {
+      onRefresh()
     }
+  }
 
-    val isDeleted by stopItemViewModel.isDeleted.collectAsState()
-
-    LaunchedEffect(isDeleted) {
-        if (isDeleted) {
-            onRefresh()
-        }
-    }
-
-    val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
-    Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
-        Button(
-            onClick = { onActivityClick(stop.stopId) },
-            shape = RectangleShape,
-            modifier =
+  val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
+  Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
+    Button(
+        onClick = { onActivityClick(stop.stopId) },
+        shape = RectangleShape,
+        modifier =
             Modifier.height(100.dp).fillMaxWidth().testTag("activityItemButton" + stop.stopId),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
-            Row(modifier = Modifier.fillMaxSize()) {
-                // Texts Column
-                Column(
-                    modifier =
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)) {
+          Row(modifier = Modifier.fillMaxSize()) {
+            // Texts Column
+            Column(
+                modifier =
                     Modifier.weight(
-                        1f) // Takes up all available space, pushing the IconButton to the right
+                            1f) // Takes up all available space, pushing the IconButton to the right
                         .align(Alignment.CenterVertically) // Vertically center the column content
                         .fillMaxSize(), // Fill the available space
-                    verticalArrangement = Arrangement.SpaceEvenly) {
+                verticalArrangement = Arrangement.SpaceEvenly) {
+                  Text(
+                      text = stop.title,
+                      style =
+                          TextStyle(
+                              fontSize = 16.sp,
+                              lineHeight = 20.sp,
+                              fontWeight = FontWeight(500),
+                              letterSpacing = 0.16.sp),
+                      color = MaterialTheme.colorScheme.primary,
+                      modifier =
+                          Modifier.wrapContentWidth(Alignment.Start)
+                              .testTag("ActivityTitle" + stop.stopId))
+                  Text(
+                      text =
+                          "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
+                      style =
+                          TextStyle(
+                              fontSize = 16.sp,
+                              lineHeight = 20.sp,
+                              fontWeight = FontWeight(500),
+                              letterSpacing = 0.16.sp,
+                          ),
+                      color = MaterialTheme.colorScheme.secondary,
+                      modifier =
+                          Modifier.wrapContentWidth(Alignment.Start)
+                              .testTag("ActivityTime" + stop.stopId))
+                  if (stopHasLocation) {
                     Text(
-                        text = stop.title,
+                        text = stop.address,
                         style =
-                        TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 20.sp,
-                            fontWeight = FontWeight(500),
-                            letterSpacing = 0.16.sp),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier =
-                        Modifier.wrapContentWidth(Alignment.Start)
-                            .testTag("ActivityTitle" + stop.stopId))
-                    Text(
-                        text =
-                        "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
-                        style =
-                        TextStyle(
-                            fontSize = 16.sp,
-                            lineHeight = 20.sp,
-                            fontWeight = FontWeight(500),
-                            letterSpacing = 0.16.sp,
-                        ),
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier =
-                        Modifier.wrapContentWidth(Alignment.Start)
-                            .testTag("ActivityTime" + stop.stopId))
-                    if (stopHasLocation) {
-                        Text(
-                            text = stop.address,
-                            style =
                             TextStyle(
                                 fontSize = 16.sp,
                                 lineHeight = 20.sp,
                                 fontWeight = FontWeight(500),
                                 letterSpacing = 0.16.sp),
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier =
+                        color = MaterialTheme.colorScheme.secondary,
+                        modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
                                 .testTag("ActivityAddress" + stop.stopId))
-                    }
+                  }
                 }
 
-                // Map Navigation Button
-                // Icon Button at the far right, centered vertically
-                IconButton(
-                    onClick = {
-                        if (stopHasLocation) {
-                            navigationActions.setVariablesLocation(stop.geoCords, stop.address)
-                            navigationActions.navigateTo(Route.MAP)
-                        }
-                    },
-                    modifier =
+            // Map Navigation Button
+            // Icon Button at the far right, centered vertically
+            IconButton(
+                onClick = {
+                  if (stopHasLocation) {
+                    navigationActions.setVariablesLocation(stop.geoCords, stop.address)
+                    navigationActions.navigateTo(Route.MAP)
+                  }
+                },
+                modifier =
                     Modifier.size(24.dp) // Adjust the size of the IconButton as needed
                         .align(Alignment.CenterVertically)
                         .testTag(
                             "navigationToMapButton" +
-                                    stop.stopId), // Center the IconButton vertically within the
-                    enabled = stopHasLocation
-                    // Row
+                                stop.stopId), // Center the IconButton vertically within the
+                enabled = stopHasLocation
+                // Row
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn,
-                        tint =
-                        if (stopHasLocation) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                        contentDescription = null // Provide an appropriate content description
-                    )
+                  Icon(
+                      imageVector = Icons.Default.LocationOn,
+                      tint =
+                          if (stopHasLocation) MaterialTheme.colorScheme.primary
+                          else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                      contentDescription = null // Provide an appropriate content description
+                      )
                 }
 
-                // Add spacing between the map icon and delete icon
-                Spacer(modifier = Modifier.width(16.dp))
+            // Add spacing between the map icon and delete icon
+            Spacer(modifier = Modifier.width(16.dp))
 
-                // Delete Icon
-                IconButton(
-                    onClick = {
-                        if(SessionManager.isAdmin()) {
-                            showDeleteConfirmDialog = true
-                        } else {
-                            showNoRightsToast = true
-                        }
-                    },
-                    modifier = Modifier
-                        .size(24.dp)
+            // Delete Icon
+            IconButton(
+                onClick = {
+                  if (SessionManager.isAdmin()) {
+                    showDeleteConfirmDialog = true
+                  } else {
+                    showNoRightsToast = true
+                  }
+                },
+                modifier =
+                    Modifier.size(24.dp)
                         .align(Alignment.CenterVertically)
                         .testTag("deleteButton" + stop.stopId),
-                    content = {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            tint = if(SessionManager.isAdmin()) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                            contentDescription = "Delete Stop"
-                        )
-                    }
-                )
-            }
+                content = {
+                  Icon(
+                      imageVector = Icons.Default.Delete,
+                      tint =
+                          if (SessionManager.isAdmin()) MaterialTheme.colorScheme.error
+                          else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                      contentDescription = "Delete Stop")
+                })
+          }
         }
-    }
+  }
 
-    // Confirmation Dialog for Deletion
-    if (showDeleteConfirmDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteConfirmDialog = false },
-            title = { Text("Confirm Deletion") },
-            text = { Text("Are you sure you want to delete this stop?") },
-            confirmButton = {
-                TextButton(
-                    modifier = Modifier.testTag("confirmDeleteButton" + stop.stopId),
-                    onClick = {
-                        stopItemViewModel.deleteStop()
-                        showDeleteConfirmDialog = false
-                    }
-                ) {
-                    Text("Confirm", color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    modifier = Modifier.testTag("cancelDeleteButton" + stop.stopId),
-                    onClick = { showDeleteConfirmDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
+  // Confirmation Dialog for Deletion
+  if (showDeleteConfirmDialog) {
+    AlertDialog(
+        onDismissRequest = { showDeleteConfirmDialog = false },
+        title = { Text("Confirm Deletion") },
+        text = { Text("Are you sure you want to delete this stop?") },
+        confirmButton = {
+          TextButton(
+              modifier = Modifier.testTag("confirmDeleteButton" + stop.stopId),
+              onClick = {
+                stopItemViewModel.deleteStop()
+                showDeleteConfirmDialog = false
+              }) {
+                Text("Confirm", color = MaterialTheme.colorScheme.error)
+              }
+        },
+        dismissButton = {
+          TextButton(
+              modifier = Modifier.testTag("cancelDeleteButton" + stop.stopId),
+              onClick = { showDeleteConfirmDialog = false }) {
+                Text("Cancel")
+              }
+        })
+  }
 
-    // the horizontal divider
-    Box(
-        modifier =
-        Modifier.fillMaxWidth(), // This ensures the box takes the full width of its container
-        contentAlignment = Alignment.Center // This will center the content inside the box
-    ) {
+  // the horizontal divider
+  Box(
+      modifier =
+          Modifier.fillMaxWidth(), // This ensures the box takes the full width of its container
+      contentAlignment = Alignment.Center // This will center the content inside the box
+      ) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(), // Customize this width as needed
             thickness = 1.dp,
-            color = outlineVariantLight
-        )
-    }
+            color = outlineVariantLight)
+      }
 }
 
 @Composable
 fun ShowToast(message: String) {
-    val context = LocalContext.current
-    LaunchedEffect(message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    }
+  val context = LocalContext.current
+  LaunchedEffect(message) { Toast.makeText(context, message, Toast.LENGTH_SHORT).show() }
 }

@@ -15,13 +15,15 @@ import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.ui.screens.trip.agenda.StopItem
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
+import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -80,7 +82,11 @@ class DailyActivitiesTest {
   fun checkDailyActivitiesAreDisplayed() {
 
     composeTestRule.setContent {
-      DailyActivities(agendaViewModel = testViewModel, onActivityItemClick = {})
+      DailyActivities(
+          agendaViewModel = testViewModel,
+          onActivityItemClick = {},
+          tripId = "1",
+          tripsRepository = TripsRepository(uid = "1", Dispatchers.IO))
     }
 
     composeTestRule.waitForIdle()
@@ -101,7 +107,16 @@ class DailyActivitiesTest {
   fun verifyActivityItemsContent() {
     // Set the content once with a composable that includes all test items
     composeTestRule.setContent {
-      Column { testActivities.forEach { stop -> StopItem(stop = stop, onActivityClick = {}) } }
+      Column {
+        testActivities.forEach { stop ->
+          StopItem(
+              stop = stop,
+              onActivityClick = {},
+              tripId = "1",
+              tripsRepository = TripsRepository(uid = "1", Dispatchers.IO),
+              onRefresh = {})
+        }
+      }
     }
 
     // Loop through each test activity and assert its details
@@ -142,7 +157,11 @@ class DailyActivitiesTest {
   fun checkNoActivitiesMessageIsDisplayed() {
 
     composeTestRule.setContent {
-      DailyActivities(agendaViewModel = emptyTestViewModel, onActivityItemClick = {})
+      DailyActivities(
+          agendaViewModel = emptyTestViewModel,
+          onActivityItemClick = {},
+          tripId = "1",
+          tripsRepository = TripsRepository(uid = "1", Dispatchers.IO))
     }
 
     composeTestRule.waitForIdle()
@@ -163,7 +182,10 @@ class DailyActivitiesTest {
               onActivityClick = { stopId ->
                 isStopPressed = true
                 selectedStopId = stopId
-              })
+              },
+              tripId = "1",
+              tripsRepository = TripsRepository(uid = "1", Dispatchers.IO),
+              onRefresh = {})
         }
         if (isStopPressed) {
           val selectedStop = testActivities.find { stop -> stop.stopId == selectedStopId }!!

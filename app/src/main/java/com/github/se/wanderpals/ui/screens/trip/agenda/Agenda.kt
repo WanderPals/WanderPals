@@ -113,8 +113,7 @@ fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: Tr
             selectedStopId = stopId
           },
           tripId = tripId,
-          tripsRepository = tripsRepository
-          )
+          tripsRepository = tripsRepository)
     }
   }
 
