@@ -212,9 +212,7 @@ fun Trip(
                                       tripsRepository, tripId),
                               key = "DocumentPSViewModel")
                       DocumentsPS(
-                          tripId = tripId,
-                          viewModel = viewModel,
-                          storageReference = Firebase.storage.reference)
+                          viewModel = viewModel, storageReference = Firebase.storage.reference)
                     }
                   }
             }

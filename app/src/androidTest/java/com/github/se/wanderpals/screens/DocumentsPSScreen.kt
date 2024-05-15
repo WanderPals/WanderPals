@@ -17,4 +17,9 @@ class DocumentsPSScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val documentUser1 = onNode { hasTestTag("documentUser1") }
   val documentImage = onNode { hasTestTag("documentImage") }
   val documentImageBox = onNode { hasTestTag("documentImageBox") }
+  val documentNameBox = onNode { hasTestTag("documentNameBox") }
+  val addDocumentButton = onNode { hasTestTag("addDocumentButton") }
+  val acceptButton = onNode { hasTestTag("acceptButton") }
+  val cancelButton = onNode { hasTestTag("cancelButton") }
+  val documentBox = onNode { hasTestTag("documentBox") }
 }

@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardDocumentWidget
@@ -75,6 +76,9 @@ fun Dashboard(
     dashboardViewModel.loadSuggestion(tripId)
     dashboardViewModel.loadExpenses(tripId)
     dashboardViewModel.loadTripTitle(tripId)
+    dashboardViewModel.loadLastAddedSharedDocument(tripId)
+    dashboardViewModel.loadLastAddedPrivateDocument(
+        tripId, SessionManager.getCurrentUser()?.userId!!)
   }
 
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -114,7 +118,9 @@ fun Dashboard(
 
                 Spacer(modifier = Modifier.padding(8.dp))
 
-                DashboardDocumentWidget(onClick = { navActions.navigateTo(Route.DOCUMENT) })
+                DashboardDocumentWidget(
+                    onClick = { navActions.navigateTo(Route.DOCUMENT) },
+                    viewModel = dashboardViewModel)
               }
             }
       }

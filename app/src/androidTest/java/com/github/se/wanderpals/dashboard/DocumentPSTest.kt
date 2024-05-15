@@ -1,11 +1,15 @@
 package com.github.se.wanderpals.dashboard
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.data.Documents
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DocumentPSViewModel
 import com.github.se.wanderpals.screens.DocumentsPSScreen
 import com.github.se.wanderpals.ui.screens.DocumentsPS
+import com.google.firebase.storage.StorageReference
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -20,28 +24,34 @@ import org.junit.runner.RunWith
 // fake view model
 class FakeDocumentPSViewModel :
     DocumentPSViewModel(tripsRepository = TripsRepository("", Dispatchers.IO), "tripId") {
-  override var documentslistURL =
+  override var documentslistURL: MutableStateFlow<List<Documents>> =
       MutableStateFlow(
           listOf(
-              "https://www.google.com/url?sa=i&url=https%3A%2F%2Ffr.vecteezy.com%2Fvecteur-libre%2Fbillet-avion&psig=AOvVaw1z46CJaCsQt_21f3_98pTc&ust=1715808551692000&source=images&cd=vfe&opi=89978449&ved=0CBAQjRxqFwoTCNjls4uLjoYDFQAAAAAdAAAAABAE",
-              "url2",
-              "url3"))
-  override var documentslistUserURL = MutableStateFlow(listOf("url1", "url2"))
+              Documents("url1", "name1"), Documents("url2", "name2"), Documents("url3", "name3")))
+  override var documentslistUserURL: MutableStateFlow<List<Documents>> =
+      MutableStateFlow(listOf(Documents("url1", "name1"), Documents("url2", "name2")))
 
   override fun getAllDocumentsFromTrip() {
-    documentslistURL.value = listOf("url1", "url2", "url3")
+    documentslistURL.value
   }
 
   override fun getAllDocumentsFromCurrentUser() {
-    documentslistUserURL.value = listOf("url1", "url2")
+    documentslistUserURL.value
   }
 
-  override fun addDocumentToTrip(documentURL: String, tripID: String) {
-    documentslistURL.value += documentURL
-  }
-
-  override fun updateDocumentsOfCurrentUser(documentURL: String) {
-    documentslistUserURL.value += documentURL
+  override fun addDocument(
+      documentsName: String,
+      documentsURL: Uri,
+      path: String,
+      context: Context,
+      storageReference: StorageReference?,
+      state: Int
+  ) {
+    if (state == 0) {
+      documentslistURL.value += Documents(documentsURL.toString(), documentsName)
+    } else {
+      documentslistURL.value += Documents(documentsURL.toString(), documentsName)
+    }
   }
 }
 
@@ -55,9 +65,7 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   @Test
   fun testDocumentPS() = run {
     val viewModel = FakeDocumentPSViewModel()
-    composeTestRule.setContent {
-      DocumentsPS(tripId = "tripId", viewModel = viewModel, storageReference = null)
-    }
+    composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
     ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
       tabPrivate {
         assertIsDisplayed()
@@ -75,9 +83,7 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   @Test
   fun testClickedOnPrivateAndShared() = run {
     val viewModel = FakeDocumentPSViewModel()
-    composeTestRule.setContent {
-      DocumentsPS(tripId = "tripID", viewModel = viewModel, storageReference = null)
-    }
+    composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
     ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
       tabShared {
         performClick()
@@ -102,9 +108,7 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   @Test
   fun testDocumentIsDisplayed() = run {
     val viewModel = FakeDocumentPSViewModel()
-    composeTestRule.setContent {
-      DocumentsPS(tripId = "tripID", viewModel = viewModel, storageReference = null)
-    }
+    composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
     ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
       tabShared { performClick() }
       document0 { performClick() }
@@ -119,9 +123,7 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   @Test
   fun testDocumentIsClicked() = run {
     val viewModel = FakeDocumentPSViewModel()
-    composeTestRule.setContent {
-      DocumentsPS(tripId = "tripID", viewModel = viewModel, storageReference = null)
-    }
+    composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
     ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
       tabShared { performClick() }
       document0 { performClick() }
@@ -136,9 +138,7 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   @Test
   fun testDocumentUserIsDisplayed() = run {
     val viewModel = FakeDocumentPSViewModel()
-    composeTestRule.setContent {
-      DocumentsPS(tripId = "tripID", viewModel = viewModel, storageReference = null)
-    }
+    composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
     ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
       tabShared { performClick() }
       tabPrivate { performClick() }
@@ -147,6 +147,32 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
         assertHasClickAction()
       }
       documentUser1 {
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
+    }
+  }
+  // test6: add a document
+  @Test
+  fun testAddDocument() = run {
+    val viewModel = FakeDocumentPSViewModel()
+    composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
+    ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
+      floatingActionButton { performClick() }
+      documentBox { assertIsDisplayed() }
+      documentNameBox {
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
+      addDocumentButton {
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
+      acceptButton {
+        assertIsDisplayed()
+        assertHasClickAction()
+      }
+      cancelButton {
         assertIsDisplayed()
         assertHasClickAction()
       }

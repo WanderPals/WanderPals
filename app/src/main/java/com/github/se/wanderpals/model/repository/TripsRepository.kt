@@ -992,45 +992,6 @@ open class TripsRepository(
         }
       }
 
-  // get all the documents URL from a User
-  open suspend fun getAllDocumentsFromUser(userId: String, tripId: String): List<String> =
-      withContext(dispatcher) {
-        try {
-          val user = getUserFromTrip(tripId, userId)
-          if (user != null) {
-            user.documentsURL
-          } else {
-            Log.e("TripsRepository", "getAllDocumentsFromUser: User not found with ID $userId.")
-            emptyList()
-          }
-        } catch (e: Exception) {
-          Log.e(
-              "TripsRepository",
-              "getAllDocumentsFromUser: Error fetching documents to user $userId.",
-              e)
-          emptyList()
-        }
-      }
-
-  // get all the documents URL from a Trip
-  open suspend fun getAllDocumentsFromTrip(tripId: String): List<String> =
-      withContext(dispatcher) {
-        try {
-          val trip = getTrip(tripId)
-          if (trip != null) {
-            trip.documentsURL
-          } else {
-            Log.e("TripsRepository", "getAllDocumentsFromTrip: Trip not found with ID $tripId.")
-            emptyList()
-          }
-        } catch (e: Exception) {
-          Log.e(
-              "TripsRepository",
-              "getAllDocumentsFromTrip: Error fetching documents to trip $tripId.",
-              e)
-          emptyList()
-        }
-      }
   /**
    * Adds a user to a specified trip. This method creates or updates a document in the Users
    * subcollection within a trip, storing the user's details.

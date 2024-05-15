@@ -3,21 +3,29 @@ package com.github.se.wanderpals.ui.screens
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
@@ -30,22 +38,31 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.github.se.wanderpals.model.viewmodel.DocumentPSViewModel
 import com.google.firebase.storage.StorageReference
 
+/**
+ * This composable function is used to display the documents of a trip. It displays the documents of
+ * the trip and the documents of the current user.
+ *
+ * @param tripId the id of the trip
+ * @param viewModel the view model of the documents
+ * @param storageReference the reference to the storage
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DocumentsPS(
-    tripId: String,
-    viewModel: DocumentPSViewModel,
-    storageReference: StorageReference?
-) {
+fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReference?) {
 
   val context = LocalContext.current
 
@@ -58,7 +75,9 @@ fun DocumentsPS(
 
   var isDisplayed by remember { mutableStateOf(false) }
   var selectedDocument by remember { mutableStateOf("") }
-  var selectedImagesLocal by remember { mutableStateOf<List<Uri?>>(emptyList()) }
+  var selectedImagesLocal by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
+  var displayedTheBoxSelector by remember { mutableStateOf(false) }
+  var documentName by remember { mutableStateOf("") }
 
   // get all the documents from the trip
 
@@ -70,7 +89,7 @@ fun DocumentsPS(
   val singlePhotoPickerLauncher =
       rememberLauncherForActivityResult(
           contract = ActivityResultContracts.PickVisualMedia(),
-          onResult = { uri -> selectedImagesLocal = listOf(uri) })
+          onResult = { uri -> selectedImagesLocal = uri })
 
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("documentsScreen"),
@@ -94,7 +113,7 @@ fun DocumentsPS(
       floatingActionButton = {
         FloatingActionButton(
             modifier = Modifier.testTag("addDocumentButton"),
-            onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) }) {
+            onClick = { displayedTheBoxSelector = true }) {
               Icon(
                   imageVector = Icons.Default.Add,
                   contentDescription = "Add document",
@@ -105,13 +124,13 @@ fun DocumentsPS(
           LazyColumn(modifier = Modifier.padding(it)) {
             items(documentslistURL.size) {
               Text(
-                  "Document $it",
+                  documentslistURL[it].documentsName,
                   modifier =
                       Modifier.padding(20.dp)
                           .clickable(
                               onClick = {
                                 isDisplayed = true
-                                selectedDocument = documentslistURL[it]
+                                selectedDocument = documentslistURL[it].documentsURL
                               })
                           .testTag("document$it"))
               Log.d("Docs", "Document $it")
@@ -122,13 +141,13 @@ fun DocumentsPS(
           LazyColumn(modifier = Modifier.padding(it)) {
             items(documentslistUserURL.size) {
               Text(
-                  "Document $it",
+                  documentslistUserURL[it].documentsName,
                   modifier =
                       Modifier.padding(20.dp)
                           .clickable(
                               onClick = {
                                 isDisplayed = true
-                                selectedDocument = documentslistUserURL[it]
+                                selectedDocument = documentslistUserURL[it].documentsURL
                               })
                           .testTag("documentUser$it"))
               Log.d("Docs", "Document $it")
@@ -137,49 +156,49 @@ fun DocumentsPS(
         }
       }
 
-  if (selectedImagesLocal.isNotEmpty() && selectedImagesLocal[0] != null) {
-    Log.d("Admin", "Selected Image: ${selectedImagesLocal[0]}")
-    // create a reference to the uri of the image
-    val riversRef =
-        storageReference?.child(
-            "documents/${titles[state]}/${selectedImagesLocal[0]?.lastPathSegment}")
-    // upload the image to the firebase storage
-    val taskUp = riversRef?.putFile(selectedImagesLocal[0]!!)
+  /*if (selectedImagesLocal != Uri.EMPTY) {
+      // create a reference to the uri of the image
+      val riversRef =
+          storageReference?.child(
+              "documents/${titles[state]}/${selectedImagesLocal[0]?.lastPathSegment}"
+          )
+      // upload the image to the firebase storage
+      val taskUp = riversRef?.putFile(selectedImagesLocal[0]!!)
 
-    // Register observers to listen for state changes
-    // and progress of the upload
-    taskUp
-        ?.addOnFailureListener {
-          // Handle unsuccessful uploads
-          Log.d("Admin", "Failed to upload image")
-        }
-        ?.addOnSuccessListener {
-          // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-          Log.d("Document", "Image uploaded successfully")
-          Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-        }
-    // Continue with the task to get the download URL
-    taskUp
-        ?.continueWithTask { task ->
-          if (!task.isSuccessful) {
-            task.exception?.let { throw it }
+      // Register observers to listen for state changes
+      // and progress of the upload
+      taskUp
+          ?.addOnFailureListener {
+              // Handle unsuccessful uploads
+              Log.d("Admin", "Failed to upload image")
           }
-          riversRef.downloadUrl
-        }
-        ?.addOnCompleteListener { task ->
-          if (task.isSuccessful && state == 0) {
-            viewModel.updateDocumentsOfCurrentUser(task.result.toString())
-            // empty the list
-            selectedImagesLocal = emptyList()
-            Log.d("Admin", "Image URL: ${task.result}")
-          } else if (task.isSuccessful && state == 1) {
-            viewModel.addDocumentToTrip(task.result.toString(), tripId)
-            // empty the list
-            selectedImagesLocal = emptyList()
-            Log.d("Admin", "Image URL: ${task.result}")
+          ?.addOnSuccessListener {
+              // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+              Log.d("Document", "Image uploaded successfully")
+              Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
           }
-        }
-  }
+      // Continue with the task to get the download URL
+      taskUp
+          ?.continueWithTask { task ->
+              if (!task.isSuccessful) {
+                  task.exception?.let { throw it }
+              }
+              riversRef.downloadUrl
+          }
+          ?.addOnCompleteListener { task ->
+              if (task.isSuccessful && state == 0) {
+                  viewModel.updateDocumentsOfCurrentUser(task.result.toString())
+                  // empty the list
+                  selectedImagesLocal = emptyList()
+                  Log.d("Admin", "Image URL: ${task.result}")
+              } else if (task.isSuccessful && state == 1) {
+                  viewModel.addDocumentToTrip(task.result.toString(), tripId)
+                  // empty the list
+                  selectedImagesLocal = emptyList()
+                  Log.d("Admin", "Image URL: ${task.result}")
+              }
+          }
+  }*/
 
   if (isDisplayed) {
     Box(
@@ -192,5 +211,110 @@ fun DocumentsPS(
               contentDescription = "Document",
               modifier = Modifier.fillMaxSize().testTag("documentImage"))
         }
+  }
+
+  if (displayedTheBoxSelector) {
+    Dialog(onDismissRequest = { displayedTheBoxSelector = false }) {
+      Card(
+          colors = CardDefaults.cardColors(contentColor = androidx.compose.ui.graphics.Color.Black),
+          modifier = Modifier.size(370.dp, 300.dp).testTag("documentBox")) {
+
+            // set the name of the documents
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center) {
+                  OutlinedTextField(
+                      modifier = Modifier.size(250.dp, 60.dp).testTag("documentNameBox"),
+                      value = documentName,
+                      onValueChange = { documentName = it },
+                      label = {
+                        Text(
+                            text = "Document Name",
+                            style =
+                                TextStyle(
+                                    fontSize = 18.sp,
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = 0.5.sp,
+                                ),
+                        )
+                      },
+                      singleLine = true)
+
+                  // Button to add the document from the media picker
+                  FloatingActionButton(
+                      onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) },
+                      modifier =
+                          Modifier.padding(top = 20.dp)
+                              .size(width = 200.dp, height = 50.dp)
+                              .testTag("addDocumentButton")) {
+                        Text(
+                            text = "Add Document",
+                            style =
+                                TextStyle(
+                                    fontSize = 16.sp,
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = 0.5.sp,
+                                ),
+                        )
+                      }
+
+                  // button to accept the document
+                  Row(
+                      modifier = Modifier.padding(top = 10.dp),
+                      horizontalArrangement = Arrangement.SpaceEvenly) {
+                        FloatingActionButton(
+                            onClick = {
+                              if (selectedImagesLocal != Uri.EMPTY && documentName != "") {
+                                viewModel.addDocument(
+                                    documentName,
+                                    selectedImagesLocal!!,
+                                    titles[state],
+                                    context,
+                                    storageReference,
+                                    state)
+                              }
+                              selectedImagesLocal = Uri.EMPTY
+                              displayedTheBoxSelector = false
+                            },
+                            modifier =
+                                Modifier.padding(top = 10.dp)
+                                    .size(width = 100.dp, height = 50.dp)
+                                    .testTag("acceptButton")) {
+                              Text(
+                                  text = "Accept",
+                                  style =
+                                      TextStyle(
+                                          fontSize = 16.sp,
+                                          textAlign = TextAlign.Center,
+                                          letterSpacing = 0.5.sp,
+                                      ),
+                              )
+                            }
+                        Spacer(modifier = Modifier.width(50.dp))
+                        // cancel button
+                        FloatingActionButton(
+                            onClick = {
+                              selectedImagesLocal = Uri.EMPTY
+                              displayedTheBoxSelector = false
+                            },
+                            modifier =
+                                Modifier.padding(top = 10.dp)
+                                    .size(width = 100.dp, height = 50.dp)
+                                    .testTag("cancelButton")) {
+                              Text(
+                                  text = "Cancel",
+                                  style =
+                                      TextStyle(
+                                          fontSize = 16.sp,
+                                          textAlign = TextAlign.Center,
+                                          letterSpacing = 0.5.sp,
+                                      ),
+                              )
+                            }
+                      }
+                }
+          }
+    }
   }
 }

@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.firestoreData
 
+import com.github.se.wanderpals.model.data.Documents
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
@@ -28,7 +29,7 @@ data class FirestoreUser(
         GeoCords(0.0, 0.0), // or consider a different representation if more suitable
     val profilePictureURL: String = "",
     val notificationTokenId: String = "",
-    val documentsURL: List<String> = emptyList()
+    val documentsURL: List<Documents> = emptyList()
 ) {
   companion object {
     /**
