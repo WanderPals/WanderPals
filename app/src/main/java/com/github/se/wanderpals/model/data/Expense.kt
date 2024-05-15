@@ -16,13 +16,13 @@ import java.time.LocalDate
  * @property localDate The date when the expense was incurred.
  */
 data class Expense(
-    val expenseId: String = "",
-    val title: String = "",
-    val amount: Double = 0.0,
-    val category: Category = Category.OTHER,
-    val userId: String = "",
-    val userName: String = "",
-    val participantsIds: List<String> = emptyList(),
-    val names: List<String> = emptyList(),
-    val localDate: LocalDate = LocalDate.of(0, 1, 1)
+    val expenseId: String,
+    val title: String,
+    val amount: Double,
+    val category: Category,
+    val userId: String,
+    val userName: String,
+    val participantsIds: List<String>,
+    val names: List<String>,
+    val localDate: LocalDate
 )

@@ -39,8 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Announcement
-import com.github.se.wanderpals.model.data.Expense
-import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -81,25 +79,6 @@ fun Notification(
   val selectedAnnouncementId by notificationsViewModel.selectedAnnouncementID.collectAsState()
 
   val isLoading by notificationsViewModel.isLoading.collectAsState()
-
-  val suggestion by notificationsViewModel.currentSuggestion.collectAsState()
-  val isLoadingSuggestion by notificationsViewModel.isSuggestionReady.collectAsState()
-
-  val expense by notificationsViewModel.currentExpense.collectAsState()
-  val isLoadingExpense by notificationsViewModel.isExpenseReady.collectAsState()
-
-  LaunchedEffect(isLoadingSuggestion, isLoadingExpense) {
-    if (isLoadingSuggestion) {
-      navigationActions.variables.currentSuggestion = suggestion as Suggestion
-      navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
-      notificationsViewModel.resetIsLoadingSuggestion()
-    }
-    if (isLoadingExpense) {
-      navigationActions.variables.expense = expense as Expense
-      navigationActions.navigateTo(Route.EXPENSE_INFO)
-      notificationsViewModel.resetIsLoadingExpense()
-    }
-  }
 
   Column(modifier = Modifier.testTag("notificationScreen")) {
     if (announcementItemPressed) {
@@ -197,17 +176,13 @@ fun Notification(
                               if (item.navActionVariables.isNotEmpty()) {
                                 navigationActions.deserializeNavigationVariables(
                                     item.navActionVariables)
-                                when (item.route) {
-                                  Route.SUGGESTION_DETAIL ->
+                                if (item.route == Route.SUGGESTION_DETAIL) {
+                                  navigationActions.variables.currentSuggestion =
                                       notificationsViewModel.getSuggestion(
                                           navigationActions.variables.suggestionId)
-                                  Route.EXPENSE_INFO ->
-                                      notificationsViewModel.getExpense(
-                                          navigationActions.variables.expense.expenseId)
                                 }
-                              } else {
-                                navigationActions.navigateTo(item.route)
                               }
+                              navigationActions.navigateTo(item.route)
                             }
                           })
                     }

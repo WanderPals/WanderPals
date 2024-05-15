@@ -98,11 +98,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             ExpensesContent(
                 innerPadding = innerPadding,
                 expenseList = expenseList,
-                onRefresh = { financeViewModel.updateStateLists() },
-                onExpenseItemClick = {
-                  navigationActions.setVariablesExpense(it)
-                  navigationActions.navigateTo(Route.EXPENSE_INFO)
-                })
+                onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.CATEGORIES -> {
             CategoryContent(

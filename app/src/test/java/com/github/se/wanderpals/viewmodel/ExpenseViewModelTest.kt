@@ -4,7 +4,7 @@ import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
+import com.github.se.wanderpals.model.viewmodel.ExpenseViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -19,9 +19,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 
-class FinanceViewModelTest {
+class ExpenseViewModelTest {
 
-  private lateinit var viewModel: FinanceViewModel
+  private lateinit var viewModel: ExpenseViewModel
   private lateinit var mockTripsRepository: TripsRepository
   private val testDispatcher = StandardTestDispatcher()
   private val tripId = "tripId"
@@ -34,7 +34,8 @@ class FinanceViewModelTest {
     mockTripsRepository = mockk(relaxed = true)
     setupMockResponses()
 
-    viewModel = FinanceViewModel(mockTripsRepository, tripId)
+    val factory = ExpenseViewModel.ExpenseViewModelFactory(mockTripsRepository, "tripId")
+    viewModel = factory.create(ExpenseViewModel::class.java)
   }
 
   private fun setupMockResponses() {
@@ -49,42 +50,37 @@ class FinanceViewModelTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `updateStateLists fetches and updates expenses correctly`() =
-      runBlockingTest(testDispatcher) {
-        viewModel.updateStateLists()
-
-        advanceUntilIdle()
-
-        assert(viewModel.expenseStateList.value.isNotEmpty())
-        assertEquals("Lunch", viewModel.expenseStateList.value.first().title)
-        coVerify { mockTripsRepository.getAllExpensesFromTrip(tripId) }
-      }
-
-  @OptIn(ExperimentalCoroutinesApi::class)
-  @Test
   fun `loadMembers fetches and updates users correctly`() =
       runBlockingTest(testDispatcher) {
         viewModel.loadMembers(tripId)
 
         advanceUntilIdle()
 
-        assert(viewModel.users.value.isNotEmpty())
+        assertEquals(1, viewModel.users.value.size)
         assertEquals("Alice", viewModel.users.value.first().name)
-        coVerify { mockTripsRepository.getAllUsersFromTrip(tripId) }
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun `addExpense adds an expense and updates state list`() =
+  fun `addExpense adds an expense and updates the repository correctly`() =
       runBlockingTest(testDispatcher) {
-        val expense =
+        val newExpense =
             Expense(
-                "", "Lunch", 0.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now())
-        viewModel.addExpense(tripId, expense)
+                "",
+                "Dinner",
+                30.0,
+                Category.FOOD,
+                "",
+                "",
+                emptyList(),
+                emptyList(),
+                LocalDate.now())
+        viewModel.addExpense(tripId, newExpense)
 
         advanceUntilIdle()
 
-        coVerify { mockTripsRepository.addExpenseToTrip(tripId, expense) }
-        assert(viewModel.expenseStateList.value.contains(expense))
+        coVerify { mockTripsRepository.addExpenseToTrip(tripId, newExpense) }
+        // Verify if the state list has been updated, additional checks might be necessary if state
+        // management is more complex.
       }
 }

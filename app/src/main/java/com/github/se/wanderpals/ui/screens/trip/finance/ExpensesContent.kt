@@ -54,8 +54,7 @@ import java.time.format.DateTimeFormatter
 fun ExpensesContent(
     innerPadding: PaddingValues,
     expenseList: List<Expense>,
-    onRefresh: () -> Unit,
-    onExpenseItemClick: (Expense) -> Unit
+    onRefresh: () -> Unit
 ) {
   if (expenseList.isEmpty()) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -85,7 +84,7 @@ fun ExpensesContent(
                 items(expenseList) { expense ->
                   HorizontalDivider(
                       color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-                  ExpenseItem(expense = expense) { onExpenseItemClick(it) }
+                  ExpenseItem(expense = expense) {}
                 }
               }
         }
@@ -100,16 +99,16 @@ fun ExpensesContent(
  * @param onExpenseItemClick Callback function for when an expense item is clicked.
  */
 @Composable
-fun ExpenseItem(expense: Expense, onExpenseItemClick: (Expense) -> Unit) {
+fun ExpenseItem(expense: Expense, onExpenseItemClick: (String) -> Unit) {
   Box(modifier = Modifier.fillMaxWidth().height(90.dp)) {
     Button(
-        onClick = { onExpenseItemClick(expense) },
+        onClick = {},
         shape = RectangleShape,
         colors =
             ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent, disabledContainerColor = Color.Transparent),
-        enabled = true,
-        modifier = Modifier.testTag("expenseItem${expense.expenseId}")) {
+        enabled = false // not implemented for this sprint
+        ) {
           Row(
               modifier = Modifier.fillMaxSize(),
               horizontalArrangement = Arrangement.SpaceBetween,

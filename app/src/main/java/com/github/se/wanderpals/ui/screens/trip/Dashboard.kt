@@ -15,9 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -30,7 +28,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,7 +45,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
-import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -89,11 +85,10 @@ fun Dashboard(
   val scope = rememberCoroutineScope()
   val isLoading by dashboardViewModel.isLoading.collectAsState()
   val tripTitle by dashboardViewModel.tripTitle.collectAsState()
-  val showDeleteDialog by dashboardViewModel.showDeleteDialog.collectAsState()
 
   ModalNavigationDrawer(
       drawerState = drawerState,
-      drawerContent = { Menu(scope, drawerState, navActions, dashboardViewModel) },
+      drawerContent = { Menu(scope, drawerState, navActions) },
   ) {
     Text(modifier = Modifier.testTag("dashboardScreen"), text = " ")
     if (isLoading) {
@@ -128,31 +123,6 @@ fun Dashboard(
                     viewModel = dashboardViewModel)
               }
             }
-
-        if (showDeleteDialog) {
-          AlertDialog(
-              onDismissRequest = { dashboardViewModel.hideDeleteDialog() },
-              title = { Text("Confirm Deletion") },
-              text = { Text("Are you sure you want to delete this Trip?") },
-              confirmButton = {
-                TextButton(
-                    onClick = {
-                      dashboardViewModel.confirmDeleteTrip()
-                      navActions.navigateTo(Route.OVERVIEW)
-                    },
-                    modifier = Modifier.testTag("confirmDeleteTripButton")) {
-                      Text("Confirm", color = Color.Red)
-                    }
-              },
-              dismissButton = {
-                TextButton(
-                    onClick = { dashboardViewModel.hideDeleteDialog() },
-                    modifier = Modifier.testTag("cancelDeleteTripButton")) {
-                      Text("Cancel")
-                    }
-              },
-              modifier = Modifier.testTag("deleteTripDialog"))
-        }
       }
     }
   }
@@ -169,12 +139,7 @@ fun Dashboard(
  * oldNavActions is used to navigate back to the overview screen.
  */
 @Composable
-fun Menu(
-    scope: CoroutineScope,
-    drawerState: DrawerState,
-    navActions: NavigationActions,
-    dashboardViewModel: DashboardViewModel
-) {
+fun Menu(scope: CoroutineScope, drawerState: DrawerState, navActions: NavigationActions) {
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
@@ -230,26 +195,6 @@ fun Menu(
             navActions.navigateTo(Route.FINANCE)
           }
         })
-
-    if (SessionManager.getCurrentUser()!!.role == Role.OWNER) {
-      ElevatedButton(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("deleteTripButton"),
-          content = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-              Icon(
-                  Icons.Default.Delete,
-                  contentDescription = "Delete",
-                  modifier = Modifier.clip(CircleShape).size(25.dp))
-              Text(text = "Delete Trip", modifier = Modifier.padding(start = 20.dp))
-            }
-          },
-          onClick = {
-            scope.launch {
-              drawerState.close()
-              dashboardViewModel.deleteTrip()
-            }
-          })
-    }
   }
 }
 

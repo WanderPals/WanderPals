@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Suggestion
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -193,15 +192,6 @@ data class NavigationActions(
   }
 
   /**
-   * Set the variables for the navigation actions.
-   *
-   * @param expense The expense.
-   */
-  fun setVariablesExpense(expense: Expense) {
-    variables.expense = expense
-  }
-
-  /**
    * Serializes the navigation variables into a string format.
    *
    * @return The serialized string containing navigation variables.
@@ -213,8 +203,7 @@ data class NavigationActions(
             "latitude: ${variables.currentGeoCords.latitude}",
             "longitude: ${variables.currentGeoCords.longitude}",
             "currentAddress: ${variables.currentAddress}",
-            "suggestionId: ${variables.suggestionId}",
-            "expenseId: ${variables.expense.expenseId}")
+            "suggestionId: ${variables.suggestionId}")
 
     return navActionsVariablesToString.joinToString("|")
   }
@@ -238,7 +227,6 @@ data class NavigationActions(
                 variables.currentGeoCords.copy(longitude = argVal.toDouble())
         "currentAddress" -> variables.currentAddress = argVal
         "suggestionId" -> variables.suggestionId = argVal
-        "expenseId" -> variables.expense = Expense(expenseId = argVal)
       }
     }
     this.variables = variables
@@ -252,5 +240,4 @@ class NavigationActionsVariables {
   var currentGeoCords: GeoCords = GeoCords(0.0, 0.0)
   var currentAddress: String = ""
   var suggestionId: String = ""
-  var expense = Expense()
 }

@@ -51,6 +51,4 @@ val TRIP_DESTINATIONS =
         Destination(route = Route.FINANCE, icon = Icons.Default.Menu, text = "finance"),
         Destination(
             route = Route.CREATE_EXPENSE, icon = Icons.Default.Create, text = "Create Expense"),
-        Destination(route = Route.STOPS_LIST, icon = Icons.Default.Menu, text = "Stops List"),
-        Destination(route = Route.EXPENSE_INFO, icon = Icons.Default.Create, text = "Expense info"),
         Destination(route = Route.DOCUMENT, icon = Icons.Default.Menu, text = "document"))

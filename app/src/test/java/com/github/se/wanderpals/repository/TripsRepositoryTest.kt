@@ -58,7 +58,6 @@ class TripsRepositoryTest {
     repository = TripsRepository(testUid, dispatcher = Dispatchers.IO)
     val app = FirebaseApp.initializeApp(context)!!
     repository.initFirestore(app)
-    repository.isNetworkEnabled = true
   }
 
   @Test

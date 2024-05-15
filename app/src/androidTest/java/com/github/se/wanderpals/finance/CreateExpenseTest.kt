@@ -430,6 +430,27 @@ class CreateExpenseTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   }
 
   @Test
+  fun viewModelTest() // This test might pose problem later, concurrency issues. If this breaks,
+    // remove it.
+  {
+    val viewModel = FinanceViewModel(FakeExpenseTripRepository(), "")
+    viewModel.loadMembers("")
+    viewModel.addExpense("", mockExpense)
+    composeTestRule.setContent { CreateExpense("", viewModel, mockNavActions) }
+    composeTestRule.waitForIdle()
+
+    ComposeScreen.onComposeScreen<ExpenseScreen>(composeTestRule) {
+      userRow1 { assertExists() }
+      userRow2 { assertExists() }
+      userRow3 { assertExists() }
+      userRow4 { assertExists() }
+    }
+
+    val users = viewModel.users.value
+    assert(users == listOf(mockUser1, mockUser2, mockUser3, mockUser4))
+  }
+
+  @Test
   fun goBackButton() {
     val viewModel = FakeFinanceViewModel()
 

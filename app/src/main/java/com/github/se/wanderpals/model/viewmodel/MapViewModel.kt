@@ -132,7 +132,6 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
       if (userId.isNotEmpty()) {
         val user = _tripsRepository.getUserFromTrip(tripId, userId)
         if (user != null) {
-          if (SessionManager.getPosition() == latLng) return@launch
           val geoCords = GeoCords(latLng.latitude, latLng.longitude)
           _tripsRepository.updateUserInTrip(tripId, user = user.copy(lastPosition = geoCords))
           SessionManager.setGeoCords(geoCords)

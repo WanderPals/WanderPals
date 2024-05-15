@@ -3,16 +3,11 @@ package com.github.se.wanderpals.service
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
-import android.location.LocationManager
-import android.os.Looper
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
+import androidx.core.content.ContextCompat
 import com.github.se.wanderpals.BuildConfig
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
@@ -29,12 +24,6 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsResponse
 import com.google.android.libraries.places.api.net.PlacesClient
 import kotlin.coroutines.suspendCoroutine
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /**
@@ -43,12 +32,6 @@ import kotlinx.coroutines.tasks.await
  * @param context The context of the activity.
  */
 class MapManager(private val context: Context) {
-
-  private val _position = MutableStateFlow(LatLng(0.0, 0.0))
-  val position: Flow<LatLng> = _position.asStateFlow()
-
-  private val _isTracking = MutableStateFlow(false)
-  val isTracking: Flow<Boolean> = _isTracking.asStateFlow()
 
   private val placeFields =
       listOf(
@@ -70,9 +53,6 @@ class MapManager(private val context: Context) {
 
   private var startingLocation: LatLng = LatLng(46.519653, 6.632273)
 
-  private lateinit var locationIntentStart: () -> Unit
-  private lateinit var locationIntentStop: () -> Unit
-
   /** Function to initialize the Places API and the FusedLocationProviderClient. */
   fun initClients() {
     Places.initialize(context, BuildConfig.MAPS_API_KEY)
@@ -87,83 +67,6 @@ class MapManager(private val context: Context) {
    */
   fun getStartingLocation(): LatLng {
     return startingLocation
-  }
-
-  /** Update the position of the user. */
-  fun updatePosition(latLng: LatLng) {
-    _position.value = latLng
-  }
-
-  /**
-   * Function to set the starting location intent.
-   *
-   * @param intent The location intent to set.
-   */
-  fun setLocationIntentStart(intent: () -> Unit) {
-    locationIntentStart = intent
-  }
-
-  /**
-   * Function to set the stopping location intent.
-   *
-   * @param intent The location intent to set.
-   */
-  fun setLocationIntentStop(intent: () -> Unit) {
-    locationIntentStop = intent
-  }
-
-  /** Function to execute the location intent. */
-  fun executeLocationIntent() {
-    _isTracking.value = true
-    locationIntentStart().run {}
-  }
-
-  /** Function to execute the location intent. */
-  fun executeLocationIntentStop() {
-    _isTracking.value = false
-    locationIntentStop().run {}
-  }
-
-  /**
-   * Function to get the location updates.
-   *
-   * @param interval The interval between location updates.
-   * @return The flow of location updates.
-   */
-  fun getLocationUpdates(interval: Long): Flow<Location> {
-    return callbackFlow {
-      if (!checkLocationPermission()) {
-        throw Exception("Location permission is required")
-      }
-
-      val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-      val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-      val isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-      if (!isGpsEnabled && !isNetworkEnabled) {
-        throw Exception("Location services are disabled")
-      }
-
-      val request =
-          LocationRequest.create()
-              .setInterval(interval)
-              .setFastestInterval(interval)
-              .setPriority(100)
-
-      val locationCallback =
-          object : LocationCallback() {
-            override fun onLocationResult(result: LocationResult) {
-              super.onLocationResult(result)
-              result.locations.lastOrNull()?.let { location -> launch { send(location) } }
-            }
-          }
-
-      if (checkLocationPermission()) {
-        fusedLocationClient.requestLocationUpdates(
-            request, locationCallback, Looper.getMainLooper())
-      }
-
-      awaitClose { fusedLocationClient.removeLocationUpdates(locationCallback) }
-    }
   }
 
   /**
@@ -187,7 +90,10 @@ class MapManager(private val context: Context) {
   /** Function to ask for location permission. */
   fun askLocationPermission() {
     if (::locationPermissionRequest.isInitialized) {
-      if (checkLocationPermission()) {
+      if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+          PackageManager.PERMISSION_GRANTED ||
+          ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) ==
+              PackageManager.PERMISSION_GRANTED) {
         Log.d("MapActivity", "Location permission already granted")
       } else {
         Log.d("MapActivity", "Requesting location permission")

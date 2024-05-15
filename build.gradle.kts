@@ -5,7 +5,6 @@ plugins {
 
     alias(libs.plugins.googleServices) apply false
 
-
 }
 buildscript {
     dependencies {

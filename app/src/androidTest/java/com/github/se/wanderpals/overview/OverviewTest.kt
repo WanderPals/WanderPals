@@ -87,9 +87,6 @@ class OverviewViewModelTest :
   private val _isLoading = MutableStateFlow(false)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-  private val _createTripFinished = MutableStateFlow(false)
-  override val createTripFinished: StateFlow<Boolean> = _createTripFinished.asStateFlow()
-
   fun deleteTrips() {
     _state.value = listOf()
   }
@@ -97,7 +94,6 @@ class OverviewViewModelTest :
   override fun createTrip(trip: Trip) {
     val newTrip = trip.copy(users = listOf("user1"))
     _state.value = _state.value.toMutableList().apply { add(newTrip) }
-    _createTripFinished.value = true
   }
 
   override fun getAllTrips() {}

@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -43,9 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
-import com.github.se.wanderpals.navigationActions
-import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
+import com.github.se.wanderpals.ui.theme.primaryLight
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -78,15 +76,14 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
 
   Scaffold(
       topBar = {
-        Column(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+        Column(modifier = Modifier.background(primaryLight)) {
           Banner(
               agendaViewModel,
               isDrawerExpanded,
               onToggle = { isDrawerExpanded = !isDrawerExpanded })
           AnimatedVisibility(
               visible = isDrawerExpanded,
-              modifier =
-                  Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxWidth()) {
+              modifier = Modifier.background(color = Color.White).fillMaxWidth()) {
                 CalendarWidget(
                     days = getDaysOfWeekLabels(),
                     yearMonth = uiState.yearMonth,
@@ -105,12 +102,10 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
       modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues)) {
-      if (isDrawerExpanded) {
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.secondary)
-      }
+      HorizontalDivider(
+          modifier = Modifier.fillMaxWidth(),
+          thickness = 1.dp,
+          color = MaterialTheme.colorScheme.secondary)
       // Daily agenda implementation
       DailyActivities(
           agendaViewModel = agendaViewModel,
@@ -150,7 +145,7 @@ fun CalendarWidget(
     onNextMonthButtonClicked: (YearMonth) -> Unit,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
 ) {
-  Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
+  Column(modifier = Modifier.padding(16.dp).background(Color.White)) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -179,34 +174,17 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
       modifier =
           Modifier.fillMaxWidth()
               .clickable { onToggle() }
-              .padding(8.dp)
-              .background(MaterialTheme.colorScheme.primary)
+              .padding(16.dp)
+              .background(primaryLight)
               .testTag("Banner")) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          DisplayDate(date = selectedDate, color = MaterialTheme.colorScheme.onPrimary)
-          // Optional: Add an icon to indicate the expand/collapse action
-          Icon(
-              imageVector =
-                  if (isExpanded) Icons.Default.KeyboardArrowUp
-                  else Icons.Default.KeyboardArrowDown,
-              contentDescription = "Toggle",
-              tint = MaterialTheme.colorScheme.onPrimary)
-          Spacer(modifier = Modifier.weight(1f))
-          // Add an icon to tap that opens the full list of all stops for the trip
-          IconButton(
-              onClick = {
-                // Navigate to the stops list screen
-                navigationActions.navigateTo(Route.STOPS_LIST)
-              },
-              modifier = Modifier.testTag("AllStopsButton"),
-              content = {
-                Icon(
-                    painter = painterResource(id = R.drawable.stops_list_icon),
-                    contentDescription = "Open Stops",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
-              })
-        }
+        DisplayDate(date = selectedDate)
+        // Optional: Add an icon to indicate the expand/collapse action
+        Icon(
+            imageVector =
+                if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+            contentDescription = "Toggle",
+            modifier = Modifier.align(Alignment.CenterEnd),
+            tint = Color.White)
       }
 }
 

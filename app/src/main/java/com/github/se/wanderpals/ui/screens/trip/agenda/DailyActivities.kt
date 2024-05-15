@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -44,6 +45,8 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.github.se.wanderpals.ui.theme.outlineVariantLight
+import com.github.se.wanderpals.ui.theme.primaryLight
+import com.github.se.wanderpals.ui.theme.secondaryLight
 import kotlinx.coroutines.Dispatchers
 
 @Preview(showBackground = true)
@@ -133,7 +136,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                               lineHeight = 20.sp,
                               fontWeight = FontWeight(500),
                               letterSpacing = 0.16.sp),
-                      color = MaterialTheme.colorScheme.primary,
+                      color = primaryLight,
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTitle" + stop.stopId))
@@ -147,7 +150,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                               fontWeight = FontWeight(500),
                               letterSpacing = 0.16.sp,
                           ),
-                      color = MaterialTheme.colorScheme.secondary,
+                      color = secondaryLight,
                       modifier =
                           Modifier.wrapContentWidth(Alignment.Start)
                               .testTag("ActivityTime" + stop.stopId))
@@ -160,7 +163,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                                 lineHeight = 20.sp,
                                 fontWeight = FontWeight(500),
                                 letterSpacing = 0.16.sp),
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = secondaryLight,
                         modifier =
                             Modifier.wrapContentWidth(Alignment.Start)
                                 .testTag("ActivityAddress" + stop.stopId))
@@ -186,9 +189,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 ) {
                   Icon(
                       imageVector = Icons.Default.LocationOn,
-                      tint =
-                          if (stopHasLocation) MaterialTheme.colorScheme.primary
-                          else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                      tint = if (stopHasLocation) secondaryLight else Color.LightGray,
                       contentDescription = null // Provide an appropriate content description
                       )
                 }
@@ -203,7 +204,7 @@ fun ActivityItem(stop: Stop, onActivityClick: (String) -> Unit) {
       contentAlignment = Alignment.Center // This will center the content inside the box
       ) {
         HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(), // Customize this width as needed
+            modifier = Modifier.width(380.dp), // Customize this width as needed
             thickness = 1.dp,
             color = outlineVariantLight)
       }
