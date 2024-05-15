@@ -53,7 +53,7 @@ class StopsListViewModelTest {
     SessionManager.setUserSession("user", "user@example.com", "token", Role.MEMBER)
 
     // Create the ViewModel using a factory with the mocked repository
-    val factory = StopsListViewModel.StopsListViewModelFactory(mockTripsRepository)
+    val factory = StopsListViewModel.StopsListViewModelFactory(mockTripsRepository, tripId)
     viewModel = factory.create(StopsListViewModel::class.java)
   }
 
@@ -67,7 +67,7 @@ class StopsListViewModelTest {
   @Test
   fun `loadStops fetches stops successfully and updates state`() =
       runTest(testDispatcher) {
-        viewModel.loadStops(tripId)
+        viewModel.loadStops()
 
         // Wait for all coroutines started during the test to complete
         advanceUntilIdle()
