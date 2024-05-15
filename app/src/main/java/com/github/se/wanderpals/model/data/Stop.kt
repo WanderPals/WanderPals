@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.data
 
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -22,6 +23,8 @@ import java.time.LocalTime
  * @param website Optional. A URL to a website providing additional information about the stop.
  *   Empty by default.
  * @param imageUrl URL for an image of the stop, optional.
+ * @param stopStatus The status of the stop, indicating whether it has been added to the trip or
+ *   not.
  */
 data class Stop(
     val stopId: String = "",
@@ -35,4 +38,5 @@ data class Stop(
     val geoCords: GeoCords = GeoCords(),
     val website: String = "",
     val imageUrl: String = "",
+    val stopStatus: CalendarUiState.StopStatus = CalendarUiState.StopStatus.NONE // Default value
 )

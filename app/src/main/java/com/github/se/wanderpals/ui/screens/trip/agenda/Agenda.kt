@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -148,7 +149,7 @@ fun CalendarWidget(
     dates: List<CalendarUiState.Date>,
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
-    onDateClickListener: (CalendarUiState.Date) -> Unit,
+    onDateClickListener: (CalendarUiState.Date) -> Unit
 ) {
   Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
     Row {
@@ -308,6 +309,13 @@ fun ContentItem(
   // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
   val isEmptyDate = date.dayOfMonth.isEmpty()
 
+  // Set the marker color based on the stop status
+  val markerColor =
+      when (date.stopStatus) {
+        CalendarUiState.StopStatus.ADDED -> Color.Blue // Stop added
+        else -> Color.Transparent // No stop
+      }
+
   val baseModifier =
       modifier
           .aspectRatio(1f)
@@ -324,16 +332,32 @@ fun ContentItem(
 
   // Apply clickable only if the date is not empty.
   val finalModifier =
-      if (!isEmptyDate) {
-        baseModifier.clickable { onClickListener(date) }
-      } else baseModifier
+      (if (!isEmptyDate) {
+        baseModifier.clickable { onClickListener(date) }.padding(10.dp)
+      } else baseModifier)
 
   Box(modifier = finalModifier) {
     if (!isEmptyDate) {
       Text(
           text = date.dayOfMonth,
           style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.align(Alignment.Center).padding(10.dp))
+          modifier = Modifier.align(Alignment.TopCenter))
+      // Displaying the status dot below the date
+      if (date.stopStatus !=
+          CalendarUiState.StopStatus
+              .NONE) { // I use "not equal to the NONE status" here, because we might have more
+        // statuses in the future
+        Box(
+            modifier =
+                Modifier.align(
+                        Alignment.BottomCenter) // Center the dot at the bottom of the date cell
+                    .size(8.dp) // Size of the dot
+                    .clip(CircleShape) // Make it circular
+                    .background(markerColor) // Set the appropriate color
+                    .padding(bottom = 4.dp) // Add some padding to the bottom
+                    .testTag("MarkerADDED") // Add test tag here
+            )
+      }
     }
   }
 }
