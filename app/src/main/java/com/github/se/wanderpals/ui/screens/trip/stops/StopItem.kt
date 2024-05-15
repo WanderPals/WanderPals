@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +41,10 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.StopItemViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
@@ -53,7 +57,15 @@ import com.github.se.wanderpals.ui.theme.outlineVariantLight
  * @param onActivityClick Callback function triggered when the activity item is clicked,
  */
 @Composable
-fun StopItem(stop: Stop, onActivityClick: (String) -> Unit) {
+fun StopItem(stop: Stop, onActivityClick: (String) -> Unit, tripId: String, tripsRepository: TripsRepository, onRefresh: () -> Unit) {
+
+    val stopItemViewModel: StopItemViewModel = viewModel(
+        factory = StopItemViewModel.StopItemViewModelFactory(
+            stopId = stop.stopId,
+            tripsRepository = tripsRepository,
+            tripId = tripId
+        )
+    )
 
     // State to handle the visibility of the confirmation dialog
     var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -62,6 +74,14 @@ fun StopItem(stop: Stop, onActivityClick: (String) -> Unit) {
     if (showNoRightsToast) {
         ShowToast("You do not have the rights to delete this stop")
         showNoRightsToast = false
+    }
+
+    val isDeleted by stopItemViewModel.isDeleted.collectAsState()
+
+    LaunchedEffect(isDeleted) {
+        if (isDeleted) {
+            onRefresh()
+        }
     }
 
     val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
@@ -188,7 +208,7 @@ fun StopItem(stop: Stop, onActivityClick: (String) -> Unit) {
                 TextButton(
                     modifier = Modifier.testTag("confirmDeleteButton" + stop.stopId),
                     onClick = {
-
+                        stopItemViewModel.deleteStop()
                         showDeleteConfirmDialog = false
                     }
                 ) {

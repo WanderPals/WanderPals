@@ -41,6 +41,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -59,7 +60,7 @@ private const val MAX_ROWS_CALENDAR = 6
  *   screen. It defaults to a ViewModel instance provided by the `viewModel()` function.
  */
 @Composable
-fun Agenda(agendaViewModel: AgendaViewModel) {
+fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: TripsRepository) {
   val uiState by agendaViewModel.uiState.collectAsState()
   val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
 
@@ -109,7 +110,10 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
           onActivityItemClick = { stopId ->
             isStopPressed = true
             selectedStopId = stopId
-          })
+          },
+          tripId = tripId,
+          tripsRepository = tripsRepository
+          )
     }
   }
 

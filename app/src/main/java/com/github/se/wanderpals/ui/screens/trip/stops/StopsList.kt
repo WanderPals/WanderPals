@@ -38,6 +38,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.StopsListViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
@@ -53,7 +54,7 @@ import java.time.LocalDate
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "WeekBasedYear")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
+fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String, tripsRepository: TripsRepository) {
 
   var isStopPressed by remember { mutableStateOf(false) }
   var selectedStopId by remember { mutableStateOf("") }
@@ -68,7 +69,9 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
 
   val stops by stopsListViewModel.stops.collectAsState()
 
-  LaunchedEffect(Unit) { stopsListViewModel.loadStops(tripId) }
+  val  refreshFunction = { stopsListViewModel.loadStops() }
+
+  LaunchedEffect(Unit) { refreshFunction() }
 
   Scaffold(
       topBar = {
@@ -139,14 +142,14 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
                                 stops
                                     .filter { stop -> stop.date == date }
                                     .sortedBy { it.startTime }) { stop ->
-                                  StopItem(stop, onActivityItemClick)
+                                  StopItem(stop, onActivityItemClick, tripId, tripsRepository, refreshFunction)
                                 }
                           }
                         })
                   }
               PullToRefreshLazyColumn(
                   inputLazyColumn = stopsLazyColumn,
-                  onRefresh = { stopsListViewModel.loadStops(tripId) })
+                  onRefresh = { stopsListViewModel.loadStops() })
             } else { // Display a message if there are no stops
               Box(modifier = Modifier.fillMaxSize()) {
                 Text(
@@ -158,7 +161,7 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
                             .testTag("NoActivitiesMessage")
                             .align(Alignment.Center))
                 IconButton(
-                    onClick = { stopsListViewModel.loadStops(tripId) },
+                    onClick = { stopsListViewModel.loadStops() },
                     modifier =
                         Modifier.align(Alignment.Center)
                             .padding(top = 60.dp)
