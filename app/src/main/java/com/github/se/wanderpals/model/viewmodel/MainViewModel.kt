@@ -74,6 +74,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     runBlocking { tripsRepository.addEmailToUsername(getUserName(email), email) }
   }
 
+  fun setUserToken(token: String) {
+    runBlocking { tripsRepository }
+  }
+
   /**
    * Factory for creating instances of the MainViewModel. Ensures the ViewModel is constructed with
    * the necessary application context.

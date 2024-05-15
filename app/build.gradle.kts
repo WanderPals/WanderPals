@@ -134,7 +134,12 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 
 dependencies {
     implementation(libs.test.core.ktx)
+
+    implementation(libs.firebase.messaging.ktx)
+
+
     implementation(libs.firebase.storage.ktx)
+
     val composeBom = platform(libs.compose.bom)
 
     implementation(libs.androidx.navigation.runtime.ktx)
@@ -171,6 +176,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     // Import the BoM for the Firebase platform
     implementation(platform(libs.firebase.bom))
+
 
     // Add the dependency for the Cloud Storage library
     // When using the BoM, you don't specify versions in Firebase library dependencies

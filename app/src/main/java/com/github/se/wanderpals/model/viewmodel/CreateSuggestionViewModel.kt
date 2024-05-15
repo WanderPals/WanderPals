@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
+import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -20,6 +22,11 @@ open class CreateSuggestionViewModel(tripsRepository: TripsRepository) : ViewMod
       runBlocking {
         val newSuggestion = _tripsRepository.getAllSuggestionsFromTrip(tripId).last()
         NotificationsManager.addCreateSuggestionNotification(tripId, newSuggestion.suggestionId)
+        for (userToken in SessionManager.getListOfTokensTrip()) {
+          sendMessageToListOfUsers(
+              userToken,
+              "A new suggestion has been added to ${SessionManager.getCurrentUser()?.tripName}")
+        }
       }
     }
     return a

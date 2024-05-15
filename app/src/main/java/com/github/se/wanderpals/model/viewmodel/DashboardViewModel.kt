@@ -10,10 +10,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
-open class DashboardViewModel(private val tripsRepository: TripsRepository, tripId: String) :
-    ViewModel() {
+open class DashboardViewModel(
+    private val tripsRepository: TripsRepository,
+    private val tripId: String
+) : ViewModel() {
   // State flow to hold the list of suggestions
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   open val state: StateFlow<List<Suggestion>> = _state
@@ -23,6 +24,9 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
 
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+  private val _showDeleteDialog = MutableStateFlow(false)
+  open val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
 
   private var _tripTitle = MutableStateFlow("")
   open val tripTitle: StateFlow<String> = _tripTitle.asStateFlow()
@@ -52,7 +56,20 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
 
   open fun loadTripTitle(tripId: String) {
     // Get the title of the trip
-    runBlocking { _tripTitle.value = tripsRepository.getTrip(tripId)?.title ?: "" }
+    viewModelScope.launch { _tripTitle.value = tripsRepository.getTrip(tripId)?.title ?: "" }
+  }
+
+  open fun deleteTrip() {
+    _showDeleteDialog.value = true
+  }
+
+  open fun confirmDeleteTrip() {
+    viewModelScope.launch { tripsRepository.deleteTrip(tripId) }
+    hideDeleteDialog()
+  }
+
+  fun hideDeleteDialog() {
+    _showDeleteDialog.value = false
   }
 
   open fun loadLastAddedSharedDocument(tripId: String) {

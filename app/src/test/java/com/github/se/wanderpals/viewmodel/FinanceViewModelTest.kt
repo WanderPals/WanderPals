@@ -5,8 +5,13 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
+import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.service.NotificationsManager
+import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +37,10 @@ class FinanceViewModelTest {
     Dispatchers.setMain(testDispatcher)
 
     mockTripsRepository = mockk(relaxed = true)
+    NotificationsManager.initNotificationsManager(mockTripsRepository)
+    navigationActions = mockk(relaxed = true)
+
+    every { navigationActions.goBack() } just Runs
     setupMockResponses()
 
     viewModel = FinanceViewModel(mockTripsRepository, tripId)

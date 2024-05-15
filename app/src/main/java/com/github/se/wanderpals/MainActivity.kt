@@ -1,7 +1,14 @@
 package com.github.se.wanderpals
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -13,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,9 +29,13 @@ import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
+import com.github.se.wanderpals.service.NetworkHelper
+import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
+import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -38,23 +50,27 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.runBlocking
 
 const val EMPTY_CODE = ""
 
 lateinit var navigationActions: NavigationActions
+@SuppressLint("StaticFieldLeak") lateinit var mapManager: MapManager
 
 class MainActivity : ComponentActivity() {
 
   private lateinit var signInClient: GoogleSignInClient
 
-  private lateinit var mapManager: MapManager
-
   private lateinit var context: Context
+
+  private lateinit var networkHelper: NetworkHelper
 
   private val viewModel: MainViewModel by viewModels {
     MainViewModel.MainViewModelFactory(application)
@@ -75,6 +91,8 @@ class MainActivity : ComponentActivity() {
                       val uid = it.result?.user?.uid ?: ""
                       Log.d("MainActivity", "Firebase UID: $uid")
                       viewModel.initRepository(uid)
+                      networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
+
                       Log.d("MainActivity", "Firebase Initialized")
                       Log.d("SignIn", "Login result " + account.displayName)
 
@@ -122,6 +140,13 @@ class MainActivity : ComponentActivity() {
         }
       }
 
+  override fun onDestroy() {
+    super.onDestroy()
+    if (isMapManagerInitialized()) {
+      mapManager.executeLocationIntentStop()
+    }
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     val storage = Firebase.storage
@@ -143,11 +168,44 @@ class MainActivity : ComponentActivity() {
     mapManager = MapManager(this)
     mapManager.initClients()
     mapManager.setPermissionRequest(locationPermissionRequest)
+    mapManager.setLocationIntentStart {
+      Intent(applicationContext, LocationService::class.java).apply {
+        action = LocationService.ACTION_START
+        startService(this)
+      }
+    }
+    mapManager.setLocationIntentStop {
+      Intent(applicationContext, LocationService::class.java).apply {
+        action = LocationService.ACTION_STOP
+        startService(this)
+      }
+    }
 
     setContent {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+          NotificationPermission(context = context)
+
+          Log.d("Hello", "Hello")
+
+          FirebaseMessaging.getInstance()
+              .token
+              .addOnCompleteListener(
+                  OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                      Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                      return@OnCompleteListener
+                    }
+                    // Get new FCM registration token
+                    // Send the token to the server
+                    val token = task.result
+                    SessionManager.setNotificationToken(task.result)
+                    // SessionManager.setListOfTokensTrip(listOfTokens = mutableListOf(token))
+
+                    Log.d(TAG, token)
+                  })
+
           navigationActions =
               NavigationActions(
                   mainNavigation = rememberMultiNavigationAppState(startDestination = ROOT_ROUTE),
@@ -158,6 +216,7 @@ class MainActivity : ComponentActivity() {
           if (currentUser != null) {
             Log.d("MainActivity", "User is already signed in")
             viewModel.initRepository(currentUser.uid)
+            networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
 
             SessionManager.setUserSession(
                 userId = currentUser.uid,
@@ -185,6 +244,7 @@ class MainActivity : ComponentActivity() {
                             .addOnSuccessListener { result ->
                               val uid = result.user?.uid ?: ""
                               viewModel.initRepository(uid)
+                              networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
                               SessionManager.setUserSession(
                                   userId = uid,
                                   name = "Anonymous User",
@@ -201,6 +261,8 @@ class MainActivity : ComponentActivity() {
                         val onSucess = { result: AuthResult ->
                           val uid = result.user?.uid ?: ""
                           viewModel.initRepository(uid)
+                          networkHelper = NetworkHelper(context, viewModel.getTripsRepository())
+
                           SessionManager.setUserSession(
                               userId = uid,
                               name = result.user?.email?.substringBefore("@") ?: "",
@@ -222,6 +284,9 @@ class MainActivity : ComponentActivity() {
                                   }
                             }
                       })
+                  runBlocking {
+                    sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
+                  }
                 }
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
@@ -246,7 +311,12 @@ class MainActivity : ComponentActivity() {
                               OverviewViewModel.OverviewViewModelFactory(
                                   viewModel.getTripsRepository()),
                           key = "Overview")
+                  Log.d("CREATE_TRIP", "Create Trip")
+
                   CreateTrip(overviewViewModel, navigationActions)
+                  // create notification to send to the list of tokens
+                  // iterate on the list of tokens and send the notification
+
                 }
 
                 composable(Route.CREATE_SUGGESTION) {
@@ -284,4 +354,31 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
+
+  private fun showNotification() {
+    val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val channelId = "12345"
+    val description = "Test Notification"
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val notificationChannel =
+          NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
+      notificationChannel.lightColor = Color.BLUE
+
+      notificationChannel.enableVibration(true)
+      notificationManager.createNotificationChannel(notificationChannel)
+    }
+    val notification =
+        NotificationCompat.Builder(applicationContext, channelId)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Hello Nilesh")
+            .setContentText("Test Notification")
+            .build()
+    notificationManager.notify(1, notification)
+  }
+}
+
+/** Checks if the map manager is initialized. */
+fun isMapManagerInitialized(): Boolean {
+  return ::mapManager.isInitialized
 }
