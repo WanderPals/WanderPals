@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,8 +36,7 @@ fun DashboardDocumentWidget(onClick: () -> Unit, viewModel: DashboardViewModel) 
           Modifier.padding(16.dp)
               .clip(RoundedCornerShape(20))
               .clickable(onClick = onClick)
-              .size(150.dp)
-              .testTag("suggestionCard"),
+              .size(150.dp),
       colors =
           CardDefaults.cardColors(
               containerColor = surfaceVariantLight // This sets the background color of the Card
