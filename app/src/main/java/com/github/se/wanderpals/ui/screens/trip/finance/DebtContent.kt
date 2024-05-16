@@ -28,13 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.service.SessionManager
-import java.time.LocalDate
 
 /**
  * Composable function for displaying the list of debts of the trip. It displays the following
@@ -67,65 +64,70 @@ fun DebtContent(expenses: List<Expense>, users: List<User>) {
     }
   }
 
-  Box(modifier = Modifier.padding(start = 4.dp, end = 4.dp).testTag("defaultDebtContent")) {
-    LazyColumn(modifier = Modifier.fillMaxWidth().testTag("debtColumn")) {
-      item {
-        ElevatedCard(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            elevation = CardDefaults.cardElevation(4.dp)) {
-              Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                Text(
-                    text = "Balance Info",
-                    modifier = Modifier.testTag("balanceInfo").padding(top = 12.dp, start = 8.dp),
-                )
+  Box(
+      modifier =
+          Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp).testTag("defaultDebtContent")) {
+        LazyColumn(modifier = Modifier.fillMaxWidth().testTag("debtColumn")) {
+          item {
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                elevation = CardDefaults.cardElevation(4.dp)) {
+                  Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                    Text(
+                        text = "Balance Info",
+                        modifier =
+                            Modifier.testTag("balanceInfo").padding(top = 12.dp, start = 8.dp),
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Column {
-                  for (key in users) {
-                    DebtInfo(
-                        amount =
-                            debt[key.userId]!!.values.sumOf { it } -
-                                debt[key.userId]!![key.userId]!!,
-                        user = key.name)
+                    Column {
+                      for (key in users) {
+                        DebtInfo(
+                            amount =
+                                debt[key.userId]!!.values.sumOf { it } -
+                                    debt[key.userId]!![key.userId]!!,
+                            user = key.name)
+                      }
+                    }
                   }
                 }
-              }
-            }
-      }
-      item {
-        ElevatedCard(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            elevation = CardDefaults.cardElevation(4.dp)) {
-              Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                Text(
-                    text = "Fix debt",
-                    modifier = Modifier.testTag("myDebt").padding(top = 12.dp, start = 8.dp),
-                )
+          }
+          item {
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                elevation = CardDefaults.cardElevation(4.dp)) {
+                  Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                    Text(
+                        text = "Fix debt",
+                        modifier = Modifier.testTag("myDebt").padding(top = 12.dp, start = 8.dp),
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Column {
-                  users
-                      .filter { it.userId != SessionManager.getCurrentUser()!!.userId }
-                      .forEach { key ->
-                        if (debt[SessionManager.getCurrentUser()!!.userId]!![key.userId]!! != 0.0) {
-                          DebtItem(
-                              amount =
-                                  debt[SessionManager.getCurrentUser()!!.userId]!![key.userId]!!,
-                              user = SessionManager.getCurrentUser()!!.name,
-                              user2 = key.name,
-                              isClickable = true,
-                              onClick = {})
-                          HorizontalDivider()
-                        }
-                      }
+                    Column {
+                      users
+                          .filter { it.userId != SessionManager.getCurrentUser()!!.userId }
+                          .forEach { key ->
+                            if (debt[SessionManager.getCurrentUser()!!.userId]!![key.userId]!! !=
+                                0.0) {
+                              DebtItem(
+                                  amount =
+                                      debt[SessionManager.getCurrentUser()!!.userId]!![
+                                          key.userId]!!,
+                                  user = SessionManager.getCurrentUser()!!.name,
+                                  user2 = key.name,
+                                  isClickable = true,
+                                  onClick = {})
+                              HorizontalDivider()
+                            }
+                          }
+                    }
+                  }
                 }
-              }
-            }
+          }
+        }
       }
-    }
-  }
 }
 
 /**
@@ -245,71 +247,12 @@ fun DebtInfo(amount: Double, user: String) {
             modifier = Modifier.padding(8.dp).fillMaxSize().weight(4f)) {
               Column {
                 Text(
-                    text = "${String.format("%.02f", amount)} CHF",
+                    text =
+                        if (amount >= 0) "+${String.format("%.02f", amount)} CHF"
+                        else "${String.format("%.02f", amount)} CHF",
                     modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("end$user"),
                     textAlign = TextAlign.End)
               }
             }
       }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DebtItemPreview() {
-  Column {
-    DebtItem(
-        amount = 50.0, user = "ZDIAUHDZQUHIZDQHIUZQDHIUZQDHUIZDQHUIZQDHUIZQDHUIZDQHIU", "Bob", true)
-    DebtItem(amount = -50.0, user = "David", user2 = "Alice")
-
-    DebtInfo(amount = 50.0, user = "ZDIAUHDZQUHIZDQHIUZQDHIUZQDHUIZDQHUIZQDHUIZQDHUIZDQHIU")
-    DebtInfo(amount = -50.0, user = "David")
-  }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DebtContentTestPreview() {
-  val expense1 =
-      Expense(
-          expenseId = "1",
-          title = "Groceries",
-          amount = 50.0,
-          category = Category.FOOD,
-          userId = "user001",
-          userName = "Alice",
-          participantsIds = listOf("user001", "user002", "user003"),
-          names = listOf("Alice", "Bob", "Charlie"),
-          localDate = LocalDate.of(2024, 4, 30))
-
-  val expense2 =
-      Expense(
-          expenseId = "2",
-          title = "Movie Night",
-          amount = 25.0,
-          category = Category.TRANSPORT,
-          userId = "user002",
-          userName = "Bob",
-          participantsIds = listOf("user001", "user002", "user003"),
-          names = listOf("Alice", "Bob", "Charlie"),
-          localDate = LocalDate.of(2024, 4, 29))
-
-  val expense3 =
-      Expense(
-          expenseId = "3",
-          title = "Dinner",
-          amount = 100.0,
-          category = Category.FOOD,
-          userId = "user003",
-          userName = "Charlie",
-          participantsIds = listOf("user001", "user002", "user003"),
-          names = listOf("Alice", "Bob", "Charlie"),
-          localDate = LocalDate.of(2024, 4, 28))
-  SessionManager.setUserSession("user001", "Alice", "")
-  DebtContent(
-      expenses = listOf(expense1, expense2, expense3),
-      users =
-          listOf(
-              User("user001", "Alice", ""),
-              User("user002", "Bob", ""),
-              User("user003", "Charlie", "")))
 }
