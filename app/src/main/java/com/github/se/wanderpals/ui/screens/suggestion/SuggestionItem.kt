@@ -30,11 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.theme.backgroundLight
@@ -74,9 +76,13 @@ fun SuggestionItem(
             .border(width = 1.dp, color = surfaceVariantLight, shape = RoundedCornerShape(10.dp))
             .clickable(onClick = onClick),
         colors = cardColors) {
-        Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+        Column(modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.fillMaxWidth(0.6f).padding(end = 8.dp)) {
+                Column(modifier = Modifier
+                    .fillMaxWidth(0.6f)
+                    .padding(end = 8.dp)) {
                     Text(
                         text = suggestion.stop.title,
                         style =
@@ -132,7 +138,8 @@ fun SuggestionItem(
             // Description
             Box(
                 modifier =
-                Modifier.fillMaxWidth()
+                Modifier
+                    .fillMaxWidth()
                     .height(55.dp)
                     .background(backgroundLight, RoundedCornerShape(10.dp))
                     .padding(8.dp)) {
@@ -172,14 +179,15 @@ fun SuggestionItem(
 
                 Row {
                     Icon(
-                        imageVector =
-                        if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
+                        painter = if (isLiked) painterResource(R.drawable.up_filled) else painterResource(R.drawable.up_outlined),
                         contentDescription = "Like",
                         tint = if (isLiked) Color.Red else tertiaryLight,
                         modifier =
-                        Modifier.size(18.dp)
+                        Modifier
+                            .size(24.dp)
                             .padding(
-                                end = 4.dp) // 4.dp is the space between the icon and the text
+                                end = 4.dp
+                            ) // 4.dp is the space between the icon and the text
                             .clickable { viewModel.toggleLikeSuggestion(suggestion) })
 
                     Text(
@@ -203,9 +211,11 @@ fun SuggestionItem(
                         contentDescription = null,
                         tint = tertiaryLight,
                         modifier =
-                        Modifier.size(18.dp)
+                        Modifier
+                            .size(18.dp)
                             .padding(
-                                end = 4.dp) // 4.dp is the space between the icon and the text
+                                end = 4.dp
+                            ) // 4.dp is the space between the icon and the text
                     )
 
                     Text(
@@ -229,8 +239,10 @@ fun SuggestionItem(
                         contentDescription = "Options",
                         tint = tertiaryLight,
                         modifier =
-                        Modifier.size(
-                            18.dp) // Make sure to set the size as you did with other icons
+                        Modifier
+                            .size(
+                                18.dp
+                            ) // Make sure to set the size as you did with other icons
                             .clickable { viewModel.showSuggestionBottomSheet(suggestion) }
                             .testTag("suggestionOptionIcon" + suggestion.suggestionId)
                             .graphicsLayer {
