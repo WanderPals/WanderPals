@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
@@ -26,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.theme.backgroundLight
@@ -65,26 +66,40 @@ fun SuggestionItem(
     onClick: () -> Unit,
     tripId: String,
     viewModel: SuggestionsViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userRole: Role = viewModel.getCurrentUserRole(),
+//    onVoteClick: () -> Unit
 ) {
     val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
     val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
     val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
 
     val remainingTime = remember { mutableStateOf("") }
+    val isCountdownStarted by viewModel.countdownStates.collectAsState() // Collect the state from the ViewModel
+    val isVoteIconClickable by viewModel.voteIconClickability.collectAsState()
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            val now = LocalDateTime.now()
-            val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1)
-            val duration = java.time.Duration.between(now, endTime)
+    // Ensure default values are used if the states are not initialized
+    val countdownStarted = isCountdownStarted[suggestion.suggestionId] ?: false
+    val voteIconClickable = isVoteIconClickable[suggestion.suggestionId] ?: true
+
+
+    // LaunchedEffect should be inside the composable function
+    LaunchedEffect(suggestion.suggestionId) { // Use suggestionId to ensure unique LaunchedEffect per item
+        val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1)
+        var now: LocalDateTime
+        var duration: java.time.Duration
+
+        do {
+            now = LocalDateTime.now()
+            duration = java.time.Duration.between(now, endTime)
             val hours = duration.toHours().toString().padStart(2, '0')
             val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
             val seconds = (duration.seconds % 60).toString().padStart(2, '0')
             remainingTime.value = "$hours:$minutes:$seconds"
             delay(1000)
-        }
+        } while (duration > java.time.Duration.ZERO)
     }
+
 
     Card(
         modifier =
@@ -94,78 +109,80 @@ fun SuggestionItem(
             .height(166.dp)
             .border(width = 1.dp, color = surfaceVariantLight, shape = RoundedCornerShape(10.dp))
             .clickable(onClick = onClick),
-        colors = cardColors) {
+        colors = cardColors
+    ) {
         Column(modifier = Modifier
             .padding(16.dp)
-            .fillMaxWidth()) {
+            .fillMaxWidth()
+        ) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier
                     .fillMaxWidth(0.6f)
-                    .padding(end = 8.dp)) {
+                    .padding(end = 8.dp)
+                ) {
                     Text(
                         text = suggestion.stop.title,
-                        style =
-                        TextStyle(
+                        style = TextStyle(
                             fontSize = 15.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
                             color = primaryLight,
                             letterSpacing = 0.15.sp,
-                        ))
+                        )
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                        style =
-                        TextStyle(
+                        style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
                             color = secondaryLight,
                             letterSpacing = 0.14.sp,
-                        ))
+                        )
+                    )
                 }
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
                     val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
                     val endTime = startTime.plusMinutes(suggestion.stop.duration.toLong())
                     Text(
                         text = startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                        style =
-                        TextStyle(
+                        style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
                             color = secondaryLight,
                             letterSpacing = 0.14.sp,
                         ),
-                        modifier = Modifier.testTag("suggestionStart" + suggestion.suggestionId))
+                        modifier = Modifier.testTag("suggestionStart" + suggestion.suggestionId)
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                        style =
-                        TextStyle(
+                        style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
                             color = secondaryLight,
                             letterSpacing = 0.14.sp,
                         ),
-                        modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId))
+                        modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId)
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
 
             // Description
             Box(
-                modifier =
-                Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(55.dp)
                     .background(backgroundLight, RoundedCornerShape(10.dp))
-                    .padding(8.dp)) {
+                    .padding(8.dp)
+            ) {
                 Text(
                     text = suggestion.stop.description,
-                    style =
-                    TextStyle(
+                    style = TextStyle(
                         fontSize = 12.sp,
                         lineHeight = 20.sp,
                         fontWeight = FontWeight(500),
@@ -182,104 +199,117 @@ fun SuggestionItem(
             // User and Icons
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text(
                     text = "Suggested by ${suggestion.userName}",
-                    style =
-                    TextStyle(
+                    style = TextStyle(
                         fontSize = 14.sp,
                         lineHeight = 20.sp,
                         fontWeight = FontWeight(500),
                         color = tertiaryLight,
                         letterSpacing = 0.14.sp,
-                    ))
+                    )
+                )
 
                 Spacer(Modifier.weight(1f)) // push the icons to the right
 
                 Row {
+                    if (userRole == Role.OWNER || userRole == Role.ADMIN) {
+                        println("isVoteIconClickable[suggestion.suggestionId] = ${isVoteIconClickable[suggestion.suggestionId]} for suggestion: ${suggestion.stop.title}")
+                        println("isCountdownStarted[suggestion.suggestionId] = ${isCountdownStarted[suggestion.suggestionId]} for suggestion: ${suggestion.stop.title}")
+                        Icon(
+                            painter = painterResource(R.drawable.vote),
+                            contentDescription = "Vote",
+                            tint = tertiaryLight.copy(alpha = if (countdownStarted) 0.5f else 1f),
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(
+                                    bottom = 4.dp, end = 4.dp // end=4.dp is the space between the icon and the text
+                                )
+                                .clickable(enabled = voteIconClickable) {
+                                    println("Vote icon clicked for suggestion: ${suggestion.stop.title}")
+                                    viewModel.startCountdownAndDisableVoteButton(suggestion)
+                                }
+                        )
+                    }
+
                     Text(
                         text = remainingTime.value,
-                        style =
-                        TextStyle(
+                        style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
                             color = primaryLight,
                             letterSpacing = 0.14.sp,
-                        ))
+                        )
+                    )
 
                     Spacer(Modifier.width(8.dp)) // Space between text and icon
 
                     Icon(
                         painter = if (isLiked) painterResource(R.drawable.up_filled) else painterResource(R.drawable.up_outlined),
-                        contentDescription = "Vote",
+                        contentDescription = "Up",
                         tint = if (isLiked) Color.Red else tertiaryLight,
-                        modifier =
-                        Modifier
+                        modifier = Modifier
                             .size(20.dp)
                             .padding(
                                 bottom = 4.dp, end = 4.dp
-                            ) // 4.dp is the space between the icon and the text
-                            .clickable { viewModel.toggleLikeSuggestion(suggestion) })
+                            )
+                            .clickable { viewModel.toggleLikeSuggestion(suggestion) }
+                    )
 
                     Text(
                         text = likesCount,
-                        style =
-                        TextStyle(
+                        style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
                             color = tertiaryLight,
                             letterSpacing = 0.14.sp,
-                        ))
+                        )
+                    )
 
                     Spacer(
-                        modifier =
-                        Modifier.width(
-                            8.dp)) // 8.dp is the space between the text and the next icon
+                        modifier = Modifier.width(8.dp)
+                    ) // 8.dp is the space between the text and the next icon
 
                     Icon(
                         imageVector = Icons.Default.MailOutline,
                         contentDescription = null,
                         tint = tertiaryLight,
-                        modifier =
-                        Modifier
+                        modifier = Modifier
                             .size(18.dp)
-                            .padding(
-                                end = 4.dp
-                            ) // 4.dp is the space between the icon and the text
+                            .padding(end = 4.dp) // 4.dp is the space between the icon and the text
                     )
 
                     Text(
                         text = "${suggestion.comments.size}",
-                        style =
-                        TextStyle(
+                        style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
                             color = tertiaryLight,
                             letterSpacing = 0.14.sp,
-                        ))
+                        )
+                    )
 
                     Spacer(
-                        modifier =
-                        Modifier.width(
-                            8.dp)) // 8.dp is the space between the text and the next icon
+                        modifier = Modifier.width(8.dp)
+                    ) // 8.dp is the space between the text and the next icon
 
                     Icon(
                         imageVector = Icons.Outlined.MoreVert,
                         contentDescription = "Options",
                         tint = tertiaryLight,
-                        modifier =
-                        Modifier
-                            .size(
-                                18.dp
-                            ) // Make sure to set the size as you did with other icons
+                        modifier = Modifier
+                            .size(18.dp) // Make sure to set the size as you did with other icons
                             .clickable { viewModel.showSuggestionBottomSheet(suggestion) }
                             .testTag("suggestionOptionIcon" + suggestion.suggestionId)
                             .graphicsLayer {
                                 rotationZ = 90f // Rotate by 90 degrees
-                            })
+                            }
+                    )
                 }
             }
         }

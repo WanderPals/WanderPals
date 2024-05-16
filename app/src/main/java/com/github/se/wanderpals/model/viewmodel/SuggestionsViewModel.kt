@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Comment
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -103,6 +104,8 @@ open class SuggestionsViewModel(
 
       _likedSuggestions.value =
         _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
+
+      initializeStates(suggestions) // Initialize state maps
 
       _isLoading.value = false
     }
@@ -360,6 +363,44 @@ open class SuggestionsViewModel(
 
   open fun cancelEditComment() {
     _editingComment.value = false
+  }
+
+  open fun getCurrentUserRole(): Role {
+    val currentUser = SessionManager.getCurrentUser()
+    return currentUser?.role ?: Role.MEMBER
+  }
+
+//  // State to track if the countdown has started
+//  private val _isCountdownStarted = MutableStateFlow(false)
+//  open val isCountdownStarted: StateFlow<Boolean> = _isCountdownStarted.asStateFlow()
+//
+//    // State to track if the vote icon is clickable
+//    private val _isVoteIconClickable = MutableStateFlow(true)
+//    open val isVoteIconClickable: StateFlow<Boolean> = _isVoteIconClickable.asStateFlow()
+//
+//  open fun startCountdownAndDisableVoteButton() {
+//    _isCountdownStarted.value = true
+//    _isVoteIconClickable.value = false
+//  }
+// State to track if the countdown has started for each suggestion
+  private val _countdownStates = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+  open val countdownStates: StateFlow<Map<String, Boolean>> = _countdownStates.asStateFlow()
+
+  // State to track if the vote icon is clickable for each suggestion
+  private val _voteIconClickability = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+  open val voteIconClickability: StateFlow<Map<String, Boolean>> = _voteIconClickability.asStateFlow()
+
+  // Function to initialize state maps for each suggestion
+  private fun initializeStates(suggestions: List<Suggestion>) {
+    val countdownStateMap = suggestions.associate { it.suggestionId to false }
+    val voteIconClickableMap = suggestions.associate { it.suggestionId to true }
+    _countdownStates.value = countdownStateMap
+    _voteIconClickability.value = voteIconClickableMap
+  }
+
+  open fun startCountdownAndDisableVoteButton(suggestion: Suggestion) {
+    _countdownStates.value += (suggestion.suggestionId to true)
+    _voteIconClickability.value += (suggestion.suggestionId to false)
   }
 
   /** Transforms a suggestion to a stop and updates the backend and local state accordingly. */

@@ -176,7 +176,7 @@ fun SuggestionHistoryItem(
                   Icon(
                       painter = if (isLiked) painterResource(R.drawable.up_filled) else painterResource(
                           R.drawable.up_outlined),
-                      contentDescription = "Vote",
+                      contentDescription = "Up",
                       tint = if (isLiked) Color.Red else tertiaryLight,
                       modifier =
                           Modifier

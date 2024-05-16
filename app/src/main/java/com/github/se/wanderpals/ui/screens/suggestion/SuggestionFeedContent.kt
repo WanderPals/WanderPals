@@ -48,6 +48,7 @@ import com.github.se.wanderpals.ui.theme.scrimLight
  * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  * @param tripId The ID of the trip.
  * @param suggestionsViewModel The ViewModel for managing suggestions.
+ * @param navigationActions The navigation actions used to navigate to different screens.
  */
 @Composable
 fun SuggestionFeedContent(
@@ -83,7 +84,9 @@ fun SuggestionFeedContent(
         }
       }
 
-  Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
+  Column(modifier = Modifier
+      .fillMaxWidth()
+      .padding(innerPadding)) {
 
     // Title for the list of suggestions
     Text(
@@ -121,10 +124,11 @@ fun SuggestionFeedContent(
       Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier =
-                Modifier.width(260.dp)
-                    .height(55.dp)
-                    .align(Alignment.Center)
-                    .testTag("noSuggestionsForUserText"),
+            Modifier
+                .width(260.dp)
+                .height(55.dp)
+                .align(Alignment.Center)
+                .testTag("noSuggestionsForUserText"),
             text = "Looks like there is no suggestions yet. ",
             style =
                 TextStyle(
@@ -137,7 +141,9 @@ fun SuggestionFeedContent(
         )
         IconButton(
             onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-            modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(top = 60.dp),
             content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestions") })
       }
     } else {
@@ -164,7 +170,8 @@ fun SuggestionFeedContent(
                       }, // This lambda is passed to the SuggestionItem composable
                       modifier = Modifier.testTag("suggestion${index + 1}"),
                       tripId = tripId,
-                      viewModel = suggestionsViewModel)
+                      viewModel = suggestionsViewModel
+                  )
                 }
               }
             }
