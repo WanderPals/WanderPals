@@ -180,8 +180,7 @@ fun SuggestionItem(
                           Modifier.size(18.dp)
                               .padding(
                                   end = 4.dp) // 4.dp is the space between the icon and the text
-                              .clickable { viewModel.toggleLikeSuggestion(suggestion) }
-                              .testTag("likeIconSuggestionFeedScreen_${suggestion.suggestionId}"))
+                              .clickable { viewModel.toggleLikeSuggestion(suggestion) })
 
                   Text(
                       text = likesCount,
