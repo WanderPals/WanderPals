@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -46,24 +47,27 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
   val suggestionList by viewModel.state.collectAsState()
   val sortedSuggestion = suggestionList.sortedByDescending { it.createdAt }
 
-  Card(
+  ElevatedCard(
       modifier =
-          Modifier.padding(16.dp)
-              .fillMaxWidth()
-              .clickable(onClick = onClick)
-              .testTag("suggestionCard"),
+      Modifier
+          .padding(horizontal = 16.dp)
+          .fillMaxWidth()
+          .clickable(onClick = onClick)
+          .testTag("suggestionCard"),
       colors =
           CardDefaults.cardColors(
               containerColor = surfaceVariantLight // This sets the background color of the Card
               ),
-      shape = RoundedCornerShape(10.dp)) {
+      shape = RoundedCornerShape(10.dp),
+      elevation = CardDefaults.cardElevation(10.dp)) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
           Row(
               verticalAlignment = Alignment.CenterVertically,
               modifier =
-                  Modifier.clip(RoundedCornerShape(10.dp))
-                      .background(primaryContainerLight)
-                      .padding(8.dp)) {
+              Modifier
+                  .clip(RoundedCornerShape(10.dp))
+                  .background(primaryContainerLight)
+                  .padding(8.dp)) {
                 Icon(
                     Icons.Default.Menu,
                     contentDescription = "suggestionIcon",
@@ -88,10 +92,11 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
           if (sortedSuggestion.isEmpty()) {
             Column(
                 modifier =
-                    Modifier.fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(backgroundLight)
-                        .padding(40.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(backgroundLight)
+                    .padding(40.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally) {
                   Text(
@@ -122,10 +127,11 @@ fun SuggestionItem(suggestion: Suggestion) {
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
       modifier =
-          Modifier.fillMaxWidth()
-              .clip(RoundedCornerShape(10.dp))
-              .background(backgroundLight)
-              .testTag("suggestionItem" + suggestion.suggestionId)) {
+      Modifier
+          .fillMaxWidth()
+          .clip(RoundedCornerShape(10.dp))
+          .background(backgroundLight)
+          .testTag("suggestionItem" + suggestion.suggestionId)) {
         Column(modifier = Modifier.padding(16.dp, 8.dp)) {
           Text(
               text = suggestion.stop.title,

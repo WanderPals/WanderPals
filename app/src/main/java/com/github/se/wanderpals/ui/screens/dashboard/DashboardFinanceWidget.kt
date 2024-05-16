@@ -19,11 +19,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -52,9 +54,9 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
   val expenses by viewModel.expenses.collectAsState()
   val sortedExpenses = expenses.sortedByDescending { it.localDate }
 
-  Card(
+  ElevatedCard(
       modifier =
-          Modifier.padding(16.dp)
+          Modifier.padding(horizontal = 16.dp)
               .fillMaxWidth()
               .clickable(onClick = onClick)
               .testTag("financeCard"),
@@ -64,7 +66,8 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                   MaterialTheme.colorScheme
                       .surfaceVariant // This sets the background color of the Card
               ),
-      shape = RoundedCornerShape(6.dp)) {
+      shape = RoundedCornerShape(6.dp),
+        elevation = CardDefaults.cardElevation(10.dp)) {
         // Finance Widget
         Row(
             modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
@@ -119,10 +122,9 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                     Spacer(modifier = Modifier.padding(4.dp))
 
                     // Latest expenses
-                    Surface(
+                    Box(
                         modifier =
-                            Modifier.clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.surface)) {
+                            Modifier.clip(RoundedCornerShape(4.dp)).background(MaterialTheme.colorScheme.surface)){
                           if (expenses.isEmpty()) {
                             Box(
                                 contentAlignment = Alignment.Center,

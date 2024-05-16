@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,9 @@ open class DashboardViewModel(
 
   private var _tripTitle = MutableStateFlow("")
   open val tripTitle: StateFlow<String> = _tripTitle.asStateFlow()
+
+  private var _stops = MutableStateFlow(emptyList<Stop>())
+    open val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {
@@ -64,6 +68,13 @@ open class DashboardViewModel(
 
   fun hideDeleteDialog() {
     _showDeleteDialog.value = false
+  }
+
+  open fun loadStops(tripId: String) {
+    viewModelScope.launch {
+      // Fetch all stops from the trip
+      _stops.value = tripsRepository.getAllStopsFromTrip(tripId)
+    }
   }
 
   class DashboardViewModelFactory(
