@@ -115,7 +115,7 @@ fun CommentBottomSheet(
           TextButton(
               onClick = { viewModel.confirmDeleteComment(suggestion) },
               modifier = Modifier.testTag("confirmDeleteCommentButton")) {
-                Text("Confirm")
+                Text("Confirm", color = MaterialTheme.colorScheme.error)
               }
         },
         dismissButton = {

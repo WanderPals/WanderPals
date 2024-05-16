@@ -40,24 +40,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
 import java.time.YearMonth
 
 private const val DAYS_IN_A_WEEK = 7
 private const val MAX_ROWS_CALENDAR = 6
-
-@Preview(showSystemUi = true)
-@Composable
-fun AgendaPreview() {
-  WanderPalsTheme { Agenda(AgendaViewModel("", null)) }
-}
 
 /**
  * The main entry point Composable for the Agenda screen. It displays a calendar view that allows
@@ -68,14 +61,10 @@ fun AgendaPreview() {
  *   screen. It defaults to a ViewModel instance provided by the `viewModel()` function.
  */
 @Composable
-fun Agenda(agendaViewModel: AgendaViewModel) {
+fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: TripsRepository) {
   val uiState by agendaViewModel.uiState.collectAsState()
-  val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
 
   var isDrawerExpanded by remember { mutableStateOf(false) }
-
-  var isStopPressed by remember { mutableStateOf(false) }
-  var selectedStopId by remember { mutableStateOf("") }
 
   Scaffold(
       topBar = {
@@ -114,17 +103,8 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
       }
       // Daily agenda implementation
       DailyActivities(
-          agendaViewModel = agendaViewModel,
-          onActivityItemClick = { stopId ->
-            isStopPressed = true
-            selectedStopId = stopId
-          })
+          agendaViewModel = agendaViewModel, tripId = tripId, tripsRepository = tripsRepository)
     }
-  }
-
-  if (isStopPressed) {
-    val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
-    StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
   }
 }
 

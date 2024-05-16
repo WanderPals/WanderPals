@@ -1,27 +1,21 @@
 package com.github.se.wanderpals.agenda
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.ui.screens.trip.agenda.ActivityItem
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
-import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
+import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.YearMonth
-import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -80,7 +74,10 @@ class DailyActivitiesTest {
   fun checkDailyActivitiesAreDisplayed() {
 
     composeTestRule.setContent {
-      DailyActivities(agendaViewModel = testViewModel, onActivityItemClick = {})
+      DailyActivities(
+          agendaViewModel = testViewModel,
+          tripId = "1",
+          tripsRepository = TripsRepository(uid = "1", Dispatchers.IO))
     }
 
     composeTestRule.waitForIdle()
@@ -101,7 +98,15 @@ class DailyActivitiesTest {
   fun verifyActivityItemsContent() {
     // Set the content once with a composable that includes all test items
     composeTestRule.setContent {
-      Column { testActivities.forEach { stop -> ActivityItem(stop = stop, onActivityClick = {}) } }
+      Column {
+        testActivities.forEach { stop ->
+          StopItem(
+              stop = stop,
+              tripId = "1",
+              tripsRepository = TripsRepository(uid = "1", Dispatchers.IO),
+              onDelete = {})
+        }
+      }
     }
 
     // Loop through each test activity and assert its details
@@ -142,68 +147,14 @@ class DailyActivitiesTest {
   fun checkNoActivitiesMessageIsDisplayed() {
 
     composeTestRule.setContent {
-      DailyActivities(agendaViewModel = emptyTestViewModel, onActivityItemClick = {})
+      DailyActivities(
+          agendaViewModel = emptyTestViewModel,
+          tripId = "1",
+          tripsRepository = TripsRepository(uid = "1", Dispatchers.IO))
     }
 
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithTag("NoActivitiesMessage").assertIsDisplayed()
-  }
-
-  @Test
-  fun activityDialogDisplayCorrectInfo() {
-    composeTestRule.setContent {
-      Column {
-        var isStopPressed by remember { mutableStateOf(false) }
-        var selectedStopId by remember { mutableStateOf("") }
-
-        testActivities.forEach { stop ->
-          ActivityItem(
-              stop = stop,
-              onActivityClick = { stopId ->
-                isStopPressed = true
-                selectedStopId = stopId
-              })
-        }
-        if (isStopPressed) {
-          val selectedStop = testActivities.find { stop -> stop.stopId == selectedStopId }!!
-          StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
-        }
-      }
-    }
-    testActivities.forEach { testStop ->
-      composeTestRule.onNodeWithTag("activityItemButton" + testStop.stopId).performClick()
-      composeTestRule.onNodeWithTag("activityDialog").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("titleText").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("titleText").assertTextEquals("Title " + testStop.stopId)
-      composeTestRule.onNodeWithTag("activityDescription").assertIsDisplayed()
-      composeTestRule
-          .onNodeWithTag("activityDescription")
-          .assertTextEquals("Description " + testStop.stopId)
-      //      composeTestRule.onNodeWithTag("titleDate").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("activityDate").assertIsDisplayed()
-      composeTestRule
-          .onNodeWithTag("activityDate")
-          .assertTextEquals(LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")))
-      //      composeTestRule.onNodeWithTag("titleSchedule").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("activitySchedule").assertIsDisplayed()
-      //      composeTestRule.onNodeWithTag("titleAddress").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("activityAddress").assertIsDisplayed()
-      if (testStop.address.isNotEmpty()) {
-        composeTestRule
-            .onNodeWithTag("activityAddress")
-            .assertTextEquals("Location " + testStop.stopId)
-        composeTestRule.onNodeWithTag("navigationToMapButton" + testStop.stopId).assertIsDisplayed()
-      } else {
-        composeTestRule.onNodeWithTag("activityAddress").assertTextEquals("No address provided")
-        composeTestRule
-            .onNodeWithTag("navigationToMapButton" + testStop.stopId)
-            .assertIsDisplayed()
-            .assertIsNotEnabled()
-      }
-      //      composeTestRule.onNodeWithTag("titleBudget").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("activityBudget").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("activityBudget").assertTextEquals("0.0")
-    }
   }
 }

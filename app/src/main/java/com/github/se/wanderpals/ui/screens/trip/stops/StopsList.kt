@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -38,38 +37,47 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.StopsListViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
-import com.github.se.wanderpals.ui.screens.trip.agenda.ActivityItem
 import com.github.se.wanderpals.ui.screens.trip.agenda.DisplayDate
-import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import java.time.LocalDate
 
 /**
  * Composable function that displays the list of stops for a trip.
  *
- * @param stopsListViewModel The view model that provides the data for the stops list.
+ * @param stopsListViewModel The view model that provides the data for the stops list
+ * @param tripId The id of the trip
+ * @param tripsRepository The repository for trips
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "WeekBasedYear")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
-
-  var isStopPressed by remember { mutableStateOf(false) }
-  var selectedStopId by remember { mutableStateOf("") }
-
-  val onActivityItemClick = { stopId: String ->
-    isStopPressed = true
-    selectedStopId = stopId
-  }
+fun StopsList(
+    stopsListViewModel: StopsListViewModel,
+    tripId: String,
+    tripsRepository: TripsRepository
+) {
 
   // State for managing the loading state
   val isLoading by stopsListViewModel.isLoading.collectAsState()
 
   val stops by stopsListViewModel.stops.collectAsState()
+  var isRefreshNeeded by remember { mutableStateOf(false) }
 
-  LaunchedEffect(Unit) { stopsListViewModel.loadStops(tripId) }
+  val refreshFunction = {
+    stopsListViewModel.loadStops()
+    isRefreshNeeded = false
+  }
+
+  LaunchedEffect(isRefreshNeeded) {
+    if (isRefreshNeeded) {
+      refreshFunction()
+    }
+  }
+
+  LaunchedEffect(Unit) { refreshFunction() }
 
   Scaffold(
       topBar = {
@@ -140,14 +148,17 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
                                 stops
                                     .filter { stop -> stop.date == date }
                                     .sortedBy { it.startTime }) { stop ->
-                                  ActivityItem(stop, onActivityItemClick)
+                                  StopItem(
+                                      stop,
+                                      tripId,
+                                      tripsRepository,
+                                      onDelete = { isRefreshNeeded = true })
                                 }
                           }
                         })
                   }
               PullToRefreshLazyColumn(
-                  inputLazyColumn = stopsLazyColumn,
-                  onRefresh = { stopsListViewModel.loadStops(tripId) })
+                  inputLazyColumn = stopsLazyColumn, onRefresh = { stopsListViewModel.loadStops() })
             } else { // Display a message if there are no stops
               Box(modifier = Modifier.fillMaxSize()) {
                 Text(
@@ -159,7 +170,7 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
                             .testTag("NoActivitiesMessage")
                             .align(Alignment.Center))
                 IconButton(
-                    onClick = { stopsListViewModel.loadStops(tripId) },
+                    onClick = { stopsListViewModel.loadStops() },
                     modifier =
                         Modifier.align(Alignment.Center)
                             .padding(top = 60.dp)
@@ -167,17 +178,12 @@ fun StopsList(stopsListViewModel: StopsListViewModel, tripId: String) {
                     content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
               }
             }
-          } else { // Display a loading indicator while the data is being fetched
-            Box(modifier = Modifier.fillMaxSize()) {
-              CircularProgressIndicator(
-                  modifier = Modifier.align(Alignment.Center).testTag("Loading").size(50.dp),
-                  color = MaterialTheme.colorScheme.primary)
+          } else {
+            // Display a circular progress indicator when loading
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              CircularProgressIndicator()
             }
           }
         }
       }
-  if (isStopPressed) { // Display the stop information dialog
-    val selectedStop = stops.find { stop -> stop.stopId == selectedStopId }!!
-    StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
-  }
 }

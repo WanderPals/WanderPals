@@ -17,7 +17,6 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.Banner
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarWidget
 import com.github.se.wanderpals.ui.screens.trip.agenda.getDisplayName
-import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
@@ -111,7 +110,12 @@ class AgendaTest {
     val testYearMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
 
-    composeTestRule.setContent { Agenda(agendaViewModel = fakeViewModel) }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     composeTestRule.waitForIdle()
 
@@ -127,7 +131,12 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -144,7 +153,12 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -165,7 +179,12 @@ class AgendaTest {
           // Initial state setup to ensure "15" is present and not selected.
         }
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -186,7 +205,12 @@ class AgendaTest {
   fun checkBannerIsDisplayed() {
     val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
-    composeTestRule.setContent { Agenda(agendaViewModel = testViewModel) }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = testViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     composeTestRule.waitForIdle()
 
@@ -239,23 +263,21 @@ class AgendaTest {
 
     // Set up the environment for the test
     composeTestRule.setContent {
-      WanderPalsTheme {
-        CalendarWidget(
-            days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
-            yearMonth = testYearMonth,
-            dates =
-                listOf(
-                    CalendarUiState.Date(
-                        "5",
-                        testYearMonth.withMonth(5),
-                        year = Year.of(2024),
-                        isSelected = false,
-                        stopStatus = CalendarUiState.StopStatus.ADDED)),
-            onPreviousMonthButtonClicked = {},
-            onNextMonthButtonClicked = {},
-            onDateClickListener = {},
-        )
-      }
+      CalendarWidget(
+          days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+          yearMonth = testYearMonth,
+          dates =
+              listOf(
+                  CalendarUiState.Date(
+                      "5",
+                      testYearMonth.withMonth(5),
+                      year = Year.of(2024),
+                      isSelected = false,
+                      stopStatus = CalendarUiState.StopStatus.ADDED)),
+          onPreviousMonthButtonClicked = {},
+          onNextMonthButtonClicked = {},
+          onDateClickListener = {},
+      )
     }
 
     // Find the marker and assert it's displayed on the screen because the stop status is "ADDED"
@@ -277,22 +299,20 @@ class AgendaTest {
 
     // Set up the environment for the test
     composeTestRule.setContent {
-      WanderPalsTheme {
-        CalendarWidget(
-            days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
-            yearMonth = testYearMonth,
-            dates =
-                listOf(
-                    CalendarUiState.Date(
-                        "6",
-                        testYearMonth.withMonth(5),
-                        year = Year.of(2024),
-                        isSelected = false,
-                        stopStatus = CalendarUiState.StopStatus.NONE)),
-            onPreviousMonthButtonClicked = {},
-            onNextMonthButtonClicked = {},
-            onDateClickListener = {})
-      }
+      CalendarWidget(
+          days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+          yearMonth = testYearMonth,
+          dates =
+              listOf(
+                  CalendarUiState.Date(
+                      "6",
+                      testYearMonth.withMonth(5),
+                      year = Year.of(2024),
+                      isSelected = false,
+                      stopStatus = CalendarUiState.StopStatus.NONE)),
+          onPreviousMonthButtonClicked = {},
+          onNextMonthButtonClicked = {},
+          onDateClickListener = {})
     }
 
     // Assert that the marker with "ADDED" status is not displayed because the stop status is "NONE"
