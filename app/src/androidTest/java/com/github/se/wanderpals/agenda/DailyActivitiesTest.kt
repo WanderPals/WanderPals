@@ -1,10 +1,6 @@
 package com.github.se.wanderpals.agenda
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
@@ -17,7 +13,6 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
-import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
 import java.time.LocalDate
 import java.time.LocalTime
@@ -84,7 +79,6 @@ class DailyActivitiesTest {
     composeTestRule.setContent {
       DailyActivities(
           agendaViewModel = testViewModel,
-          onActivityItemClick = {},
           tripId = "1",
           tripsRepository = TripsRepository(uid = "1", Dispatchers.IO))
     }
@@ -111,10 +105,9 @@ class DailyActivitiesTest {
         testActivities.forEach { stop ->
           StopItem(
               stop = stop,
-              onActivityClick = {},
               tripId = "1",
               tripsRepository = TripsRepository(uid = "1", Dispatchers.IO),
-              onRefresh = {})
+              onDelete = {})
         }
       }
     }
@@ -159,7 +152,6 @@ class DailyActivitiesTest {
     composeTestRule.setContent {
       DailyActivities(
           agendaViewModel = emptyTestViewModel,
-          onActivityItemClick = {},
           tripId = "1",
           tripsRepository = TripsRepository(uid = "1", Dispatchers.IO))
     }
@@ -173,23 +165,12 @@ class DailyActivitiesTest {
   fun activityDialogDisplayCorrectInfo() {
     composeTestRule.setContent {
       Column {
-        var isStopPressed by remember { mutableStateOf(false) }
-        var selectedStopId by remember { mutableStateOf("") }
-
         testActivities.forEach { stop ->
           StopItem(
               stop = stop,
-              onActivityClick = { stopId ->
-                isStopPressed = true
-                selectedStopId = stopId
-              },
               tripId = "1",
               tripsRepository = TripsRepository(uid = "1", Dispatchers.IO),
-              onRefresh = {})
-        }
-        if (isStopPressed) {
-          val selectedStop = testActivities.find { stop -> stop.stopId == selectedStopId }!!
-          StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
+              onDelete = {})
         }
       }
     }
