@@ -17,17 +17,16 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.Banner
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarWidget
 import com.github.se.wanderpals.ui.screens.trip.agenda.getDisplayName
-import com.github.se.wanderpals.ui.theme.WanderPalsTheme
-import java.time.LocalDate
-import java.time.Year
-import java.time.YearMonth
-import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.time.LocalDate
+import java.time.Year
+import java.time.YearMonth
+import java.util.Locale
 
 class FakeAgendaViewModel(
     initialYearMonth: YearMonth,
@@ -133,12 +132,10 @@ class AgendaTest {
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
     composeTestRule.setContent {
-      WanderPalsTheme {
         Agenda(
             agendaViewModel = fakeViewModel,
             tripId = "",
             tripsRepository = TripsRepository("", Dispatchers.IO))
-      }
     }
 
     // Click on the banner to make the calendar appear
@@ -157,12 +154,10 @@ class AgendaTest {
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
     composeTestRule.setContent {
-      WanderPalsTheme {
         Agenda(
             agendaViewModel = fakeViewModel,
             tripId = "",
             tripsRepository = TripsRepository("", Dispatchers.IO))
-      }
     }
 
     // Click on the banner to make the calendar appear
@@ -185,12 +180,10 @@ class AgendaTest {
         }
 
     composeTestRule.setContent {
-      WanderPalsTheme {
         Agenda(
             agendaViewModel = fakeViewModel,
             tripId = "",
             tripsRepository = TripsRepository("", Dispatchers.IO))
-      }
     }
 
     // Click on the banner to make the calendar appear
@@ -270,7 +263,6 @@ class AgendaTest {
 
     // Set up the environment for the test
     composeTestRule.setContent {
-      WanderPalsTheme {
         CalendarWidget(
             days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
             yearMonth = testYearMonth,
@@ -286,7 +278,6 @@ class AgendaTest {
             onNextMonthButtonClicked = {},
             onDateClickListener = {},
         )
-      }
     }
 
     // Find the marker and assert it's displayed on the screen because the stop status is "ADDED"
@@ -308,7 +299,6 @@ class AgendaTest {
 
     // Set up the environment for the test
     composeTestRule.setContent {
-      WanderPalsTheme {
         CalendarWidget(
             days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
             yearMonth = testYearMonth,
@@ -323,7 +313,6 @@ class AgendaTest {
             onPreviousMonthButtonClicked = {},
             onNextMonthButtonClicked = {},
             onDateClickListener = {})
-      }
     }
 
     // Assert that the marker with "ADDED" status is not displayed because the stop status is "NONE"

@@ -14,7 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-class FakeStopItemViewModel() : StopItemViewModel(mockk(relaxed = true), tripId = "1") {
+class FakeStopItemViewModel : StopItemViewModel(mockk(relaxed = true), tripId = "1") {
   private val _isDeleted = MutableStateFlow(false)
   override val isDeleted: StateFlow<Boolean> = _isDeleted
 
