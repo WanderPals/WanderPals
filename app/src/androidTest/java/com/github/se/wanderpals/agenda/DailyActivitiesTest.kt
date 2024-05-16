@@ -12,13 +12,13 @@ import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.screens.trip.agenda.DailyActivities
 import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.YearMonth
 import kotlinx.coroutines.Dispatchers
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.YearMonth
 
 @RunWith(AndroidJUnit4::class)
 class DailyActivitiesTest {
