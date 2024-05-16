@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.finance
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
@@ -184,24 +185,27 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       composeTestRule.onNodeWithTag("debtAlice").assertIsDisplayed()
       composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
       composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("debtItemBob").assertExists()
+        composeTestRule.onNodeWithTag("debtItemCharlie").assertExists()
+
 
       composeTestRule
           .onNodeWithTag("startAlice", useUnmergedTree = true)
           .assertIsDisplayed()
-          .assertTextContains("-8.33 CHF")
+          .assertTextContains("Alice")
       composeTestRule
           .onNodeWithTag("endAlice", useUnmergedTree = true)
           .assertIsDisplayed()
-          .assertTextContains("Alice")
+          .assertTextContains("-8.33 CHF")
 
       composeTestRule
           .onNodeWithTag("startBob", useUnmergedTree = true)
           .assertIsDisplayed()
-          .assertTextContains("-33.33 CHF")
+          .assertTextContains("Bob")
       composeTestRule
           .onNodeWithTag("endBob", useUnmergedTree = true)
           .assertIsDisplayed()
-          .assertTextContains("Bob")
+          .assertTextContains("-33.33 CHF")
 
       composeTestRule
           .onNodeWithTag("startCharlie", useUnmergedTree = true)
@@ -216,7 +220,10 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   @Test
   fun debtScreenDisplaysDetails() = run {
+      SessionManager.setUserSession("user001")
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+
+
       debtsButton { performClick() }
       composeTestRule.onNodeWithTag("debtAlice").performClick()
       composeTestRule.onNodeWithTag("debtDetails").assertIsDisplayed()
