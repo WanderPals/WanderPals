@@ -576,18 +576,21 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("stopIcon", useUnmergedTree = true).assertIsDisplayed()
   }
 
-    @Test
-    fun StopWidgetDisplaysNothing() = run {
-        val viewModel = DashboardViewModelTest(emptyList())
-        viewModel.setLoading(false)
-        composeTestRule.setContent {
-            Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
-        }
-
-        viewModel.setStops(listOf(Stop(date = LocalDate.now().minusDays(1), startTime = LocalTime.now()), Stop(date = LocalDate.now(), startTime = LocalTime.now().minusSeconds(1))))
-
-        composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertIsDisplayed()
+  @Test
+  fun StopWidgetDisplaysNothing() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
+
+    viewModel.setStops(
+        listOf(
+            Stop(date = LocalDate.now().minusDays(1), startTime = LocalTime.now()),
+            Stop(date = LocalDate.now(), startTime = LocalTime.now().minusSeconds(1))))
+
+    composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertIsDisplayed()
+  }
 
   @Test
   fun stopWidgetDisplaysProperlyOne() = run {
