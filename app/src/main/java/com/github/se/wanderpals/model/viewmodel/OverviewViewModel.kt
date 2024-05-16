@@ -105,12 +105,19 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
         val newState = _state.value.toMutableList()
         val newTrip = tripsRepository.getTrip(tripId)!!
 
+        // update the list of tokens for the trip
+        SessionManager.setListOfTokensTrip(newTrip.tokenIds + SessionManager.getNotificationToken())
+
+        //add the token to the list of tokens
+        tripsRepository.updateTrip(newTrip.copy(tokenIds = SessionManager.getListOfTokensTrip()))
+
         // send a notification to all the users of the trip
-        for (userToken in newTrip.tokenIds) {
+        /*for (userToken in SessionManager.getListOfTokensTrip()) {
           sendMessageToListOfUsers(
               userToken,
               "${SessionManager.getCurrentUser()?.name} has been added to ${newTrip.title}")
-        }
+        }*/
+
 
         newState.add(newTrip)
         _state.value = newState.toList()

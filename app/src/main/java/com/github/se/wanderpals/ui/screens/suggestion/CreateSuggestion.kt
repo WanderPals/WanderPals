@@ -51,6 +51,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 
 /**
  * CreateSuggestion composable responsible for adding a suggestion to a trip
@@ -401,6 +402,7 @@ fun CreateSuggestion(
                     }
                   } else {
                     if (viewModel.addSuggestion(tripId, newSuggestion)) {
+                        NotificationAPI().sendNotification(SessionManager.getListOfTokensTrip(), "A new suggestion has been added to ${SessionManager.getCurrentUser()?.tripName}")
                       onSuccess()
                     } else {
                       onFailure()

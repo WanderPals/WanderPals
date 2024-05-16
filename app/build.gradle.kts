@@ -135,6 +135,9 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
 dependencies {
     implementation(libs.test.core.ktx)
 
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+
     implementation(libs.firebase.messaging.ktx)
 
 

@@ -134,7 +134,7 @@ object SessionManager {
   }
 
   // update the list of tokens for the trip
-  fun setListOfTokensTrip(listOfTokens: MutableList<String>) {
+  fun setListOfTokensTrip(listOfTokens: List<String>) {
     currentListOfTokensTrip += listOfTokens
   }
 

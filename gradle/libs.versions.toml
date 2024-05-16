@@ -3,6 +3,7 @@ activityKtx = "1.9.0"
 agp = "8.4.0"
 androidxCoreKtxVersion = "2.2.0"
 coilCompose = "2.6.0"
+converterMoshi = "2.9.0"
 coreKtxVersion = "1.8.1"
 firebaseAdmin = "9.2.0"
 firebaseAuth = "22.3.1"
@@ -29,6 +30,7 @@ kaspresso = "1.5.5"
 mockk = "1.13.7"
 mockkAgent = "1.13.7"
 mockkAndroid = "1.13.7"
+retrofit = "2.9.0"
 robolectric = "4.11.1"
 secretsGradlePlugin = "2.0.1"
 sonar = "4.4.1.3373"
@@ -49,6 +51,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-core-ktx-v220 = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtxVersion" }
 androidx-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espressoCore" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+converter-moshi = { module = "com.squareup.retrofit2:converter-moshi", version.ref = "converterMoshi" }
 core-ktx = { module = "com.google.android.play:core-ktx", version.ref = "coreKtxVersion" }
 firebase-admin = { module = "com.google.firebase:firebase-admin", version.ref = "firebaseAdmin" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
@@ -88,6 +91,7 @@ kaspresso-compose = { group = "com.kaspersky.android-components", name = "kaspre
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockkAgent" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }

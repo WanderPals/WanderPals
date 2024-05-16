@@ -68,7 +68,9 @@ fun Trip(
   val sessionViewModel: SessionViewModel =
       viewModel(
           factory = SessionViewModel.SessionViewModelFactory(tripsRepository), key = "Session")
-  LaunchedEffect(key1 = tripId) { sessionViewModel.updateUserForCurrentUser(tripId) }
+  LaunchedEffect(key1 = tripId) {
+      sessionViewModel.updateUserForCurrentUser(tripId)
+  sessionViewModel.getTheTokenList(tripId)}
 
   Scaffold(
       modifier = Modifier.testTag("tripScreen"),
