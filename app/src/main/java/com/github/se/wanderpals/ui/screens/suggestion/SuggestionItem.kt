@@ -25,6 +25,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,6 +48,7 @@ import com.github.se.wanderpals.ui.theme.primaryLight
 import com.github.se.wanderpals.ui.theme.secondaryLight
 import com.github.se.wanderpals.ui.theme.surfaceVariantLight
 import com.github.se.wanderpals.ui.theme.tertiaryLight
+import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -66,6 +70,21 @@ fun SuggestionItem(
     val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
     val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
     val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
+
+    val remainingTime = remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            val now = LocalDateTime.now()
+            val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1)
+            val duration = java.time.Duration.between(now, endTime)
+            val hours = duration.toHours().toString().padStart(2, '0')
+            val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
+            val seconds = (duration.seconds % 60).toString().padStart(2, '0')
+            remainingTime.value = "$hours:$minutes:$seconds"
+            delay(1000)
+        }
+    }
 
     Card(
         modifier =
@@ -178,15 +197,28 @@ fun SuggestionItem(
                 Spacer(Modifier.weight(1f)) // push the icons to the right
 
                 Row {
+                    Text(
+                        text = remainingTime.value,
+                        style =
+                        TextStyle(
+                            fontSize = 14.sp,
+                            lineHeight = 20.sp,
+                            fontWeight = FontWeight(500),
+                            color = primaryLight,
+                            letterSpacing = 0.14.sp,
+                        ))
+
+                    Spacer(Modifier.width(8.dp)) // Space between text and icon
+
                     Icon(
                         painter = if (isLiked) painterResource(R.drawable.up_filled) else painterResource(R.drawable.up_outlined),
-                        contentDescription = "Like",
+                        contentDescription = "Vote",
                         tint = if (isLiked) Color.Red else tertiaryLight,
                         modifier =
                         Modifier
-                            .size(24.dp)
+                            .size(20.dp)
                             .padding(
-                                end = 4.dp
+                                bottom = 4.dp, end = 4.dp
                             ) // 4.dp is the space between the icon and the text
                             .clickable { viewModel.toggleLikeSuggestion(suggestion) })
 

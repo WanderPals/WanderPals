@@ -27,11 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.theme.backgroundLight
@@ -172,14 +174,16 @@ fun SuggestionHistoryItem(
 
                 Row {
                   Icon(
-                      imageVector =
-                          if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
-                      contentDescription = "Like",
+                      painter = if (isLiked) painterResource(R.drawable.up_filled) else painterResource(
+                          R.drawable.up_outlined),
+                      contentDescription = "Vote",
                       tint = if (isLiked) Color.Red else tertiaryLight,
                       modifier =
-                          Modifier.size(18.dp)
+                          Modifier
+                              .size(20.dp)
                               .padding(
-                                  end = 4.dp) // 4.dp is the space between the icon and the text
+                                  bottom = 4.dp, end = 4.dp
+                              ) // 4.dp is the space between the icon and the text
                               .testTag(
                                   "staticLikeIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
 
