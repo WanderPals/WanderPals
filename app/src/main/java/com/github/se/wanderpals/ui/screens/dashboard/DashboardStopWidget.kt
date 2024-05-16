@@ -13,18 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -42,215 +38,200 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
-import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
-import kotlinx.coroutines.Dispatchers
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.Dispatchers
 
 @Composable
-fun DashboardStopWidget(viewModel: DashboardViewModel, onClick : () -> Unit = {}) {
-    val stops by viewModel.stops.collectAsState()
-    val sortedStops = stops.sortedBy { LocalDateTime.of(it.date, it.startTime) }
-        .filter { LocalDateTime.of(it.date, it.startTime).plusMinutes(it.duration.toLong()).isAfter(LocalDateTime.now()) }
+fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
+  val stops by viewModel.stops.collectAsState()
+  val sortedStops =
+      stops
+          .sortedBy { LocalDateTime.of(it.date, it.startTime) }
+          .filter {
+            LocalDateTime.of(it.date, it.startTime)
+                .plusMinutes(it.duration.toLong())
+                .isAfter(LocalDateTime.now())
+          }
 
-    ElevatedCard(
-        modifier =
-        Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .testTag("financeCard"),
-        colors =
-        CardDefaults.cardColors(
-            containerColor =
-            MaterialTheme.colorScheme
-                .surfaceVariant // This sets the background color of the Card
-        ),
-        shape = RoundedCornerShape(6.dp),
-        elevation = CardDefaults.cardElevation(10.dp)
-    ) {
+  ElevatedCard(
+      modifier =
+          Modifier.padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .clickable(onClick = onClick)
+              .testTag("stopCard"),
+      colors =
+          CardDefaults.cardColors(
+              containerColor =
+                  MaterialTheme.colorScheme
+                      .surfaceVariant // This sets the background color of the Card
+              ),
+      shape = RoundedCornerShape(6.dp),
+      elevation = CardDefaults.cardElevation(10.dp)) {
         // Finance Widget
         Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Max)
-                .fillMaxWidth(),
+            modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
-            // Finance Details, Left part of the widget
-            Column(
-                modifier =
-                Modifier
-                    .padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
-                    .fillMaxWidth()) {
-                // Top part of the texts
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()) {
+              // Finance Details, Left part of the widget
+              Column(
+                  modifier =
+                      Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
+                          .fillMaxWidth()) {
+                    // Top part of the texts
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start,
-                        modifier =
-                        Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .padding(horizontal = 8.dp, vertical = 4.dp)) {
-                        Icon(
-                            Icons.Default.LocationOn,
-                            contentDescription = "Finance Icon",
-                            modifier = Modifier
-                                .size(16.dp)
-                                .testTag("financeIcon"),
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                        Text(
-                            text = "Upcoming Stops",
-                            modifier = Modifier.testTag("financeTitle"),
-                            style =
-                            TextStyle(
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                fontWeight = FontWeight.Bold)
-                        )
-                    }
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()) {
+                          Row(
+                              verticalAlignment = Alignment.CenterVertically,
+                              horizontalArrangement = Arrangement.Start,
+                              modifier =
+                                  Modifier.clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.primaryContainer)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                                Icon(
+                                    Icons.Default.LocationOn,
+                                    contentDescription = "Stop Icon",
+                                    modifier = Modifier.size(16.dp).testTag("stopIcon"),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Text(
+                                    text = "Upcoming Stops",
+                                    modifier = Modifier.testTag("stopTitle"),
+                                    style =
+                                        TextStyle(
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            fontWeight = FontWeight.Bold))
+                              }
+
+                          Spacer(modifier = Modifier.padding(4.dp))
+
+                          Text(
+                              text =
+                                  "Total: ${sortedStops.size} stop" +
+                                      if (sortedStops.size > 1) "s" else "",
+                              modifier =
+                                  Modifier.testTag("totalStops")
+                                      .clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.surface)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp),
+                              style =
+                                  TextStyle(
+                                      color = MaterialTheme.colorScheme.primary,
+                                      fontWeight = FontWeight.Bold))
+                        }
 
                     Spacer(modifier = Modifier.padding(4.dp))
 
-                    Text(
-                        text =
-                        "Total: ${sortedStops.size} stop" + if (sortedStops.size > 1) "s" else "",
+                    // Latest expenses
+                    Box(
                         modifier =
-                        Modifier
-                            .testTag("totalAmount")
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colorScheme.surface)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        style =
-                        TextStyle(
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold)
-                    )
-                }
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                // Latest expenses
-                Box(
-                    modifier =
-                    Modifier
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(MaterialTheme.colorScheme.surface)
-                        .fillMaxWidth()) {
-                    if (sortedStops.isEmpty()) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier =
-                            Modifier
-                                .padding(top = 16.dp, bottom = 40.dp)
-                                .fillMaxSize()) {
-                            Text(
-                                text = "No expenses yet.",
-                                modifier = Modifier.testTag("noExpenses"),
-                                style = TextStyle(color = MaterialTheme.colorScheme.primary),
-                            )
-                        }
-                    } else {
-                        Column {
-                            StopItem(stop = sortedStops[0])
-                            HorizontalDivider(
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                thickness = 1.dp,
-                                modifier = Modifier.padding(horizontal = 8.dp))
-                            if (sortedStops.size > 1) {
+                            Modifier.clip(RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxWidth()) {
+                          if (sortedStops.isEmpty()) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier =
+                                    Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
+                                  Text(
+                                      text = "No stops yet.",
+                                      modifier = Modifier.testTag("noStops"),
+                                      style = TextStyle(color = MaterialTheme.colorScheme.primary),
+                                  )
+                                }
+                          } else {
+                            Column {
+                              StopItem(stop = sortedStops[0])
+                              HorizontalDivider(
+                                  color = MaterialTheme.colorScheme.surfaceVariant,
+                                  thickness = 1.dp,
+                                  modifier = Modifier.padding(horizontal = 8.dp))
+                              if (sortedStops.size > 1) {
                                 StopItem(stop = sortedStops[1])
-                            } else {
+                              } else {
                                 Box(modifier = Modifier.fillMaxSize())
+                              }
                             }
+                          }
                         }
-                    }
-                }
+                  }
             }
-        }
-    }
-
+      }
 }
 
 @Composable
 fun StopItem(stop: Stop) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .testTag("expenseItem" + stop.stopId)) {
-        Column(modifier = Modifier
-            .padding(8.dp)
-            .weight(1f)
-            .fillMaxWidth()) {
-            Text(
-                text =
-                if (stop.title.length > 20) stop.title.subSequence(0, 18).toString() + "..."
-                else stop.title,
-                style =
-                TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 15.sp),
-                modifier = Modifier.testTag("expenseTitle" + stop.stopId))
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = LocalDateTime.of(stop.date, stop.startTime).format(
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                style = TextStyle(color = MaterialTheme.colorScheme.tertiary, fontSize = 10.sp),
-                modifier = Modifier.testTag("expenseUser"))
+  Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier.fillMaxWidth().testTag("stopItem" + stop.stopId)) {
+        Column(modifier = Modifier.padding(8.dp).weight(1f).fillMaxWidth()) {
+          Text(
+              text =
+                  if (stop.title.length > 20) stop.title.subSequence(0, 18).toString() + "..."
+                  else stop.title,
+              style =
+                  TextStyle(
+                      fontWeight = FontWeight.Bold,
+                      color = MaterialTheme.colorScheme.primary,
+                      fontSize = 15.sp),
+              modifier = Modifier.testTag("stopTitle" + stop.stopId))
+          Spacer(modifier = Modifier.height(4.dp))
+          Text(
+              text =
+                  LocalDateTime.of(stop.date, stop.startTime)
+                      .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+              style = TextStyle(color = MaterialTheme.colorScheme.tertiary, fontSize = 10.sp),
+              modifier = Modifier.testTag("stopStart" + stop.stopId))
         }
-        Column(modifier = Modifier
-            .padding(8.dp)
-            .weight(1f)
-            .fillMaxWidth()) {
-            Text(
-                text = if (stop.address.isEmpty()) "" else if (stop.address.length > 40) stop.address.subSequence(0, 38).toString() + "..."
-                                                                else stop.address,
-                style =
-                TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 15.sp,
-                    textAlign = TextAlign.End
-                ),
-                modifier = Modifier
-                    .testTag("expenseAmount")
-                    .fillMaxWidth()
-            )
+        Column(modifier = Modifier.padding(8.dp).weight(1f).fillMaxWidth()) {
+          Text(
+              text =
+                  if (stop.address.isEmpty()) ""
+                  else if (stop.address.length > 40)
+                      stop.address.subSequence(0, 38).toString() + "..."
+                  else stop.address,
+              style =
+                  TextStyle(
+                      fontWeight = FontWeight.Bold,
+                      color = MaterialTheme.colorScheme.primary,
+                      fontSize = 15.sp,
+                      textAlign = TextAlign.End),
+              modifier = Modifier.testTag("stopAddress" + stop.stopId).fillMaxWidth())
 
-            Spacer(modifier = Modifier.height(4.dp))
+          Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = LocalDateTime.of(stop.date, stop.startTime).plusMinutes(stop.duration.toLong()).format(
-                    DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                style = TextStyle(color = MaterialTheme.colorScheme.tertiary, fontSize = 10.sp, textAlign = TextAlign.End),
-                modifier = Modifier
-                    .testTag("expenseUser")
-                    .fillMaxWidth())
+          Text(
+              text =
+                  LocalDateTime.of(stop.date, stop.startTime)
+                      .plusMinutes(stop.duration.toLong())
+                      .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+              style =
+                  TextStyle(
+                      color = MaterialTheme.colorScheme.tertiary,
+                      fontSize = 10.sp,
+                      textAlign = TextAlign.End),
+              modifier = Modifier.testTag("stopEnd" + stop.stopId).fillMaxWidth())
         }
-    }
+      }
 }
 
-@Preview (showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun StopItemPreview() {
-    StopItem(
-        Stop(
-            stopId = "1",
-            title = "Stop 1",
-            date = LocalDateTime.now().toLocalDate(),
-            startTime = LocalDateTime.now().toLocalTime(),
-            duration = 60,
-            address = "EPFL, 1015 Lausanne, Switzerland",
-            description = "Description 1"
-        )
-    )
+  StopItem(
+      Stop(
+          stopId = "1",
+          title = "Stop 1",
+          date = LocalDateTime.now().toLocalDate(),
+          startTime = LocalDateTime.now().toLocalTime(),
+          duration = 60,
+          address = "EPFL, 1015 Lausanne, Switzerland",
+          description = "Description 1"))
 }
 
-@Preview (showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun DashboardStopWidgetPreview() {
-    DashboardStopWidget(DashboardViewModel(TripsRepository("", Dispatchers.IO), ""))
+  DashboardStopWidget(DashboardViewModel(TripsRepository("", Dispatchers.IO), ""))
 }

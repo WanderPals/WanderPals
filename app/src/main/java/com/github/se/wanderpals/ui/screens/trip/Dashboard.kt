@@ -81,7 +81,7 @@ fun Dashboard(
     dashboardViewModel.loadSuggestion(tripId)
     dashboardViewModel.loadExpenses(tripId)
     dashboardViewModel.loadTripTitle(tripId)
-      dashboardViewModel.loadStops(tripId)
+    dashboardViewModel.loadStops(tripId)
   }
 
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -98,10 +98,7 @@ fun Dashboard(
     if (isLoading) {
       Box(modifier = Modifier.fillMaxSize()) {
         CircularProgressIndicator(
-            modifier = Modifier
-                .size(50.dp)
-                .align(Alignment.Center)
-                .testTag("loading"))
+            modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
       }
     } else {
       Scaffold(
@@ -109,37 +106,34 @@ fun Dashboard(
       ) { contentPadding ->
         Surface(
             modifier =
-            Modifier
-                .background(Color.White)
-                .padding(contentPadding)
-                .testTag("dashboardSuggestions")) {
+                Modifier.background(Color.White)
+                    .padding(contentPadding)
+                    .testTag("dashboardSuggestions")) {
               LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
-                  item {
-                      Spacer(modifier = Modifier.padding(8.dp))
-                      DashboardSuggestionWidget(
-                          viewModel = dashboardViewModel,
-                          onClick = { navActions.navigateTo(Route.SUGGESTION) })
+                item {
+                  Spacer(modifier = Modifier.padding(8.dp))
+                  DashboardSuggestionWidget(
+                      viewModel = dashboardViewModel,
+                      onClick = { navActions.navigateTo(Route.SUGGESTION) })
 
-                      Spacer(modifier = Modifier.padding(8.dp))
-                  }
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
 
-                  item {
+                item {
+                  DashboardFinanceWidget(
+                      viewModel = dashboardViewModel,
+                      onClick = { navActions.navigateTo(Route.FINANCE) })
 
-                    DashboardFinanceWidget(
-                        viewModel = dashboardViewModel,
-                        onClick = { navActions.navigateTo(Route.FINANCE) })
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
 
-                    Spacer(modifier = Modifier.padding(8.dp))
-                  }
+                item {
+                  DashboardStopWidget(
+                      viewModel = dashboardViewModel,
+                      onClick = { navActions.navigateTo(Route.AGENDA) })
 
-                  item {
-
-                      DashboardStopWidget(
-                          viewModel = dashboardViewModel,
-                          onClick = { navActions.navigateTo(Route.AGENDA) })
-
-                      Spacer(modifier = Modifier.padding(8.dp))
-                  }
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
               }
             }
 
@@ -192,11 +186,7 @@ fun Menu(
   ModalDrawerSheet(
       drawerShape = MaterialTheme.shapes.large,
       modifier =
-      Modifier
-          .testTag("menuNav")
-          .requiredWidth(200.dp)
-          .requiredHeight(250.dp)
-          .padding(8.dp),
+          Modifier.testTag("menuNav").requiredWidth(200.dp).requiredHeight(250.dp).padding(8.dp),
   ) {
     ElevatedButton(
         modifier = Modifier.testTag("backToOverview"),
@@ -214,18 +204,13 @@ fun Menu(
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 2.dp)
-            .testTag("AdminButtonTest"),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("AdminButtonTest"),
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painterResource(id = R.drawable.logo_nsa),
                 contentDescription = "NSA",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(30.dp))
+                modifier = Modifier.clip(CircleShape).size(30.dp))
             Text(text = "Admin", modifier = Modifier.padding(horizontal = 20.dp))
           }
         },
@@ -237,18 +222,13 @@ fun Menu(
         })
     Spacer(modifier = Modifier.padding(2.dp))
     ElevatedButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 2.dp)
-            .testTag("FinanceButtonTest"),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("FinanceButtonTest"),
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painterResource(id = R.drawable.finance_logo),
                 contentDescription = "financeLogo",
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(25.dp))
+                modifier = Modifier.clip(CircleShape).size(25.dp))
             Text(text = "Finance", modifier = Modifier.padding(horizontal = 20.dp))
           }
         },
@@ -261,18 +241,13 @@ fun Menu(
 
     if (SessionManager.getCurrentUser()!!.role == Role.OWNER) {
       ElevatedButton(
-          modifier = Modifier
-              .fillMaxWidth()
-              .padding(horizontal = 2.dp)
-              .testTag("deleteTripButton"),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("deleteTripButton"),
           content = {
             Row(verticalAlignment = Alignment.CenterVertically) {
               Icon(
                   Icons.Default.Delete,
                   contentDescription = "Delete",
-                  modifier = Modifier
-                      .clip(CircleShape)
-                      .size(25.dp))
+                  modifier = Modifier.clip(CircleShape).size(25.dp))
               Text(text = "Delete Trip", modifier = Modifier.padding(start = 20.dp))
             }
           },
@@ -297,35 +272,35 @@ fun Menu(
  */
 @Composable
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: String) {
-  Column(modifier = Modifier
-      .padding(top = 8.dp, start = 8.dp, end = 8.dp)
-      .testTag("dashboardTopBar")) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment =
-            Alignment.CenterVertically // This aligns all children vertically centered in the Row
-        ) {
-          ElevatedButton(
-              modifier = Modifier.testTag("menuButton"),
-              content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
-              onClick = {
-                scope.launch { drawerState.apply { if (isClosed) open() else close() } }
-              })
-          Text(
-              text = tripTitle,
-              modifier =
-              Modifier
-                  .padding(8.dp)
-                  .testTag("tripTitle")
-                  .weight(1f), // This makes the text expand and fill the space
-              color = MaterialTheme.colorScheme.primary,
-              fontWeight = FontWeight.Bold, // This makes the text bold
-              fontSize = 24.sp, // This sets the font size to 24sp
-              maxLines = 1, // This makes the text to be displayed in a single line
-              overflow =
-                  TextOverflow.Ellipsis // This makes the text to be ellipsized if it overflows
-              )
-        }
-    HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
-  }
+  Column(
+      modifier =
+          Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp).testTag("dashboardTopBar")) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment =
+                Alignment
+                    .CenterVertically // This aligns all children vertically centered in the Row
+            ) {
+              ElevatedButton(
+                  modifier = Modifier.testTag("menuButton"),
+                  content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
+                  onClick = {
+                    scope.launch { drawerState.apply { if (isClosed) open() else close() } }
+                  })
+              Text(
+                  text = tripTitle,
+                  modifier =
+                      Modifier.padding(8.dp)
+                          .testTag("tripTitle")
+                          .weight(1f), // This makes the text expand and fill the space
+                  color = MaterialTheme.colorScheme.primary,
+                  fontWeight = FontWeight.Bold, // This makes the text bold
+                  fontSize = 24.sp, // This sets the font size to 24sp
+                  maxLines = 1, // This makes the text to be displayed in a single line
+                  overflow =
+                      TextOverflow.Ellipsis // This makes the text to be ellipsized if it overflows
+                  )
+            }
+        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+      }
 }

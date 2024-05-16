@@ -33,7 +33,7 @@ open class DashboardViewModel(
   open val tripTitle: StateFlow<String> = _tripTitle.asStateFlow()
 
   private var _stops = MutableStateFlow(emptyList<Stop>())
-    open val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
+  open val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {
