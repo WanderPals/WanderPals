@@ -32,18 +32,16 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlinx.coroutines.Dispatchers
 
 /**
  * Composable function to display the stop widget in the dashboard screen
+ *
  * @param viewModel DashboardViewModel to get the stops from
  * @param onClick Function to execute when the widget is clicked
  */
@@ -53,11 +51,7 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
   val sortedStops =
       stops
           .sortedBy { LocalDateTime.of(it.date, it.startTime) }
-          .filter {
-            LocalDateTime.of(it.date, it.startTime)
-                .plusMinutes(it.duration.toLong())
-                .isAfter(LocalDateTime.now())
-          }
+          .filter { LocalDateTime.of(it.date, it.startTime).isAfter(LocalDateTime.now()) }
 
   ElevatedCard(
       modifier =
@@ -73,11 +67,11 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
               ),
       shape = RoundedCornerShape(6.dp),
       elevation = CardDefaults.cardElevation(10.dp)) {
-        // Finance Widget
+        // Stop Widget
         Row(
             modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
-              // Finance Details, Left part of the widget
+              // List of stop
               Column(
                   modifier =
                       Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
@@ -127,7 +121,7 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
 
                     Spacer(modifier = Modifier.padding(4.dp))
 
-                    // Latest expenses
+                    // Upcoming stops
                     Box(
                         modifier =
                             Modifier.clip(RoundedCornerShape(4.dp))
@@ -146,13 +140,13 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
                                 }
                           } else {
                             Column {
-                              StopItem(stop = sortedStops[0])
+                              StopWidgetItem(stop = sortedStops[0])
                               HorizontalDivider(
                                   color = MaterialTheme.colorScheme.surfaceVariant,
                                   thickness = 1.dp,
                                   modifier = Modifier.padding(horizontal = 8.dp))
                               if (sortedStops.size > 1) {
-                                StopItem(stop = sortedStops[1])
+                                StopWidgetItem(stop = sortedStops[1])
                               } else {
                                 Box(modifier = Modifier.fillMaxSize())
                               }
@@ -166,10 +160,11 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
 
 /**
  * Composable function to display a single stop item in the dashboard widget
+ *
  * @param stop Stop object to display
  */
 @Composable
-fun StopItem(stop: Stop) {
+fun StopWidgetItem(stop: Stop) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
