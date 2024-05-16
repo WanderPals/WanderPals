@@ -48,28 +48,25 @@ import com.github.se.wanderpals.model.viewmodel.StopItemViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import com.github.se.wanderpals.ui.theme.outlineVariantLight
 
 /**
- * Composable function that displays an activity item.
+ * Composable function that displays a stop item in the list of stops for a trip.
  *
  * @param stop The stop to display.
- * @param onActivityClick Callback function triggered when the activity item is clicked,
+ * @param tripId The identifier of the trip to which the stop belongs.
+ * @param tripsRepository The repository for trips.
+ * @param onDelete Callback function triggered when the stop is deleted.
  */
 @Composable
-fun StopItem(
-    stop: Stop,
-    onActivityClick: (String) -> Unit,
-    tripId: String,
-    tripsRepository: TripsRepository,
-    onRefresh: () -> Unit
-) {
+fun StopItem(stop: Stop, tripId: String, tripsRepository: TripsRepository, onDelete: () -> Unit) {
 
   val stopItemViewModel: StopItemViewModel =
       viewModel(
           factory =
               StopItemViewModel.StopItemViewModelFactory(
-                  stopId = stop.stopId, tripsRepository = tripsRepository, tripId = tripId))
+                  tripsRepository = tripsRepository, tripId = tripId))
 
   // State to handle the visibility of the confirmation dialog
   var showDeleteConfirmDialog by remember { mutableStateOf(false) }
@@ -81,17 +78,17 @@ fun StopItem(
   }
 
   val isDeleted by stopItemViewModel.isDeleted.collectAsState()
-
-  LaunchedEffect(isDeleted) {
-    if (isDeleted) {
-      onRefresh()
-    }
+  if (isDeleted) {
+    onDelete()
+    stopItemViewModel.resetDeleteState()
   }
+
+  var isStopPressed by remember { mutableStateOf(false) }
 
   val stopHasLocation = stop.geoCords.latitude != 0.0 || stop.geoCords.longitude != 0.0
   Box(modifier = Modifier.testTag(stop.stopId).fillMaxWidth()) {
     Button(
-        onClick = { onActivityClick(stop.stopId) },
+        onClick = { isStopPressed = true },
         shape = RectangleShape,
         modifier =
             Modifier.height(100.dp).fillMaxWidth().testTag("activityItemButton" + stop.stopId),
@@ -212,7 +209,7 @@ fun StopItem(
           TextButton(
               modifier = Modifier.testTag("confirmDeleteButton" + stop.stopId),
               onClick = {
-                stopItemViewModel.deleteStop()
+                stopItemViewModel.deleteStop(stop.stopId)
                 showDeleteConfirmDialog = false
               }) {
                 Text("Confirm", color = MaterialTheme.colorScheme.error)
@@ -238,6 +235,9 @@ fun StopItem(
             thickness = 1.dp,
             color = outlineVariantLight)
       }
+  if (isStopPressed) { // Display the stop information dialog
+    StopInfoDialog(stop = stop, closeDialogueAction = { isStopPressed = false })
+  }
 }
 
 @Composable

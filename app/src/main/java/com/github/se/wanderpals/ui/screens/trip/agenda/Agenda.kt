@@ -63,12 +63,8 @@ private const val MAX_ROWS_CALENDAR = 6
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: TripsRepository) {
   val uiState by agendaViewModel.uiState.collectAsState()
-  val dailyActivities by agendaViewModel.dailyActivities.collectAsState()
 
   var isDrawerExpanded by remember { mutableStateOf(false) }
-
-  var isStopPressed by remember { mutableStateOf(false) }
-  var selectedStopId by remember { mutableStateOf("") }
 
   Scaffold(
       topBar = {
@@ -107,19 +103,8 @@ fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: Tr
       }
       // Daily agenda implementation
       DailyActivities(
-          agendaViewModel = agendaViewModel,
-          onActivityItemClick = { stopId ->
-            isStopPressed = true
-            selectedStopId = stopId
-          },
-          tripId = tripId,
-          tripsRepository = tripsRepository)
+          agendaViewModel = agendaViewModel, tripId = tripId, tripsRepository = tripsRepository)
     }
-  }
-
-  if (isStopPressed) {
-    val selectedStop = dailyActivities.find { stop -> stop.stopId == selectedStopId }!!
-    StopInfoDialog(stop = selectedStop, closeDialogueAction = { isStopPressed = false })
   }
 }
 

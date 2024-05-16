@@ -11,20 +11,22 @@ import kotlinx.coroutines.launch
 /**
  * ViewModel for a stop item in a trip.
  *
- * @param stopId the id of the stop
  * @param tripsRepository the repository for trips
  * @param tripId the id of the trip
  */
-class StopItemViewModel(
-    private val stopId: String,
+open class StopItemViewModel(
     private val tripsRepository: TripsRepository,
     private val tripId: String
 ) : ViewModel() {
 
   private val _isDeleted = MutableStateFlow(false)
-  val isDeleted: StateFlow<Boolean> = _isDeleted
+  open val isDeleted: StateFlow<Boolean> = _isDeleted
 
-  fun deleteStop() {
+  fun resetDeleteState() {
+    _isDeleted.value = false
+  }
+
+  open fun deleteStop(stopId: String) {
     viewModelScope.launch {
       tripsRepository.removeStopFromTrip(tripId, stopId)
       _isDeleted.value = true
@@ -35,12 +37,11 @@ class StopItemViewModel(
   class StopItemViewModelFactory(
       private val tripsRepository: TripsRepository,
       private val tripId: String,
-      private val stopId: String
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(StopItemViewModel::class.java)) {
-        @Suppress("UNCHECKED_CAST") return StopItemViewModel(stopId, tripsRepository, tripId) as T
+        @Suppress("UNCHECKED_CAST") return StopItemViewModel(tripsRepository, tripId) as T
       }
       throw IllegalArgumentException("Unknown ViewModel class")
     }

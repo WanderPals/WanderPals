@@ -25,15 +25,13 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
 
 /**
- * Composable function that displays the daily activities for a selected date.
+ * Composable function that displays the daily activities for a trip.
  *
- * @param agendaViewModel The view model for managing the agenda of a trip.
- * @param onActivityItemClick Callback function triggered when an activity item is clicked,
+ * @param agendaViewModel The view model that provides the data for the daily activities.
  */
 @Composable
 fun DailyActivities(
     agendaViewModel: AgendaViewModel,
-    onActivityItemClick: (String) -> Unit,
     tripId: String,
     tripsRepository: TripsRepository
 ) {
@@ -69,8 +67,7 @@ fun DailyActivities(
           LazyColumn(
               content = {
                 items(dailyActivities.sortedBy { it.startTime }) { stop ->
-                  StopItem(
-                      stop, onActivityItemClick, tripId, tripsRepository, { refreshFunction() })
+                  StopItem(stop, tripId, tripsRepository) { refreshFunction() }
                 }
               })
         }
