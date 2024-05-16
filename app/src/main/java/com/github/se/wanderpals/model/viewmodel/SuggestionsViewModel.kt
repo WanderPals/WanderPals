@@ -301,7 +301,8 @@ open class SuggestionsViewModel(
         val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, suggestion.stop) ?: false
         if (wasStopAdded) {
           // Update suggestion with ADDED stopStatus
-          val updatedSuggestion = suggestion.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+          val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+          val updatedSuggestion = suggestion.copy(stop = updatedStop)
 
           // Update the state flow list to include this updated suggestion
           _state.value =
@@ -369,7 +370,8 @@ open class SuggestionsViewModel(
       NotificationsManager.addStopNotification(tripId, suggestion.stop)
 
       // Update suggestion with ADDED stopStatus
-      val updatedSuggestion = suggestion.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+      val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+      val updatedSuggestion = suggestion.copy(stop = updatedStop)
 
       // Insert the updated suggestion at the beginning of the list
       _state.value =

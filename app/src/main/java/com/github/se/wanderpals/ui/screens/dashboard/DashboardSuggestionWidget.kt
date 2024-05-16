@@ -96,7 +96,7 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
 
           if (sortedSuggestion.isEmpty() ||
               sortedSuggestion.none {
-                it.stopStatus == CalendarUiState.StopStatus.NONE
+                it.stop.stopStatus == CalendarUiState.StopStatus.NONE
               }) { // if there are no suggestions or if all suggestions are added to stops
             Column(
                 modifier =
@@ -113,7 +113,7 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
                 }
           } else {
             sortedSuggestion
-                .filter { it.stopStatus == CalendarUiState.StopStatus.NONE }
+                .filter { it.stop.stopStatus == CalendarUiState.StopStatus.NONE }
                 .take(DISPLAY_COUNT)
                 .forEachIndexed { index, suggestion ->
                   SuggestionItem(suggestion = suggestion)

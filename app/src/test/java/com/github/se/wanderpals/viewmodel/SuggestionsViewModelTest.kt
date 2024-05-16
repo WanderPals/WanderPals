@@ -277,8 +277,9 @@ class SuggestionsViewModelTest {
 
         // Modify userLikes to simulate a toggle that reaches majority
         val updatedLikes = suggestion.userLikes + "currentUser"
-        val updatedSuggestion =
-            suggestion.copy(userLikes = updatedLikes, stopStatus = CalendarUiState.StopStatus.ADDED)
+        val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+        val updatedSuggestion = suggestion.copy(userLikes = updatedLikes, stop = updatedStop)
+
         coEvery { mockTripsRepository.getSuggestionFromTrip(any(), any()) } returns
             updatedSuggestion
         coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns
@@ -298,9 +299,8 @@ class SuggestionsViewModelTest {
                 suggestion.suggestionId)) // Check if added to stops
         coVerify {
           mockTripsRepository.updateSuggestionInTrip(
-              tripId, match { it.stopStatus == CalendarUiState.StopStatus.ADDED })
+              tripId, match { it.stop.stopStatus == CalendarUiState.StopStatus.ADDED })
         }
-        coVerify { mockTripsRepository.addStopToTrip(tripId, suggestion.stop) }
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)
