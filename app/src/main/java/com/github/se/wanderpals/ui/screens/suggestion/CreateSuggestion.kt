@@ -40,6 +40,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
+import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
@@ -51,7 +52,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 
 /**
  * CreateSuggestion composable responsible for adding a suggestion to a trip
@@ -402,7 +402,10 @@ fun CreateSuggestion(
                     }
                   } else {
                     if (viewModel.addSuggestion(tripId, newSuggestion)) {
-                        NotificationAPI().sendNotification(SessionManager.getListOfTokensTrip(), "A new suggestion has been added to ${SessionManager.getCurrentUser()?.tripName}")
+                      NotificationAPI()
+                          .sendNotification(
+                              SessionManager.getListOfTokensTrip(),
+                              "A new suggestion has been added to ${SessionManager.getCurrentUser()?.tripName}")
                       onSuccess()
                     } else {
                       onFailure()

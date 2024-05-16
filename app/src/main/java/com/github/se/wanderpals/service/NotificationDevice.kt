@@ -153,21 +153,25 @@ fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Contex
 
 // function to send message to a topic from a client app
 
+@SuppressLint("SuspiciousIndentation")
 suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
   // Define the FCM endpoint
   val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/wanderpals/messages:send"
+  val FCM_ENDPOINT2 = "https://fcm.googleapis.com/fcm/send"
 
   // Define the FCM access token
   val ACCESS_TOKEN =
       "ya29.a0AXooCgsn9SLrWcXFvPQLm4a5114soLNIFriJxD9Z1xU9g9RxieMvlwKiDGBliKqvvIGrh4SaqazreeMsh7w9kwYfv4B6uRX28pZvx-bu3Fa0aTl8vgfF4bemeuUMzlagnbSWGV0FLSkVT5l8EuRIyis1X77pkWbKwIqAaCgYKAaQSARESFQHGX2MiL0Sbdsyxr34UF_M44syD4g0171"
 
+  val TOKEN =
+      "AAAALI85TW0:APA91bHQIiTEFkzRUv6FQMlyL1TxtPBztg6lByt18vDaVLkssIEXkPrQu1WLX5Wc_WmTdYqoOWBITP2yp7ej4gH4LeH_iMZbz9lkQQJ-DVC8w2gRxhW8lp8gAuzCqaY136urySlFw-0p"
+
   // Create the notification payload
   val notificationPayload =
-      mapOf(
-          "message" to
-              mapOf(
-                  "token" to deviceToken,
-                  "notification" to mapOf("body" to message, "title" to "Wanderpals")))
+      mapOf("notification" to mapOf("body" to message, "time" to "Wanderpals"), "to" to deviceToken)
+
+  // log the payload
+  Log.d("FCM", "Payload: $notificationPayload")
 
   // Convert the payload to JSON
   val gson = Gson()
@@ -183,9 +187,9 @@ suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
     // Create a POST request to the FCM endpoint
     val request =
         Request.Builder()
-            .url(FCM_ENDPOINT)
+            .url(FCM_ENDPOINT2)
             .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "Bearer $ACCESS_TOKEN")
+            .addHeader("Authorization", "key=${TOKEN}")
             .post(requestBody)
             .build()
     Log.d("FCM", "Sending message to $deviceToken")

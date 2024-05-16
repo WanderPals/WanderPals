@@ -6,8 +6,5 @@ import retrofit2.http.POST
 
 interface NotificationInterface {
 
-    @POST("/send")
-    suspend fun sendMessage(
-        @Body notification: BroadcastNotification
-    )
+  @POST("/send") suspend fun sendMessage(@Body notification: BroadcastNotification)
 }

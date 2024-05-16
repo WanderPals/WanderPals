@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 
 class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
 
-
   fun getTheTokenList(tripId: String) {
     viewModelScope.launch {
       try {
@@ -23,6 +22,7 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
       }
     }
   }
+
   fun updateUserForCurrentUser(tripId: String) {
     val userId = SessionManager.getCurrentUser()?.userId
     if (userId != null) {

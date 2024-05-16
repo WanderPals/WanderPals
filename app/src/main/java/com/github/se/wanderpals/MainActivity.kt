@@ -19,7 +19,6 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
-import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
@@ -207,9 +205,6 @@ class MainActivity : ComponentActivity() {
 
                     Log.d(TAG, token)
                   })
-            NotificationAPI().sendNotification(
-                listOf(SessionManager.getNotificationToken()), "Hello"
-            )
 
           navigationActions =
               NavigationActions(
@@ -289,11 +284,11 @@ class MainActivity : ComponentActivity() {
                                   }
                             }
                       })
-                  /*runBlocking {
+                  Log.d("MainActivity", "User is signed in")
+                  Log.d("token", SessionManager.getNotificationToken())
+                  runBlocking {
                     sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
-                  }*/
-
-
+                  }
                 }
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =

@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -105,19 +106,19 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
         val newState = _state.value.toMutableList()
         val newTrip = tripsRepository.getTrip(tripId)!!
 
-        // update the list of tokens for the trip
-        SessionManager.setListOfTokensTrip(newTrip.tokenIds + SessionManager.getNotificationToken())
+        Log.d("JoinTrip", "Tokens: ${SessionManager.getListOfTokensTrip()}")
 
-        //add the token to the list of tokens
-        tripsRepository.updateTrip(newTrip.copy(tokenIds = SessionManager.getListOfTokensTrip()))
+        val newListOfTokens = newTrip.tokenIds + SessionManager.getNotificationToken()
+
+        // add the token to the token list of the trip
+        tripsRepository.updateTrip(newTrip.copy(tokenIds = newListOfTokens))
 
         // send a notification to all the users of the trip
-        /*for (userToken in SessionManager.getListOfTokensTrip()) {
+        for (userToken in newListOfTokens) {
           sendMessageToListOfUsers(
               userToken,
               "${SessionManager.getCurrentUser()?.name} has been added to ${newTrip.title}")
-        }*/
-
+        }
 
         newState.add(newTrip)
         _state.value = newState.toList()
