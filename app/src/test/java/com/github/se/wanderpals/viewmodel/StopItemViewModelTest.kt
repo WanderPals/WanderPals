@@ -60,7 +60,7 @@ class StopItemViewModelTest {
         coVerify { mockTripsRepository.removeStopFromTrip(tripId, stopId) }
 
         // Assert that the isDeleted state was updated to true
-        assertTrue(viewModel.isDeleted.value)
+        assertTrue(viewModel.isDeleting.value)
       }
 
   @Test
@@ -69,7 +69,7 @@ class StopItemViewModelTest {
     viewModel.resetDeleteState()
 
     // Assert that the isDeleted state was updated to false
-    assertFalse(viewModel.isDeleted.value)
+    assertFalse(viewModel.isDeleting.value)
   }
 
   @After

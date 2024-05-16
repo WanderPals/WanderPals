@@ -77,7 +77,7 @@ fun StopItem(stop: Stop, tripId: String, tripsRepository: TripsRepository, onDel
     showNoRightsToast = false
   }
 
-  val isDeleted by stopItemViewModel.isDeleted.collectAsState()
+  val isDeleted by stopItemViewModel.isDeleting.collectAsState()
   if (isDeleted) {
     onDelete()
     stopItemViewModel.resetDeleteState()

@@ -19,17 +19,23 @@ open class StopItemViewModel(
     private val tripId: String
 ) : ViewModel() {
 
-  private val _isDeleted = MutableStateFlow(false)
-  open val isDeleted: StateFlow<Boolean> = _isDeleted
+  private val _isDeleting = MutableStateFlow(false)
+  open val isDeleting: StateFlow<Boolean> = _isDeleting
 
+  /** Function to reset the state of the delete operation. */
   fun resetDeleteState() {
-    _isDeleted.value = false
+    _isDeleting.value = false
   }
 
+  /**
+   * Function to delete a stop from the trip.
+   *
+   * @param stopId the id of the stop to be deleted
+   */
   open fun deleteStop(stopId: String) {
     viewModelScope.launch {
       tripsRepository.removeStopFromTrip(tripId, stopId)
-      _isDeleted.value = true
+      _isDeleting.value = true
     }
   }
 

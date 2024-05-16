@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,7 +47,9 @@ import java.time.LocalDate
 /**
  * Composable function that displays the list of stops for a trip.
  *
- * @param stopsListViewModel The view model that provides the data for the stops list.
+ * @param stopsListViewModel The view model that provides the data for the stops list
+ * @param tripId The id of the trip
+ * @param tripsRepository The repository for trips
  */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "WeekBasedYear")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -174,6 +177,11 @@ fun StopsList(
                             .testTag("RefreshButton"),
                     content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
               }
+            }
+          } else {
+            // Display a circular progress indicator when loading
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+              CircularProgressIndicator()
             }
           }
         }
