@@ -30,18 +30,37 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-val notification1 =
+private val notification1 =
     TripNotification(
         title = "Username1 joined the trip",
         route = Route.ADMIN_PAGE,
         timestamp = LocalDateTime.now())
 
-val notification2 =
+private val notification2 =
     TripNotification(
-        title = "Username1 joined the trip",
-        route = "",
-        timestamp = LocalDateTime.now().minusDays(1))
-val announcement1 =
+        title = "A new suggestion has been created", route = "", timestamp = LocalDateTime.now())
+
+private val notification3 =
+    TripNotification(
+        title = "A new stop has been added",
+        route = Route.STOPS_LIST,
+        timestamp = LocalDateTime.now())
+
+private val notification4 =
+    TripNotification(
+        title = "A new suggestion has been created",
+        route = Route.SUGGESTION_DETAIL,
+        timestamp = LocalDateTime.now(),
+        "currentTrip: 1 |latitude: 0.0|longitude: 0.0|currentAddress: |suggestionId: |expenseId: 0")
+
+private val notification5 =
+    TripNotification(
+        title = "A new Expense has been created",
+        route = Route.EXPENSE_INFO,
+        timestamp = LocalDateTime.now(),
+        "currentTrip: 1 |latitude: 0.0|longitude: 0.0|currentAddress: |suggestionId: |expenseId: 1")
+
+private val announcement1 =
     Announcement(
         announcementId = "1", // Replace with actual announcement ID
         userId = "1", // Replace with actual user ID
@@ -50,7 +69,7 @@ val announcement1 =
         description = "This is a new announcement!",
         timestamp = LocalDateTime.now() // Replace with actual timestamp
         )
-val announcement2 =
+private val announcement2 =
     Announcement(
         announcementId = "2", // Replace with actual announcement ID
         userId = "2", // Replace with actual user ID
@@ -63,7 +82,8 @@ val announcement2 =
 class NotificationsViewModelTest :
     NotificationsViewModel(TripsRepository("-1", dispatcher = Dispatchers.IO), "-1") {
 
-  private val _notifStateList = MutableStateFlow(listOf(notification1, notification2))
+  private val _notifStateList =
+      MutableStateFlow(listOf(notification1, notification2, notification3, notification4))
   override val notifStateList: StateFlow<List<TripNotification>> = _notifStateList
 
   private val _announcementStateList = MutableStateFlow(listOf(announcement1))
@@ -72,8 +92,17 @@ class NotificationsViewModelTest :
   private val _isLoading = MutableStateFlow(false)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  override fun getSuggestion(suggestionId: String) {
+    _isLoading.value = true
+  }
+
+  override fun getExpense(expenseID: String) {
+    _isLoading.value = true
+  }
+
   override fun updateStateLists() {
-    _notifStateList.value = listOf(notification1, notification2)
+    _notifStateList.value =
+        listOf(notification1, notification2, notification3, notification4, notification5)
     _announcementStateList.value = listOf(announcement1)
   }
 
@@ -112,14 +141,48 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   }
 
   @Test
-  fun notifItemWithPathNavigatesOnClick() = run {
+  fun notifJoinTripNavigatesToAdmin() = run {
     ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
-      notifItemButtonWithPath {
+      notifJoinTripItemButton {
         assertIsDisplayed()
         performClick()
       }
       verify { mockNavActions.navigateTo(Route.ADMIN_PAGE) }
       confirmVerified(mockNavActions)
+    }
+  }
+
+  @Test
+  fun notifStopNavigatesToStopList() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifStopItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      verify { mockNavActions.navigateTo(Route.STOPS_LIST) }
+      confirmVerified(mockNavActions)
+    }
+  }
+
+  @Test
+  fun notifSuggestionNavigatesToSuggestionDetail() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifSuggestionItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      assert(notificationsViewModelTest.isLoading.value)
+    }
+  }
+
+  @Test
+  fun notifSuggestionNavigatesToExpenseInfo() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifExpenseItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      assert(notificationsViewModelTest.isLoading.value)
     }
   }
 

@@ -2,6 +2,7 @@ package com.github.se.wanderpals.model.firestoreData
 
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -22,6 +23,7 @@ import java.time.format.DateTimeFormatter
  * @property geoCords Coordinates pinpointing the stop's location.
  * @property website Optional URL for more information about the stop.
  * @property imageUrl Optional URL for an image of the stop.
+ * @property stopStatus Status of the stop addition, converted to String for Firestore.
  */
 data class FirestoreStop(
     val stopId: String = "",
@@ -34,7 +36,9 @@ data class FirestoreStop(
     val description: String = "",
     val geoCords: GeoCords = GeoCords(0.0, 0.0), // Assuming GeoCords is Firestore compatible
     val website: String = "",
-    val imageUrl: String = ""
+    val imageUrl: String = "",
+    val stopStatus: String =
+        CalendarUiState.StopStatus.NONE.name // Convert enum to string for Firestore
 ) {
   companion object {
     /**
@@ -58,7 +62,9 @@ data class FirestoreStop(
           description = stop.description,
           geoCords = stop.geoCords,
           website = stop.website,
-          imageUrl = stop.imageUrl)
+          imageUrl = stop.imageUrl,
+          stopStatus = stop.stopStatus.name // Convert enum to string for Firestore
+          )
     }
   }
 
@@ -82,6 +88,8 @@ data class FirestoreStop(
         description = description,
         geoCords = geoCords,
         website = website,
-        imageUrl = imageUrl)
+        imageUrl = imageUrl,
+        stopStatus = CalendarUiState.StopStatus.valueOf(stopStatus) // Convert string back to enum
+        )
   }
 }
