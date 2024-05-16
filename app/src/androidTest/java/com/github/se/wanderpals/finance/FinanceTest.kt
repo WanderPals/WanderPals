@@ -133,7 +133,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
   private val financeViewModelTest = FinanceViewModelTest()
 
   private fun setUpFinanceTest(role: Role = Role.OWNER) {
-    SessionManager.setUserSession()
+    SessionManager.setUserSession("user001", "Alice")
     SessionManager.setRole(role)
     navigationActions = mockNavActions
     composeTestRule.setContent {
