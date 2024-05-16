@@ -42,6 +42,11 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 
+/**
+ * Composable function to display the stop widget in the dashboard screen
+ * @param viewModel DashboardViewModel to get the stops from
+ * @param onClick Function to execute when the widget is clicked
+ */
 @Composable
 fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
   val stops by viewModel.stops.collectAsState()
@@ -159,6 +164,10 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
       }
 }
 
+/**
+ * Composable function to display a single stop item in the dashboard widget
+ * @param stop Stop object to display
+ */
 @Composable
 fun StopItem(stop: Stop) {
   Row(
@@ -214,24 +223,4 @@ fun StopItem(stop: Stop) {
               modifier = Modifier.testTag("stopEnd" + stop.stopId).fillMaxWidth())
         }
       }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun StopItemPreview() {
-  StopItem(
-      Stop(
-          stopId = "1",
-          title = "Stop 1",
-          date = LocalDateTime.now().toLocalDate(),
-          startTime = LocalDateTime.now().toLocalTime(),
-          duration = 60,
-          address = "EPFL, 1015 Lausanne, Switzerland",
-          description = "Description 1"))
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DashboardStopWidgetPreview() {
-  DashboardStopWidget(DashboardViewModel(TripsRepository("", Dispatchers.IO), ""))
 }
