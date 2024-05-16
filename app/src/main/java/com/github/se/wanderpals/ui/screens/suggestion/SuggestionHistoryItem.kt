@@ -3,7 +3,6 @@ package com.github.se.wanderpals.ui.screens.suggestion
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,10 +51,8 @@ import java.time.format.DateTimeFormatter
  */
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun SuggestionItem(
+fun SuggestionHistoryItem(
     suggestion: Suggestion,
-    onClick: () -> Unit,
-    tripId: String,
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -72,7 +67,7 @@ fun SuggestionItem(
               .fillMaxWidth()
               .height(166.dp)
               .border(width = 1.dp, color = surfaceVariantLight, shape = RoundedCornerShape(10.dp))
-              .clickable(onClick = onClick),
+              .testTag("suggestionHistory"),
       colors = cardColors) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
           Row(modifier = Modifier.fillMaxWidth()) {
@@ -86,7 +81,8 @@ fun SuggestionItem(
                           fontWeight = FontWeight(500),
                           color = primaryLight,
                           letterSpacing = 0.15.sp,
-                      ))
+                      ),
+                  modifier = Modifier.testTag("suggestionHistoryTitle"))
               Spacer(modifier = Modifier.height(4.dp))
               Text(
                   text = suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
@@ -97,7 +93,8 @@ fun SuggestionItem(
                           fontWeight = FontWeight(500),
                           color = secondaryLight,
                           letterSpacing = 0.14.sp,
-                      ))
+                      ),
+                  modifier = Modifier.testTag("suggestionHistoryCreatedAt"))
             }
             Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
               val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
@@ -112,7 +109,7 @@ fun SuggestionItem(
                           color = secondaryLight,
                           letterSpacing = 0.14.sp,
                       ),
-                  modifier = Modifier.testTag("suggestionStart" + suggestion.suggestionId))
+                  modifier = Modifier.testTag("suggestionHistoryStart" + suggestion.suggestionId))
               Spacer(modifier = Modifier.height(4.dp))
               Text(
                   text = endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
@@ -124,7 +121,7 @@ fun SuggestionItem(
                           color = secondaryLight,
                           letterSpacing = 0.14.sp,
                       ),
-                  modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId))
+                  modifier = Modifier.testTag("suggestionHistoryEnd" + suggestion.suggestionId))
             }
           }
           Spacer(modifier = Modifier.height(8.dp))
@@ -135,7 +132,8 @@ fun SuggestionItem(
                   Modifier.fillMaxWidth()
                       .height(55.dp)
                       .background(backgroundLight, RoundedCornerShape(10.dp))
-                      .padding(8.dp)) {
+                      .padding(8.dp)
+                      .testTag("suggestionHistoryDescription")) {
                 Text(
                     text = suggestion.stop.description,
                     style =
@@ -166,7 +164,9 @@ fun SuggestionItem(
                             fontWeight = FontWeight(500),
                             color = tertiaryLight,
                             letterSpacing = 0.14.sp,
-                        ))
+                        ),
+                    modifier =
+                        Modifier.testTag("suggestionHistoryUserName" + suggestion.suggestionId))
 
                 Spacer(Modifier.weight(1f)) // push the icons to the right
 
@@ -180,7 +180,8 @@ fun SuggestionItem(
                           Modifier.size(18.dp)
                               .padding(
                                   end = 4.dp) // 4.dp is the space between the icon and the text
-                              .clickable { viewModel.toggleLikeSuggestion(suggestion) })
+                              .testTag(
+                                  "staticLikeIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
 
                   Text(
                       text = likesCount,
@@ -191,7 +192,10 @@ fun SuggestionItem(
                               fontWeight = FontWeight(500),
                               color = tertiaryLight,
                               letterSpacing = 0.14.sp,
-                          ))
+                          ),
+                      modifier =
+                          Modifier.testTag(
+                              "suggestionHistoryLikesNumber" + suggestion.suggestionId))
 
                   Spacer(
                       modifier =
@@ -206,7 +210,9 @@ fun SuggestionItem(
                           Modifier.size(18.dp)
                               .padding(
                                   end = 4.dp) // 4.dp is the space between the icon and the text
-                      )
+                              .testTag(
+                                  "staticCommentIconSuggestionHistoryFeedScreen" +
+                                      suggestion.suggestionId))
 
                   Text(
                       text = "${suggestion.comments.size}",
@@ -217,25 +223,10 @@ fun SuggestionItem(
                               fontWeight = FontWeight(500),
                               color = tertiaryLight,
                               letterSpacing = 0.14.sp,
-                          ))
-
-                  Spacer(
+                          ),
                       modifier =
-                          Modifier.width(
-                              8.dp)) // 8.dp is the space between the text and the next icon
-
-                  Icon(
-                      imageVector = Icons.Outlined.MoreVert,
-                      contentDescription = "Options",
-                      tint = tertiaryLight,
-                      modifier =
-                          Modifier.size(
-                                  18.dp) // Make sure to set the size as you did with other icons
-                              .clickable { viewModel.showSuggestionBottomSheet(suggestion) }
-                              .testTag("suggestionOptionIcon" + suggestion.suggestionId)
-                              .graphicsLayer {
-                                rotationZ = 90f // Rotate by 90 degrees
-                              })
+                          Modifier.testTag(
+                              "suggestionHistoryCommentsNumber" + suggestion.suggestionId))
                 }
               }
         }

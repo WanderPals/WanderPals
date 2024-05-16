@@ -8,9 +8,9 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalTime
 import java.util.UUID
 import kotlin.math.ceil
@@ -95,27 +95,14 @@ open class SuggestionsViewModel(
   open fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
       _isLoading.value = true
+
       // Fetch all trips from the repository
       delay(1000)
       val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
       _state.value = suggestions
-      Log.d("Fetched Suggestions", _state.value.toString())
 
       _likedSuggestions.value =
           _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
-
-      // Fetch all users from the trip once, before the loop
-      val (allUsers, threshold) = fetchUsersAndThreshold(suggestionRepository, tripId)
-
-      // After loading, check if any suggestions have already reached the majority.
-      // If so, add them as stops and remove them from the suggestions list. This is done
-      // automatically.
-      suggestions.forEach { suggestion ->
-        checkAndAddSuggestionAsStop(suggestion, allUsers, threshold)
-        if (selectedSuggestion.value?.suggestionId == suggestion.suggestionId) {
-          _selectedSuggestion.value = suggestion
-        }
-      }
 
       _isLoading.value = false
     }
@@ -185,7 +172,6 @@ open class SuggestionsViewModel(
 
           // Now check if the suggestion should be added to stops
           checkAndAddSuggestionAsStop(updatedSuggestion, allUsers, threshold)
-
           _isLikeChanging.value = false
         }
       }
@@ -306,22 +292,38 @@ open class SuggestionsViewModel(
             // users (one extra) to ensure majority
           }
 
-      if (isMajority && !_addedSuggestionsToStops.value.contains(suggestion.suggestionId)) {
+      if (isMajority &&
+          !_addedSuggestionsToStops.value.contains(
+              suggestion
+                  .suggestionId)) { // If the suggestion has reached the majority of likes and has
+        // not been added as a stop yet
+
         val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, suggestion.stop) ?: false
         if (wasStopAdded) {
-          // Remove the suggestion from the state
+          // Update suggestion with ADDED stopStatus
+          val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+          val updatedSuggestion = suggestion.copy(stop = updatedStop)
+
+          // Update the state flow list to include this updated suggestion
+          _state.value =
+              _state.value.map {
+                if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
+              }
+
+          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)
+
+          // Remove the suggestion from the trip's suggestion list
           _state.value = _state.value.filterNot { it.suggestionId == suggestion.suggestionId }
           // Add the suggestion ID to the list of added stops
           _addedSuggestionsToStops.value += suggestion.suggestionId
-          // Remove the suggestion from the trip's suggestion list
-          suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
+
           NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
           NotificationsManager.addStopNotification(tripId, suggestion.stop)
           if (selectedSuggestion.value?.suggestionId == suggestion.suggestionId) {
             _selectedSuggestion.value = null
           }
-          // Go back to suggestion list
-          navigationActions.goBack()
+          //          // Go back to suggestion list
+          //          navigationActions.goBack()
         }
       }
     }
@@ -360,12 +362,25 @@ open class SuggestionsViewModel(
     _editingComment.value = false
   }
 
+  /** Transforms a suggestion to a stop and updates the backend and local state accordingly. */
   open fun transformToStop(suggestion: Suggestion) {
     viewModelScope.launch {
       suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
       NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
       NotificationsManager.addStopNotification(tripId, suggestion.stop)
-      suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)
+
+      // Update suggestion with ADDED stopStatus
+      val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+      val updatedSuggestion = suggestion.copy(stop = updatedStop)
+
+      // Insert the updated suggestion at the beginning of the list
+      _state.value =
+          listOf(updatedSuggestion) +
+              _state.value.filter { it.suggestionId != suggestion.suggestionId }
+
+      suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)
+      // Add the suggestion ID to the list of added stops
+      _addedSuggestionsToStops.value += suggestion.suggestionId
     }
     loadSuggestion(tripId)
     hideBottomSheet()

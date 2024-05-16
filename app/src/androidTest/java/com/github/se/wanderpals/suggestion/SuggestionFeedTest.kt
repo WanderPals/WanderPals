@@ -290,7 +290,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   fun suggestionButtonExists_isDisplayed() {
     composeTestRule.setContent {
       // Place the SuggestionBottomBar composable within the test context
-      SuggestionBottomBar(onSuggestionClick = {})
+      SuggestionBottomBar(onSuggestionClick = {}, onHistoryClick = {})
     }
 
     // Now check if the button with the testTag "suggestionButtonExists" is displayed
