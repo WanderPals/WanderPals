@@ -1,16 +1,18 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -60,8 +61,12 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
   var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
+  val users by financeViewModel.users.collectAsState()
 
-  LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
+  LaunchedEffect(Unit) {
+    financeViewModel.updateStateLists()
+    financeViewModel.loadMembers(navigationActions.variables.currentTrip)
+  }
 
   Scaffold(
       modifier = Modifier.testTag("financeScreen"),
@@ -111,11 +116,10 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                 onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.DEBTS -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-              Text(
-                  modifier = Modifier.align(Alignment.Center),
-                  text = "Not available yet. ",
-              )
+            Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
+              HorizontalDivider()
+              Spacer(modifier = Modifier.height(10.dp))
+              DebtContent(expenses = expenseList, users = users)
             }
           }
         }
