@@ -1,14 +1,15 @@
 package com.github.se.wanderpals.ui.screens.trip.agenda
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
@@ -35,6 +36,17 @@ data class CalendarUiState(
   }
 
   /**
+   * Enum class representing the status of the stop addition.
+   *
+   * @property ADDED Stop was added to the trip.
+   * @property NONE Stop was not added, it is still a suggestion of the trip.
+   */
+  enum class StopStatus {
+    ADDED,
+    NONE
+  }
+
+  /**
    * Data class representing a single date in the calendar. Includes information about the day of
    * the month, the corresponding year and month, and whether the date is selected.
    *
@@ -47,11 +59,12 @@ data class CalendarUiState(
       val dayOfMonth: String,
       val yearMonth: YearMonth,
       val year: Year,
-      val isSelected: Boolean
+      val isSelected: Boolean,
+      val stopStatus: StopStatus = StopStatus.NONE
   ) {
     companion object {
       // Represents an empty date, used as a placeholder in the calendar grid
-      val Empty = Date("", YearMonth.now(), Year.now(), false)
+      val Empty = Date("", YearMonth.now(), Year.now(), false, StopStatus.NONE)
     }
   }
 }
@@ -68,16 +81,23 @@ class CalendarDataSource {
    *
    * @param yearMonth The year and month for which to generate the date list.
    * @param selectedDate An optional `LocalDate` representing the currently selected date.
+   * @param stopsInfo A map of `LocalDate` to `CalendarUiState.StopStatus` representing the status
+   *   of stops.
    * @return A list of `CalendarUiState.Date` objects representing the dates of the specified month.
    */
-  fun getDates(yearMonth: YearMonth, selectedDate: LocalDate?): List<CalendarUiState.Date> {
+  fun getDates(
+      yearMonth: YearMonth,
+      selectedDate: LocalDate?,
+      stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>
+  ): List<CalendarUiState.Date> {
     return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
       val isSelected = date == selectedDate && date.monthValue == yearMonth.monthValue
       CalendarUiState.Date(
           dayOfMonth = if (date.monthValue == yearMonth.monthValue) "${date.dayOfMonth}" else "",
           yearMonth = yearMonth,
           year = Year.of(date.year),
-          isSelected = isSelected)
+          isSelected = isSelected,
+          stopStatus = stopsInfo[date] ?: CalendarUiState.StopStatus.NONE)
     }
   }
 }
@@ -129,19 +149,29 @@ fun YearMonth.getDisplayName(): String {
  * @param date The selected date to display.
  */
 @Composable
-fun DisplayDate(date: LocalDate?) {
-
+fun DisplayDate(date: LocalDate?, color: Color) {
   // Define a formatter
   val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(Locale.getDefault())
 
   // Format the selected date using the formatter
-  val formattedDate = date?.format(formatter) ?: "No date selected"
+  val formattedDate =
+      date?.format(formatter)?.let { it ->
+        it.split(", ").joinToString(", ") { part ->
+          part.split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar {
+              if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+            }
+          }
+        }
+      } ?: "No date selected"
 
   // Display the formatted date
   Text(
       text = formattedDate,
-      style = MaterialTheme.typography.bodyLarge,
-      color = Color.White,
+      style =
+          androidx.compose.ui.text.TextStyle(
+              color = color, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+      color = color,
       textAlign = TextAlign.Center,
       modifier = Modifier.padding(8.dp).testTag("displayDateText"))
 }

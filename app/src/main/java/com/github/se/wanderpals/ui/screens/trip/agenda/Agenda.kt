@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -42,8 +44,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
+import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
-import com.github.se.wanderpals.ui.theme.primaryLight
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -76,14 +79,15 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
 
   Scaffold(
       topBar = {
-        Column(modifier = Modifier.background(primaryLight)) {
+        Column(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
           Banner(
               agendaViewModel,
               isDrawerExpanded,
               onToggle = { isDrawerExpanded = !isDrawerExpanded })
           AnimatedVisibility(
               visible = isDrawerExpanded,
-              modifier = Modifier.background(color = Color.White).fillMaxWidth()) {
+              modifier =
+                  Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxWidth()) {
                 CalendarWidget(
                     days = getDaysOfWeekLabels(),
                     yearMonth = uiState.yearMonth,
@@ -102,10 +106,12 @@ fun Agenda(agendaViewModel: AgendaViewModel) {
       modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
   ) { paddingValues ->
     Column(modifier = Modifier.padding(paddingValues)) {
-      HorizontalDivider(
-          modifier = Modifier.fillMaxWidth(),
-          thickness = 1.dp,
-          color = MaterialTheme.colorScheme.secondary)
+      if (isDrawerExpanded) {
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.secondary)
+      }
       // Daily agenda implementation
       DailyActivities(
           agendaViewModel = agendaViewModel,
@@ -143,9 +149,9 @@ fun CalendarWidget(
     dates: List<CalendarUiState.Date>,
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
-    onDateClickListener: (CalendarUiState.Date) -> Unit,
+    onDateClickListener: (CalendarUiState.Date) -> Unit
 ) {
-  Column(modifier = Modifier.padding(16.dp).background(Color.White)) {
+  Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
     Row {
       repeat(days.size) {
         val item = days[it]
@@ -174,17 +180,34 @@ fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -
       modifier =
           Modifier.fillMaxWidth()
               .clickable { onToggle() }
-              .padding(16.dp)
-              .background(primaryLight)
+              .padding(8.dp)
+              .background(MaterialTheme.colorScheme.primary)
               .testTag("Banner")) {
-        DisplayDate(date = selectedDate)
-        // Optional: Add an icon to indicate the expand/collapse action
-        Icon(
-            imageVector =
-                if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-            contentDescription = "Toggle",
-            modifier = Modifier.align(Alignment.CenterEnd),
-            tint = Color.White)
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+          DisplayDate(date = selectedDate, color = MaterialTheme.colorScheme.onPrimary)
+          // Optional: Add an icon to indicate the expand/collapse action
+          Icon(
+              imageVector =
+                  if (isExpanded) Icons.Default.KeyboardArrowUp
+                  else Icons.Default.KeyboardArrowDown,
+              contentDescription = "Toggle",
+              tint = MaterialTheme.colorScheme.onPrimary)
+          Spacer(modifier = Modifier.weight(1f))
+          // Add an icon to tap that opens the full list of all stops for the trip
+          IconButton(
+              onClick = {
+                // Navigate to the stops list screen
+                navigationActions.navigateTo(Route.STOPS_LIST)
+              },
+              modifier = Modifier.testTag("AllStopsButton"),
+              content = {
+                Icon(
+                    painter = painterResource(id = R.drawable.stops_list_icon),
+                    contentDescription = "Open Stops",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                )
+              })
+        }
       }
 }
 
@@ -286,6 +309,13 @@ fun ContentItem(
   // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
   val isEmptyDate = date.dayOfMonth.isEmpty()
 
+  // Set the marker color based on the stop status
+  val markerColor =
+      when (date.stopStatus) {
+        CalendarUiState.StopStatus.ADDED -> Color.Blue // Stop added
+        else -> Color.Transparent // No stop
+      }
+
   val baseModifier =
       modifier
           .aspectRatio(1f)
@@ -302,16 +332,32 @@ fun ContentItem(
 
   // Apply clickable only if the date is not empty.
   val finalModifier =
-      if (!isEmptyDate) {
-        baseModifier.clickable { onClickListener(date) }
-      } else baseModifier
+      (if (!isEmptyDate) {
+        baseModifier.clickable { onClickListener(date) }.padding(10.dp)
+      } else baseModifier)
 
   Box(modifier = finalModifier) {
     if (!isEmptyDate) {
       Text(
           text = date.dayOfMonth,
           style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.align(Alignment.Center).padding(10.dp))
+          modifier = Modifier.align(Alignment.TopCenter))
+      // Displaying the status dot below the date
+      if (date.stopStatus !=
+          CalendarUiState.StopStatus
+              .NONE) { // I use "not equal to the NONE status" here, because we might have more
+        // statuses in the future
+        Box(
+            modifier =
+                Modifier.align(
+                        Alignment.BottomCenter) // Center the dot at the bottom of the date cell
+                    .size(8.dp) // Size of the dot
+                    .clip(CircleShape) // Make it circular
+                    .background(markerColor) // Set the appropriate color
+                    .padding(bottom = 4.dp) // Add some padding to the bottom
+                    .testTag("MarkerADDED") // Add test tag here
+            )
+      }
     }
   }
 }

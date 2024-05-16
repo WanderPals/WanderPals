@@ -35,5 +35,5 @@ data class Suggestion(
     val createdAtTime: LocalTime = LocalTime.of(0, 0), // Time of creation
     val stop: Stop = Stop(), // Embed the Stop object directly
     val comments: List<Comment> = emptyList(),
-    val userLikes: List<String> = emptyList()
+    val userLikes: List<String> = emptyList(),
 )

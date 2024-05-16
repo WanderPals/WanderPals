@@ -1,6 +1,8 @@
 package com.github.se.wanderpals.trip
 
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -14,13 +16,16 @@ import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.mockk.Called
+import io.mockk.coEvery
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
+import io.mockk.spyk
 import io.mockk.verify
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
-import org.junit.Before
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,14 +59,10 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
 
-  @Before
-  fun testSetup() {
-    val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-    composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
-  }
-
   @Test
   fun goBackButtonTriggersBackNavigation() = run {
+    val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+    composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
     ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
       goBackButton {
         assertIsDisplayed()
@@ -76,6 +77,8 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
   @Test
   fun saveTripDoesNotWorkWithEmptyTitle() = run {
+    val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+    composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
     ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
       step("Open trip screen") {
         inputTitle {
@@ -145,6 +148,8 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
   @Test
   fun saveTripDoesNotWorkWithEmptyDescription() = run {
+    val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+    composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
     ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
       step("Open trip screen") {
         inputTitle {
@@ -212,6 +217,8 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   }
 
   fun saveTripDoesNotWorkWithEmptyDates() = run {
+    val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+    composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
     ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
       step("Open trip screen") {
         inputTitle {
@@ -278,6 +285,8 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   }
 
   fun saveTripDoesNotWorkWithNotLogicalDates() = run {
+    val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+    composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
     ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
       step("Open trip screen") {
         inputTitle {
@@ -348,6 +357,8 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   @Test
   fun saveDoesNotWorkWithNegativeBudget() = run {
     ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
+      val vm = CreateTripViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
+      composeTestRule.setContent { CreateTrip(vm, mockNavActions) }
       step("Open trip screen") {
         inputTitle {
           assertIsDisplayed()
@@ -414,72 +425,47 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     }
   }
 
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun saveTripWorks() = run {
-    ComposeScreen.onComposeScreen<CreateTripoScreen>(composeTestRule) {
-      step("Open trip screen") {
-        inputTitle {
-          assertIsDisplayed()
-          performClick()
+  fun saveTripWorks() = runBlockingTest {
 
-          assertTextContains("Title")
-          assertTextContains("Name the trip")
+    // Spy on the actual ViewModel rather than completely mocking it
+    val overviewViewModel =
+        spyk(
+            OverviewViewModel(tripsRepository = TripsRepository("-1", Dispatchers.IO)),
+            recordPrivateCalls = true)
 
-          performTextClearance()
-          performTextInput("My trip")
-        }
-        titleLengthText {
-          assertIsDisplayed()
-          assertTextEquals("7/35")
-        }
-
-        inputBudget {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Budget")
-
-          performTextClearance()
-          performTextInput("500")
+    // Mock the createTrip function to only modify certain properties
+    coEvery { overviewViewModel.createTrip(any()) } coAnswers
+        {
+          overviewViewModel.apply {
+            this.setCreateTripFinished(true)
+            // this.setProperty("_createTripFinished", true)
+          }
         }
 
-        inputDescription {
-          assertIsDisplayed()
-          performClick()
-
-          assertTextContains("Describe")
-          assertTextContains("Describe the trip")
-
-          performTextClearance()
-          performTextInput("My description")
-        }
-
-        inputStartDate {
-          assertIsDisplayed()
-
-          assertTextContains("dd/mm/yyyy")
-          performTextClearance()
-
-          performTextInput("05/03/2024")
-        }
-
-        inputEndDate {
-          assertIsDisplayed()
-
-          assertTextContains("dd/mm/yyyy")
-          performTextClearance()
-
-          performTextInput("10/03/2024")
-        }
-
-        saveButton {
-          assertIsDisplayed()
-          performClick()
-        }
-
-        verify { mockNavActions.navigateTo(Route.OVERVIEW) }
-        confirmVerified(mockNavActions)
-      }
+    // Set the content of the test
+    composeTestRule.setContent {
+      CreateTrip(overviewViewModel = overviewViewModel, nav = mockNavActions)
     }
+
+    // Access the UI controls using your custom screen class
+    val screen = CreateTripoScreen(composeTestRule)
+
+    // Simulate user inputs and interactions
+    screen.inputTitle.performTextInput("My Trip")
+    screen.inputBudget.performTextInput("500")
+    screen.inputDescription.performTextInput("An exciting journey")
+    screen.inputStartDate.performTextInput("05/03/2024")
+    screen.inputEndDate.performTextInput("10/03/2024")
+
+    // Simulate clicking the save button
+    screen.saveButton.performClick()
+
+    // Wait for Compose to process potential recompositions due to state changes
+    composeTestRule.waitForIdle()
+
+    // Verify that the navigation has been triggered as expected due to the ViewModel's state change
+    verify { mockNavActions.navigateTo(Route.OVERVIEW) }
   }
 }

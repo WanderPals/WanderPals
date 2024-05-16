@@ -1,7 +1,7 @@
 package com.github.se.wanderpals.finance
 
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -16,23 +16,27 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
+import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.screens.FinanceScreen
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.trip.finance.ExpenseInfo
 import com.github.se.wanderpals.ui.screens.trip.finance.Finance
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
+import io.mockk.verify
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -84,6 +88,9 @@ class FinanceViewModelTest :
   private val _isLoading = MutableStateFlow(true)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  private val _selectedExpense = MutableStateFlow(expense1)
+  override val selectedExpense: StateFlow<Expense?> = _selectedExpense.asStateFlow()
+
   fun removeExpenseList() {
     _expenseStateList.value = listOf()
   }
@@ -107,6 +114,11 @@ class FinanceViewModelTest :
               User("user003", "Charlie", ""))
     }
   }
+
+  override fun deleteExpense(expense: Expense) {
+    _expenseStateList.value = _expenseStateList.value.filter { it.expenseId != expense.expenseId }
+    setShowDeleteDialogState(false)
+  }
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -120,17 +132,25 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   private val financeViewModelTest = FinanceViewModelTest()
 
-  @Before
-  fun testSetup() {
+  private fun setUpFinanceTest(role: Role = Role.OWNER) {
     SessionManager.setUserSession()
-    SessionManager.setRole(Role.OWNER)
+    SessionManager.setRole(role)
+    navigationActions = mockNavActions
     composeTestRule.setContent {
       Finance(financeViewModel = financeViewModelTest, navigationActions = mockNavActions)
     }
   }
 
+  private fun setUpExpenseInfoTest(role: Role = Role.OWNER) {
+    SessionManager.setUserSession()
+    SessionManager.setRole(role)
+    navigationActions = mockNavActions
+    composeTestRule.setContent { ExpenseInfo(financeViewModel = financeViewModelTest) }
+  }
+
   @Test
   fun expensesContentIsDisplayed() = run {
+    setUpFinanceTest()
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
       financeBackButton { assertIsDisplayed() }
       financeTopBar { assertIsDisplayed() }
@@ -143,6 +163,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   @Test
   fun noExpenseTextIsDisplayedIfNoExpenses() = run {
+    setUpFinanceTest()
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
       financeViewModelTest.removeExpenseList()
       noExpensesTripText { assertIsDisplayed() }
@@ -152,6 +173,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   @Test
   fun expensesContentIsNotDisplayedWhenNotSelected() = run {
+    setUpFinanceTest()
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
       financeTopBar { assertIsDisplayed() }
       financeBottomBar { assertIsDisplayed() }
@@ -168,26 +190,36 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   @Test
   fun userWithViewRightCantAddExpense() = run {
-    SessionManager.setRole(Role.VIEWER)
+    setUpFinanceTest(Role.VIEWER)
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
-      categoriesButton { performClick() }
-      expensesButton { performClick() }
       financeFloatingActionButton { assertIsNotDisplayed() }
     }
   }
 
   @Test
   fun debtScreenDisplaysProperly() = run {
+    SessionManager.setUserSession("user001", "Alice")
+    navigationActions = mockNavActions
+    composeTestRule.setContent {
+      Finance(financeViewModel = financeViewModelTest, navigationActions = mockNavActions)
+    }
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+
+      // Testing debtContent
+
       debtsButton { performClick() }
       composeTestRule.onNodeWithTag("debtsContent").assertIsDisplayed()
       composeTestRule.onNodeWithTag("defaultDebtContent").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtColumn").assertIsDisplayed()
       composeTestRule.onNodeWithTag("debtAlice").assertIsDisplayed()
       composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
       composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("debtItemBob").assertExists()
-        composeTestRule.onNodeWithTag("debtItemCharlie").assertExists()
+      composeTestRule.onNodeWithTag("debtItemBob").assertExists()
+      composeTestRule.onNodeWithTag("debtItemCharlie").assertExists()
+      composeTestRule.onNodeWithTag("myDebt").assertExists()
+      composeTestRule.onNodeWithTag("balanceInfo").assertExists()
 
+      // Testing debtInfo
 
       composeTestRule
           .onNodeWithTag("startAlice", useUnmergedTree = true)
@@ -214,56 +246,41 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       composeTestRule
           .onNodeWithTag("endCharlie", useUnmergedTree = true)
           .assertIsDisplayed()
-          .assertTextContains("+41.67 CHF")
-    }
-  }
+          .assertTextContains("41.67 CHF")
 
-  @Test
-  fun debtScreenDisplaysDetails() = run {
-      SessionManager.setUserSession("user001")
-    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("debtColumn", useUnmergedTree = true).performScrollToIndex(1)
 
+      // Testing DebtItem
 
-      debtsButton { performClick() }
-      composeTestRule.onNodeWithTag("debtAlice").performClick()
-      composeTestRule.onNodeWithTag("debtDetails").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("nameStartBob", useUnmergedTree = true).assertTextEquals("Bob")
       composeTestRule
-          .onNodeWithTag("detailsAlice")
-          .assertIsDisplayed()
-          .assertTextContains("Details for Alice")
-      composeTestRule.onNodeWithTag("debtAlice").assertDoesNotExist()
-      composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
+          .onNodeWithTag("moneyStartBob", useUnmergedTree = true)
+          .assertTextEquals("8.33 CHF")
+      composeTestRule
+          .onNodeWithTag("nameEndAliceBob", useUnmergedTree = true)
+          .assertTextEquals("Alice")
+      composeTestRule
+          .onNodeWithTag("nameEndAliceCharlie", useUnmergedTree = true)
+          .assertTextEquals("Alice")
+      composeTestRule.onNodeWithTag("moneyEndBob", useUnmergedTree = true).assertDoesNotExist()
+      composeTestRule
+          .onNodeWithTag("nameStartCharlie", useUnmergedTree = true)
+          .assertTextEquals("Charlie")
+      composeTestRule
+          .onNodeWithTag("moneyEndCharlie", useUnmergedTree = true)
+          .assertTextEquals("16.67 CHF")
+      composeTestRule
+          .onNodeWithTag("moneyStartCharlie", useUnmergedTree = true)
+          .assertDoesNotExist()
 
-      composeTestRule
-          .onNodeWithTag("startBob", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("Bob")
-      composeTestRule
-          .onNodeWithTag("endBob", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("+8.33 CHF")
-
-      composeTestRule
-          .onNodeWithTag("startCharlie", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("-16.67 CHF")
-      composeTestRule
-          .onNodeWithTag("endCharlie", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("Charlie")
-
-      composeTestRule.onNodeWithTag("detailsBack").performClick()
-      composeTestRule.onNodeWithTag("debtDetails").assertDoesNotExist()
-      composeTestRule.onNodeWithTag("defaultDebtContent").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtAlice").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("arrowForwardBob", useUnmergedTree = true).assertExists()
+      composeTestRule.onNodeWithTag("arrowBackCharlie", useUnmergedTree = true).assertExists()
     }
   }
 
   @Test
   fun categoryContentDisplaysEverythingCorrectly() = run {
+    setUpFinanceTest()
     composeTestRule.onNodeWithTag("CategoriesButton").performClick()
     composeTestRule.onNodeWithTag("categoryOptionPieChart").assertIsDisplayed()
     composeTestRule.onNodeWithTag("FinancePieChart").assertIsDisplayed()
@@ -278,6 +295,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   @Test
   fun categoryItemsDisplayCorrectNumberOfTransactionsForEachCategory() = run {
+    setUpFinanceTest()
     composeTestRule.onNodeWithTag("CategoriesButton").performClick()
 
     composeTestRule
@@ -297,6 +315,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   @Test
   fun categoryItemsDisplayCorrectTotalAmountForEachCategory() = run {
+    setUpFinanceTest()
     composeTestRule.onNodeWithTag("CategoriesButton").performClick()
 
     composeTestRule
@@ -312,5 +331,56 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("FoodTotalAmount").assertTextEquals("150.00 CHF")
 
     composeTestRule.onNodeWithTag("OtherTotalAmount").assertTextEquals("0.00 CHF")
+  }
+
+  @Test
+  fun expenseInfoDisplaysCorrectly() = run {
+    setUpExpenseInfoTest()
+    composeTestRule.onNodeWithTag("expenseInfo").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("expenseAmount1").assertIsDisplayed()
+    financeViewModelTest.expenseStateList.value.first().names.forEach { name ->
+      composeTestRule.onNodeWithTag(name + "1").assertTextEquals(name)
+    }
+  }
+
+  @Test
+  fun expenseInfoGoBackToFinanceRouteWhenClickingOnBackButton() = run {
+    setUpExpenseInfoTest()
+    composeTestRule.onNodeWithTag("expenseInfoBackButton").performClick()
+    verify { mockNavActions.goBack() }
+    confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun expensesDeletesCorrectly() = run {
+    setUpExpenseInfoTest()
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("deleteTextButton").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("confirmDeleteExpenseButton").performClick()
+      verify { mockNavActions.navigateTo(Route.FINANCE) }
+      confirmVerified(mockNavActions)
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
+      assert(financeViewModelTest.expenseStateList.value.size == 2)
+    }
+  }
+
+  @Test
+  fun expensesDeletesCancel() = run {
+    setUpExpenseInfoTest()
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("deleteTextButton").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("cancelDeleteExpenseButton").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
+      composeTestRule.onNodeWithTag("expenseInfo").assertIsDisplayed()
+    }
+  }
+
+  @Test
+  fun viewerCantDeleteExpense() = run {
+    setUpExpenseInfoTest(Role.VIEWER)
+    composeTestRule.onNodeWithTag("deleteTextButton").performClick()
+    composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
   }
 }

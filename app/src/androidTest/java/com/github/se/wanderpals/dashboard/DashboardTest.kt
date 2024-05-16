@@ -10,10 +10,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.Dashboard
@@ -183,6 +185,10 @@ class DashboardViewModelTest(list: List<Suggestion>) :
 
   fun setLoading(isLoading: Boolean) {
     _isLoading.value = isLoading
+  }
+
+  override fun confirmDeleteTrip() {
+    // Do nothing
   }
 }
 
@@ -523,5 +529,52 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("financeCard").performClick()
     verify { mockNavActions.navigateTo(Route.FINANCE) }
     confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun deleteTripWorks() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    SessionManager.setUserSession(role = Role.OWNER)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripDialog", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmDeleteTripButton", useUnmergedTree = true).performClick()
+
+    verify { mockNavActions.navigateTo(Route.OVERVIEW) }
+    confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun deleteTripCancel() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    SessionManager.setUserSession(role = Role.OWNER)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripDialog", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelDeleteTripButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripDialog", useUnmergedTree = true).assertDoesNotExist()
+  }
+
+  @Test
+  fun deleteTripNotOwner() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    SessionManager.setUserSession(role = Role.ADMIN)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).assertDoesNotExist()
   }
 }

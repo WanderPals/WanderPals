@@ -50,7 +50,6 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
-import com.github.se.wanderpals.model.viewmodel.ExpenseViewModel
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
@@ -66,7 +65,7 @@ import java.time.format.DateTimeFormatter
  * selected. If not, an error message is displayed at the bottom of the screen.
  *
  * @param tripId The id of the trip.
- * @param viewModel The [ExpenseViewModel] to handle the expense creation.
+ * @param viewModel The [FinanceViewModel] to handle the expense creation.
  * @param navActions The navigation actions to navigate back.
  */
 @OptIn(ExperimentalMaterial3Api::class)

@@ -33,6 +33,8 @@ object SessionManager {
 
   private var currentUserNotificationTokenId: String = ""
 
+  private var isNetworkAvailable = true
+
   /**
    * Sets or updates the current user session with provided details.
    *
@@ -56,7 +58,7 @@ object SessionManager {
     currentUser =
         SessionUser(userId, name, email, role, geoCords, profilePhotoUse, tripName, nickname)
 
-    if (isFirebaseInitialized()) {
+    if (isFirebaseInitialized() && isNetworkAvailable) {
       val currentUser = FirebaseAuth.getInstance().currentUser!!
       if (currentUser.photoUrl.toString() != profilePhotoUse || currentUser.displayName != name) {
         FirebaseAuth.getInstance()
@@ -98,6 +100,21 @@ object SessionManager {
     this.currentUserNotificationTokenId = currentUserNotificationTokenId
   }
 
+  /**
+   * Returns the current network availability status.
+   *
+   * @return Boolean indicating if the network is available.
+   */
+  fun getIsNetworkAvailable(): Boolean = this.isNetworkAvailable
+
+  /**
+   * Sets the network availability status.
+   *
+   * @param status Boolean value representing the new network availability status.
+   */
+  fun setIsNetworkAvailable(status: Boolean) {
+    this.isNetworkAvailable = status
+  }
   /**
    * Retrieves the current user of the session.
    *
