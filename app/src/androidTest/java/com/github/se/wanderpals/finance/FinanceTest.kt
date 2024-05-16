@@ -246,7 +246,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       composeTestRule
           .onNodeWithTag("endCharlie", useUnmergedTree = true)
           .assertIsDisplayed()
-          .assertTextContains("41.67 CHF")
+          .assertTextContains("+41.67 CHF")
 
       composeTestRule.onNodeWithTag("debtColumn", useUnmergedTree = true).performScrollToIndex(1)
 
