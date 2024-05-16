@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,9 +55,9 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
   val suggestionList by viewModel.state.collectAsState()
   val sortedSuggestion = suggestionList.sortedByDescending { it.createdAt }
 
-  Card(
+  ElevatedCard(
       modifier =
-          Modifier.padding(16.dp)
+          Modifier.padding(horizontal = 16.dp)
               .fillMaxWidth()
               .clickable(onClick = onClick)
               .testTag("suggestionCard"),
@@ -65,7 +65,8 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
           CardDefaults.cardColors(
               containerColor = surfaceVariantLight // This sets the background color of the Card
               ),
-      shape = RoundedCornerShape(10.dp)) {
+      shape = RoundedCornerShape(10.dp),
+      elevation = CardDefaults.cardElevation(10.dp)) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
           Row(
               verticalAlignment = Alignment.CenterVertically,

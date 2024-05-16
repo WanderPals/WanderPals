@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -54,6 +55,7 @@ import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardFinanceWidget
+import com.github.se.wanderpals.ui.screens.dashboard.DashboardStopWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -79,6 +81,7 @@ fun Dashboard(
     dashboardViewModel.loadSuggestion(tripId)
     dashboardViewModel.loadExpenses(tripId)
     dashboardViewModel.loadTripTitle(tripId)
+    dashboardViewModel.loadStops(tripId)
   }
 
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -106,16 +109,31 @@ fun Dashboard(
                 Modifier.background(Color.White)
                     .padding(contentPadding)
                     .testTag("dashboardSuggestions")) {
-              Column {
-                DashboardSuggestionWidget(
-                    viewModel = dashboardViewModel,
-                    onClick = { navActions.navigateTo(Route.SUGGESTION) })
+              LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
+                item {
+                  Spacer(modifier = Modifier.padding(8.dp))
+                  DashboardSuggestionWidget(
+                      viewModel = dashboardViewModel,
+                      onClick = { navActions.navigateTo(Route.SUGGESTION) })
 
-                Spacer(modifier = Modifier.padding(8.dp))
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
 
-                DashboardFinanceWidget(
-                    viewModel = dashboardViewModel,
-                    onClick = { navActions.navigateTo(Route.FINANCE) })
+                item {
+                  DashboardFinanceWidget(
+                      viewModel = dashboardViewModel,
+                      onClick = { navActions.navigateTo(Route.FINANCE) })
+
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
+
+                item {
+                  DashboardStopWidget(
+                      viewModel = dashboardViewModel,
+                      onClick = { navActions.navigateTo(Route.AGENDA) })
+
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
               }
             }
 
@@ -254,32 +272,35 @@ fun Menu(
  */
 @Composable
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: String) {
-  Column(modifier = Modifier.padding(8.dp).testTag("dashboardTopBar")) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment =
-            Alignment.CenterVertically // This aligns all children vertically centered in the Row
-        ) {
-          ElevatedButton(
-              modifier = Modifier.testTag("menuButton"),
-              content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
-              onClick = {
-                scope.launch { drawerState.apply { if (isClosed) open() else close() } }
-              })
-          Text(
-              text = tripTitle,
-              modifier =
-                  Modifier.padding(8.dp)
-                      .testTag("tripTitle")
-                      .weight(1f), // This makes the text expand and fill the space
-              color = MaterialTheme.colorScheme.primary,
-              fontWeight = FontWeight.Bold, // This makes the text bold
-              fontSize = 24.sp, // This sets the font size to 24sp
-              maxLines = 1, // This makes the text to be displayed in a single line
-              overflow =
-                  TextOverflow.Ellipsis // This makes the text to be ellipsized if it overflows
-              )
-        }
-    HorizontalDivider(modifier = Modifier.padding(8.dp))
-  }
+  Column(
+      modifier =
+          Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp).testTag("dashboardTopBar")) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment =
+                Alignment
+                    .CenterVertically // This aligns all children vertically centered in the Row
+            ) {
+              ElevatedButton(
+                  modifier = Modifier.testTag("menuButton"),
+                  content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
+                  onClick = {
+                    scope.launch { drawerState.apply { if (isClosed) open() else close() } }
+                  })
+              Text(
+                  text = tripTitle,
+                  modifier =
+                      Modifier.padding(8.dp)
+                          .testTag("tripTitle")
+                          .weight(1f), // This makes the text expand and fill the space
+                  color = MaterialTheme.colorScheme.primary,
+                  fontWeight = FontWeight.Bold, // This makes the text bold
+                  fontSize = 24.sp, // This sets the font size to 24sp
+                  maxLines = 1, // This makes the text to be displayed in a single line
+                  overflow =
+                      TextOverflow.Ellipsis // This makes the text to be ellipsized if it overflows
+                  )
+            }
+        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+      }
 }
