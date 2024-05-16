@@ -59,14 +59,16 @@ class SuggestionHistoryFeedContentTest {
             stopId = "stop1",
             title = "First Stop",
             description = "Description for first stop",
-            geoCords = GeoCords(37.7749, -122.4194))
+            geoCords = GeoCords(37.7749, -122.4194),
+            stopStatus = CalendarUiState.StopStatus.ADDED)
 
     val stop2 =
         Stop(
             stopId = "stop2",
             title = "Second Stop",
             description = "Description for second stop",
-            geoCords = GeoCords(40.7128, -74.0060))
+            geoCords = GeoCords(40.7128, -74.0060),
+            stopStatus = CalendarUiState.StopStatus.ADDED)
 
     suggestionList =
         listOf(
@@ -74,14 +76,12 @@ class SuggestionHistoryFeedContentTest {
                 suggestionId = "sugg1",
                 userName = "User1",
                 stop = stop1,
-                createdAt = LocalDate.now(),
-                stopStatus = CalendarUiState.StopStatus.ADDED),
+                createdAt = LocalDate.now()),
             Suggestion(
                 suggestionId = "sugg2",
                 userName = "User2",
                 stop = stop2,
-                createdAt = LocalDate.now(),
-                stopStatus = CalendarUiState.StopStatus.ADDED))
+                createdAt = LocalDate.now()))
   }
 
   /**
@@ -153,15 +153,12 @@ class SuggestionHistoryFeedContentTest {
             geoCords = GeoCords(37.7749, -122.4194),
             date = LocalDate.of(2024, 4, 16),
             startTime = LocalTime.of(12, 0),
-            duration = 60)
+            duration = 60,
+            stopStatus = CalendarUiState.StopStatus.ADDED)
 
     val suggestion =
         Suggestion(
-            suggestionId = "sugg1",
-            userName = "User1",
-            stop = stop,
-            createdAt = LocalDate.now(),
-            stopStatus = CalendarUiState.StopStatus.ADDED)
+            suggestionId = "sugg1", userName = "User1", stop = stop, createdAt = LocalDate.now())
 
     val fakeViewModel =
         FakeSuggestionsViewModel().apply { updateSuggestionList(listOf(suggestion)) }
