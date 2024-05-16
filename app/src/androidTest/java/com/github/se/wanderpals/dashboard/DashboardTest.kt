@@ -50,7 +50,7 @@ private val suggestion1: Suggestion =
                 stopId = "1",
                 title = "Stop Title",
                 address = "123 Street",
-                date = LocalDate.now().plusDays(1),
+                date = LocalDate.now().plusDays(2),
                 startTime = LocalTime.now(),
                 duration = 60,
                 budget = 100.0,
@@ -73,7 +73,7 @@ private val suggestion2: Suggestion =
                 stopId = "2",
                 title = "Stop Title",
                 address = "123 Street",
-                date = LocalDate.now(),
+                date = LocalDate.now().plusDays(1),
                 startTime = LocalTime.now(),
                 duration = 60,
                 budget = 100.0,
@@ -96,7 +96,7 @@ private val suggestion3: Suggestion =
                 stopId = "3",
                 title = "Stop Title",
                 address = "123 Street",
-                date = LocalDate.now(),
+                date = LocalDate.now().plusDays(1),
                 startTime = LocalTime.now(),
                 duration = 60,
                 budget = 100.0,
@@ -575,6 +575,19 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertIsDisplayed()
     composeTestRule.onNodeWithTag("stopIcon", useUnmergedTree = true).assertIsDisplayed()
   }
+
+    @Test
+    fun StopWidgetDisplaysNothing() = run {
+        val viewModel = DashboardViewModelTest(emptyList())
+        viewModel.setLoading(false)
+        composeTestRule.setContent {
+            Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+        }
+
+        viewModel.setStops(listOf(Stop(date = LocalDate.now().minusDays(1), startTime = LocalTime.now()), Stop(date = LocalDate.now(), startTime = LocalTime.now().minusSeconds(1))))
+
+        composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertIsDisplayed()
+    }
 
   @Test
   fun stopWidgetDisplaysProperlyOne() = run {
