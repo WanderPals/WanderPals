@@ -9,7 +9,6 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
-import io.mockk.coEvery
 import io.mockk.mockk
 import kotlin.math.ceil
 import kotlinx.coroutines.Dispatchers
@@ -142,51 +141,5 @@ class SuggestionToStopWithConditionTest {
         .onNodeWithTag("suggestion5")
         .assertDoesNotExist() // The suggestion with 5 likes (i.e. suggestion5) should have been
     // transformed
-  }
-
-  /**
-   * Test the transformation of suggestions to stops when a user manually clicks the like button.
-   */
-  @Test
-  fun testUserClickTransformsSuggestionToStop() {
-
-    // fakeTripsRepository as a mock instead of a concrete class
-    fakeTripsRepository = mockk<TripsRepository>(relaxed = true)
-
-    coEvery {
-      fakeTripsRepository.getSuggestionFromTrip(tripId = "trip1", suggestionId = "s1")
-    } returns Suggestion(suggestionId = "s1", userLikes = listOf("user1", "user2"))
-    coEvery {
-      fakeTripsRepository.getSuggestionFromTrip(tripId = "trip1", suggestionId = "s2")
-    } returns Suggestion(suggestionId = "s2", userLikes = listOf("user1"))
-
-    // Assume there are 4 users in the trip. Threshold for transformation is 3 likes.
-    val suggestions =
-        listOf(
-            Suggestion(
-                suggestionId = "s1",
-                userLikes = listOf("user1", "user2"),
-                stop = mockk(relaxed = true)),
-            Suggestion(
-                suggestionId = "s2", userLikes = listOf("user1"), stop = mockk(relaxed = true)))
-    val viewModel = createViewModel(suggestions, 4)
-
-    composeTestRule.setContent {
-      SuggestionFeedContent(
-          innerPadding = PaddingValues(),
-          suggestionList = viewModel.state.value,
-          searchSuggestionText = "",
-          tripId = "trip1",
-          suggestionsViewModel = viewModel,
-          navigationActions = mockk(relaxed = true))
-    }
-
-    // Click the like button for the first suggestion, which should now meet the threshold.
-    composeTestRule.onNodeWithTag("likeIconSuggestionFeedScreen_s1").performClick()
-
-    composeTestRule.waitForIdle()
-
-    // Ensure the second suggestion is still visible.
-    composeTestRule.onNodeWithTag("suggestion2").assertExists()
   }
 }

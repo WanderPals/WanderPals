@@ -197,6 +197,8 @@ dependencies {
     // Google Places
     implementation(libs.places)
 
+    debugImplementation("androidx.compose.ui:ui-tooling:1.6.7")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
 
     debugImplementation(libs.compose.tooling)
     // UI Tests

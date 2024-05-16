@@ -45,10 +45,6 @@ open class AgendaViewModel(
 
   open val _stopsInfo = MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>>(emptyMap())
 
-  /** Exposed read-only state flow of stops info. */
-  //  val stopsInfo: StateFlow<Map<LocalDate, CalendarUiState.StopStatus>> =
-  // _stopsInfo.asStateFlow()
-
   /**
    * Initializes the UI state of the agenda by fetching the dates for the current month and updating
    * the UI state accordingly.

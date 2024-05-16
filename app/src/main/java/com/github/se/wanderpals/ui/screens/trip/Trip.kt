@@ -38,6 +38,7 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionHistoryFeedContent
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.github.se.wanderpals.ui.screens.trip.finance.CreateExpense
 import com.github.se.wanderpals.ui.screens.trip.finance.ExpenseInfo
@@ -181,25 +182,24 @@ fun Trip(
                     }
                     composable(Route.FINANCE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
-                      val financeViewModel: FinanceViewModel =
+                      val viewModel: FinanceViewModel =
                           viewModel(
                               factory =
                                   FinanceViewModel.FinanceViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
-                      Finance(
-                          financeViewModel = financeViewModel, navigationActions = oldNavActions)
+                      Finance(financeViewModel = viewModel, navigationActions = oldNavActions)
                     }
                     composable(Route.CREATE_EXPENSE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_EXPENSE)
-                      val financeViewModel: FinanceViewModel =
+                      val viewModel: FinanceViewModel =
                           viewModel(
                               factory =
                                   FinanceViewModel.FinanceViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
-                      CreateExpense(tripId, financeViewModel, oldNavActions) {
-                        financeViewModel.updateStateLists()
+                      CreateExpense(tripId, viewModel, oldNavActions) {
+                        viewModel.updateStateLists()
                       }
                     }
                     composable(Route.EXPENSE_INFO) {
@@ -226,6 +226,18 @@ fun Trip(
                       StopsList(viewModel, tripId)
                     }
                   }
+              composable(Route.SUGGESTION_HISTORY) {
+                oldNavActions.updateCurrentRouteOfTrip(
+                    Route.SUGGESTION_HISTORY) // Update the current route of the trip to
+                // SUGGESTION_HISTORY
+                val suggestionsViewModel: SuggestionsViewModel =
+                    viewModel(
+                        factory =
+                            SuggestionsViewModel.SuggestionsViewModelFactory(
+                                tripsRepository, tripId),
+                        key = "SuggestionsHistoryViewModel")
+                SuggestionHistoryFeedContent(suggestionsViewModel)
+              }
             }
       }
 }
