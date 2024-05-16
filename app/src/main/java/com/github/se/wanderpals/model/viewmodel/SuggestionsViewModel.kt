@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.Duration
+import java.time.LocalDateTime
 
 /**
  * Fetches all users from a trip and calculates the threshold for majority based on the number of
@@ -82,6 +84,12 @@ open class SuggestionsViewModel(
   // This will hold the IDs of suggestions that have been added to stops
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
   open val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
+
+  // State flow to hold the remaining time for each suggestion
+  private val _remainingTimes = MutableStateFlow<Map<String, Duration>>(emptyMap())
+  open val remainingTimes: StateFlow<Map<String, Duration>> = _remainingTimes.asStateFlow()
+
+  private val voteEndTimes = mutableMapOf<String, LocalDateTime>()
 
   open fun getIsLiked(suggestionId: String): Boolean {
     return _likedSuggestions.value.contains(suggestionId)
@@ -369,6 +377,57 @@ open class SuggestionsViewModel(
     }
     loadSuggestion(tripId)
     hideBottomSheet()
+  }
+
+  // Function to start a vote and initialize the remaining time for the vote
+  fun startVote(suggestionId: String) {
+    voteEndTimes[suggestionId] = LocalDateTime.now().plusHours(24)
+    updateRemainingTime(suggestionId)
+  }
+
+  // Function to get the remaining time for a suggestion
+  fun getRemainingVoteTime(suggestionId: String): Duration? {
+    val endTime = voteEndTimes[suggestionId] ?: return null
+    val now = LocalDateTime.now()
+    return if (endTime.isAfter(now)) {
+      Duration.between(now, endTime)
+    } else {
+      null
+    }
+  }
+
+  // Function to update the remaining time for a suggestion periodically
+  private fun updateRemainingTime(suggestionId: String) {
+    viewModelScope.launch {
+      while (true) {
+        val remainingTime = getRemainingVoteTime(suggestionId)
+        if (remainingTime != null) {
+          _remainingTimes.value = _remainingTimes.value.toMutableMap().apply {
+            put(suggestionId, remainingTime)
+          }
+          delay(1000)
+        } else {
+          _remainingTimes.value = _remainingTimes.value.toMutableMap().apply {
+            remove(suggestionId)
+          }
+        }
+      }
+    }
+  }
+
+  init {
+    // Initialize the countdown timer for all suggestions on ViewModel creation
+    viewModelScope.launch {
+      _state.collect { suggestions ->
+        suggestions.forEach { suggestion ->
+          updateRemainingTime(suggestion.suggestionId)
+        }
+      }
+    }
+  }
+
+  suspend fun getUser(userId: String): User? {
+    return suggestionRepository?.getUserFromTrip(tripId, userId)
   }
 
   class SuggestionsViewModelFactory(
