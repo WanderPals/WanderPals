@@ -201,7 +201,6 @@ class MainActivity : ComponentActivity() {
                     // Send the token to the server
                     val token = task.result
                     SessionManager.setNotificationToken(task.result)
-                    // SessionManager.setListOfTokensTrip(listOfTokens = mutableListOf(token))
 
                     Log.d(TAG, token)
                   })

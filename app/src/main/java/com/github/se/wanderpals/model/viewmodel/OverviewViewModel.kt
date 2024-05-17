@@ -99,6 +99,7 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
    */
   open fun joinTrip(tripId: String): Boolean {
     var success = false
+    var newListOfTokens = emptyList<String>()
     runBlocking {
       success = tripsRepository.addTripId(tripId)
       if (success) {
@@ -107,8 +108,16 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
         val newTrip = tripsRepository.getTrip(tripId)!!
 
         Log.d("JoinTrip", "Tokens: ${SessionManager.getListOfTokensTrip()}")
+        Log.d("JoinTripExistingToken", "Tokens: ${newTrip.tokenIds}")
 
-        val newListOfTokens = newTrip.tokenIds + SessionManager.getNotificationToken()
+        // check if SessionManager.getNotificationToken() is already in the list of tokens
+
+        newListOfTokens =
+            if (newTrip.tokenIds.contains(SessionManager.getNotificationToken())) {
+              newTrip.tokenIds
+            } else {
+              newTrip.tokenIds + SessionManager.getNotificationToken()
+            }
 
         // add the token to the token list of the trip
         tripsRepository.updateTrip(newTrip.copy(tokenIds = newListOfTokens))
