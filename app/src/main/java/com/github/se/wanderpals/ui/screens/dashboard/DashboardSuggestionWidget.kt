@@ -3,18 +3,22 @@ package com.github.se.wanderpals.ui.screens.dashboard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,18 +31,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
-import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
-import com.github.se.wanderpals.ui.theme.backgroundLight
-import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
-import com.github.se.wanderpals.ui.theme.primaryContainerLight
-import com.github.se.wanderpals.ui.theme.primaryLight
-import com.github.se.wanderpals.ui.theme.secondaryLight
-import com.github.se.wanderpals.ui.theme.surfaceVariantLight
-import com.github.se.wanderpals.ui.theme.tertiaryLight
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -63,131 +60,169 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
               .testTag("suggestionCard"),
       colors =
           CardDefaults.cardColors(
-              containerColor = surfaceVariantLight // This sets the background color of the Card
+              containerColor =
+                  MaterialTheme.colorScheme
+                      .surfaceVariant // This sets the background color of the Card
               ),
-      shape = RoundedCornerShape(10.dp),
+      shape = RoundedCornerShape(6.dp),
       elevation = CardDefaults.cardElevation(10.dp)) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
-          Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier =
-                  Modifier.clip(RoundedCornerShape(10.dp))
-                      .background(primaryContainerLight)
-                      .padding(8.dp)) {
-                Icon(
-                    Icons.Default.Menu,
-                    contentDescription = "suggestionIcon",
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.testTag("suggestionIcon"))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "Suggestions",
-                    style =
-                        TextStyle(
-                            fontSize = 15.sp,
-                            lineHeight = 20.sp,
-                            fontWeight = FontWeight(500),
-                            color = onPrimaryContainerLight,
-                            letterSpacing = 0.15.sp,
-                        ),
-                    modifier = Modifier.testTag("suggestionTitle"))
-              }
+        // Suggestion Widget
+        Row(
+            modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween) {
+              // List of Suggestio
+              Column(
+                  modifier =
+                      Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
+                          .fillMaxWidth()) {
+                    // Top part of the texts
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()) {
+                          Row(
+                              verticalAlignment = Alignment.CenterVertically,
+                              horizontalArrangement = Arrangement.Start,
+                              modifier =
+                                  Modifier.clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.primaryContainer)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                                Icon(
+                                    Icons.Default.Menu,
+                                    contentDescription = "Suggestion Icon",
+                                    modifier = Modifier.size(16.dp).testTag("suggestionIcon"),
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                                Text(
+                                    text = "Suggestions",
+                                    modifier = Modifier.testTag("suggestionTitle"),
+                                    style =
+                                        TextStyle(
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            fontWeight = FontWeight.Bold))
+                              }
 
-          Spacer(modifier = Modifier.padding(6.dp))
+                          Spacer(modifier = Modifier.padding(4.dp))
 
-          if (sortedSuggestion.isEmpty() ||
-              sortedSuggestion.none {
-                it.stop.stopStatus == CalendarUiState.StopStatus.NONE
-              }) { // if there are no suggestions or if all suggestions are added to stops
-            Column(
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(backgroundLight)
-                        .padding(40.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally) {
-                  Text(
-                      text = "No suggestions available",
-                      style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                      modifier = Modifier.testTag("noSuggestions"))
-                }
-          } else {
-            sortedSuggestion
-                .filter { it.stop.stopStatus == CalendarUiState.StopStatus.NONE }
-                .take(DISPLAY_COUNT)
-                .forEachIndexed { index, suggestion ->
-                  SuggestionItem(suggestion = suggestion)
-                  if (index < DISPLAY_COUNT - 1) {
-                    Spacer(modifier = Modifier.height(8.dp)) // Add space between items
+                          Text(
+                              text =
+                                  "Total: ${sortedSuggestion.size} suggestion" +
+                                      if (sortedSuggestion.size > 1) "s" else "",
+                              modifier =
+                                  Modifier.testTag("totalSuggestions")
+                                      .clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.surface)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp),
+                              style =
+                                  TextStyle(
+                                      color = MaterialTheme.colorScheme.primary,
+                                      fontWeight = FontWeight.Bold))
+                        }
+
+                    Spacer(modifier = Modifier.padding(4.dp))
+
+                    // List of suggestions
+                    Box(
+                        modifier =
+                            Modifier.clip(RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxWidth()) {
+                          if (sortedSuggestion.isEmpty()) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier =
+                                    Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
+                                  Text(
+                                      text = "No suggestions yet.",
+                                      modifier = Modifier.testTag("noSuggestions"),
+                                      style = TextStyle(color = MaterialTheme.colorScheme.primary),
+                                  )
+                                }
+                          } else {
+                            Column {
+                              SuggestionWidgetItem(suggestion = sortedSuggestion[0])
+                              HorizontalDivider(
+                                  color = MaterialTheme.colorScheme.surfaceVariant,
+                                  thickness = 1.dp,
+                                  modifier = Modifier.padding(horizontal = 8.dp))
+                              if (sortedSuggestion.size > 1) {
+                                SuggestionWidgetItem(suggestion = sortedSuggestion[1])
+                                HorizontalDivider(
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(horizontal = 8.dp))
+                                if (sortedSuggestion.size > 2) {
+                                  SuggestionWidgetItem(suggestion = sortedSuggestion[2])
+                                } else {
+                                  Box(modifier = Modifier.fillMaxSize())
+                                }
+                              } else {
+                                Box(modifier = Modifier.fillMaxSize())
+                              }
+                            }
+                          }
+                        }
                   }
-                }
-          }
-        }
+            }
       }
 }
 
+/**
+ * The Suggestion item for the dashboard screen.
+ *
+ * @param suggestion The suggestion to display.
+ */
 @Composable
-fun SuggestionItem(suggestion: Suggestion) {
+fun SuggestionWidgetItem(suggestion: Suggestion) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
-      modifier =
-          Modifier.fillMaxWidth()
-              .clip(RoundedCornerShape(10.dp))
-              .background(backgroundLight)
-              .testTag("suggestionItem" + suggestion.suggestionId)) {
-        Column(modifier = Modifier.padding(16.dp, 8.dp)) {
+      modifier = Modifier.fillMaxWidth().testTag("suggestionItem" + suggestion.suggestionId)) {
+        Column(modifier = Modifier.padding(8.dp).weight(1f).fillMaxWidth()) {
           Text(
-              text = suggestion.stop.title,
+              text =
+                  if (suggestion.stop.title.length > 20)
+                      suggestion.stop.title.subSequence(0, 18).toString() + "..."
+                  else suggestion.stop.title,
               style =
                   TextStyle(
-                      fontWeight = FontWeight(500),
-                      color = primaryLight,
-                      fontSize = 15.sp,
-                      lineHeight = 20.sp,
-                      letterSpacing = 0.15.sp),
+                      fontWeight = FontWeight.Bold,
+                      color = MaterialTheme.colorScheme.primary,
+                      fontSize = 15.sp),
               modifier = Modifier.testTag("suggestionTitle" + suggestion.suggestionId))
           Spacer(modifier = Modifier.height(4.dp))
           Text(
               text =
-                  "Suggested by ${if(suggestion.userName.length > 10) suggestion.userName.subSequence(0, 10).toString()+"..." else suggestion.userName}",
-              style =
-                  TextStyle(
-                      fontSize = 14.sp,
-                      lineHeight = 20.sp,
-                      fontWeight = FontWeight(500),
-                      color = tertiaryLight,
-                      letterSpacing = 0.14.sp,
-                  ),
-              modifier = Modifier.testTag("suggestionUser" + suggestion.userId))
-        }
-        Column(modifier = Modifier.padding(8.dp)) {
-          val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
-          val endTime = startTime.plusMinutes(suggestion.stop.duration.toLong())
-          Text(
-              text = startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-              style =
-                  TextStyle(
-                      fontSize = 14.sp,
-                      lineHeight = 20.sp,
-                      fontWeight = FontWeight(500),
-                      color = secondaryLight,
-                      letterSpacing = 0.14.sp,
-                  ),
+                  LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+                      .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+              style = TextStyle(color = MaterialTheme.colorScheme.tertiary, fontSize = 10.sp),
               modifier = Modifier.testTag("suggestionStart" + suggestion.suggestionId))
-          Spacer(modifier = Modifier.height(4.dp))
+        }
+        Column(modifier = Modifier.padding(8.dp).weight(1f).fillMaxWidth()) {
+          val text = suggestion.userName
           Text(
-              text = endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+              text = if (text.length > 40) text.subSequence(0, 38).toString() + "..." else text,
               style =
                   TextStyle(
-                      fontSize = 14.sp,
-                      lineHeight = 20.sp,
-                      fontWeight = FontWeight(500),
-                      color = secondaryLight,
-                      letterSpacing = 0.14.sp,
-                  ),
-              modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId))
+                      fontWeight = FontWeight.Bold,
+                      color = MaterialTheme.colorScheme.primary,
+                      fontSize = 15.sp,
+                      textAlign = TextAlign.End),
+              modifier =
+                  Modifier.testTag("suggestionUser" + suggestion.suggestionId).fillMaxWidth())
+
+          Spacer(modifier = Modifier.height(4.dp))
+
+          Text(
+              text =
+                  LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+                      .plusMinutes(suggestion.stop.duration.toLong())
+                      .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+              style =
+                  TextStyle(
+                      color = MaterialTheme.colorScheme.tertiary,
+                      fontSize = 10.sp,
+                      textAlign = TextAlign.End),
+              modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId).fillMaxWidth())
         }
       }
 }
