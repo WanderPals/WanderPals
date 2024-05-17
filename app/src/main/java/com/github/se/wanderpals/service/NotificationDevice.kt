@@ -159,6 +159,9 @@ suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
   // val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/wanderpals/messages:send"
   val FCM_ENDPOINT2 = "https://fcm.googleapis.com/fcm/send"
 
+  val TOKEN =
+      "AAAALI85TW0:APA91bHQIiTEFkzRUv6FQMlyL1TxtPBztg6lByt18vDaVLkssIEXkPrQu1WLX5Wc_WmTdYqoOWBITP2yp7ej4gH4LeH_iMZbz9lkQQJ-DVC8w2gRxhW8lp8gAuzCqaY136urySlFw-0p"
+
   // Create the notification payload
   val notificationPayload =
       mapOf("notification" to mapOf("body" to message, "time" to "Wanderpals"), "to" to deviceToken)
@@ -182,7 +185,7 @@ suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
         Request.Builder()
             .url(FCM_ENDPOINT2)
             .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "key=${R.string.FCM_SERVER}")
+            .addHeader("Authorization", "key=${TOKEN}")
             .post(requestBody)
             .build()
     Log.d("FCM", "Sending message to $deviceToken")
