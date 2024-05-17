@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
 /**
  * Fetches all users from a trip and calculates the threshold for majority based on the number of
@@ -87,14 +86,12 @@ open class SuggestionsViewModel(
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
   open val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
 
-  // stores the suggestionId with its start time when the vote icon is clicked
-  private val _voteStartTimeMap = mutableMapOf<String, LocalTime>()
-    /**
-     * Returns whether the suggestion is liked by the current user.
-     *
-     * @param suggestionId The ID of the suggestion to check.
-     * @return True if the suggestion is liked, false otherwise.
-     */
+  /**
+   * Returns whether the suggestion is liked by the current user.
+   *
+   * @param suggestionId The ID of the suggestion to check.
+   * @return True if the suggestion is liked, false otherwise.
+   */
   open fun getIsLiked(suggestionId: String): Boolean {
     return _likedSuggestions.value.contains(suggestionId)
   }
@@ -129,13 +126,34 @@ open class SuggestionsViewModel(
 
 
       _voteIconClickable.value =
-              _state.value.filter{it.voteIconClickable}.map{it.suggestionId} //todo: get the list of suggestions that have voteIconClickable as true
+        _state.value.filter{it.voteIconClickable}.map{it.suggestionId} //todo: get the list of suggestions that have voteIconClickable as true
 
 
-//      initializeStates(suggestions) // Initialize state maps //todo
+      initializeStates(suggestions) // Initialize state maps //todo
 
       _isLoading.value = false
     }
+  }
+
+  // State to track if the countdown has started for each suggestion
+  private val _countdownStates = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+  open val countdownStates: StateFlow<Map<String, Boolean>> = _countdownStates.asStateFlow()
+
+  // State to track if the vote icon is clickable for each suggestion
+  private val _voteIconClickability = MutableStateFlow<Map<String, Boolean>>(emptyMap())
+  open val voteIconClickability: StateFlow<Map<String, Boolean>> = _voteIconClickability.asStateFlow()
+
+  // Function to initialize state maps for each suggestion
+  private fun initializeStates(suggestions: List<Suggestion>) {
+    val countdownStateMap = suggestions.associate { it.suggestionId to false }
+    val voteIconClickableMap = suggestions.associate { it.suggestionId to true }
+    _countdownStates.value = countdownStateMap
+    _voteIconClickability.value = voteIconClickableMap
+  }
+
+  open fun startCountdownAndDisableVoteButton(suggestion: Suggestion) {
+    _countdownStates.value += (suggestion.suggestionId to true)
+    _voteIconClickability.value += (suggestion.suggestionId to false)
   }
 
   open fun setSelectedSuggestion(suggestion: Suggestion) {
@@ -220,11 +238,7 @@ open class SuggestionsViewModel(
         if (voteIconClickable) {
           _voteIconClickable.value - currentSuggestion.suggestionId
         } else {
-          // Store the start time when the vote icon is clicked
-          val startTime = LocalTime.now() // Get the current time
-          _voteStartTimeMap[currentSuggestion.suggestionId] = startTime // Store the start time
-
-          _voteIconClickable.value + currentSuggestion.suggestionId // Add the suggestion ID to the list of voteIconClickable suggestions
+          _voteIconClickable.value + currentSuggestion.suggestionId
         }
 
       // Prepare the updated suggestion for backend update
@@ -246,11 +260,6 @@ open class SuggestionsViewModel(
         }
       }
     }
-  }
-
-  // Add a new function to get the start time for a suggestion
-  open fun getStartTime(suggestionId: String): LocalTime? {
-    return _voteStartTimeMap[suggestionId]
   }
 
   /**
