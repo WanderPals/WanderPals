@@ -44,8 +44,6 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
-import com.github.se.wanderpals.ui.theme.WanderPalsTheme
-import com.github.se.wanderpals.ui.theme.primaryLight
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.LocalDate

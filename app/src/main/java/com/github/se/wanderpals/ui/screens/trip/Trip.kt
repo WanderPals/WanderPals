@@ -231,20 +231,18 @@ fun Trip(
                               key = "StopsListViewModel")
                       StopsList(viewModel, tripId, tripsRepository)
                     }
-                  composable(Route.DOCUMENT) {
+                    composable(Route.DOCUMENT) {
                       // oldNavActions.updateCurrentRouteOfTrip(Route.DOCUMENT)
                       Log.d("DOCUMENTS", "Navigating to Documents")
                       val viewModel: DocumentPSViewModel =
                           viewModel(
                               factory =
-                              DocumentPSViewModel.DocumentPSViewModelFactory(
-                                  tripsRepository, tripId),
+                                  DocumentPSViewModel.DocumentPSViewModelFactory(
+                                      tripsRepository, tripId),
                               key = "DocumentPSViewModel")
                       DocumentsPS(
                           viewModel = viewModel, storageReference = Firebase.storage.reference)
-                  }
-
-
+                    }
                   }
               composable(Route.SUGGESTION_HISTORY) {
                 oldNavActions.updateCurrentRouteOfTrip(

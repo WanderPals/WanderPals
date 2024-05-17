@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 open class DashboardViewModel(
     private val tripsRepository: TripsRepository,
@@ -58,18 +57,19 @@ open class DashboardViewModel(
       _expenses.value = tripsRepository.getAllExpensesFromTrip(tripId)
     }
   }
-    open fun deleteTrip() {
-        _showDeleteDialog.value = true
-    }
 
-    open fun confirmDeleteTrip() {
-        viewModelScope.launch { tripsRepository.deleteTrip(tripId) }
-        hideDeleteDialog()
-    }
+  open fun deleteTrip() {
+    _showDeleteDialog.value = true
+  }
 
-    fun hideDeleteDialog() {
-        _showDeleteDialog.value = false
-    }
+  open fun confirmDeleteTrip() {
+    viewModelScope.launch { tripsRepository.deleteTrip(tripId) }
+    hideDeleteDialog()
+  }
+
+  fun hideDeleteDialog() {
+    _showDeleteDialog.value = false
+  }
 
   open fun loadTripTitle(tripId: String) {
     // Get the title of the trip
@@ -95,7 +95,6 @@ open class DashboardViewModel(
       }
     }
   }
-
 
   open fun loadStops(tripId: String) {
     viewModelScope.launch {

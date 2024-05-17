@@ -138,13 +138,13 @@ fun Dashboard(
 
                   Spacer(modifier = Modifier.padding(8.dp))
                 }
-                  item{
-                      DashboardDocumentWidget(
-                          onClick = { navActions.navigateTo(Route.DOCUMENT) },
-                          viewModel = dashboardViewModel)
+                item {
+                  DashboardDocumentWidget(
+                      onClick = { navActions.navigateTo(Route.DOCUMENT) },
+                      viewModel = dashboardViewModel)
 
-                      Spacer(modifier = Modifier.padding(8.dp))
-                  }
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
               }
             }
 
