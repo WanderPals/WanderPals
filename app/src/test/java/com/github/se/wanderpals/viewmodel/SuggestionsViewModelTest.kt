@@ -130,7 +130,97 @@ class SuggestionsViewModelTest {
     coEvery { mockTripsRepository.removeSuggestionFromTrip(any(), any()) } returns true
   }
 
-  // Example test for loading suggestions
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testToggleVoteIconClickable() = runBlockingTest(testDispatcher) {
+        // Load the suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Capture the suggestion state before clicking the vote icon
+        val suggestion = viewModel.state.value.first()
+        assertFalse(viewModel.getVoteIconClickable(suggestion.suggestionId))
+
+        // Perform the action to toggle the vote icon
+        viewModel.toggleVoteIconClickable(suggestion)
+        advanceUntilIdle()
+
+        // Verify the state in the repository mock update
+        coVerify {
+            mockTripsRepository.updateSuggestionInTrip(tripId, match {
+                it.suggestionId == suggestion.suggestionId && it.voteIconClickable
+            })
+        }
+
+        // Assert that the vote icon is no longer clickable, because the owner or the admin has already clicked it
+        assertFalse(viewModel.getVoteIconClickable(suggestion.suggestionId))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testStartCountdown() = runBlockingTest(testDispatcher) {
+        // Load the suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Capture the suggestion state before clicking the vote icon
+        val suggestion = viewModel.state.value.first()
+        assertFalse(viewModel.getVoteIconClickable(suggestion.suggestionId))
+
+        // Perform the action to toggle the vote icon and start the countdown
+        viewModel.toggleVoteIconClickable(suggestion)
+        advanceUntilIdle()
+
+        // Assert that the countdown is running
+        val remainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
+        assertTrue(remainingTimeFlow.value != "23:59:59")
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testCountdownFormat() = runBlockingTest(testDispatcher) {
+        // Load the suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Capture the suggestion state before clicking the vote icon
+        val suggestion = viewModel.state.value.first()
+        assertFalse(viewModel.getVoteIconClickable(suggestion.suggestionId))
+
+        // Perform the action to toggle the vote icon and start the countdown
+        viewModel.toggleVoteIconClickable(suggestion)
+        advanceUntilIdle()
+
+        // Assert that the countdown is in the correct format
+        val remainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
+        assertTrue(remainingTimeFlow.value.matches(Regex("\\d{2}:\\d{2}:\\d{2}")))
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testIconReplacement() = runBlockingTest(testDispatcher) {
+        // Load the suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Capture the suggestion state before clicking the vote icon
+        val suggestion = viewModel.state.value.first()
+        assertFalse(viewModel.getVoteIconClickable(suggestion.suggestionId))
+
+        // Perform the action to toggle the vote icon and start the countdown
+        viewModel.toggleVoteIconClickable(suggestion)
+        advanceUntilIdle()
+
+        // Reload suggestions to simulate the updated state from the backend
+        coEvery { mockTripsRepository.getAllSuggestionsFromTrip(any()) } returns listOf(suggestion.copy(voteIconClickable = true))
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Assert that the vote icon is replaced and the up icon is displayed
+        assertTrue(viewModel.getVoteIconClickable(suggestion.suggestionId))
+    }
+
+  // Test for loading suggestions
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun testLoadSuggestions() =

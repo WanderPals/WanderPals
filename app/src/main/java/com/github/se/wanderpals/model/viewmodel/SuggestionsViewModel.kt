@@ -208,12 +208,12 @@ open class SuggestionsViewModel(
   // Add a MutableStateFlow to store the initial remaining time for each suggestion
   private val _initialRemainingTimeMap = mutableMapOf<String, MutableStateFlow<String>>()
 
-  // Initialize or get the remaining time flow for a suggestion
-//  open fun getRemainingTimeFlow(suggestionId: String): MutableStateFlow<String> {
-//    return _initialRemainingTimeMap.getOrPut(suggestionId) {
-//      MutableStateFlow("23:59:59") // Default initial time
-//    }
-//  }
+  /**
+   * Get the remaining time for a suggestion.
+   *
+   * @param suggestionId The ID of the suggestion to get the remaining time for.
+   * @return A MutableStateFlow containing the remaining time for the suggestion.
+   */
   open fun getRemainingTimeFlow(suggestionId: String): MutableStateFlow<String> {
     val startTime = _voteStartTimeMap[suggestionId]
     val remainingTimeFlow = MutableStateFlow("23:59:59")
@@ -236,6 +236,7 @@ open class SuggestionsViewModel(
     return remainingTimeFlow
   }
 
+  /* newer
   open fun toggleVoteIconClickable(suggestion: Suggestion) {
     viewModelScope.launch {
       val currentSuggestion = suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
@@ -259,6 +260,40 @@ open class SuggestionsViewModel(
           if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
             _selectedSuggestion.value = updatedSuggestion
           }
+        }
+      }
+    }
+  }
+*/
+// Update the initial remaining time when the vote icon is clicked
+  //older
+  open fun toggleVoteIconClickable(suggestion: Suggestion) {
+    viewModelScope.launch {
+      val currentSuggestion = suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+      val voteIconClickable = getVoteIconClickable(currentSuggestion.suggestionId)
+      val initialRemainingTimeFlow = getRemainingTimeFlow(currentSuggestion.suggestionId)
+
+      // Toggle the vote icon clickable status in the local state
+      _voteIconClickable.value = if (voteIconClickable) {
+        _voteIconClickable.value - currentSuggestion.suggestionId
+      } else {
+        // Store the start time when the vote icon is clicked
+        val startTime = LocalDateTime.now()
+        _voteStartTimeMap[currentSuggestion.suggestionId] = startTime
+        initialRemainingTimeFlow.value = "23:59:59" // Reset initial remaining time
+
+        _voteIconClickable.value + currentSuggestion.suggestionId
+      }
+
+      // Prepare the updated suggestion for backend update
+      val updatedSuggestion = currentSuggestion.copy(voteIconClickable = !voteIconClickable)
+      val wasUpdateSuccessful = suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+
+      if (wasUpdateSuccessful) {
+        _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
+        _voteIconClickable.value = _state.value.filter { it.voteIconClickable }.map { it.suggestionId }
+        if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
+          _selectedSuggestion.value = updatedSuggestion
         }
       }
     }
