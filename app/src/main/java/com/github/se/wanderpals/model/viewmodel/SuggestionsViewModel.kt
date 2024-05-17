@@ -392,15 +392,29 @@ open class SuggestionsViewModel(
 
   // Function to initialize state maps for each suggestion
   private fun initializeStates(suggestions: List<Suggestion>) {
-    val countdownStateMap = suggestions.associate { it.suggestionId to false }
-    val voteIconClickableMap = suggestions.associate { it.suggestionId to true }
-    _countdownStates.value = countdownStateMap
-    _voteIconClickability.value = voteIconClickableMap
+    val newCountdownStateMap = mutableMapOf<String, Boolean>()
+    val newVoteIconClickableMap = mutableMapOf<String, Boolean>()
+
+    suggestions.forEach { suggestion ->
+      newCountdownStateMap[suggestion.suggestionId] = _countdownStates.value[suggestion.suggestionId] ?: false
+      newVoteIconClickableMap[suggestion.suggestionId] = _voteIconClickability.value[suggestion.suggestionId] ?: true
+    }
+
+    _countdownStates.value = newCountdownStateMap
+    _voteIconClickability.value = newVoteIconClickableMap
   }
 
   open fun startCountdownAndDisableVoteButton(suggestion: Suggestion) {
-    _countdownStates.value += (suggestion.suggestionId to true)
-    _voteIconClickability.value += (suggestion.suggestionId to false)
+    // Only set countdown to start, do not adjust the time here
+    _countdownStates.value = _countdownStates.value.toMutableMap().apply {
+      this[suggestion.suggestionId] = true
+    }
+    // Immediately disable vote button to prevent re-clicks
+    _voteIconClickability.value = _voteIconClickability.value.toMutableMap().apply {
+      this[suggestion.suggestionId] = false
+    }
+  //    _countdownStates.value += (suggestion.suggestionId to true)
+//    _voteIconClickability.value += (suggestion.suggestionId to false)
   }
 
   /** Transforms a suggestion to a stop and updates the backend and local state accordingly. */

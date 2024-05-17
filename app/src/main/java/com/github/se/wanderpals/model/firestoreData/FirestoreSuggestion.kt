@@ -30,7 +30,8 @@ data class FirestoreSuggestion(
     val stop: FirestoreStop = FirestoreStop(), // Using Firestore-compatible Stop object
     val comments: List<FirestoreComment> =
         emptyList(), // Using Firestore-compatible Comment objects
-    val userLikes: List<String> = emptyList()
+    val userLikes: List<String> = emptyList(),
+    val voteIconClickable: Boolean = true // Default value
 ) {
   companion object {
     /**
@@ -56,7 +57,9 @@ data class FirestoreSuggestion(
               suggestion.comments.map {
                 FirestoreComment.fromComment(it)
               }, // Convert each Comment to FirestoreComment
-          userLikes = suggestion.userLikes)
+          userLikes = suggestion.userLikes,
+            voteIconClickable = suggestion.voteIconClickable
+          )
     }
   }
 
@@ -80,6 +83,8 @@ data class FirestoreSuggestion(
             LocalTime.parse(createdAtTime, timeFormatter), // Parse time string back into LocalTime
         stop = stop.toStop(), // Convert FirestoreStop back to Stop
         comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
-        userLikes = userLikes)
+        userLikes = userLikes,
+        voteIconClickable = voteIconClickable
+        )
   }
 }

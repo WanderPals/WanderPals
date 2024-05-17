@@ -74,7 +74,7 @@ fun SuggestionItem(
     val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
     val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
 
-    val remainingTime = remember { mutableStateOf("") }
+    val remainingTime = remember { mutableStateOf("24:00:00") }
     val isCountdownStarted by viewModel.countdownStates.collectAsState() // Collect the state from the ViewModel
     val isVoteIconClickable by viewModel.voteIconClickability.collectAsState()
 
@@ -82,24 +82,27 @@ fun SuggestionItem(
     val countdownStarted = isCountdownStarted[suggestion.suggestionId] ?: false
     val voteIconClickable = isVoteIconClickable[suggestion.suggestionId] ?: true
 
+    LaunchedEffect(key1 = countdownStarted) {
+        if (countdownStarted) {
+            val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1)
+            var now: LocalDateTime
+            var duration: java.time.Duration
 
-    // LaunchedEffect should be inside the composable function
-    LaunchedEffect(suggestion.suggestionId) { // Use suggestionId to ensure unique LaunchedEffect per item
-        val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1)
-        var now: LocalDateTime
-        var duration: java.time.Duration
-
-        do {
-            now = LocalDateTime.now()
-            duration = java.time.Duration.between(now, endTime)
-            val hours = duration.toHours().toString().padStart(2, '0')
-            val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
-            val seconds = (duration.seconds % 60).toString().padStart(2, '0')
-            remainingTime.value = "$hours:$minutes:$seconds"
-            delay(1000)
-        } while (duration > java.time.Duration.ZERO)
+            do {
+                now = LocalDateTime.now()
+                duration = java.time.Duration.between(now, endTime)
+                if (duration.isNegative) {
+                    remainingTime.value = "00:00:00"
+                    break
+                }
+                val hours = duration.toHours().toString().padStart(2, '0')
+                val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
+                val seconds = (duration.seconds % 60).toString().padStart(2, '0')
+                remainingTime.value = "$hours:$minutes:$seconds"
+                delay(1000)
+            } while (duration > java.time.Duration.ZERO)
+        }
     }
-
 
     Card(
         modifier =
@@ -227,7 +230,7 @@ fun SuggestionItem(
                                 .padding(
                                     bottom = 4.dp, end = 4.dp // end=4.dp is the space between the icon and the text
                                 )
-                                .clickable(enabled = voteIconClickable) {
+                                .clickable(enabled = suggestion.voteIconClickable) {
                                     println("Vote icon clicked for suggestion: ${suggestion.stop.title}")
                                     viewModel.startCountdownAndDisableVoteButton(suggestion)
                                 }
