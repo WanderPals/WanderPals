@@ -24,8 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -73,36 +71,17 @@ fun SuggestionItem(
     val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
 
     val isVoteClicked = viewModel.getVoteIconClickable(suggestion.suggestionId) // the vote icon is clicked
+    val startTime = viewModel.getStartTime(suggestion.suggestionId)
 
     val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
 
-    val remainingTime = remember { mutableStateOf("24:00:00") }
-    val isCountdownStarted by viewModel.countdownStates.collectAsState() // Collect the state from the ViewModel
-    val isVoteIconClickable by viewModel.voteIconClickability.collectAsState()
+    val remainingTime = remember { mutableStateOf("23:59:59") }
 
-    val countdownStarted = isCountdownStarted[suggestion.suggestionId] ?: false
-    val voteIconClickable = isVoteIconClickable[suggestion.suggestionId] ?: true
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            val now = LocalDateTime.now()
-            val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1)
-
-            val duration = java.time.Duration.between(now, endTime)
-            val hours = duration.toHours().toString().padStart(2, '0')
-            val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
-            val seconds = (duration.seconds % 60).toString().padStart(2, '0')
-            remainingTime.value = "$hours:$minutes:$seconds"
-            delay(1000)
-        }
-    }
-
-    /*LaunchedEffect(key1 = isVoteClicked) {// Start the countdown only if the vote icon is clicked
-        if (countdownStarted) { // Start the countdown only if the vote icon is clicked
-            val endTime: LocalDateTime = LocalDateTime.now().plusDays(1)
+    LaunchedEffect(key1 = isVoteClicked) {// Start the countdown only if the vote icon is clicked
+        if (isVoteClicked && startTime != null) { // Start the countdown only if the vote icon is clicked
+            val endTime = startTime.plusHours(24)
             var now: LocalDateTime
             var duration: java.time.Duration
-            // Ensure default values are used if the states are not initialized
 
             do {
                 now = LocalDateTime.now()
@@ -118,7 +97,7 @@ fun SuggestionItem(
                 delay(1000)
             } while (duration > java.time.Duration.ZERO) // while the duration is not negative and the vote icon is clicked (because inside the if(isVoteClicked) block)
         }
-    }*/
+    }
 
     Card(
         modifier =
@@ -238,7 +217,7 @@ fun SuggestionItem(
                         Icon(
                             painter = painterResource(R.drawable.vote),
                             contentDescription = "Vote",
-                            tint = tertiaryLight.copy(alpha = if (!isVoteClicked || countdownStarted) 1f else 0.5f), // if the icon is not clicked, make it opaque; if the icon is clicked, make it semi-transparent
+                            tint = tertiaryLight.copy(alpha = if (!isVoteClicked) 1f else 0.5f), // if the icon is not clicked, make it opaque; if the icon is clicked, make it semi-transparent
                             modifier = Modifier
                                 .size(20.dp)
                                 .padding(

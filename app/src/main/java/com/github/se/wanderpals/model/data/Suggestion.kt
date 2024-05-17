@@ -26,6 +26,7 @@ import java.time.LocalTime
  * @param userLikes A list of user IDs who have liked the suggestion, indicating its popularity and
  *   acceptance among the community.
  *   @param voteIconClickable A boolean flag indicating whether the vote icon is clickable or not.
+ *   @param voteStartTime The time when the countdown starts for the suggestion.
  */
 data class Suggestion(
     val suggestionId: String = "",
@@ -37,6 +38,7 @@ data class Suggestion(
     val stop: Stop = Stop(), // Embed the Stop object directly
     val comments: List<Comment> = emptyList(),
     val userLikes: List<String> = emptyList(),
-    val voteIconClickable: Boolean = true  // By default, the vote icon is clickable
+    val voteIconClickable: Boolean = true,  // By default, the vote icon is clickable
     // voteIconClickable implies countdownStarted has not started; voteIconClickable is false implies countdownStarted has started
+    val voteStartTime: LocalTime = LocalTime.MIDNIGHT, // Default value is 24:00:00 indicating countdown has not started
 )
