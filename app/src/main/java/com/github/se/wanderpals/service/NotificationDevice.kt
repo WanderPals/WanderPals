@@ -182,7 +182,7 @@ suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
         Request.Builder()
             .url(FCM_ENDPOINT2)
             .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "key=${R.string.FCM_SERVER_KEY}")
+            .addHeader("Authorization", "key=${R.string.FCM_SERVER}")
             .post(requestBody)
             .build()
     Log.d("FCM", "Sending message to $deviceToken")
