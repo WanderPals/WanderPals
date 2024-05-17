@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 /**
  * Fetches all users from a trip and calculates the threshold for majority based on the number of
@@ -86,6 +87,8 @@ open class SuggestionsViewModel(
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
   open val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
 
+  // stores the suggestionId with its start time when the vote icon is clicked
+  private val _voteStartTimeMap = mutableMapOf<String, LocalTime>()
     /**
      * Returns whether the suggestion is liked by the current user.
      *
@@ -217,7 +220,11 @@ open class SuggestionsViewModel(
         if (voteIconClickable) {
           _voteIconClickable.value - currentSuggestion.suggestionId
         } else {
-          _voteIconClickable.value + currentSuggestion.suggestionId
+          // Store the start time when the vote icon is clicked
+          val startTime = LocalTime.now() // Get the current time
+          _voteStartTimeMap[currentSuggestion.suggestionId] = startTime // Store the start time
+
+          _voteIconClickable.value + currentSuggestion.suggestionId // Add the suggestion ID to the list of voteIconClickable suggestions
         }
 
       // Prepare the updated suggestion for backend update
@@ -239,6 +246,11 @@ open class SuggestionsViewModel(
         }
       }
     }
+  }
+
+  // Add a new function to get the start time for a suggestion
+  open fun getStartTime(suggestionId: String): LocalTime? {
+    return _voteStartTimeMap[suggestionId]
   }
 
   /**

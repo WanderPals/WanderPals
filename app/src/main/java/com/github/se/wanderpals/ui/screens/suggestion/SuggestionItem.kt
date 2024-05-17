@@ -71,14 +71,15 @@ fun SuggestionItem(
     val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
 
     val isVoteClicked = viewModel.getVoteIconClickable(suggestion.suggestionId) // the vote icon is clicked
+    val startTime = viewModel.getStartTime(suggestion.suggestionId)
 
     val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
 
     val remainingTime = remember { mutableStateOf("24:00:00") }
 
     LaunchedEffect(key1 = isVoteClicked) {// Start the countdown only if the vote icon is clicked
-        if (isVoteClicked) { // Start the countdown only if the vote icon is clicked
-            val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1)
+        if (isVoteClicked && startTime != null) { // Start the countdown only if the vote icon is clicked
+            val endTime = startTime.plusHours(24)
             var now: LocalDateTime
             var duration: java.time.Duration
 

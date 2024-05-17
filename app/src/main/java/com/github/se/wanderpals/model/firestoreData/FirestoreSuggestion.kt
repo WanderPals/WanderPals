@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter
  * @property comments List of comments on the suggestion, in Firestore-compatible formats.
  * @property userLikes List of user IDs who liked the suggestion.
  * @property voteIconClickable Flag indicating whether the vote icon is clickable.
+ * @property voteStartTime Time when the countdown starts for the suggestion.
  */
 data class FirestoreSuggestion(
     val suggestionId: String = "",
@@ -32,7 +33,8 @@ data class FirestoreSuggestion(
     val comments: List<FirestoreComment> =
         emptyList(), // Using Firestore-compatible Comment objects
     val userLikes: List<String> = emptyList(),
-    val voteIconClickable: Boolean = true // Default value
+    val voteIconClickable: Boolean = true, // Default value
+    val voteStartTime: String = "" // Converted to String for Firestore compatibility
 ) {
   companion object {
     /**
@@ -59,7 +61,8 @@ data class FirestoreSuggestion(
                 FirestoreComment.fromComment(it)
               }, // Convert each Comment to FirestoreComment
           userLikes = suggestion.userLikes,
-            voteIconClickable = suggestion.voteIconClickable
+            voteIconClickable = suggestion.voteIconClickable,
+            voteStartTime = suggestion.voteStartTime.format(timeFormatter) // Convert LocalTime to String
           )
     }
   }
@@ -85,7 +88,8 @@ data class FirestoreSuggestion(
         stop = stop.toStop(), // Convert FirestoreStop back to Stop
         comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
         userLikes = userLikes,
-        voteIconClickable = voteIconClickable
+        voteIconClickable = voteIconClickable,
+        voteStartTime = LocalTime.parse(voteStartTime, timeFormatter) // Parse time string back into LocalTime
         )
   }
 }
