@@ -5,6 +5,7 @@ object Route {
   const val DOCUMENT = "document"
   const val ROOT_ROUTE = "root"
   const val SUGGESTION_DETAIL = "suggestDetail"
+  const val SUGGESTION_HISTORY = "suggestHistory"
   const val NOTIFICATION = "notif"
   const val DASHBOARD = "dashboard"
   const val AGENDA = "agenda"

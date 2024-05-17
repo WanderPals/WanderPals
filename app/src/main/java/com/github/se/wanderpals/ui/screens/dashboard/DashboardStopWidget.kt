@@ -13,10 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
@@ -32,31 +31,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
-import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /**
- * Composable function for displaying the finance widget in the Dashboard screen. The finance widget
- * displays the total amount of expenses and the latest two expenses. The widget also displays a pie
- * chart of the expenses. The user can click on the widget to navigate to the Finance screen.
+ * Composable function to display the stop widget in the dashboard screen
  *
- * @param viewModel The ViewModel for the Dashboard screen.
- * @param onClick The callback function for when the widget is clicked.
+ * @param viewModel DashboardViewModel to get the stops from
+ * @param onClick Function to execute when the widget is clicked
  */
 @Composable
-fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
-  val expenses by viewModel.expenses.collectAsState()
-  val sortedExpenses = expenses.sortedByDescending { it.localDate }
+fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
+  val stops by viewModel.stops.collectAsState()
+  val sortedStops =
+      stops
+          .sortedBy { LocalDateTime.of(it.date, it.startTime) }
+          .filter { LocalDateTime.of(it.date, it.startTime).isAfter(LocalDateTime.now()) }
 
   ElevatedCard(
       modifier =
           Modifier.padding(horizontal = 16.dp)
               .fillMaxWidth()
               .clickable(onClick = onClick)
-              .testTag("financeCard"),
+              .testTag("stopCard"),
       colors =
           CardDefaults.cardColors(
               containerColor =
@@ -65,15 +67,15 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
               ),
       shape = RoundedCornerShape(6.dp),
       elevation = CardDefaults.cardElevation(10.dp)) {
-        // Finance Widget
+        // Stop Widget
         Row(
             modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
-              // Finance Details, Left part of the widget
+              // List of stop
               Column(
                   modifier =
                       Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
-                          .width(IntrinsicSize.Max)) {
+                          .fillMaxWidth()) {
                     // Top part of the texts
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -87,13 +89,13 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                                       .background(MaterialTheme.colorScheme.primaryContainer)
                                       .padding(horizontal = 8.dp, vertical = 4.dp)) {
                                 Icon(
-                                    Icons.Default.ShoppingCart,
-                                    contentDescription = "Finance Icon",
-                                    modifier = Modifier.size(16.dp).testTag("financeIcon"),
+                                    Icons.Default.LocationOn,
+                                    contentDescription = "Stop Icon",
+                                    modifier = Modifier.size(16.dp).testTag("stopIcon"),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer)
                                 Text(
-                                    text = "Finance",
-                                    modifier = Modifier.testTag("financeTitle"),
+                                    text = "Upcoming Stops",
+                                    modifier = Modifier.testTag("stopTitle"),
                                     style =
                                         TextStyle(
                                             color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -104,9 +106,10 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
                           Text(
                               text =
-                                  "Total: ${String.format("%.02f", expenses.sumOf { it.amount })} CHF",
+                                  "Total: ${sortedStops.size} stop" +
+                                      if (sortedStops.size > 1) "s" else "",
                               modifier =
-                                  Modifier.testTag("totalAmount")
+                                  Modifier.testTag("totalStops")
                                       .clip(RoundedCornerShape(4.dp))
                                       .background(MaterialTheme.colorScheme.surface)
                                       .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -118,31 +121,32 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
                     Spacer(modifier = Modifier.padding(4.dp))
 
-                    // Latest expenses
+                    // Upcoming stops
                     Box(
                         modifier =
                             Modifier.clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.surface)) {
-                          if (expenses.isEmpty()) {
+                                .background(MaterialTheme.colorScheme.surface)
+                                .fillMaxWidth()) {
+                          if (sortedStops.isEmpty()) {
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier =
                                     Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
                                   Text(
-                                      text = "No expenses yet.",
-                                      modifier = Modifier.testTag("noExpenses"),
+                                      text = "No stops yet.",
+                                      modifier = Modifier.testTag("noStops"),
                                       style = TextStyle(color = MaterialTheme.colorScheme.primary),
                                   )
                                 }
                           } else {
                             Column {
-                              ExpenseItem(expense = sortedExpenses[0])
+                              StopWidgetItem(stop = sortedStops[0])
                               HorizontalDivider(
                                   color = MaterialTheme.colorScheme.surfaceVariant,
                                   thickness = 1.dp,
                                   modifier = Modifier.padding(horizontal = 8.dp))
-                              if (expenses.size > 1) {
-                                ExpenseItem(expense = sortedExpenses[1])
+                              if (sortedStops.size > 1) {
+                                StopWidgetItem(stop = sortedStops[1])
                               } else {
                                 Box(modifier = Modifier.fillMaxSize())
                               }
@@ -150,62 +154,68 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                           }
                         }
                   }
-
-              // Finance Pie Chart
-              Box(
-                  modifier =
-                      Modifier.padding(top = 8.dp, start = 4.dp, bottom = 8.dp, end = 8.dp)
-                          .clip(RoundedCornerShape(4.dp))
-                          .background(MaterialTheme.colorScheme.surface)
-                          .fillMaxSize(),
-                  contentAlignment = Alignment.Center) {
-                    if (expenses.isEmpty()) {
-                      Text(
-                          text = "No expenses yet.",
-                          modifier = Modifier.testTag("noExpensesBox"),
-                          style = TextStyle(color = MaterialTheme.colorScheme.primary))
-                    } else {
-                      Box(modifier = Modifier.padding(4.dp).testTag("pieChartBox")) {
-                        FinancePieChart(
-                            expenses = expenses, radiusOuter = 50.dp, chartBandWidth = 10.dp)
-                      }
-                    }
-                  }
             }
       }
 }
 
+/**
+ * Composable function to display a single stop item in the dashboard widget
+ *
+ * @param stop Stop object to display
+ */
 @Composable
-fun ExpenseItem(expense: Expense) {
+fun StopWidgetItem(stop: Stop) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
-      modifier = Modifier.fillMaxWidth().testTag("expenseItem" + expense.expenseId)) {
-        Column(modifier = Modifier.padding(8.dp)) {
+      modifier = Modifier.fillMaxWidth().testTag("stopItem" + stop.stopId)) {
+        Column(modifier = Modifier.padding(8.dp).weight(1f).fillMaxWidth()) {
           Text(
               text =
-                  if (expense.title.length > 20) expense.title.subSequence(0, 18).toString() + "..."
-                  else expense.title,
+                  if (stop.title.length > 20) stop.title.subSequence(0, 18).toString() + "..."
+                  else stop.title,
               style =
                   TextStyle(
                       fontWeight = FontWeight.Bold,
                       color = MaterialTheme.colorScheme.primary,
                       fontSize = 15.sp),
-              modifier = Modifier.testTag("expenseTitle" + expense.expenseId))
+              modifier = Modifier.testTag("stopTitle" + stop.stopId))
+          Spacer(modifier = Modifier.height(4.dp))
           Text(
               text =
-                  "Paid by ${if(expense.userName.length > 12) expense.userName.subSequence(0, 10).toString()+"..." else expense.userName}",
+                  LocalDateTime.of(stop.date, stop.startTime)
+                      .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
               style = TextStyle(color = MaterialTheme.colorScheme.tertiary, fontSize = 10.sp),
-              modifier = Modifier.testTag("expenseUser" + expense.userId))
+              modifier = Modifier.testTag("stopStart" + stop.stopId))
         }
+        Column(modifier = Modifier.padding(8.dp).weight(1f).fillMaxWidth()) {
+          Text(
+              text =
+                  if (stop.address.isEmpty()) ""
+                  else if (stop.address.length > 40)
+                      stop.address.subSequence(0, 38).toString() + "..."
+                  else stop.address,
+              style =
+                  TextStyle(
+                      fontWeight = FontWeight.Bold,
+                      color = MaterialTheme.colorScheme.primary,
+                      fontSize = 15.sp,
+                      textAlign = TextAlign.End),
+              modifier = Modifier.testTag("stopAddress" + stop.stopId).fillMaxWidth())
 
-        Text(
-            text = "${String.format("%.02f", expense.amount)} CHF",
-            style =
-                TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    fontSize = 15.sp),
-            modifier = Modifier.padding(8.dp).testTag("expenseAmount" + expense.expenseId))
+          Spacer(modifier = Modifier.height(4.dp))
+
+          Text(
+              text =
+                  LocalDateTime.of(stop.date, stop.startTime)
+                      .plusMinutes(stop.duration.toLong())
+                      .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+              style =
+                  TextStyle(
+                      color = MaterialTheme.colorScheme.tertiary,
+                      fontSize = 10.sp,
+                      textAlign = TextAlign.End),
+              modifier = Modifier.testTag("stopEnd" + stop.stopId).fillMaxWidth())
+        }
       }
 }

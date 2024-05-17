@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,8 +13,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-open class DashboardViewModel(private val tripsRepository: TripsRepository, tripId: String) :
-    ViewModel() {
+open class DashboardViewModel(
+    private val tripsRepository: TripsRepository,
+    private val tripId: String
+) : ViewModel() {
   // State flow to hold the list of suggestions
   private val _state = MutableStateFlow(emptyList<Suggestion>())
   open val state: StateFlow<List<Suggestion>> = _state
@@ -24,8 +27,14 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
   private val _isLoading = MutableStateFlow(true)
   open val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  private val _showDeleteDialog = MutableStateFlow(false)
+  open val showDeleteDialog: StateFlow<Boolean> = _showDeleteDialog.asStateFlow()
+
   private var _tripTitle = MutableStateFlow("")
   open val tripTitle: StateFlow<String> = _tripTitle.asStateFlow()
+
+  private var _stops = MutableStateFlow(emptyList<Stop>())
+  open val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 
   private var _lastSharedDocument = MutableStateFlow("")
   open val lastSharedDocument: StateFlow<String> = _lastSharedDocument.asStateFlow()
@@ -49,10 +58,22 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
       _expenses.value = tripsRepository.getAllExpensesFromTrip(tripId)
     }
   }
+    open fun deleteTrip() {
+        _showDeleteDialog.value = true
+    }
+
+    open fun confirmDeleteTrip() {
+        viewModelScope.launch { tripsRepository.deleteTrip(tripId) }
+        hideDeleteDialog()
+    }
+
+    fun hideDeleteDialog() {
+        _showDeleteDialog.value = false
+    }
 
   open fun loadTripTitle(tripId: String) {
     // Get the title of the trip
-    runBlocking { _tripTitle.value = tripsRepository.getTrip(tripId)?.title ?: "" }
+    viewModelScope.launch { _tripTitle.value = tripsRepository.getTrip(tripId)?.title ?: "" }
   }
 
   open fun loadLastAddedSharedDocument(tripId: String) {
@@ -72,6 +93,14 @@ open class DashboardViewModel(private val tripsRepository: TripsRepository, trip
       if (privateDocs.isNotEmpty()) {
         _lastPrivateDocument.value = privateDocs.last().documentsName
       }
+    }
+  }
+
+
+  open fun loadStops(tripId: String) {
+    viewModelScope.launch {
+      // Fetch all stops from the trip
+      _stops.value = tripsRepository.getAllStopsFromTrip(tripId)
     }
   }
 

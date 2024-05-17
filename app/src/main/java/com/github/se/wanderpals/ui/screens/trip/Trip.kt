@@ -32,6 +32,7 @@ import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.model.viewmodel.NotificationsViewModel
 import com.github.se.wanderpals.model.viewmodel.SessionViewModel
+import com.github.se.wanderpals.model.viewmodel.StopsListViewModel
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -39,12 +40,15 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
 import com.github.se.wanderpals.ui.screens.DocumentsPS
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionHistoryFeedContent
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.github.se.wanderpals.ui.screens.trip.finance.CreateExpense
+import com.github.se.wanderpals.ui.screens.trip.finance.ExpenseInfo
 import com.github.se.wanderpals.ui.screens.trip.finance.Finance
 import com.github.se.wanderpals.ui.screens.trip.map.Map
 import com.github.se.wanderpals.ui.screens.trip.notifications.CreateAnnouncement
 import com.github.se.wanderpals.ui.screens.trip.notifications.Notification
+import com.github.se.wanderpals.ui.screens.trip.stops.StopsList
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
@@ -101,7 +105,7 @@ fun Trip(
                               factory =
                                   AgendaViewModel.AgendaViewModelFactory(tripId, tripsRepository),
                               key = "Agenda")
-                      Agenda(agendaViewModel)
+                      Agenda(agendaViewModel, tripId, tripsRepository)
                     }
                     composable(Route.SUGGESTION) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.SUGGESTION)
@@ -182,13 +186,14 @@ fun Trip(
                     }
                     composable(Route.FINANCE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)
-                      val viewModel: FinanceViewModel =
+                      val financeViewModel: FinanceViewModel =
                           viewModel(
                               factory =
                                   FinanceViewModel.FinanceViewModelFactory(
                                       tripsRepository, oldNavActions.variables.currentTrip),
                               key = "FinanceViewModel")
-                      Finance(financeViewModel = viewModel, navigationActions = oldNavActions)
+                      Finance(
+                          financeViewModel = financeViewModel, navigationActions = oldNavActions)
                     }
                     composable(Route.CREATE_EXPENSE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.CREATE_EXPENSE)
@@ -202,19 +207,57 @@ fun Trip(
                         viewModel.updateStateLists()
                       }
                     }
-                    composable(Route.DOCUMENT) {
+                    composable(Route.EXPENSE_INFO) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.EXPENSE_INFO)
+                      val financeViewModel: FinanceViewModel =
+                          viewModel(
+                              factory =
+                                  FinanceViewModel.FinanceViewModelFactory(
+                                      tripsRepository, oldNavActions.variables.currentTrip),
+                              key = "FinanceViewModel")
+
+                      financeViewModel.setSelectedExpense(oldNavActions.variables.expense)
+                      ExpenseInfo(
+                          financeViewModel = financeViewModel,
+                      )
+                    }
+                    composable(Route.STOPS_LIST) {
+                      oldNavActions.updateCurrentRouteOfTrip(Route.STOPS_LIST)
+                      val viewModel: StopsListViewModel =
+                          viewModel(
+                              factory =
+                                  StopsListViewModel.StopsListViewModelFactory(
+                                      tripsRepository, tripId),
+                              key = "StopsListViewModel")
+                      StopsList(viewModel, tripId, tripsRepository)
+                    }
+                  composable(Route.DOCUMENT) {
                       // oldNavActions.updateCurrentRouteOfTrip(Route.DOCUMENT)
                       Log.d("DOCUMENTS", "Navigating to Documents")
                       val viewModel: DocumentPSViewModel =
                           viewModel(
                               factory =
-                                  DocumentPSViewModel.DocumentPSViewModelFactory(
-                                      tripsRepository, tripId),
+                              DocumentPSViewModel.DocumentPSViewModelFactory(
+                                  tripsRepository, tripId),
                               key = "DocumentPSViewModel")
                       DocumentsPS(
                           viewModel = viewModel, storageReference = Firebase.storage.reference)
-                    }
                   }
+
+
+                  }
+              composable(Route.SUGGESTION_HISTORY) {
+                oldNavActions.updateCurrentRouteOfTrip(
+                    Route.SUGGESTION_HISTORY) // Update the current route of the trip to
+                // SUGGESTION_HISTORY
+                val suggestionsViewModel: SuggestionsViewModel =
+                    viewModel(
+                        factory =
+                            SuggestionsViewModel.SuggestionsViewModelFactory(
+                                tripsRepository, tripId),
+                        key = "SuggestionsHistoryViewModel")
+                SuggestionHistoryFeedContent(suggestionsViewModel)
+              }
             }
       }
 }

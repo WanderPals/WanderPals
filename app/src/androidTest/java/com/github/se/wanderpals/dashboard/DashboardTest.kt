@@ -10,10 +10,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.GeoCords
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.Dashboard
@@ -25,11 +27,14 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
 import io.mockk.verify
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -45,7 +50,7 @@ private val suggestion1: Suggestion =
                 stopId = "1",
                 title = "Stop Title",
                 address = "123 Street",
-                date = LocalDate.now(),
+                date = LocalDate.now().plusDays(2),
                 startTime = LocalTime.now(),
                 duration = 60,
                 budget = 100.0,
@@ -68,7 +73,7 @@ private val suggestion2: Suggestion =
                 stopId = "2",
                 title = "Stop Title",
                 address = "123 Street",
-                date = LocalDate.now(),
+                date = LocalDate.now().plusDays(1),
                 startTime = LocalTime.now(),
                 duration = 60,
                 budget = 100.0,
@@ -91,7 +96,7 @@ private val suggestion3: Suggestion =
                 stopId = "3",
                 title = "Stop Title",
                 address = "123 Street",
-                date = LocalDate.now(),
+                date = LocalDate.now().plusDays(1),
                 startTime = LocalTime.now(),
                 duration = 60,
                 budget = 100.0,
@@ -173,9 +178,18 @@ class DashboardViewModelTest(list: List<Suggestion>) :
   private val _expenses = MutableStateFlow(emptyList<Expense>())
   override val expenses: StateFlow<List<Expense>> = _expenses
 
+  private val _stops = MutableStateFlow(emptyList<Stop>())
+  override val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
+
   override fun loadSuggestion(tripId: String) {}
 
   override fun loadExpenses(tripId: String) {}
+
+  override fun loadStops(tripId: String) {}
+
+  fun setStops(stops: List<Stop>) {
+    _stops.value = stops
+  }
 
   fun setExpenses(expenses: List<Expense>) {
     _expenses.value = expenses
@@ -183,6 +197,10 @@ class DashboardViewModelTest(list: List<Suggestion>) :
 
   fun setLoading(isLoading: Boolean) {
     _isLoading.value = isLoading
+  }
+
+  override fun confirmDeleteTrip() {
+    // Do nothing
   }
 }
 
@@ -194,6 +212,11 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
   @get:Rule val mockkRule = MockKRule(this)
 
   @RelaxedMockK lateinit var mockNavActions: NavigationActions
+
+  @Before
+  fun setUp() {
+    SessionManager.setUserSession(role = Role.OWNER)
+  }
 
   @Test
   fun testDashboardLoading() {
@@ -523,5 +546,218 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("financeCard").performClick()
     verify { mockNavActions.navigateTo(Route.FINANCE) }
     confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun StopWidgetNavigation() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("stopCard").performClick()
+    verify { mockNavActions.navigateTo(Route.AGENDA) }
+    confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun StopWidgetDisplaysProperly() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("stopCard", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("stopTitle", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("totalStops", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("stopIcon", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  @Test
+  fun StopWidgetDisplaysNothing() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setStops(
+        listOf(
+            Stop(date = LocalDate.now().minusDays(1), startTime = LocalTime.now()),
+            Stop(date = LocalDate.now(), startTime = LocalTime.now().minusSeconds(1))))
+
+    composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  @Test
+  fun stopWidgetDisplaysProperlyOne() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setStops(listOf(suggestion1.stop))
+
+    composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("totalStops", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Total: 1 stop")
+    composeTestRule.onNodeWithTag("stopItem1", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("stopItem2", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("stopTitle1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Stop Title")
+    composeTestRule
+        .onNodeWithTag("stopAddress1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("123 Street")
+    composeTestRule
+        .onNodeWithTag("stopStart1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains(
+            LocalDateTime.of(suggestion1.stop.date, suggestion1.stop.startTime)
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+    composeTestRule
+        .onNodeWithTag("stopEnd1", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains(
+            LocalDateTime.of(suggestion1.stop.date, suggestion1.stop.startTime)
+                .plusMinutes(suggestion1.stop.duration.toLong())
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+  }
+
+  @Test
+  fun stopWidgetDisplaysProperlyTwo() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setStops(listOf(suggestion1.stop, suggestion2.stop))
+
+    composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("totalStops", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Total: 2 stops")
+    composeTestRule.onNodeWithTag("stopItem1", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("stopItem2", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("stopItem3", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("stopTitle2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Stop Title")
+    composeTestRule
+        .onNodeWithTag("stopAddress2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("123 Street")
+    composeTestRule
+        .onNodeWithTag("stopStart2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains(
+            LocalDateTime.of(suggestion2.stop.date, suggestion2.stop.startTime)
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+    composeTestRule
+        .onNodeWithTag("stopEnd2", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains(
+            LocalDateTime.of(suggestion2.stop.date, suggestion2.stop.startTime)
+                .plusMinutes(suggestion2.stop.duration.toLong())
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+  }
+
+  @Test
+  fun stopWidgetDisplaysProperlyThree() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setStops(listOf(suggestion1.stop, suggestion2.stop, suggestion3.stop))
+
+    composeTestRule.onNodeWithTag("noStops", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("totalStops", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Total: 3 stops")
+    composeTestRule.onNodeWithTag("stopItem3", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("stopItem2", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("stopItem1", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule
+        .onNodeWithTag("stopTitle3", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("Stop Title")
+    composeTestRule
+        .onNodeWithTag("stopAddress3", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("123 Street")
+    composeTestRule
+        .onNodeWithTag("stopStart3", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains(
+            LocalDateTime.of(suggestion3.stop.date, suggestion3.stop.startTime)
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+    composeTestRule
+        .onNodeWithTag("stopEnd3", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains(
+            LocalDateTime.of(suggestion3.stop.date, suggestion3.stop.startTime)
+                .plusMinutes(suggestion3.stop.duration.toLong())
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")))
+  }
+
+  @Test
+  fun deleteTripWorks() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    SessionManager.setUserSession(role = Role.OWNER)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripDialog", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("confirmDeleteTripButton", useUnmergedTree = true).performClick()
+
+    verify { mockNavActions.navigateTo(Route.OVERVIEW) }
+    confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun deleteTripCancel() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    SessionManager.setUserSession(role = Role.OWNER)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripDialog", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("cancelDeleteTripButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripDialog", useUnmergedTree = true).assertDoesNotExist()
+  }
+
+  @Test
+  fun deleteTripNotOwner() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    SessionManager.setUserSession(role = Role.ADMIN)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).assertDoesNotExist()
   }
 }

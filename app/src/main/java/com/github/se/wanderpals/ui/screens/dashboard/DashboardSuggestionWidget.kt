@@ -13,8 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.github.se.wanderpals.ui.theme.backgroundLight
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
 import com.github.se.wanderpals.ui.theme.primaryContainerLight
@@ -41,14 +42,22 @@ import com.github.se.wanderpals.ui.theme.tertiaryLight
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+private const val DISPLAY_COUNT = 3
+
+/**
+ * The Suggestion widget for the dashboard screen.
+ *
+ * @param viewModel The ViewModel for managing the dashboard screen.
+ * @param onClick The action to perform when the widget is clicked.
+ */
 @Composable
 fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
   val suggestionList by viewModel.state.collectAsState()
   val sortedSuggestion = suggestionList.sortedByDescending { it.createdAt }
 
-  Card(
+  ElevatedCard(
       modifier =
-          Modifier.padding(16.dp)
+          Modifier.padding(horizontal = 16.dp)
               .fillMaxWidth()
               .clickable(onClick = onClick)
               .testTag("suggestionCard"),
@@ -56,7 +65,8 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
           CardDefaults.cardColors(
               containerColor = surfaceVariantLight // This sets the background color of the Card
               ),
-      shape = RoundedCornerShape(10.dp)) {
+      shape = RoundedCornerShape(10.dp),
+      elevation = CardDefaults.cardElevation(10.dp)) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
           Row(
               verticalAlignment = Alignment.CenterVertically,
@@ -85,7 +95,10 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
 
           Spacer(modifier = Modifier.padding(6.dp))
 
-          if (sortedSuggestion.isEmpty()) {
+          if (sortedSuggestion.isEmpty() ||
+              sortedSuggestion.none {
+                it.stop.stopStatus == CalendarUiState.StopStatus.NONE
+              }) { // if there are no suggestions or if all suggestions are added to stops
             Column(
                 modifier =
                     Modifier.fillMaxWidth()
@@ -100,17 +113,15 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
                       modifier = Modifier.testTag("noSuggestions"))
                 }
           } else {
-            SuggestionItem(suggestion = sortedSuggestion[0])
-
-            if (sortedSuggestion.size > 1) {
-              Spacer(modifier = Modifier.height(8.dp))
-              SuggestionItem(suggestion = sortedSuggestion[1])
-            }
-
-            if (sortedSuggestion.size > 2) {
-              Spacer(modifier = Modifier.height(8.dp))
-              SuggestionItem(suggestion = sortedSuggestion[2])
-            }
+            sortedSuggestion
+                .filter { it.stop.stopStatus == CalendarUiState.StopStatus.NONE }
+                .take(DISPLAY_COUNT)
+                .forEachIndexed { index, suggestion ->
+                  SuggestionItem(suggestion = suggestion)
+                  if (index < DISPLAY_COUNT - 1) {
+                    Spacer(modifier = Modifier.height(8.dp)) // Add space between items
+                  }
+                }
           }
         }
       }
@@ -151,7 +162,6 @@ fun SuggestionItem(suggestion: Suggestion) {
                   ),
               modifier = Modifier.testTag("suggestionUser" + suggestion.userId))
         }
-        // cont
         Column(modifier = Modifier.padding(8.dp)) {
           val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
           val endTime = startTime.plusMinutes(suggestion.stop.duration.toLong())

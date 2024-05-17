@@ -2,6 +2,7 @@ package com.github.se.wanderpals.agenda
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -14,8 +15,8 @@ import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
 import com.github.se.wanderpals.ui.screens.trip.agenda.Banner
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarWidget
 import com.github.se.wanderpals.ui.screens.trip.agenda.getDisplayName
-import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import java.time.LocalDate
 import java.time.Year
 import java.time.YearMonth
@@ -27,8 +28,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-class FakeAgendaViewModel(initialYearMonth: YearMonth, testActivities: List<Stop>) :
-    AgendaViewModel("", TripsRepository("", Dispatchers.IO)) {
+class FakeAgendaViewModel(
+    initialYearMonth: YearMonth,
+    testActivities: List<Stop>,
+    private val initialStopsInfo: MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>> =
+        MutableStateFlow(emptyMap())
+) : AgendaViewModel("", TripsRepository("", Dispatchers.IO)) {
   private val _uiState =
       MutableStateFlow(
           CalendarUiState(
@@ -39,9 +44,18 @@ class FakeAgendaViewModel(initialYearMonth: YearMonth, testActivities: List<Stop
                         dayOfMonth = (day + 1).toString(),
                         yearMonth = initialYearMonth,
                         year = Year.now(),
-                        isSelected = false)
+                        isSelected = false,
+                        stopStatus =
+                            initialStopsInfo.value.getOrDefault(
+                                LocalDate.now().withDayOfMonth(day + 1),
+                                CalendarUiState.StopStatus.NONE))
                   },
               selectedDate = null))
+
+  /** Mutable state flow for the stops info. */
+  init {
+    _stopsInfo.value = initialStopsInfo.value
+  }
 
   override var uiState: StateFlow<CalendarUiState> = _uiState
   override var dailyActivities: StateFlow<List<Stop>> = MutableStateFlow(testActivities)
@@ -65,6 +79,25 @@ class FakeAgendaViewModel(initialYearMonth: YearMonth, testActivities: List<Stop
         _uiState.value.copy(
             dates = newDates, selectedDate = if (date.isSelected) null else LocalDate.now())
   }
+
+  /**
+   * Simulates a change in the stop status for a given date.
+   *
+   * @param date The date to update.
+   * @param status The new status to assign to the date.
+   */
+  fun simulateStopStatusChange(date: LocalDate, status: CalendarUiState.StopStatus) {
+    initialStopsInfo.value = initialStopsInfo.value.plus(date to status)
+    _stopsInfo.value = initialStopsInfo.value
+    _uiState.value =
+        _uiState.value.copy(
+            dates =
+                _uiState.value.dates.map {
+                  if (it.dayOfMonth.toInt() == date.dayOfMonth) {
+                    it.copy(stopStatus = status)
+                  } else it
+                })
+  }
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -77,7 +110,12 @@ class AgendaTest {
     val testYearMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
 
-    composeTestRule.setContent { Agenda(agendaViewModel = fakeViewModel) }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     composeTestRule.waitForIdle()
 
@@ -93,7 +131,12 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -110,7 +153,12 @@ class AgendaTest {
     val initialMonth = YearMonth.now()
     val fakeViewModel = FakeAgendaViewModel(initialMonth, emptyList())
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -131,7 +179,12 @@ class AgendaTest {
           // Initial state setup to ensure "15" is present and not selected.
         }
 
-    composeTestRule.setContent { WanderPalsTheme { Agenda(agendaViewModel = fakeViewModel) } }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = fakeViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     // Click on the banner to make the calendar appear
     composeTestRule.onNodeWithTag("Banner").performClick()
@@ -152,7 +205,12 @@ class AgendaTest {
   fun checkBannerIsDisplayed() {
     val testViewModel = AgendaViewModel("", TripsRepository("", Dispatchers.Main))
 
-    composeTestRule.setContent { Agenda(agendaViewModel = testViewModel) }
+    composeTestRule.setContent {
+      Agenda(
+          agendaViewModel = testViewModel,
+          tripId = "",
+          tripsRepository = TripsRepository("", Dispatchers.IO))
+    }
 
     composeTestRule.waitForIdle()
 
@@ -191,5 +249,74 @@ class AgendaTest {
     composeTestRule.waitForIdle() // Wait for UI to update
 
     composeTestRule.onNodeWithTag("displayDateText", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  /** Test to verify that the marker with "ADDED" stop status exists and is displayed. */
+  @Test
+  fun calendarDateWithAddedStatusShowsMarker() {
+    val testYearMonth = YearMonth.of(2024, 5)
+    val testDate = LocalDate.of(2024, 5, 5)
+    val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
+
+    // Simulate adding a stop with ADDED status on May 5, 2024
+    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.ADDED)
+
+    // Set up the environment for the test
+    composeTestRule.setContent {
+      CalendarWidget(
+          days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+          yearMonth = testYearMonth,
+          dates =
+              listOf(
+                  CalendarUiState.Date(
+                      "5",
+                      testYearMonth.withMonth(5),
+                      year = Year.of(2024),
+                      isSelected = false,
+                      stopStatus = CalendarUiState.StopStatus.ADDED)),
+          onPreviousMonthButtonClicked = {},
+          onNextMonthButtonClicked = {},
+          onDateClickListener = {},
+      )
+    }
+
+    // Find the marker and assert it's displayed on the screen because the stop status is "ADDED"
+    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  /**
+   * Test to verify that the marker with "ADDED" stop status does not exist and is not displayed.
+   */
+  @Test
+  fun calendarDateWithNoAddedStatusShowsNoMarker() {
+    val testYearMonth = YearMonth.of(2024, 5)
+    val testDate = LocalDate.of(2024, 5, 6)
+    val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
+
+    // Ensure the status is NONE for the test date
+    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.NONE)
+
+    // Set up the environment for the test
+    composeTestRule.setContent {
+      CalendarWidget(
+          days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+          yearMonth = testYearMonth,
+          dates =
+              listOf(
+                  CalendarUiState.Date(
+                      "6",
+                      testYearMonth.withMonth(5),
+                      year = Year.of(2024),
+                      isSelected = false,
+                      stopStatus = CalendarUiState.StopStatus.NONE)),
+          onPreviousMonthButtonClicked = {},
+          onNextMonthButtonClicked = {},
+          onDateClickListener = {})
+    }
+
+    // Assert that the marker with "ADDED" status is not displayed because the stop status is "NONE"
+    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).isNotDisplayed()
   }
 }

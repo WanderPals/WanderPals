@@ -11,6 +11,7 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -235,6 +236,71 @@ class SuggestionsViewModelTest {
 
         // Assert that the like status has toggled as expected
         assertEquals(!initialLikeStatus, viewModel.getIsLiked(suggestion.suggestionId))
+      }
+
+  /**
+   * Test the toggle like suggestion method with a majority check with the stop status set to ADDED.
+   */
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testToggleLikeSuggestionWithMajorityCheck() =
+      runBlockingTest(testDispatcher) {
+        // Setup initial conditions
+        val stop =
+            Stop(
+                stopId = UUID.randomUUID().toString(),
+                title = "Test Stop",
+            )
+
+        val suggestion =
+            Suggestion(
+                suggestionId = "testSuggestionId",
+                userId = "testUserId",
+                userName = "testUserName",
+                text = "Test Suggestion",
+                createdAt = LocalDate.now(),
+                createdAtTime = LocalTime.now(),
+                stop = stop,
+                comments = listOf(),
+                userLikes = listOf("user1", "user2") // Initial likes
+                )
+
+        // Set viewModel state before accessing it
+        viewModel.loadSuggestion(
+            tripId) // Ensure this method properly populates the state or directly set it for
+        // testing:
+        coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns listOf(suggestion)
+
+        // Trigger loading to ensure state is populated
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Modify userLikes to simulate a toggle that reaches majority
+        val updatedLikes = suggestion.userLikes + "currentUser"
+        val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+        val updatedSuggestion = suggestion.copy(userLikes = updatedLikes, stop = updatedStop)
+
+        coEvery { mockTripsRepository.getSuggestionFromTrip(any(), any()) } returns
+            updatedSuggestion
+        coEvery { mockTripsRepository.getAllSuggestionsFromTrip(tripId) } returns
+            listOf(updatedSuggestion)
+        coEvery { mockTripsRepository.updateSuggestionInTrip(tripId, any()) } returns true
+        coEvery { mockTripsRepository.addStopToTrip(any(), any()) } returns true
+
+        // Perform the action to toggle a like
+        viewModel.toggleLikeSuggestion(suggestion)
+        advanceUntilIdle() // Ensure all coroutines are executed before checking
+
+        // Assertions
+        assertFalse(
+            viewModel.state.value.contains(suggestion)) // Assuming suggestion should be removed
+        assertTrue(
+            viewModel.addedSuggestionsToStops.value.contains(
+                suggestion.suggestionId)) // Check if added to stops
+        coVerify {
+          mockTripsRepository.updateSuggestionInTrip(
+              tripId, match { it.stop.stopStatus == CalendarUiState.StopStatus.ADDED })
+        }
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)
