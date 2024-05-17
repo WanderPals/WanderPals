@@ -25,6 +25,7 @@ import java.time.LocalTime
  *   facilitates discussion and feedback, allowing for collaborative planning and decision-making.
  * @param userLikes A list of user IDs who have liked the suggestion, indicating its popularity and
  *   acceptance among the community.
+ *   @param voteIconClickable A boolean flag indicating whether the vote icon is clickable or not.
  */
 data class Suggestion(
     val suggestionId: String = "",

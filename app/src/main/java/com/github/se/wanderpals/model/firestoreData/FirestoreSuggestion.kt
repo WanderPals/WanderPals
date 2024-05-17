@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter
  * @property stop Detailed proposed Stop, in a Firestore-compatible format.
  * @property comments List of comments on the suggestion, in Firestore-compatible formats.
  * @property userLikes List of user IDs who liked the suggestion.
+ * @property voteIconClickable Flag indicating whether the vote icon is clickable.
  */
 data class FirestoreSuggestion(
     val suggestionId: String = "",

@@ -80,12 +80,30 @@ open class SuggestionsViewModel(
   // item:
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
 
+  private val _voteIconClickable = MutableStateFlow<List<String>>(emptyList())
+
   // This will hold the IDs of suggestions that have been added to stops
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
   open val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
 
+    /**
+     * Returns whether the suggestion is liked by the current user.
+     *
+     * @param suggestionId The ID of the suggestion to check.
+     * @return True if the suggestion is liked, false otherwise.
+     */
   open fun getIsLiked(suggestionId: String): Boolean {
     return _likedSuggestions.value.contains(suggestionId)
+  }
+
+  /**
+   * Returns whether the vote icon is clickable for a suggestion.
+   *
+   * @param suggestionId The ID of the suggestion to check.
+   * @return True if the vote icon is clickable, false otherwise.
+   */
+  open fun getVoteIconClickable(suggestionId: String): Boolean {
+    return _voteIconClickable.value.contains(suggestionId)
   }
 
   open fun getNbrLiked(suggestionId: String): Int {
@@ -102,10 +120,16 @@ open class SuggestionsViewModel(
       val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
       _state.value = suggestions
 
+      // Update the liked suggestions list with the current user's liked suggestions
       _likedSuggestions.value =
         _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
 
-      initializeStates(suggestions) // Initialize state maps
+
+      _voteIconClickable.value =
+              _state.value.filter{it.voteIconClickable}.map{it.suggestionId} //todo: get the list of suggestions that have voteIconClickable as true
+
+
+//      initializeStates(suggestions) // Initialize state maps //todo
 
       _isLoading.value = false
     }
@@ -176,6 +200,42 @@ open class SuggestionsViewModel(
           // Now check if the suggestion should be added to stops
           checkAndAddSuggestionAsStop(updatedSuggestion, allUsers, threshold)
           _isLikeChanging.value = false
+        }
+      }
+    }
+  }
+
+  open fun toggleVoteIconClickable(suggestion: Suggestion) {
+    viewModelScope.launch {
+      val currentSuggestion =
+        suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+
+      val voteIconClickable = getVoteIconClickable(currentSuggestion.suggestionId)
+
+      // Toggle the vote icon clickable status in the local state
+      _voteIconClickable.value =
+        if (voteIconClickable) {
+          _voteIconClickable.value - currentSuggestion.suggestionId
+        } else {
+          _voteIconClickable.value + currentSuggestion.suggestionId
+        }
+
+      // Prepare the updated suggestion for backend update
+      val updatedSuggestion = currentSuggestion.copy(voteIconClickable = !voteIconClickable) // set the voteIconClickable to the opposite of the current value in order to toggle it
+
+      // Call the repository function to update the suggestion
+      val wasUpdateSuccessful =
+        suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+      if (wasUpdateSuccessful) { // If the backend update is successful,
+        _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
+
+        _voteIconClickable.value =
+          _state.value
+            .filter { it.voteIconClickable }
+            .map { it.suggestionId }
+
+        if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
+          _selectedSuggestion.value = updatedSuggestion
         }
       }
     }
@@ -368,53 +428,6 @@ open class SuggestionsViewModel(
   open fun getCurrentUserRole(): Role {
     val currentUser = SessionManager.getCurrentUser()
     return currentUser?.role ?: Role.MEMBER
-  }
-
-//  // State to track if the countdown has started
-//  private val _isCountdownStarted = MutableStateFlow(false)
-//  open val isCountdownStarted: StateFlow<Boolean> = _isCountdownStarted.asStateFlow()
-//
-//    // State to track if the vote icon is clickable
-//    private val _isVoteIconClickable = MutableStateFlow(true)
-//    open val isVoteIconClickable: StateFlow<Boolean> = _isVoteIconClickable.asStateFlow()
-//
-//  open fun startCountdownAndDisableVoteButton() {
-//    _isCountdownStarted.value = true
-//    _isVoteIconClickable.value = false
-//  }
-// State to track if the countdown has started for each suggestion
-  private val _countdownStates = MutableStateFlow<Map<String, Boolean>>(emptyMap())
-  open val countdownStates: StateFlow<Map<String, Boolean>> = _countdownStates.asStateFlow()
-
-  // State to track if the vote icon is clickable for each suggestion
-  private val _voteIconClickability = MutableStateFlow<Map<String, Boolean>>(emptyMap())
-  open val voteIconClickability: StateFlow<Map<String, Boolean>> = _voteIconClickability.asStateFlow()
-
-  // Function to initialize state maps for each suggestion
-  private fun initializeStates(suggestions: List<Suggestion>) {
-    val newCountdownStateMap = mutableMapOf<String, Boolean>()
-    val newVoteIconClickableMap = mutableMapOf<String, Boolean>()
-
-    suggestions.forEach { suggestion ->
-      newCountdownStateMap[suggestion.suggestionId] = _countdownStates.value[suggestion.suggestionId] ?: false
-      newVoteIconClickableMap[suggestion.suggestionId] = _voteIconClickability.value[suggestion.suggestionId] ?: true
-    }
-
-    _countdownStates.value = newCountdownStateMap
-    _voteIconClickability.value = newVoteIconClickableMap
-  }
-
-  open fun startCountdownAndDisableVoteButton(suggestion: Suggestion) {
-    // Only set countdown to start, do not adjust the time here
-    _countdownStates.value = _countdownStates.value.toMutableMap().apply {
-      this[suggestion.suggestionId] = true
-    }
-    // Immediately disable vote button to prevent re-clicks
-    _voteIconClickability.value = _voteIconClickability.value.toMutableMap().apply {
-      this[suggestion.suggestionId] = false
-    }
-  //    _countdownStates.value += (suggestion.suggestionId to true)
-//    _voteIconClickability.value += (suggestion.suggestionId to false)
   }
 
   /** Transforms a suggestion to a stop and updates the backend and local state accordingly. */
