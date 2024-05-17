@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -72,10 +73,13 @@ fun SuggestionItem(
 
     val isVoteClicked = viewModel.getVoteIconClickable(suggestion.suggestionId) // the vote icon is clicked
     val startTime = viewModel.getStartTime(suggestion.suggestionId)
+    Log.d("SuggestionItem", "isVoteClicked for suggestion ${suggestion.suggestionId}: $isVoteClicked")
 
     val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
 
-    val remainingTime = remember { mutableStateOf("23:59:59") }
+    val initialRemainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
+//    val remainingTime = remember { mutableStateOf("23:59:59") }
+    val remainingTime = remember { mutableStateOf(initialRemainingTimeFlow.value) }
 
     LaunchedEffect(key1 = isVoteClicked) {// Start the countdown only if the vote icon is clicked
         if (isVoteClicked && startTime != null) { // Start the countdown only if the vote icon is clicked
@@ -223,7 +227,9 @@ fun SuggestionItem(
                                 .padding(
                                     bottom = 4.dp, end = 4.dp // end=4.dp is the space between the icon and the text
                                 )
-                                .clickable{viewModel.toggleVoteIconClickable(suggestion)}
+                                .clickable(enabled = !isVoteClicked) { // disable the click if the icon is already clicked
+                                    Log.d("SuggestionItem", "Vote icon clicked for suggestion ${suggestion.suggestionId}")
+                                    viewModel.toggleVoteIconClickable(suggestion)}
                         )
                     }
 

@@ -4,6 +4,7 @@ import com.github.se.wanderpals.model.data.Suggestion
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 /**
  * Firestore-compatible DTO for a Suggestion, adapting complex objects (Stop, Comment) and
@@ -76,6 +77,16 @@ data class FirestoreSuggestion(
     fun toSuggestion(): Suggestion {
         val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
         val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+
+        val parsedVoteStartTime = if (voteStartTime.isNotEmpty()) {
+            try {
+                LocalTime.parse(voteStartTime, timeFormatter)
+            } catch (e: DateTimeParseException) {
+                LocalTime.MIDNIGHT // or another default value
+            }
+        } else {
+            LocalTime.MIDNIGHT // or another default value
+        }
         return Suggestion(
             suggestionId = suggestionId,
             userId = userId,
@@ -89,7 +100,9 @@ data class FirestoreSuggestion(
             comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
             userLikes = userLikes,
             voteIconClickable = voteIconClickable,
-            voteStartTime = LocalTime.parse(voteStartTime, timeFormatter) // Parse time string back into LocalTime
+//            voteStartTime = LocalTime.parse(voteStartTime, timeFormatter) // Parse time string back into LocalTime
+            voteStartTime = parsedVoteStartTime
+
         )
     }
 }
