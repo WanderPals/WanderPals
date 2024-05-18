@@ -40,7 +40,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
-import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
@@ -402,10 +401,6 @@ fun CreateSuggestion(
                     }
                   } else {
                     if (viewModel.addSuggestion(tripId, newSuggestion)) {
-                      NotificationAPI()
-                          .sendNotification(
-                              SessionManager.getListOfTokensTrip(),
-                              "A new suggestion has been added to ${SessionManager.getCurrentUser()?.tripName}")
                       onSuccess()
                     } else {
                       onFailure()
