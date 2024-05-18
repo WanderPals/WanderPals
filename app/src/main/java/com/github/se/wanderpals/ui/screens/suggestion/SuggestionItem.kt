@@ -81,25 +81,17 @@ fun SuggestionItem(
 //    val remainingTime = remember { mutableStateOf("23:59:59") }
     val remainingTime = remember { mutableStateOf(initialRemainingTimeFlow.value) }
 
-    LaunchedEffect(key1 = isVoteClicked) {// Start the countdown only if the vote icon is clicked
-        if (isVoteClicked && startTime != null) { // Start the countdown only if the vote icon is clicked
-            val endTime = startTime.plusHours(24)
-            var now: LocalDateTime
-            var duration: java.time.Duration
+    LaunchedEffect(Unit) {
+        while (true) {
+            val now = LocalDateTime.now() // todo: change to transformedAtTime
+            val endTime = suggestion.createdAt.atTime(suggestion.createdAtTime).plusDays(1) //todo: change to transformedAtTime + 1day
 
-            do {
-                now = LocalDateTime.now()
-                duration = java.time.Duration.between(now, endTime)
-                if (duration.isNegative) {
-                    remainingTime.value = "00:00:00"
-                    break
-                }
-                val hours = duration.toHours().toString().padStart(2, '0')
-                val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
-                val seconds = (duration.seconds % 60).toString().padStart(2, '0')
-                remainingTime.value = "$hours:$minutes:$seconds"
-                delay(1000)
-            } while (duration > java.time.Duration.ZERO) // while the duration is not negative and the vote icon is clicked (because inside the if(isVoteClicked) block)
+            val duration = java.time.Duration.between(now, endTime)
+            val hours = duration.toHours().toString().padStart(2, '0')
+            val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
+            val seconds = (duration.seconds % 60).toString().padStart(2, '0')
+            remainingTime.value = "$hours:$minutes:$seconds"
+            delay(1000)
         }
     }
 
@@ -145,10 +137,10 @@ fun SuggestionItem(
                     )
                 }
                 Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
-                    val startTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
-                    val endTime = startTime.plusMinutes(suggestion.stop.duration.toLong())
+                    val suggestionStartTime = LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+                    val endTime = suggestionStartTime.plusMinutes(suggestion.stop.duration.toLong())
                     Text(
-                        text = startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        text = suggestionStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
                         style = TextStyle(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,

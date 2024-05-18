@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.data
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 /**
@@ -40,5 +41,5 @@ data class Suggestion(
     val userLikes: List<String> = emptyList(),
     val voteIconClickable: Boolean = false,  // By default, the vote icon is not clickable
     // voteIconClickable implies countdownStarted has not started; voteIconClickable is false implies countdownStarted has started
-    val voteStartTime: LocalTime = LocalTime.MIDNIGHT, // Default value is 24:00:00 indicating countdown has not started
+    val voteStartTime: LocalDateTime = LocalDateTime.MIN // Use LocalDateTime to represent the start time
 )

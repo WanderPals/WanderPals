@@ -2,6 +2,7 @@ package com.github.se.wanderpals.model.firestoreData
 
 import com.github.se.wanderpals.model.data.Suggestion
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -48,6 +49,7 @@ data class FirestoreSuggestion(
         fun fromSuggestion(suggestion: Suggestion): FirestoreSuggestion {
             val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
             val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+            val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
             return FirestoreSuggestion(
                 suggestionId = suggestion.suggestionId,
                 userId = suggestion.userId,
@@ -63,7 +65,7 @@ data class FirestoreSuggestion(
                 }, // Convert each Comment to FirestoreComment
                 userLikes = suggestion.userLikes,
                 voteIconClickable = suggestion.voteIconClickable,
-                voteStartTime = suggestion.voteStartTime.format(timeFormatter) // Convert LocalTime to String
+                voteStartTime = suggestion.voteStartTime.format(dateTimeFormatter) // Convert LocalTime to String
             )
         }
     }
@@ -77,16 +79,18 @@ data class FirestoreSuggestion(
     fun toSuggestion(): Suggestion {
         val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
         val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+        val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
         val parsedVoteStartTime = if (voteStartTime.isNotEmpty()) {
             try {
-                LocalTime.parse(voteStartTime, timeFormatter)
+                LocalDateTime.parse(voteStartTime, dateTimeFormatter)
             } catch (e: DateTimeParseException) {
-                LocalTime.MIDNIGHT // or another default value
+                LocalDateTime.MIN
             }
         } else {
-            LocalTime.MIDNIGHT // or another default value
+            LocalDateTime.MIN
         }
+
         return Suggestion(
             suggestionId = suggestionId,
             userId = userId,
