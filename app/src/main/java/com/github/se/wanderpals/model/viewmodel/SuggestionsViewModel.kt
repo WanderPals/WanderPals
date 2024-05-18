@@ -67,7 +67,7 @@ open class SuggestionsViewModel(
   open val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
   // State flow to handle the editing of a comment
-  private val _editingComment = MutableStateFlow<Boolean>(false)
+  private val _editingComment = MutableStateFlow(false)
   open val editingComment: StateFlow<Boolean> = _editingComment.asStateFlow()
 
   // State flow to remember the suggestion that is being interacted with
@@ -224,7 +224,7 @@ open class SuggestionsViewModel(
     startTime?.let {
       val now = LocalDateTime.now()
       val endTime = it.plusHours(24)
-      val duration = java.time.Duration.between(now, endTime)
+      val duration = Duration.between(now, endTime)
 
       if (!duration.isNegative) {
         val hours = duration.toHours().toString().padStart(2, '0')
