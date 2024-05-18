@@ -68,7 +68,7 @@ fun OverviewContent(
           text =
               when (SessionManager.getIsNetworkAvailable()) {
                 true -> "Looks like you have no travel plan yet. "
-                false -> "No internet connection."
+                false -> "It seems you're not connected to the Internet"
               },
           style =
               TextStyle(
