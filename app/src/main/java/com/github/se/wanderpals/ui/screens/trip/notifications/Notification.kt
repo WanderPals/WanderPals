@@ -169,7 +169,12 @@ fun Notification(
         Box(modifier = Modifier.fillMaxWidth().weight(1f).padding(vertical = 16.dp)) {
           // text if no items found
           Text(
-              text = "Looks like there is no $emptyItemText.",
+              text =
+                  when {
+                    SessionManager.getIsNetworkAvailable() ->
+                        "Looks like there is no $emptyItemText."
+                    else -> "Looks like you are offline. Please check your network connection."
+                  },
               modifier =
                   Modifier.align(Alignment.Center)
                       .padding(horizontal = 16.dp)
@@ -177,6 +182,7 @@ fun Notification(
               textAlign = TextAlign.Center,
               style = MaterialTheme.typography.bodyLarge)
           IconButton(
+              enabled = SessionManager.getIsNetworkAvailable(),
               onClick = { notificationsViewModel.updateStateLists() },
               modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
               content = {
@@ -234,6 +240,7 @@ fun Notification(
     if (!notificationSelected && SessionManager.isAdmin()) {
       Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
         Button(
+            enabled = SessionManager.getIsNetworkAvailable(),
             onClick = { navigationActions.navigateTo(Route.CREATE_ANNOUNCEMENT) },
             modifier =
                 Modifier.padding(horizontal = 20.dp)
