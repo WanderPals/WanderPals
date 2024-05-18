@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.LocalDateTime
 
 /**
@@ -82,6 +83,7 @@ open class SuggestionsViewModel(
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
 
   private val _voteIconClickable = MutableStateFlow<List<String>>(emptyList())
+  open val voteIconClickable: StateFlow<List<String>> = _voteIconClickable.asStateFlow()
 
   // This will hold the IDs of suggestions that have been added to stops
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
@@ -89,6 +91,7 @@ open class SuggestionsViewModel(
 
   // stores the suggestionId with its start time when the vote icon is clicked
   private val _voteStartTimeMap = mutableMapOf<String, LocalDateTime>()
+
   /**
    * Returns whether the suggestion is liked by the current user.
    *
@@ -129,7 +132,7 @@ open class SuggestionsViewModel(
 
 
       _voteIconClickable.value =
-        _state.value.filter{it.voteIconClickable}.map{it.suggestionId} //todo: get the list of suggestions that have voteIconClickable as true
+        _state.value.filter{it.voteIconClickable}.map{it.suggestionId} //get the list of suggestions that have voteIconClickable as true
 
       _isLoading.value = false
     }
