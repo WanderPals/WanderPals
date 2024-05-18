@@ -2,6 +2,7 @@ package com.github.se.wanderpals.suggestion
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -527,6 +528,32 @@ class CommentOptionsBottomSheetTest {
 
     // Check if the edit comment option is displayed
     composeTestRule.onNodeWithTag("editCommentOption").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEditCommentOptionVisibleForOwnerAndDisabledOffline() {
+    SessionManager.setIsNetworkAvailable(false)
+    SessionManager.setUserSession(
+        // use the same user id as the comment owner
+        userId = "user1",
+        // must not be an admin
+        role = Role.MEMBER)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the edit comment option is displayed
+    composeTestRule.onNodeWithTag("editCommentOption").assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test

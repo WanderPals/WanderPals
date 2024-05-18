@@ -81,28 +81,27 @@ fun CommentBottomSheet(
                       }
                     }
 
-                if (SessionManager.getIsNetworkAvailable()) {
-                  Box(
-                      modifier =
-                          Modifier.fillMaxWidth()
-                              .clickable(
-                                  onClick = {
-                                    viewModel.editCommentOption()
-                                    onEdit(selectedComment!!.text)
-                                  })
-                              .padding(16.dp)
-                              .testTag("editCommentOption"),
-                      contentAlignment = Alignment.CenterStart) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                          Icon(
-                              imageVector = Icons.Outlined.Create,
-                              contentDescription = "Edit",
-                              modifier = Modifier.size(24.dp))
-                          Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                          Text("Edit comment", style = MaterialTheme.typography.bodyLarge)
-                        }
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(
+                                enabled = SessionManager.getIsNetworkAvailable(),
+                                onClick = {
+                                  viewModel.editCommentOption()
+                                  onEdit(selectedComment!!.text)
+                                })
+                            .padding(16.dp)
+                            .testTag("editCommentOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Create,
+                            contentDescription = "Edit",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text("Edit comment", style = MaterialTheme.typography.bodyLarge)
                       }
-                }
+                    }
               }
             }
           }

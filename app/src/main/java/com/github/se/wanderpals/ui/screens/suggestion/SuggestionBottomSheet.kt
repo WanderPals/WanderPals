@@ -103,27 +103,26 @@ fun SuggestionBottomSheet(
                     }
 
                 // Display the transform suggestion option
-                if (SessionManager.getIsNetworkAvailable()) {
-                  Box(
-                      modifier =
-                          Modifier.fillMaxWidth()
-                              .clickable(
-                                  onClick = { viewModel.transformToStop(selectedSuggestion!!) })
-                              .padding(16.dp)
-                              .testTag("transformSuggestionOption"),
-                      contentAlignment = Alignment.CenterStart) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                          Icon(
-                              imageVector = Icons.Outlined.Add,
-                              contentDescription = "TransformToStop",
-                              modifier = Modifier.size(24.dp))
-                          Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                          Text(
-                              "Transform suggestion to a stop",
-                              style = MaterialTheme.typography.bodyLarge)
-                        }
+                Box(
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .clickable(
+                                enabled = SessionManager.getIsNetworkAvailable(),
+                                onClick = { viewModel.transformToStop(selectedSuggestion!!) })
+                            .padding(16.dp)
+                            .testTag("transformSuggestionOption"),
+                    contentAlignment = Alignment.CenterStart) {
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Outlined.Add,
+                            contentDescription = "TransformToStop",
+                            modifier = Modifier.size(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                        Text(
+                            "Transform suggestion to a stop",
+                            style = MaterialTheme.typography.bodyLarge)
                       }
-                }
+                    }
               }
             }
           }
