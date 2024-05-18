@@ -20,6 +20,7 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
             Log.d("SessionViewModel", "Failed to find user with userId $userId , in trip $tripId")
           } else {
             SessionManager.setRole(user.role)
+            SessionManager.setName(user.name)
             tripsRepository.updateUserInTrip(
                 tripId,
                 user.copy(profilePictureURL = SessionManager.getCurrentUser()?.profilePhoto!!))

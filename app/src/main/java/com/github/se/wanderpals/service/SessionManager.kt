@@ -73,7 +73,7 @@ object SessionManager {
   }
 
   /** See if Firebase is initialized */
-  fun isFirebaseInitialized(): Boolean {
+  private fun isFirebaseInitialized(): Boolean {
     return try {
       FirebaseAuth.getInstance().currentUser != null
     } catch (e: Exception) {
@@ -175,6 +175,10 @@ object SessionManager {
 
   fun setTripName(tripName: String) {
     currentUser?.tripName = tripName
+  }
+
+  fun setName(name: String) {
+    currentUser?.name = name
   }
 
   /** Clears the current user session, effectively logging out the user. */

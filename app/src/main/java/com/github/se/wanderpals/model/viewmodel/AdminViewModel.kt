@@ -59,6 +59,15 @@ open class AdminViewModel(
     }
   }
 
+  open fun modifyCurrentUserName(name: String) {
+    currentUser.value = currentUser.value?.copy(name = name)
+    SessionManager.setName(name)
+    val user = listOfUsers.value.find { it.userId == currentUser.value?.userId }
+    if (user != null) {
+      modifyUser(user.copy(name = name))
+    }
+  }
+
   // Modify the current user's profil photo
   open fun modifyCurrentUserProfilePhoto(profilePhoto: String) {
     currentUser.value = currentUser.value?.copy(profilePhoto = profilePhoto)
