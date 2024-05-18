@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.text.SimpleDateFormat
@@ -219,6 +220,7 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
               )
 
               Button(
+                  enabled = SessionManager.getIsNetworkAvailable(),
                   modifier = Modifier.testTag("tripSave").fillMaxWidth().padding(16.dp),
                   onClick = {
                     val error = validateInputs(name, budget, description, startDate, endDate)

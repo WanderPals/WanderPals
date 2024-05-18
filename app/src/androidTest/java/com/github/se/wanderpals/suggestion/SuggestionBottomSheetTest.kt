@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -261,5 +262,22 @@ class SuggestionBottomSheetTest {
     composeTestRule
         .onNodeWithTag("suggestionBottomSheet", useUnmergedTree = true)
         .assertDoesNotExist()
+  }
+
+  @Test
+  fun testSuggestionBottomSheetTransformOffline() {
+    val viewModel = SuggestionsViewModelSheetTest(listOf(mockSuggestion))
+    SessionManager.setIsNetworkAvailable(false)
+
+    // Launch the composable with the view model
+    composeTestRule.setContent { SuggestionBottomSheet(viewModel) }
+
+    viewModel.showSuggestionBottomSheet(mockSuggestion)
+
+    composeTestRule
+        .onNodeWithTag("transformSuggestionOption", useUnmergedTree = true)
+        .assertIsNotEnabled()
+
+    SessionManager.setIsNetworkAvailable(true)
   }
 }

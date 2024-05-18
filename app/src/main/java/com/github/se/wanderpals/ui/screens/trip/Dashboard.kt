@@ -141,12 +141,22 @@ fun Dashboard(
           AlertDialog(
               onDismissRequest = { dashboardViewModel.hideDeleteDialog() },
               title = { Text("Confirm Deletion") },
-              text = { Text("Are you sure you want to delete this Trip?") },
+              text = {
+                Text(
+                    when (SessionManager.getIsNetworkAvailable()) {
+                      true -> "Are you sure you want to delete this Trip?"
+                      false -> "No internet connection. Please try again later."
+                    })
+              },
               confirmButton = {
                 TextButton(
                     onClick = {
-                      dashboardViewModel.confirmDeleteTrip()
-                      navActions.navigateTo(Route.OVERVIEW)
+                      if (SessionManager.getIsNetworkAvailable()) {
+                        dashboardViewModel.confirmDeleteTrip()
+                        navActions.navigateTo(Route.OVERVIEW)
+                      } else {
+                        dashboardViewModel.hideDeleteDialog()
+                      }
                     },
                     modifier = Modifier.testTag("confirmDeleteTripButton")) {
                       Text("Confirm", color = Color.Red)
@@ -239,7 +249,8 @@ fun Menu(
           }
         })
 
-    if (SessionManager.getCurrentUser()!!.role == Role.OWNER) {
+    if (SessionManager.getCurrentUser()!!.role == Role.OWNER &&
+        SessionManager.getIsNetworkAvailable()) {
       ElevatedButton(
           modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("deleteTripButton"),
           content = {

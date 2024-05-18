@@ -82,7 +82,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       },
       floatingActionButton = {
         if (currentSelectedOption == FinanceOption.EXPENSES &&
-            SessionManager.getCurrentUser()!!.role != Role.VIEWER) {
+            SessionManager.getCurrentUser()!!.role != Role.VIEWER &&
+            SessionManager.getIsNetworkAvailable()) {
           FloatingActionButton(
               modifier = Modifier.testTag("financeFloatingActionButton"),
               onClick = { navigationActions.navigateTo(Route.CREATE_EXPENSE) },

@@ -8,6 +8,7 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.screens.CreateTripoScreen
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.CreateTrip
@@ -467,5 +468,45 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
     // Verify that the navigation has been triggered as expected due to the ViewModel's state change
     verify { mockNavActions.navigateTo(Route.OVERVIEW) }
+  }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun saveTripDoesntWorkOffline() = runBlockingTest {
+
+    // Spy on the actual ViewModel rather than completely mocking it
+    val overviewViewModel =
+        spyk(
+            OverviewViewModel(tripsRepository = TripsRepository("-1", Dispatchers.IO)),
+            recordPrivateCalls = true)
+
+    // Mock the createTrip function to only modify certain properties
+    coEvery { overviewViewModel.createTrip(any()) } coAnswers
+        {
+          overviewViewModel.apply {
+            this.setCreateTripFinished(true)
+            // this.setProperty("_createTripFinished", true)
+          }
+        }
+    SessionManager.setIsNetworkAvailable(false)
+
+    // Set the content of the test
+    composeTestRule.setContent {
+      CreateTrip(overviewViewModel = overviewViewModel, nav = mockNavActions)
+    }
+
+    // Access the UI controls using your custom screen class
+    val screen = CreateTripoScreen(composeTestRule)
+
+    // Simulate user inputs and interactions
+    screen.inputTitle.performTextInput("My Trip")
+    screen.inputBudget.performTextInput("500")
+    screen.inputDescription.performTextInput("An exciting journey")
+    screen.inputStartDate.performTextInput("05/03/2024")
+    screen.inputEndDate.performTextInput("10/03/2024")
+
+    // Check that the save button is disabled
+    screen.saveButton.assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
   }
 }

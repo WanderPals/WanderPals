@@ -85,6 +85,7 @@ fun CommentBottomSheet(
                     modifier =
                         Modifier.fillMaxWidth()
                             .clickable(
+                                enabled = SessionManager.getIsNetworkAvailable(),
                                 onClick = {
                                   viewModel.editCommentOption()
                                   onEdit(selectedComment!!.text)
@@ -110,10 +111,21 @@ fun CommentBottomSheet(
     AlertDialog(
         onDismissRequest = { viewModel.hideDeleteDialog() },
         title = { Text("Confirm Deletion") },
-        text = { Text("Are you sure you want to delete this comment?") },
+        text = {
+          Text(
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Are you sure you want to delete this comment?"
+                false -> "You are offline. You can't delete this comment."
+              })
+        },
         confirmButton = {
           TextButton(
-              onClick = { viewModel.confirmDeleteComment(suggestion) },
+              onClick = {
+                when (SessionManager.getIsNetworkAvailable()) {
+                  true -> viewModel.confirmDeleteComment(suggestion)
+                  false -> viewModel.hideDeleteDialog()
+                }
+              },
               modifier = Modifier.testTag("confirmDeleteCommentButton")) {
                 Text("Confirm", color = MaterialTheme.colorScheme.error)
               }

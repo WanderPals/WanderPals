@@ -138,6 +138,7 @@ fun CreateAnnouncement(viewModel: NotificationsViewModel, onNavigationBack: () -
           Spacer(modifier = Modifier.height(32.dp))
 
           Button(
+              enabled = SessionManager.getIsNetworkAvailable(),
               modifier = Modifier.fillMaxWidth().height(50.dp).testTag("createAnnouncementButton"),
               onClick = {
                 titleError = if (title.trim().isEmpty()) "Title cannot be empty" else ""

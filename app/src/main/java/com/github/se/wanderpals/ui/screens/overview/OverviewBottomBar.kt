@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
 import com.github.se.wanderpals.ui.theme.primaryContainerLight
 
@@ -42,6 +43,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
     // Button to join a trip
     Box(modifier = Modifier.fillMaxWidth()) {
       Button(
+          enabled = SessionManager.getIsNetworkAvailable(),
           onClick = { onLinkClick() },
           modifier =
               Modifier.width(360.dp)
@@ -77,6 +79,7 @@ fun OverviewBottomBar(onCreateTripClick: () -> Unit, onLinkClick: () -> Unit) {
     // Button to create a new trip
     Box(modifier = Modifier.fillMaxWidth()) {
       Button(
+          enabled = SessionManager.getIsNetworkAvailable(),
           onClick = { onCreateTripClick() },
           modifier =
               Modifier.width(360.dp)

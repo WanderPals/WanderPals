@@ -65,12 +65,22 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
     AlertDialog(
         onDismissRequest = { financeViewModel.setShowDeleteDialogState(false) },
         title = { Text("Confirm Deletion") },
-        text = { Text("Are you sure you want to delete this expense?") },
+        text = {
+          Text(
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Are you sure you want to delete this expense?"
+                false -> "You can't delete this expense because you are offline"
+              })
+        },
         confirmButton = {
           TextButton(
               onClick = {
-                financeViewModel.deleteExpense(expense)
-                navigationActions.navigateTo(Route.FINANCE)
+                if (SessionManager.getIsNetworkAvailable()) {
+                  financeViewModel.deleteExpense(expense)
+                  navigationActions.navigateTo(Route.FINANCE)
+                } else {
+                  financeViewModel.setShowDeleteDialogState(false)
+                }
               },
               modifier = Modifier.testTag("confirmDeleteExpenseButton")) {
                 Text("Confirm", color = Color.Red)
