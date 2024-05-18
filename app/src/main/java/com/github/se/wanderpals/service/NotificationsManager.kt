@@ -114,6 +114,9 @@ object NotificationsManager {
             LocalDateTime.now(),
             navActions.serializeNavigationVariable())
     addNewNotification(notifList, newNotif)
+    broadcastNotification(
+        tripId, "${SessionManager.getCurrentUser()!!.name} created a new suggestion ")
+
     tripsRepository.setNotificationList(tripId, notifList.toList())
   }
 
@@ -136,6 +139,11 @@ object NotificationsManager {
             LocalDateTime.now(),
             navActionVariables)
     addNewNotification(notifList, newNotif)
+    broadcastNotification(
+        tripId,
+        "A new stop has been added for ${stop.date.format(
+      DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(
+        Locale.getDefault()))}")
     tripsRepository.setNotificationList(tripId, notifList.toList())
   }
 
@@ -159,6 +167,18 @@ object NotificationsManager {
             "A new expense has been created", route, LocalDateTime.now(), navActionVariables)
     addNewNotification(notifList, newNotif)
 
+    broadcastNotification(
+        tripId, "A new expense has been created by ${SessionManager.getCurrentUser()!!.name}")
+
     tripsRepository.setNotificationList(tripId, notifList.toList())
+  }
+
+  private suspend fun broadcastNotification(tripId: String, message: String) {
+    val tokenList = tripsRepository.getTrip(tripId)?.tokenIds
+    if (tokenList != null) {
+      for (token in tokenList) {
+        sendMessageToListOfUsers(token, message)
+      }
+    }
   }
 }

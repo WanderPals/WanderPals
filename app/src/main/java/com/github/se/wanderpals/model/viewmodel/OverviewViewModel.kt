@@ -120,7 +120,7 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
             }
 
         // add the token to the token list of the trip
-        tripsRepository.updateTrip(newTrip.copy(tokenIds = newListOfTokens))
+        // tripsRepository.updateTrip(newTrip.copy(tokenIds = newListOfTokens))
 
         // send a notification to all the users of the trip
         for (userToken in newListOfTokens) {

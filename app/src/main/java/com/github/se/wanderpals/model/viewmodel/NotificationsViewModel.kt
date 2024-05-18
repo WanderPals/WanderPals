@@ -116,10 +116,14 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   open fun addAnnouncement(announcement: Announcement) {
     runBlocking {
       tripsRepository.addAnnouncementToTrip(tripId, announcement)
-      val listOfTokens = tripsRepository.getTrip(tripId)?.tokenIds
-      Log.d("NotificationAnnouncement", "List of tokens: $listOfTokens")
-      for (token in listOfTokens!!) {
-        sendMessageToListOfUsers(token, announcement.title)
+      val listOfTokens = tripsRepository.getTrip(tripId)
+      if (listOfTokens != null) {
+        Log.d("NotificationAnnouncement", "List of tokens: ${listOfTokens.tokenIds}")
+      }
+      if (listOfTokens != null) {
+        for (token in listOfTokens.tokenIds) {
+          sendMessageToListOfUsers(token, announcement.title)
+        }
       }
     }
   }
