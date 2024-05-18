@@ -1,3 +1,3 @@
 package com.github.se.wanderpals.model.data
 
-data class Documents(val documentsName: String = "", val documentsURL: String = "")
+data class Documents(val documentsURL: String = "", val documentsName: String = "")
