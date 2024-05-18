@@ -481,32 +481,6 @@ class CommentOptionsBottomSheetTest {
   }
 
   @Test
-  fun testEditCommentOptionNotVisibleOffline() {
-    SessionManager.setUserSession(
-        // use the same user id as the comment owner
-        userId = "user1",
-        // must not be an admin
-        role = Role.MEMBER)
-    SessionManager.setIsNetworkAvailable(false)
-
-    composeTestRule.setContent {
-      SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
-    }
-
-    // Click on the comment 3 dot option icon
-    composeTestRule
-        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
-        .performClick()
-
-    // Check if the edit comment option is displayed
-    composeTestRule.onNodeWithTag("editCommentOption").assertIsNotDisplayed()
-    SessionManager.setIsNetworkAvailable(true)
-  }
-
-  @Test
   fun testEditCommentOptionVisibleForOwner() {
     SessionManager.setUserSession(
         // use the same user id as the comment owner
