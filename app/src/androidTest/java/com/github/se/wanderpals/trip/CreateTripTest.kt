@@ -476,18 +476,18 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
     // Spy on the actual ViewModel rather than completely mocking it
     val overviewViewModel =
-      spyk(
-        OverviewViewModel(tripsRepository = TripsRepository("-1", Dispatchers.IO)),
-        recordPrivateCalls = true)
+        spyk(
+            OverviewViewModel(tripsRepository = TripsRepository("-1", Dispatchers.IO)),
+            recordPrivateCalls = true)
 
     // Mock the createTrip function to only modify certain properties
     coEvery { overviewViewModel.createTrip(any()) } coAnswers
-            {
-              overviewViewModel.apply {
-                this.setCreateTripFinished(true)
-                // this.setProperty("_createTripFinished", true)
-              }
-            }
+        {
+          overviewViewModel.apply {
+            this.setCreateTripFinished(true)
+            // this.setProperty("_createTripFinished", true)
+          }
+        }
     SessionManager.setIsNetworkAvailable(false)
 
     // Set the content of the test
