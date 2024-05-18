@@ -22,6 +22,7 @@ import com.github.se.wanderpals.ui.screens.trip.Dashboard
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
+import io.mockk.Called
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
@@ -729,6 +730,23 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("confirmDeleteTripButton", useUnmergedTree = true).performClick()
 
     verify { mockNavActions.navigateTo(Route.OVERVIEW) }
+    confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun deleteTripDoesntWorkOffline() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    SessionManager.setIsNetworkAvailable(false)
+    SessionManager.setUserSession(role = Role.OWNER)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions wasNot Called }
     confirmVerified(mockNavActions)
   }
 
