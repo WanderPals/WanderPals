@@ -143,9 +143,10 @@ fun SuggestionBottomSheet(
         confirmButton = {
           TextButton(
               onClick = {
-                if (SessionManager.getIsNetworkAvailable()) {
-                  viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
-                } else viewModel.hideDeleteDialog()
+                when (SessionManager.getIsNetworkAvailable()) {
+                  true -> viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
+                  false -> viewModel.hideDeleteDialog()
+                }
               },
               modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
                 Text(

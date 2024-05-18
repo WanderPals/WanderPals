@@ -122,10 +122,9 @@ fun CommentBottomSheet(
         confirmButton = {
           TextButton(
               onClick = {
-                if (SessionManager.getIsNetworkAvailable()) {
-                  viewModel.confirmDeleteComment(suggestion)
-                } else {
-                  viewModel.hideDeleteDialog()
+                when (SessionManager.getIsNetworkAvailable()) {
+                  true -> viewModel.confirmDeleteComment(suggestion)
+                  false -> viewModel.hideDeleteDialog()
                 }
               },
               modifier = Modifier.testTag("confirmDeleteCommentButton")) {
