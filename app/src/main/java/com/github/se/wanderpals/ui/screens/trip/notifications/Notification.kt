@@ -232,7 +232,9 @@ fun Notification(
               }
             }
         PullToRefreshLazyColumn(
-            inputLazyColumn = lazyColumn, onRefresh = { notificationsViewModel.updateStateLists() })
+            inputLazyColumn = lazyColumn,
+            onRefresh = { notificationsViewModel.updateStateLists() },
+            modifier = Modifier.weight(1f))
       }
     }
 
