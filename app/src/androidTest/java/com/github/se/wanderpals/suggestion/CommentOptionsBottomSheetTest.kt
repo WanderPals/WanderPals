@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.suggestion
 
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -246,6 +247,32 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.onNodeWithTag("comment1").assertDoesNotExist()
   }
 
+  // Add a test that checks the delete comment option deletes the comment when clicked
+  @Test
+  fun testDeleteCommentOptionDeletesCommentNotInOffline() {
+    SessionManager.setIsNetworkAvailable(false)
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Click on the delete comment option
+    composeTestRule.onNodeWithTag("deleteCommentOption").performClick()
+
+    // Click on the confirm delete comment button
+    composeTestRule.onNodeWithTag("confirmDeleteCommentButton").performClick()
+
+    // Check if the comment is deleted
+    composeTestRule.onNodeWithTag("comment1").assertExists()
+  }
+
   // Add a test that checks the bottom sheet is hidden when the delete comment option is clicked
   @Test
   fun testDeleteCommentOptionHidesBottomSheet() {
@@ -449,6 +476,31 @@ class CommentOptionsBottomSheetTest {
 
     // Check if the delete comment option is displayed
     composeTestRule.onNodeWithTag("deleteCommentOption").assertIsDisplayed()
+  }
+
+  @Test
+  fun testEditCommentOptionNotVisibleOffline() {
+    SessionManager.setUserSession(
+        // use the same user id as the comment owner
+        userId = "user1",
+        // must not be an admin
+        role = Role.MEMBER)
+    SessionManager.setIsNetworkAvailable(false)
+
+    composeTestRule.setContent {
+      SuggestionDetail(
+          suggestionId = mockSuggestion.suggestionId,
+          viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
+          navActions = mockNavActions)
+    }
+
+    // Click on the comment 3 dot option icon
+    composeTestRule
+        .onNodeWithTag("commentOptionsIconcomment1", useUnmergedTree = true)
+        .performClick()
+
+    // Check if the edit comment option is displayed
+    composeTestRule.onNodeWithTag("editCommentOption").assertIsNotDisplayed()
   }
 
   @Test
