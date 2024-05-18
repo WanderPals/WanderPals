@@ -204,12 +204,20 @@ fun StopItem(stop: Stop, tripId: String, tripsRepository: TripsRepository, onDel
     AlertDialog(
         onDismissRequest = { showDeleteConfirmDialog = false },
         title = { Text("Confirm Deletion") },
-        text = { Text("Are you sure you want to delete this stop?") },
+        text = {
+          Text(
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Are you sure you want to delete this stop?"
+                false -> "You are offline. You can't delete this stop."
+              })
+        },
         confirmButton = {
           TextButton(
               modifier = Modifier.testTag("confirmDeleteButton" + stop.stopId),
               onClick = {
-                stopItemViewModel.deleteStop(stop.stopId)
+                if (SessionManager.getIsNetworkAvailable()) {
+                  stopItemViewModel.deleteStop(stop.stopId)
+                }
                 showDeleteConfirmDialog = false
               }) {
                 Text("Confirm", color = MaterialTheme.colorScheme.error)

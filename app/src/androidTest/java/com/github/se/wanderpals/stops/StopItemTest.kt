@@ -85,6 +85,34 @@ class StopItemTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
   }
 
   @Test
+  fun testDeleteButtonFunctionalityNotWorkingOffline() = run {
+    // Set the user as an admin
+    SessionManager.setIsNetworkAvailable(false)
+    SessionManager.setUserSession(role = Role.ADMIN)
+    var deleteClicked = false
+    composeTestRule.setContent {
+      StopItem(
+          stop = stop,
+          tripId = "trip1",
+          tripsRepository = tripsRepository,
+          onDelete = { deleteClicked = true })
+    }
+
+    composeTestRule.onNodeWithTag("deleteButton1", useUnmergedTree = true).performClick()
+    // Wait for the dialog to be displayed
+    composeTestRule.waitForIdle()
+    // Assuming SessionManager.isAdmin() returns true for testing purpose
+    composeTestRule
+        .onNodeWithTag("confirmDeleteButton1", useUnmergedTree = true)
+        .assertExists()
+        .performClick()
+
+    composeTestRule.mainClock.advanceTimeBy(500) // Wait for the delete action to complete
+
+    assert(!deleteClicked) { "Delete callback was triggered" }
+  }
+
+  @Test
   fun testDeleteCancelFunctionality() = run {
     // Set the user as an admin
     SessionManager.setUserSession(role = Role.ADMIN)
