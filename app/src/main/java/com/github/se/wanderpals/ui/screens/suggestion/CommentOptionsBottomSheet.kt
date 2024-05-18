@@ -81,26 +81,28 @@ fun CommentBottomSheet(
                       }
                     }
 
-                Box(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                  viewModel.editCommentOption()
-                                  onEdit(selectedComment!!.text)
-                                })
-                            .padding(16.dp)
-                            .testTag("editCommentOption"),
-                    contentAlignment = Alignment.CenterStart) {
-                      Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.Create,
-                            contentDescription = "Edit",
-                            modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                        Text("Edit comment", style = MaterialTheme.typography.bodyLarge)
+                if (SessionManager.getIsNetworkAvailable()) {
+                  Box(
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .clickable(
+                                  onClick = {
+                                    viewModel.editCommentOption()
+                                    onEdit(selectedComment!!.text)
+                                  })
+                              .padding(16.dp)
+                              .testTag("editCommentOption"),
+                      contentAlignment = Alignment.CenterStart) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                          Icon(
+                              imageVector = Icons.Outlined.Create,
+                              contentDescription = "Edit",
+                              modifier = Modifier.size(24.dp))
+                          Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
+                          Text("Edit comment", style = MaterialTheme.typography.bodyLarge)
+                        }
                       }
-                    }
+                }
               }
             }
           }
@@ -110,12 +112,29 @@ fun CommentBottomSheet(
     AlertDialog(
         onDismissRequest = { viewModel.hideDeleteDialog() },
         title = { Text("Confirm Deletion") },
-        text = { Text("Are you sure you want to delete this comment?") },
+        text = {
+          Text(
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Are you sure you want to delete this comment?"
+                false -> "You are offline. You can't delete this comment."
+              })
+        },
         confirmButton = {
           TextButton(
-              onClick = { viewModel.confirmDeleteComment(suggestion) },
+              onClick = {
+                if (SessionManager.getIsNetworkAvailable()) {
+                  viewModel.confirmDeleteComment(suggestion)
+                } else {
+                  viewModel.hideDeleteDialog()
+                }
+              },
               modifier = Modifier.testTag("confirmDeleteCommentButton")) {
-                Text("Confirm", color = MaterialTheme.colorScheme.error)
+                Text(
+                    when (SessionManager.getIsNetworkAvailable()) {
+                      true -> "Confirm"
+                      false -> "Exit"
+                    },
+                    color = MaterialTheme.colorScheme.error)
               }
         },
         dismissButton = {
