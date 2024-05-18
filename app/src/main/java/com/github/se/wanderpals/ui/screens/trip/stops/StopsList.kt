@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.StopsListViewModel
 import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.agenda.DisplayDate
 import java.time.LocalDate
@@ -162,7 +163,11 @@ fun StopsList(
             } else { // Display a message if there are no stops
               Box(modifier = Modifier.fillMaxSize()) {
                 Text(
-                    text = "No stops for this trip",
+                    text =
+                        when (SessionManager.getIsNetworkAvailable()) {
+                          true -> "No stops for this trip"
+                          false -> "No internet connection"
+                        },
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier =
@@ -170,6 +175,7 @@ fun StopsList(
                             .testTag("NoActivitiesMessage")
                             .align(Alignment.Center))
                 IconButton(
+                    enabled = SessionManager.getIsNetworkAvailable(),
                     onClick = { stopsListViewModel.loadStops() },
                     modifier =
                         Modifier.align(Alignment.Center)

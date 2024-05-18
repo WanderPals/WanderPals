@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.stops.StopItem
 
@@ -51,11 +52,16 @@ fun DailyActivities(
   if (dailyActivities.isEmpty()) {
     Box(modifier = Modifier.fillMaxSize()) {
       Text(
-          text = "No activities for this date",
+          text =
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "No activities for this date"
+                false -> "No internet connection"
+              },
           style = MaterialTheme.typography.bodyLarge,
           color = MaterialTheme.colorScheme.secondary,
           modifier = Modifier.padding(16.dp).testTag("NoActivitiesMessage").align(Alignment.Center))
       IconButton(
+          enabled = SessionManager.getIsNetworkAvailable(),
           onClick = { refreshFunction() },
           modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
           content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })
