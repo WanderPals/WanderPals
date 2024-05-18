@@ -40,7 +40,7 @@ fun PullToRefreshLazyColumn(
       LaunchedEffect(Unit) {
         scope.launch {
           isRefreshing = true
-          when (SessionManager.getIsNetworkAvailable()){
+          when (SessionManager.getIsNetworkAvailable()) {
             true -> onRefresh()
             false -> Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show()
           }
