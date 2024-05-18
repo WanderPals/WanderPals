@@ -235,6 +235,7 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       createAnnouncementButton { assertIsNotEnabled() }
     }
     notificationsViewModelTest.addAnnouncement(announcement1)
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test

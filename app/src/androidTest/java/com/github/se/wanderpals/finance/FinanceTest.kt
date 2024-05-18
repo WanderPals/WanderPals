@@ -204,6 +204,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
       financeFloatingActionButton { assertIsNotDisplayed() }
     }
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test
@@ -388,6 +389,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
       assert(financeViewModelTest.expenseStateList.value.size == 3)
     }
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test

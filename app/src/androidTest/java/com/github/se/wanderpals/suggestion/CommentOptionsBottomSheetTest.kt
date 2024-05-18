@@ -271,6 +271,7 @@ class CommentOptionsBottomSheetTest {
 
     // Check if the comment is deleted
     composeTestRule.onNodeWithTag("comment1").assertExists()
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   // Add a test that checks the bottom sheet is hidden when the delete comment option is clicked
@@ -501,6 +502,7 @@ class CommentOptionsBottomSheetTest {
 
     // Check if the edit comment option is displayed
     composeTestRule.onNodeWithTag("editCommentOption").assertIsNotDisplayed()
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test

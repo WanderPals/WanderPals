@@ -225,5 +225,6 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         confirmVerified(mockNavActions)
       }
     }
+    SessionManager.setIsNetworkAvailable(true)
   }
 }

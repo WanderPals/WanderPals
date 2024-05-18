@@ -507,5 +507,6 @@ class CreateTripTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
     // Check that the save button is disabled
     screen.saveButton.assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
   }
 }

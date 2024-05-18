@@ -110,6 +110,7 @@ class StopItemTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
     composeTestRule.mainClock.advanceTimeBy(500) // Wait for the delete action to complete
 
     assert(!deleteClicked) { "Delete callback was triggered" }
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test

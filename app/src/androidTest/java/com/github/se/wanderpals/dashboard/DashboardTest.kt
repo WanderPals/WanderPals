@@ -748,6 +748,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     verify { mockNavActions wasNot Called }
     confirmVerified(mockNavActions)
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test
