@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Role
@@ -58,6 +59,8 @@ enum class FinanceOption(private val optionName: String) {
 @Composable
 fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationActions) {
 
+  val context = LocalContext.current
+
   var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
@@ -82,7 +85,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       },
       floatingActionButton = {
         if (currentSelectedOption == FinanceOption.EXPENSES &&
-            SessionManager.getCurrentUser()!!.role != Role.VIEWER) {
+            SessionManager.getCurrentUser()!!.role != Role.VIEWER &&
+            SessionManager.getIsNetworkAvailable()) {
           FloatingActionButton(
               modifier = Modifier.testTag("financeFloatingActionButton"),
               onClick = { navigationActions.navigateTo(Route.CREATE_EXPENSE) },
