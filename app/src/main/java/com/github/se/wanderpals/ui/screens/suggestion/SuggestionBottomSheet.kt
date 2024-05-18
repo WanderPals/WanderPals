@@ -149,12 +149,7 @@ fun SuggestionBottomSheet(
                 }
               },
               modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
-                Text(
-                    when (SessionManager.getIsNetworkAvailable()) {
-                      true -> "Confirm"
-                      false -> "Exit"
-                    },
-                    color = MaterialTheme.colorScheme.error)
+                Text("Confirm", color = MaterialTheme.colorScheme.error)
               }
         },
         dismissButton = {

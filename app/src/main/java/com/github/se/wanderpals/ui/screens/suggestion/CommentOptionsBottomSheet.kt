@@ -128,12 +128,7 @@ fun CommentBottomSheet(
                 }
               },
               modifier = Modifier.testTag("confirmDeleteCommentButton")) {
-                Text(
-                    when (SessionManager.getIsNetworkAvailable()) {
-                      true -> "Confirm"
-                      false -> "Exit"
-                    },
-                    color = MaterialTheme.colorScheme.error)
+                Text("Confirm", color = MaterialTheme.colorScheme.error)
               }
         },
         dismissButton = {

@@ -78,11 +78,7 @@ fun AnnouncementInfoDialog(
                   showDeleteDialog = false
                 },
                 modifier = Modifier.testTag("confirmDeleteAnnouncementButton")) {
-                  Text(
-                      when (SessionManager.getIsNetworkAvailable()) {
-                        true -> "Confirm"
-                        false -> "Exit"
-                      })
+                  Text("Confirm")
                 }
           },
           dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel") } },
