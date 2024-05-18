@@ -107,7 +107,12 @@ fun SuggestionBottomSheet(
                     modifier =
                         Modifier.fillMaxWidth()
                             .clickable(
-                                onClick = { viewModel.transformToStop(selectedSuggestion!!) })
+                                onClick = {
+                                  when (SessionManager.getIsNetworkAvailable()) {
+                                    true -> viewModel.transformToStop(selectedSuggestion!!)
+                                    false -> viewModel.hideBottomSheet()
+                                  }
+                                })
                             .padding(16.dp)
                             .testTag("transformSuggestionOption"),
                     contentAlignment = Alignment.CenterStart) {
@@ -131,12 +136,27 @@ fun SuggestionBottomSheet(
     AlertDialog(
         onDismissRequest = { viewModel.hideDeleteDialog() },
         title = { Text("Confirm Deletion") },
-        text = { Text("Are you sure you want to delete this suggestion?") },
+        text = {
+          Text(
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Are you sure you want to delete this suggestion?"
+                false -> "You are offline. You can't delete this suggestion."
+              })
+        },
         confirmButton = {
           TextButton(
-              onClick = { viewModel.confirmDeleteSuggestion(selectedSuggestion!!) },
+              onClick = {
+                if (SessionManager.getIsNetworkAvailable()) {
+                  viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
+                } else viewModel.hideDeleteDialog()
+              },
               modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
-                Text("Confirm", color = MaterialTheme.colorScheme.error)
+                Text(
+                    when (SessionManager.getIsNetworkAvailable()) {
+                      true -> "Confirm"
+                      false -> "Exit"
+                    },
+                    color = MaterialTheme.colorScheme.error)
               }
         },
         dismissButton = {
