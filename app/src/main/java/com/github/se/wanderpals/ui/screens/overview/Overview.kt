@@ -36,6 +36,7 @@ import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.isMapManagerInitialized
 import com.github.se.wanderpals.mapManager
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
@@ -169,11 +170,15 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
 
                     // Button to join with trip code
                     Button(
+                        enabled = SessionManager.getIsNetworkAvailable(),
                         onClick = {
                           val success = addTripCodeAction(tripCode)
+
                           if (success) {
+
                             isError = false
                             tripCode = EMPTY_CODE
+
                             closeDialogueAction()
                           } else {
                             isError = true

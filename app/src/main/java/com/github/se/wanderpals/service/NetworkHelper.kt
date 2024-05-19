@@ -22,6 +22,7 @@ class NetworkHelper(context: Context, private val repository: TripsRepository) {
       context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
   init {
+    SessionManager.setIsNetworkAvailable(false)
     val networkCallback =
         object : ConnectivityManager.NetworkCallback() {
           override fun onAvailable(network: Network) {

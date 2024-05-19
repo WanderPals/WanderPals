@@ -61,12 +61,20 @@ fun AnnouncementInfoDialog(
           modifier = Modifier.testTag("deleteAnnouncementDialog"),
           onDismissRequest = { showDeleteDialog = false },
           title = { Text("Confirm Deletion") },
-          text = { Text("Are you sure you want to delete this announcement?") },
+          text = {
+            Text(
+                when (SessionManager.getIsNetworkAvailable()) {
+                  true -> "Are you sure you want to delete this announcement?"
+                  false -> "Network is not available. Please try again later."
+                })
+          },
           confirmButton = {
             TextButton(
                 onClick = {
-                  notificationsViewModel.removeAnnouncement(announcement.announcementId)
-                  notificationsViewModel.setAnnouncementItemPressState(false)
+                  if (SessionManager.getIsNetworkAvailable()) {
+                    notificationsViewModel.removeAnnouncement(announcement.announcementId)
+                    notificationsViewModel.setAnnouncementItemPressState(false)
+                  }
                   showDeleteDialog = false
                 },
                 modifier = Modifier.testTag("confirmDeleteAnnouncementButton")) {

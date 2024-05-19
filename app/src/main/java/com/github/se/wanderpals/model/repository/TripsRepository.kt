@@ -1088,9 +1088,12 @@ open class TripsRepository(
             // Add the new userID to the trip's user list and update the trip
             val updatedStopsList = trip.users + user.userId
 
-            var updatedTokensList = trip.tokenIds
+            val updatedTokensList = trip.tokenIds.toMutableList()
             if (!SessionManager.getNotificationToken().isEmpty()) {
-              updatedTokensList = updatedStopsList + SessionManager.getNotificationToken()
+              updatedTokensList += listOf(SessionManager.getNotificationToken())
+              // problem when fetching the tokenIds
+              // updatedTokensList = updatedStopsList + SessionManager.getNotificationToken()
+
             }
             val updatedTrip = trip.copy(users = updatedStopsList, tokenIds = updatedTokensList)
             updateTrip(updatedTrip)

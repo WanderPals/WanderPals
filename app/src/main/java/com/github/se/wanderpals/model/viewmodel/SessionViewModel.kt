@@ -10,6 +10,19 @@ import kotlinx.coroutines.launch
 
 class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
 
+  fun getTheTokenList(tripId: String) {
+    viewModelScope.launch {
+      try {
+        val tokenList = tripsRepository.getTrip(tripId)?.tokenIds
+        if (tokenList != null) {
+          SessionManager.setListOfTokensTrip(tokenList)
+        }
+      } catch (e: Exception) {
+        Log.e("SessionViewModel", "Failed to get token list", e)
+      }
+    }
+  }
+
   fun updateUserForCurrentUser(tripId: String) {
     val userId = SessionManager.getCurrentUser()?.userId
     if (userId != null) {

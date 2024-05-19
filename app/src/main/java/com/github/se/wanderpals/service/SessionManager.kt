@@ -33,6 +33,7 @@ object SessionManager {
 
   private var currentUserNotificationTokenId: String = ""
 
+  private var currentListOfTokensTrip = mutableListOf<String>()
   private var isNetworkAvailable = true
 
   /**
@@ -130,6 +131,16 @@ object SessionManager {
    */
   fun canRemove(userId: String = ""): Boolean {
     return isAdmin() || currentUser?.userId == userId
+  }
+
+  // update the list of tokens for the trip
+  fun setListOfTokensTrip(listOfTokens: List<String>) {
+    currentListOfTokensTrip += listOfTokens
+  }
+
+  // get the list of tokens for the trip
+  fun getListOfTokensTrip(): MutableList<String> {
+    return currentListOfTokensTrip
   }
 
   /**
