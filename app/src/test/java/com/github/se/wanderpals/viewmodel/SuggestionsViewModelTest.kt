@@ -572,7 +572,7 @@ class SuggestionsViewModelTest {
             viewModel.getVoteIconClicked(
                 suggestion
                     .suggestionId)) // as the icon has been clicked, it is no longer clickable, so
-                                    // it returns false
+        // it returns false
 
         val startTime = viewModel.getStartTime(suggestion.suggestionId)
         assertNotNull(startTime) // Check if the start time is not null
