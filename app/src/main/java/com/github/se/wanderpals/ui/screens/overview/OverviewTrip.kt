@@ -3,23 +3,32 @@ package com.github.se.wanderpals.ui.screens.overview
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -45,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -52,6 +63,8 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
 import com.github.se.wanderpals.ui.theme.primaryContainerLight
+import com.google.firebase.Firebase
+import com.google.firebase.storage.storage
 import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
@@ -127,6 +140,17 @@ fun OverviewTrip(
   var dialogIsOpen by remember { mutableStateOf(false) }
   var dialogIsOpenEmail by remember { mutableStateOf(false) }
 
+  // image selection
+  val imageURL by overviewViewModel.imagesURL.collectAsState()
+
+  var displayedTheBoxSelector by remember { mutableStateOf(false) }
+  var selectedImagesLocal by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
+
+  val singlePhotoPickerLauncher =
+      rememberLauncherForActivityResult(
+          contract = ActivityResultContracts.PickVisualMedia(),
+          onResult = { uri -> selectedImagesLocal = uri })
+
   // Use of a launch effect to reset the value of isSelected to false after 100ms
   LaunchedEffect(isSelected.value) {
     if (isSelected.value) {
@@ -165,32 +189,43 @@ fun OverviewTrip(
         })
   }
 
-  Box(modifier = Modifier.fillMaxWidth().padding(bottom = 30.dp)) {
-    // Button representing the trip overview
-    Button(
-        onClick = {
-          if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
-            dialogIsOpen = false
-            SessionManager.setTripName(trip.title)
-            navigationActions.setVariablesTrip(trip.tripId)
-            navigationActions.navigateTo(Route.TRIP)
-          } else {
-            dialogIsOpen = true
-          }
-        },
-        modifier =
-            Modifier.align(Alignment.TopCenter)
-                .width(360.dp)
-                .height(130.dp)
-                .padding(top = 1.dp)
-                .testTag("buttonTrip" + trip.tripId),
-        shape = RoundedCornerShape(size = 15.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)) {
+  Card(
+      modifier =
+          Modifier
+              // .fillMaxSize()
+              .padding(bottom = 30.dp, start = 15.dp)
+              .clickable {
+                if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
+                  dialogIsOpen = false
+                  SessionManager.setTripName(trip.title)
+                  navigationActions.setVariablesTrip(trip.tripId)
+                  navigationActions.navigateTo(Route.TRIP)
+                } else {
+                  dialogIsOpen = true
+                }
+              }
+              .width(360.dp)
+              .height(130.dp)
+              .testTag("buttonTrip" + trip.tripId),
+      shape = RoundedCornerShape(15.dp),
+      elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+      colors = CardDefaults.cardColors(containerColor = primaryContainerLight)) {
+        Box(modifier = Modifier.fillMaxSize()) {
+          // Box containing the trip image
+          AsyncImage(
+              model = trip.imageUrl,
+              contentDescription = "",
+              contentScale = ContentScale.Crop,
+              modifier = Modifier.fillMaxWidth().height(150.dp))
+
+          // Button representing the trip overview
+
           // Column containing trip information
-          Column(modifier = Modifier.width(320.dp)) {
+          Column(modifier = Modifier.width(380.dp)) {
             Row(
                 modifier =
-                    Modifier.fillMaxWidth().padding(top = 8.dp) // Ensure padding for visual spacing
+                    Modifier.fillMaxWidth()
+                        .padding(top = 8.dp, start = 8.dp) // Ensure padding for visual spacing
                 ) {
                   // Trip title
                   Text(
@@ -295,9 +330,107 @@ fun OverviewTrip(
                                 Modifier.background(
                                     if (isSelected.value) Color.LightGray else Color.Transparent))
                       }
+                  Spacer(Modifier.width(10.dp))
+                  IconButton(
+                      onClick = { displayedTheBoxSelector = true },
+                      modifier = Modifier.width(24.dp).height(28.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier =
+                                Modifier.background(
+                                    if (isSelected.value) Color.LightGray else Color.Transparent))
+                      }
                 }
           }
         }
+      }
+  if (displayedTheBoxSelector) {
+    Dialog(onDismissRequest = { displayedTheBoxSelector = false }) {
+      Card(
+          colors = CardDefaults.cardColors(contentColor = Color.Black),
+          modifier = Modifier.size(370.dp, 300.dp).testTag("documentBox")) {
+
+            // set the name of the documents
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center) {
+
+                  // Button to add the document from the media picker
+                  FloatingActionButton(
+                      onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) },
+                      modifier =
+                          Modifier.padding(top = 20.dp)
+                              .size(width = 200.dp, height = 50.dp)
+                              .testTag("addDocumentButton")) {
+                        Text(
+                            text = "Add Document",
+                            style =
+                                TextStyle(
+                                    fontSize = 16.sp,
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = 0.5.sp,
+                                ),
+                        )
+                      }
+                  // button to accept the document
+                  Row(
+                      modifier = Modifier.padding(top = 10.dp),
+                      horizontalArrangement = Arrangement.SpaceEvenly) {
+                        FloatingActionButton(
+                            onClick = {
+                              if (selectedImagesLocal != Uri.EMPTY) {
+                                overviewViewModel.addDocument(
+                                    trip.tripId,
+                                    selectedImagesLocal!!,
+                                    "trip",
+                                    context,
+                                    Firebase.storage.reference)
+                              }
+                              selectedImagesLocal = Uri.EMPTY
+                              displayedTheBoxSelector = false
+                            },
+                            modifier =
+                                Modifier.padding(top = 10.dp)
+                                    .size(width = 100.dp, height = 50.dp)
+                                    .testTag("acceptButton")) {
+                              Text(
+                                  text = "Accept",
+                                  style =
+                                      TextStyle(
+                                          fontSize = 16.sp,
+                                          textAlign = TextAlign.Center,
+                                          letterSpacing = 0.5.sp,
+                                      ),
+                              )
+                            }
+                        Spacer(modifier = Modifier.width(50.dp))
+                        // cancel button
+                        FloatingActionButton(
+                            onClick = {
+                              selectedImagesLocal = Uri.EMPTY
+                              displayedTheBoxSelector = false
+                            },
+                            modifier =
+                                Modifier.padding(top = 10.dp)
+                                    .size(width = 100.dp, height = 50.dp)
+                                    .testTag("cancelButton")) {
+                              Text(
+                                  text = "Cancel",
+                                  style =
+                                      TextStyle(
+                                          fontSize = 16.sp,
+                                          textAlign = TextAlign.Center,
+                                          letterSpacing = 0.5.sp,
+                                      ),
+                              )
+                            }
+                      }
+                }
+          }
+    }
   }
 }
 
