@@ -2,8 +2,8 @@ package com.github.se.wanderpals.model.viewmodel
 
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -12,8 +12,8 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SessionUser
-import com.google.firebase.storage.StorageReference
 import com.github.se.wanderpals.service.sendMessageToListOfUsers
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
