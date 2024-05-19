@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
@@ -23,8 +24,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -112,6 +113,7 @@ fun Dashboard(
             modifier =
                 Modifier.background(Color.White)
                     .padding(contentPadding)
+                    .fillMaxSize()
                     .testTag("dashboardSuggestions")) {
               LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
                 item {
@@ -296,26 +298,34 @@ fun Menu(
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: String) {
   Column(
       modifier =
-          Modifier.padding(top = 8.dp, start = 8.dp, end = 8.dp).testTag("dashboardTopBar")) {
+          Modifier.background(MaterialTheme.colorScheme.surfaceTint)
+              .padding(top = 8.dp, start = 8.dp, end = 8.dp)
+              .testTag("dashboardTopBar")) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment =
                 Alignment
                     .CenterVertically // This aligns all children vertically centered in the Row
             ) {
-              ElevatedButton(
-                  modifier = Modifier.testTag("menuButton"),
-                  content = { Icon(Icons.Default.Menu, contentDescription = "Menu") },
+              IconButton(
                   onClick = {
                     scope.launch { drawerState.apply { if (isClosed) open() else close() } }
-                  })
+                  },
+                  modifier = Modifier.testTag("menuButton").padding(horizontal = 8.dp),
+              ) {
+                Icon(
+                    Icons.Default.Menu,
+                    contentDescription = "Menu",
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary)
+              }
               Text(
                   text = tripTitle,
                   modifier =
                       Modifier.padding(8.dp)
                           .testTag("tripTitle")
                           .weight(1f), // This makes the text expand and fill the space
-                  color = MaterialTheme.colorScheme.primary,
+                  color = MaterialTheme.colorScheme.onPrimary,
                   fontWeight = FontWeight.Bold, // This makes the text bold
                   fontSize = 24.sp, // This sets the font size to 24sp
                   maxLines = 1, // This makes the text to be displayed in a single line
@@ -323,6 +333,6 @@ fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: 
                       TextOverflow.Ellipsis // This makes the text to be ellipsized if it overflows
                   )
             }
-        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
       }
 }
