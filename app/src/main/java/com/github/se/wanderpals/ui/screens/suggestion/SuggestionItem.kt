@@ -124,7 +124,7 @@ fun SuggestionItem(
                     .fillMaxWidth()
                     .verticalScroll(
                         rememberScrollState())) { // Add vertical scrolling for testing purposes on
-                                                  // small phones
+              // small phones
               Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth(0.6f).padding(end = 8.dp)) {
                   Text(
