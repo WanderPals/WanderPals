@@ -103,7 +103,8 @@ open class SuggestionsViewModel(
    * Returns whether the vote icon has been clicked for a suggestion.
    *
    * @param suggestionId The ID of the suggestion to check.
-   * @return True if the vote icon has been clicked, false otherwise.
+   * @return True if the vote icon has been clicked, false if the icon is no longer clickable
+   *   because it has been clicked.
    */
   open fun getVoteIconClicked(suggestionId: String): Boolean {
     return _voteIconClicked.value.contains(suggestionId)
