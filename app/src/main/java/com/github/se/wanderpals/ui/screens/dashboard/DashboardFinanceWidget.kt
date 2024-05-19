@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.dashboard
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,7 @@ import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
  * @param viewModel The ViewModel for the Dashboard screen.
  * @param onClick The callback function for when the widget is clicked.
  */
+@SuppressLint("DefaultLocale")
 @Composable
 fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
   val expenses by viewModel.expenses.collectAsState()
@@ -72,7 +74,7 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
               // Finance Details, Left part of the widget
               Column(
                   modifier =
-                      Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
+                      Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
                           .width(IntrinsicSize.Max)) {
                     // Top part of the texts
                     Row(

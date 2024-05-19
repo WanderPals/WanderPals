@@ -70,10 +70,10 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
         Row(
             modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
-              // List of Suggestio
+              // List of Suggestions
               Column(
                   modifier =
-                      Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
+                      Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
                           .fillMaxWidth()) {
                     // Top part of the texts
                     Row(
