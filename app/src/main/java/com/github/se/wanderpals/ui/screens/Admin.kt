@@ -33,7 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
@@ -75,7 +74,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
-import com.github.se.wanderpals.model.data.Role as Role
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.navigationActions
@@ -224,7 +223,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                         }
                                       }
                                       .padding(horizontal = 10.dp)
-                                      .testTag("UserName"),
+                                      .testTag("userName"),
                               fontWeight = FontWeight.Bold)
                         }
 
@@ -248,7 +247,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                   fontSize = 14.sp,
                                   fontWeight = FontWeight.Bold,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                  modifier = Modifier.testTag("TripName"))
+                                  modifier = Modifier.testTag("tripName"))
                             }
                         // Add vertical padding
                         Spacer(modifier = Modifier.height(8.dp))
@@ -268,7 +267,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                   fontSize = 14.sp,
                                   fontWeight = FontWeight.Bold,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                  modifier = Modifier.testTag("UserRole"))
+                                  modifier = Modifier.testTag("userRole"))
                             }
 
                         // Add vertical padding
@@ -289,7 +288,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                   fontSize = 14.sp,
                                   fontWeight = FontWeight.Bold,
                                   color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                  modifier = Modifier.testTag("UserNickname"))
+                                  modifier = Modifier.testTag("userNickname"))
                             }
                       }
                     }
@@ -416,14 +415,15 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                 modifier =
                                     Modifier.size(40.dp)
                                         .clip(CircleShape)
-                                        .testTag("UserProfilePicture" + user.userId))
+                                        .testTag("userProfilePicture" + user.userId))
                             Spacer(modifier = Modifier.width(12.dp))
                             // Display the member name
                             Text(
                                 text = user.name,
                                 style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier.weight(1f).testTag("userName"))
+                                modifier = Modifier.weight(1f).testTag("userName" + user.userId))
 
+                            // Edit role button
                             if (currentUser!!.role == Role.OWNER &&
                                 currentUser!!.userId != user.userId ||
                                 currentUser!!.role != Role.OWNER) {
@@ -434,7 +434,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                     onOptionSelected(selectedOption)
                                     displayedChoiceBox = true
                                   },
-                                  modifier = Modifier.testTag("editRoleButton")) {
+                                  modifier = Modifier.testTag("editRoleButton" + user.userId)) {
                                     Icon(
                                         imageVector = Icons.Default.Build,
                                         contentDescription = "Edit Role",
@@ -442,20 +442,23 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                   }
                             }
 
+                            // Promote member to owner button
                             if (currentUser!!.role == Role.OWNER &&
                                 currentUser!!.userId != user.userId) {
                               IconButton(
                                   onClick = {
                                     userToPromote = user
                                     promoteMemberDialog = true
-                                  }) {
+                                  },
+                                  modifier = Modifier.testTag("promoteUserButton" + user.userId)) {
                                     Icon(
-                                        Icons.Default.Star,
-                                        contentDescription = "transferRights",
+                                        imageVector = Icons.Default.Star,
+                                        contentDescription = "Promote User",
                                         modifier = Modifier.size(20.dp))
                                   }
                             }
 
+                            // Delete member button
                             if ((currentUser!!.userId == user.userId ||
                                 currentUser!!.role.ordinal < user.role.ordinal) &&
                                 user.role != Role.OWNER) {
@@ -464,7 +467,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                     deleteMemberDialog = true
                                     userToDelete = user.userId
                                   },
-                                  modifier = Modifier.testTag("deleteUserButton")) {
+                                  modifier = Modifier.testTag("deleteUserButton" + user.userId)) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                                         contentDescription = "Delete User",
@@ -586,10 +589,11 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                               userToUpdate.role.ordinal > currentUser?.role!!.ordinal &&
                               currentUser?.role != Role.OWNER) {
                             adminViewModel.modifyCurrentUserRole(selectedOption)
+                            adminViewModel.modifyCurrentUserRole(selectedOption)
                           }
                           displayedChoiceBox = false
                         },
-                        modifier = Modifier.padding(10.dp).testTag("ConfirmRoleChangeButton")) {
+                        modifier = Modifier.padding(10.dp).testTag("confirmRoleChangeButton")) {
                           Text("Update Role")
                         }
                   }
