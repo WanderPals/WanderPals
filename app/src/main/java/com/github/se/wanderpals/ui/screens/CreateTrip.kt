@@ -1,10 +1,6 @@
 package com.github.se.wanderpals.ui.screens
 
 import android.annotation.SuppressLint
-import android.net.Uri
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -98,10 +93,7 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 @Composable
 fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
 
-  val context = LocalContext.current
-
   val createTripFinished by overviewViewModel.createTripFinished.collectAsState()
-  val imageURL by overviewViewModel.imagesURL.collectAsState()
 
   // Effect to react to the createTripFinished state change
   LaunchedEffect(createTripFinished) {
@@ -110,12 +102,6 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
       overviewViewModel.setCreateTripFinished(false) // Reset the flag after handling it
     }
   }
-  var selectedImagesLocal by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
-
-  val singlePhotoPickerLauncher =
-      rememberLauncherForActivityResult(
-          contract = ActivityResultContracts.PickVisualMedia(),
-          onResult = { uri -> selectedImagesLocal = uri })
 
   val MAX_TITLE_LENGTH = 35
 
@@ -239,8 +225,6 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                     if (error.isNotEmpty()) {
                       errorText = error
                     } else {
-                      Log.d("CreateTrip", "Selected images: $selectedImagesLocal")
-                      Log.d("CreateTrip", "Image URL: $imageURL")
 
                       val startDateTrip =
                           LocalDate.of(
@@ -261,7 +245,7 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                               endDate = endDateTrip,
                               totalBudget = budget.toDouble(),
                               description = description,
-                              imageUrl = imageURL,
+                              imageUrl = "",
                               stops = emptyList(),
                               users = emptyList(),
                               suggestions = emptyList())
