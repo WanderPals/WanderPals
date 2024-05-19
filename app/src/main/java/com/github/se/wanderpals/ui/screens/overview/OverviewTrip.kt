@@ -62,6 +62,7 @@ import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
+import com.github.se.wanderpals.ui.theme.primaryContainerLight
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import java.time.format.DateTimeFormatter
@@ -190,8 +191,9 @@ fun OverviewTrip(
 
   Card(
       modifier =
-          Modifier.fillMaxSize()
-              .padding(bottom = 30.dp)
+          Modifier
+              // .fillMaxSize()
+              .padding(bottom = 30.dp, start = 15.dp)
               .clickable {
                 if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
                   dialogIsOpen = false
@@ -202,9 +204,12 @@ fun OverviewTrip(
                   dialogIsOpen = true
                 }
               }
+              .width(360.dp)
+              .height(130.dp)
               .testTag("buttonTrip" + trip.tripId),
       shape = RoundedCornerShape(15.dp),
-      elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)) {
+      elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+      colors = CardDefaults.cardColors(containerColor = primaryContainerLight)) {
         Box(modifier = Modifier.fillMaxSize()) {
           // Box containing the trip image
           AsyncImage(
@@ -219,7 +224,8 @@ fun OverviewTrip(
           Column(modifier = Modifier.width(380.dp)) {
             Row(
                 modifier =
-                    Modifier.fillMaxWidth().padding(top = 8.dp) // Ensure padding for visual spacing
+                    Modifier.fillMaxWidth()
+                        .padding(top = 8.dp, start = 8.dp) // Ensure padding for visual spacing
                 ) {
                   // Trip title
                   Text(
@@ -325,15 +331,17 @@ fun OverviewTrip(
                                     if (isSelected.value) Color.LightGray else Color.Transparent))
                       }
                   Spacer(Modifier.width(10.dp))
-                  IconButton(onClick = { displayedTheBoxSelector = true }) {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier =
-                            Modifier.background(
-                                if (isSelected.value) Color.LightGray else Color.Transparent))
-                  }
+                  IconButton(
+                      onClick = { displayedTheBoxSelector = true },
+                      modifier = Modifier.width(24.dp).height(28.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier =
+                                Modifier.background(
+                                    if (isSelected.value) Color.LightGray else Color.Transparent))
+                      }
                 }
           }
         }
