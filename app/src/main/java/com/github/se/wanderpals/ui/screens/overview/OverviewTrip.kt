@@ -190,16 +190,19 @@ fun OverviewTrip(
 
   Card(
       modifier =
-          Modifier.fillMaxSize().padding(bottom = 30.dp).clickable {
-            if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
-              dialogIsOpen = false
-              SessionManager.setTripName(trip.title)
-              navigationActions.setVariablesTrip(trip.tripId)
-              navigationActions.navigateTo(Route.TRIP)
-            } else {
-              dialogIsOpen = true
-            }
-          },
+          Modifier.fillMaxSize()
+              .padding(bottom = 30.dp)
+              .clickable {
+                if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
+                  dialogIsOpen = false
+                  SessionManager.setTripName(trip.title)
+                  navigationActions.setVariablesTrip(trip.tripId)
+                  navigationActions.navigateTo(Route.TRIP)
+                } else {
+                  dialogIsOpen = true
+                }
+              }
+              .testTag("buttonTrip" + trip.tripId),
       shape = RoundedCornerShape(15.dp),
       elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)) {
         Box(modifier = Modifier.fillMaxSize()) {
