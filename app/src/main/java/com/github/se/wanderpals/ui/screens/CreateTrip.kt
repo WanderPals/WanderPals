@@ -1,6 +1,13 @@
 package com.github.se.wanderpals.ui.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -36,6 +43,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,6 +53,9 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.google.firebase.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.storage
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -93,6 +104,8 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 @Composable
 fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
 
+    val context = LocalContext.current
+
   val createTripFinished by overviewViewModel.createTripFinished.collectAsState()
 
   // Effect to react to the createTripFinished state change
@@ -102,6 +115,12 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
       overviewViewModel.setCreateTripFinished(false) // Reset the flag after handling it
     }
   }
+    var selectedImagesLocal by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
+
+    val singlePhotoPickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.PickVisualMedia(),
+            onResult = { uri -> selectedImagesLocal = uri })
 
   val MAX_TITLE_LENGTH = 35
 
@@ -110,10 +129,13 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
   var startDate by remember { mutableStateOf("") }
   var endDate by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
+    var imageURL by remember { mutableStateOf("") }
 
   var errorText by remember { mutableStateOf("") }
   var showDatePickerStart by remember { mutableStateOf(false) }
   var showDatePickerEnd by remember { mutableStateOf(false) }
+
+
 
   Scaffold(
       modifier = Modifier.testTag("createTripScreen"),
@@ -217,6 +239,52 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                   text = errorText,
                   color = Color.Red,
               )
+            //create a add image button
+            Button(onClick = {
+                singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
+            },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)) {
+                Text("Add Image")
+            }
+            fun addDocument(
+                documentsURL: Uri,
+                path: String,
+                context: Context,
+                storageReference: StorageReference?
+            ) {
+                // create a reference to the uri of the image
+                val riversRef = storageReference?.child("tripImage/${path}/${documentsURL.lastPathSegment}")
+                // upload the image to the firebase storage
+                val taskUp = riversRef?.putFile(documentsURL)
+
+                // Register observers to listen for state changes
+                // and progress of the upload
+                taskUp
+                    ?.addOnFailureListener {
+                        // Handle unsuccessful uploads
+                        Log.d("Admin", "Failed to upload image")
+                    }
+                    ?.addOnSuccessListener {
+                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+                        Log.d("Document", "Image uploaded successfully")
+                        Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+                    }
+                // Continue with the task to get the download URL
+                taskUp
+                    ?.continueWithTask { task ->
+                        if (!task.isSuccessful) {
+                            task.exception?.let { throw it }
+                        }
+                        riversRef.downloadUrl
+                    }
+                    ?.addOnCompleteListener { task ->
+                        Log.d( "Admin", "Image URL: ${task.result}")
+                        imageURL = task.result.toString()
+
+                    }
+            }
 
               Button(
                   modifier = Modifier.testTag("tripSave").fillMaxWidth().padding(16.dp),
@@ -225,8 +293,11 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                     if (error.isNotEmpty()) {
                       errorText = error
                     } else {
+                        Log.d("CreateTrip", "Selected images: $selectedImagesLocal")
+                        addDocument(selectedImagesLocal!!, name, context, Firebase.storage.reference)
+                        Log.d("CreateTrip", "Image URL: $imageURL")
 
-                      val startDateTrip =
+                        val startDateTrip =
                           LocalDate.of(
                               startDate.split("/")[2].toInt(),
                               startDate.split("/")[1].toInt(),
@@ -245,7 +316,7 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                               endDate = endDateTrip,
                               totalBudget = budget.toDouble(),
                               description = description,
-                              imageUrl = "",
+                              imageUrl = imageURL,
                               stops = emptyList(),
                               users = emptyList(),
                               suggestions = emptyList())
@@ -258,6 +329,8 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
               }
             }
       })
+
+
 }
 
 /**
