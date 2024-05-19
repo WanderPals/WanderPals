@@ -22,5 +22,6 @@ data class User(
     val role: Role = Role.MEMBER,
     val lastPosition: GeoCords = GeoCords(0.0, 0.0),
     val profilePictureURL: String = "",
-    val notificationTokenId: String = ""
+    val notificationTokenId: String = "",
+    val documentsURL: List<Documents> = emptyList()
 )

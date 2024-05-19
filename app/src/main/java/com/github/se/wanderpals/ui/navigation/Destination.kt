@@ -56,4 +56,5 @@ val TRIP_DESTINATIONS =
         Destination(
             route = Route.SUGGESTION_HISTORY,
             icon = Icons.Default.Menu,
-            text = "gSuggestion History"))
+            text = "gSuggestion History"),
+        Destination(route = Route.DOCUMENT, icon = Icons.Default.Menu, text = "Document"))

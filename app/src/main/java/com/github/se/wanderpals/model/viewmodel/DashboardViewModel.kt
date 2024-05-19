@@ -35,6 +35,12 @@ open class DashboardViewModel(
   private var _stops = MutableStateFlow(emptyList<Stop>())
   open val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 
+  private var _lastSharedDocument = MutableStateFlow("")
+  open val lastSharedDocument: StateFlow<String> = _lastSharedDocument.asStateFlow()
+
+  private var _lastPrivateDocument = MutableStateFlow("")
+  open val lastPrivateDocument: StateFlow<String> = _lastPrivateDocument.asStateFlow()
+
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
@@ -74,6 +80,26 @@ open class DashboardViewModel(
     viewModelScope.launch {
       // Fetch all stops from the trip
       _stops.value = tripsRepository.getAllStopsFromTrip(tripId)
+    }
+  }
+
+  open fun loadLastAddedSharedDocument(tripId: String) {
+    // Get the last added document
+    viewModelScope.launch {
+      val docs = tripsRepository.getTrip(tripId)?.documentsURL ?: emptyList()
+      if (docs.isNotEmpty()) {
+        _lastSharedDocument.value = docs.last().documentsName
+      }
+    }
+  }
+
+  open fun loadLastAddedPrivateDocument(tripId: String, userID: String) {
+    // Get the last added document
+    viewModelScope.launch {
+      val privateDocs = tripsRepository.getUserFromTrip(tripId, userID)?.documentsURL ?: emptyList()
+      if (privateDocs.isNotEmpty()) {
+        _lastPrivateDocument.value = privateDocs.last().documentsName
+      }
     }
   }
 
