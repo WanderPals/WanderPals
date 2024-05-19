@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -20,7 +21,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,7 +35,6 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.NetworkHelper
-import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.github.se.wanderpals.service.sendMessageToListOfUsers
@@ -281,7 +283,8 @@ class MainActivity : ComponentActivity() {
                                   }
                             }
                       })
-                  NotificationPermission(context = context)
+                  // NotificationPermission(context = context)
+                  requestNotificationPermission()
 
                   Log.d("MainActivity", "User is signed in")
                   Log.d("token", SessionManager.getNotificationToken())
@@ -376,6 +379,18 @@ class MainActivity : ComponentActivity() {
             .setContentText("Test Notification")
             .build()
     notificationManager.notify(1, notification)
+  }
+
+  private fun requestNotificationPermission() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      val hasPermission =
+          ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+              PackageManager.PERMISSION_GRANTED
+
+      if (!hasPermission) {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 0)
+      }
+    }
   }
 }
 
