@@ -26,10 +26,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -64,7 +62,6 @@ import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
-import com.github.se.wanderpals.ui.theme.primaryContainerLight
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import java.time.format.DateTimeFormatter
@@ -191,163 +188,158 @@ fun OverviewTrip(
         })
   }
 
-  Card(modifier = Modifier
-      .fillMaxSize()
-      .padding(bottom = 30.dp)
-      .clickable {
-          if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
+  Card(
+      modifier =
+          Modifier.fillMaxSize().padding(bottom = 30.dp).clickable {
+            if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
               dialogIsOpen = false
               SessionManager.setTripName(trip.title)
               navigationActions.setVariablesTrip(trip.tripId)
               navigationActions.navigateTo(Route.TRIP)
-          } else {
+            } else {
               dialogIsOpen = true
-          }
-      },
+            }
+          },
       shape = RoundedCornerShape(15.dp),
-      elevation = CardDefaults.cardElevation( defaultElevation = 5.dp)
-  ) {
-      Box(modifier = Modifier.fillMaxSize()){
-    // Box containing the trip image
-          AsyncImage(model = trip.imageUrl, contentDescription = "", contentScale = ContentScale.Crop,
+      elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)) {
+        Box(modifier = Modifier.fillMaxSize()) {
+          // Box containing the trip image
+          AsyncImage(
+              model = trip.imageUrl,
+              contentDescription = "",
+              contentScale = ContentScale.Crop,
               modifier = Modifier.fillMaxWidth().height(150.dp))
 
+          // Button representing the trip overview
 
-    // Button representing the trip overview
+          // Column containing trip information
+          Column(modifier = Modifier.width(380.dp)) {
+            Row(
+                modifier =
+                    Modifier.fillMaxWidth().padding(top = 8.dp) // Ensure padding for visual spacing
+                ) {
+                  // Trip title
+                  Text(
+                      text = trip.title,
+                      modifier = Modifier.height(24.dp),
+                      style =
+                          TextStyle(
+                              fontSize = 18.sp,
+                              lineHeight = 24.sp,
+                              fontWeight = FontWeight(500),
+                              color = onPrimaryContainerLight,
+                              letterSpacing = 0.1.sp,
+                          ),
+                      textAlign = TextAlign.Start,
+                      overflow = TextOverflow.Ellipsis,
+                      maxLines = 1)
 
-      // Column containing trip information
-      Column(modifier = Modifier.width(380.dp)) {
-        Row(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp) // Ensure padding for visual spacing
-            ) {
-              // Trip title
-              Text(
-                  text = trip.title,
-                  modifier = Modifier.height(24.dp),
-                  style =
-                      TextStyle(
-                          fontSize = 18.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = onPrimaryContainerLight,
-                          letterSpacing = 0.1.sp,
-                      ),
-                  textAlign = TextAlign.Start,
-                  overflow = TextOverflow.Ellipsis,
-                  maxLines = 1)
+                  Spacer(Modifier.weight(1f))
 
-              Spacer(Modifier.weight(1f))
+                  // Start date
+                  Text(
+                      text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
+                      modifier =
+                          Modifier.height(24.dp)
+                              .padding(
+                                  top = 4.dp), // the padding is for having the text on the same
+                      // line and in the same height as the trip title
+                      style =
+                          TextStyle(
+                              fontSize = 14.sp,
+                              lineHeight = 24.sp,
+                              fontWeight = FontWeight(500),
+                              color = onPrimaryContainerLight,
+                              letterSpacing = 0.1.sp,
+                          ),
+                      textAlign = TextAlign.End)
 
-              // Start date
-              Text(
-                  text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
-                  modifier =
-                  Modifier
-                      .height(24.dp)
-                      .padding(top = 4.dp), // the padding is for having the text on the same
-                  // line and in the same height as the trip title
-                  style =
-                      TextStyle(
-                          fontSize = 14.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = onPrimaryContainerLight,
-                          letterSpacing = 0.1.sp,
-                      ),
-                  textAlign = TextAlign.End)
+                  Spacer(modifier = Modifier.width(11.dp)) // Space between start and end date
 
-              Spacer(modifier = Modifier.width(11.dp)) // Space between start and end date
+                  // End date
+                  Text(
+                      text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
+                      modifier =
+                          Modifier.height(24.dp)
+                              .padding(
+                                  top = 4.dp), // the padding is for having the text on the same
+                      // line and in the same height as the trip title
+                      style =
+                          TextStyle(
+                              fontSize = 14.sp,
+                              lineHeight = 24.sp,
+                              fontWeight = FontWeight(500),
+                              color = onPrimaryContainerLight,
+                              letterSpacing = 0.1.sp,
+                          ),
+                      textAlign = TextAlign.End)
+                }
 
-              // End date
-              Text(
-                  text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
-                  modifier =
-                  Modifier
-                      .height(24.dp)
-                      .padding(top = 4.dp), // the padding is for having the text on the same
-                  // line and in the same height as the trip title
-                  style =
-                      TextStyle(
-                          fontSize = 14.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = onPrimaryContainerLight,
-                          letterSpacing = 0.1.sp,
-                      ),
-                  textAlign = TextAlign.End)
-            }
+            Spacer(Modifier.height(50.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth() // Ensure padding for visual spacing
+                ) {
+                  Spacer(Modifier.weight(1f)) // Pushes the icon to the end
 
-        Spacer(Modifier.height(50.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth() // Ensure padding for visual spacing
-            ) {
-              Spacer(Modifier.weight(1f)) // Pushes the icon to the end
+                  // Share trip code button
+                  IconButton(
+                      modifier =
+                          Modifier.width(24.dp)
+                              .height(28.dp)
+                              .testTag("sendTripButton" + trip.tripId),
+                      onClick = {
+                        isEmailSelected.value = true
+                        dialogIsOpenEmail = true
+                      }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.Send,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier =
+                                Modifier.background(
+                                    if (isEmailSelected.value) Color.LightGray
+                                    else Color.Transparent))
+                      }
 
-              // Share trip code button
-              IconButton(
-                  modifier =
-                  Modifier
-                      .width(24.dp)
-                      .height(28.dp)
-                      .testTag("sendTripButton" + trip.tripId),
-                  onClick = {
-                    isEmailSelected.value = true
-                    dialogIsOpenEmail = true
-                  }) {
+                  Spacer(Modifier.width(10.dp))
+
+                  // Share trip code button
+                  IconButton(
+                      modifier =
+                          Modifier.width(24.dp)
+                              .height(28.dp)
+                              .testTag("shareTripButton" + trip.tripId),
+                      onClick = {
+                        isSelected.value = true
+                        context.shareTripCodeIntent(trip.tripId)
+                      }) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier =
+                                Modifier.background(
+                                    if (isSelected.value) Color.LightGray else Color.Transparent))
+                      }
+                  Spacer(Modifier.width(10.dp))
+                  IconButton(onClick = { displayedTheBoxSelector = true }) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.Send,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier =
-                            Modifier.background(
-                                if (isEmailSelected.value) Color.LightGray else Color.Transparent))
-                  }
-
-              Spacer(Modifier.width(10.dp))
-
-              // Share trip code button
-              IconButton(
-                  modifier =
-                  Modifier
-                      .width(24.dp)
-                      .height(28.dp)
-                      .testTag("shareTripButton" + trip.tripId),
-                  onClick = {
-                    isSelected.value = true
-                    context.shareTripCodeIntent(trip.tripId)
-                  }) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
+                        imageVector = Icons.Default.Edit,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSecondaryContainer,
                         modifier =
                             Modifier.background(
                                 if (isSelected.value) Color.LightGray else Color.Transparent))
                   }
-              Spacer(Modifier.width(10.dp))
-              IconButton(onClick = { displayedTheBoxSelector = true }) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier =
-                        Modifier.background(
-                            if (isSelected.value) Color.LightGray else Color.Transparent))
-              }
-            }
+                }
+          }
+        }
       }
-    }
-  }
   if (displayedTheBoxSelector) {
     Dialog(onDismissRequest = { displayedTheBoxSelector = false }) {
       Card(
           colors = CardDefaults.cardColors(contentColor = Color.Black),
-          modifier = Modifier
-              .size(370.dp, 300.dp)
-              .testTag("documentBox")) {
+          modifier = Modifier.size(370.dp, 300.dp).testTag("documentBox")) {
 
             // set the name of the documents
             Column(
@@ -359,10 +351,9 @@ fun OverviewTrip(
                   FloatingActionButton(
                       onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) },
                       modifier =
-                      Modifier
-                          .padding(top = 20.dp)
-                          .size(width = 200.dp, height = 50.dp)
-                          .testTag("addDocumentButton")) {
+                          Modifier.padding(top = 20.dp)
+                              .size(width = 200.dp, height = 50.dp)
+                              .testTag("addDocumentButton")) {
                         Text(
                             text = "Add Document",
                             style =
@@ -391,10 +382,9 @@ fun OverviewTrip(
                               displayedTheBoxSelector = false
                             },
                             modifier =
-                            Modifier
-                                .padding(top = 10.dp)
-                                .size(width = 100.dp, height = 50.dp)
-                                .testTag("acceptButton")) {
+                                Modifier.padding(top = 10.dp)
+                                    .size(width = 100.dp, height = 50.dp)
+                                    .testTag("acceptButton")) {
                               Text(
                                   text = "Accept",
                                   style =
@@ -413,10 +403,9 @@ fun OverviewTrip(
                               displayedTheBoxSelector = false
                             },
                             modifier =
-                            Modifier
-                                .padding(top = 10.dp)
-                                .size(width = 100.dp, height = 50.dp)
-                                .testTag("cancelButton")) {
+                                Modifier.padding(top = 10.dp)
+                                    .size(width = 100.dp, height = 50.dp)
+                                    .testTag("cancelButton")) {
                               Text(
                                   text = "Cancel",
                                   style =
@@ -452,9 +441,7 @@ fun DialogHandlerEmail(
         closeDialogueAction()
       }) {
         Surface(
-            modifier = Modifier
-                .height(220.dp)
-                .testTag("emailDialog"),
+            modifier = Modifier.height(220.dp).testTag("emailDialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)) {
               Column(
