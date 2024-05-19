@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -174,16 +172,16 @@ fun SuggestionHistoryItem(
 
                 Row {
                   Icon(
-                      painter = if (isLiked) painterResource(R.drawable.up_filled) else painterResource(
-                          R.drawable.up_outlined),
+                      painter =
+                          if (isLiked) painterResource(R.drawable.up_filled)
+                          else painterResource(R.drawable.up_outlined),
                       contentDescription = "Up",
                       tint = if (isLiked) Color.Red else tertiaryLight,
                       modifier =
-                          Modifier
-                              .size(20.dp)
+                          Modifier.size(20.dp)
                               .padding(
-                                  bottom = 4.dp, end = 4.dp
-                              ) // 4.dp is the space between the icon and the text
+                                  bottom = 4.dp,
+                                  end = 4.dp) // 4.dp is the space between the icon and the text
                               .testTag(
                                   "staticLikeIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
 

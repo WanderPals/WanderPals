@@ -16,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,7 +59,7 @@ fun SuggestionFeedContent(
     suggestionsViewModel: SuggestionsViewModel,
     navigationActions: NavigationActions
 ) {
-    // State to track the selected filter criteria
+  // State to track the selected filter criteria
   var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
 
   // State to track the sorted suggestion list
@@ -84,9 +83,7 @@ fun SuggestionFeedContent(
         }
       }
 
-  Column(modifier = Modifier
-      .fillMaxWidth()
-      .padding(innerPadding)) {
+  Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
 
     // Title for the list of suggestions
     Text(
@@ -124,11 +121,10 @@ fun SuggestionFeedContent(
       Box(modifier = Modifier.fillMaxSize()) {
         Text(
             modifier =
-            Modifier
-                .width(260.dp)
-                .height(55.dp)
-                .align(Alignment.Center)
-                .testTag("noSuggestionsForUserText"),
+                Modifier.width(260.dp)
+                    .height(55.dp)
+                    .align(Alignment.Center)
+                    .testTag("noSuggestionsForUserText"),
             text = "Looks like there is no suggestions yet. ",
             style =
                 TextStyle(
@@ -141,9 +137,7 @@ fun SuggestionFeedContent(
         )
         IconButton(
             onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(top = 60.dp),
+            modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
             content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestions") })
       }
     } else {
@@ -170,8 +164,7 @@ fun SuggestionFeedContent(
                       }, // This lambda is passed to the SuggestionItem composable
                       modifier = Modifier.testTag("suggestion${index + 1}"),
                       tripId = tripId,
-                      viewModel = suggestionsViewModel
-                  )
+                      viewModel = suggestionsViewModel)
                 }
               }
             }

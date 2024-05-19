@@ -12,6 +12,7 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 import kotlin.math.ceil
@@ -20,8 +21,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.Duration
-import java.time.LocalDateTime
 
 /**
  * Fetches all users from a trip and calculates the threshold for majority based on the number of
@@ -32,8 +31,8 @@ import java.time.LocalDateTime
  * @return A pair of the list of users and the threshold for majority.
  */
 private suspend fun fetchUsersAndThreshold(
-  suggestionRepository: TripsRepository,
-  tripId: String
+    suggestionRepository: TripsRepository,
+    tripId: String
 ): Pair<List<User>, Int> {
   val allUsers = suggestionRepository.getAllUsersFromTrip(tripId)
   val threshold = ceil(allUsers.size / 2.0).toInt()
@@ -41,13 +40,13 @@ private suspend fun fetchUsersAndThreshold(
 }
 
 open class SuggestionsViewModel(
-  private val suggestionRepository: TripsRepository?,
-  val tripId: String
+    private val suggestionRepository: TripsRepository?,
+    val tripId: String
 ) : ViewModel() {
 
   private val currentLoggedInUId =
-    suggestionRepository
-      ?.uid!! // Get the current logged-in user's ID from the repository instance
+      suggestionRepository
+          ?.uid!! // Get the current logged-in user's ID from the repository instance
 
   // State flow to hold the list of suggestions
   private val _state = MutableStateFlow(emptyList<Suggestion>())
@@ -67,7 +66,7 @@ open class SuggestionsViewModel(
   open val selectedComment: StateFlow<Comment?> = _selectedComment.asStateFlow()
 
   // State flow to handle the editing of a comment
-  private val _editingComment = MutableStateFlow(false)
+  private val _editingComment = MutableStateFlow<Boolean>(false)
   open val editingComment: StateFlow<Boolean> = _editingComment.asStateFlow()
 
   // State flow to remember the suggestion that is being interacted with
@@ -82,8 +81,7 @@ open class SuggestionsViewModel(
   // item:
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
 
-  private val _voteIconClickable = MutableStateFlow<List<String>>(emptyList())
-  open val voteIconClickable: StateFlow<List<String>> = _voteIconClickable.asStateFlow()
+  private val _voteIconClicked = MutableStateFlow<List<String>>(emptyList())
 
   // This will hold the IDs of suggestions that have been added to stops
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
@@ -91,7 +89,6 @@ open class SuggestionsViewModel(
 
   // stores the suggestionId with its start time when the vote icon is clicked
   private val _voteStartTimeMap = mutableMapOf<String, LocalDateTime>()
-
   /**
    * Returns whether the suggestion is liked by the current user.
    *
@@ -103,13 +100,13 @@ open class SuggestionsViewModel(
   }
 
   /**
-   * Returns whether the vote icon is clickable for a suggestion.
+   * Returns whether the vote icon has been clicked for a suggestion.
    *
    * @param suggestionId The ID of the suggestion to check.
-   * @return True if the vote icon is clickable, false otherwise.
+   * @return True if the vote icon has been clicked, false otherwise.
    */
-  open fun getVoteIconClickable(suggestionId: String): Boolean {
-    return _voteIconClickable.value.contains(suggestionId)
+  open fun getVoteIconClicked(suggestionId: String): Boolean {
+    return _voteIconClicked.value.contains(suggestionId)
   }
 
   open fun getNbrLiked(suggestionId: String): Int {
@@ -128,11 +125,14 @@ open class SuggestionsViewModel(
 
       // Update the liked suggestions list with the current user's liked suggestions
       _likedSuggestions.value =
-        _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
+          _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
 
-
-      _voteIconClickable.value =
-        _state.value.filter{it.voteIconClickable}.map{it.suggestionId} //get the list of suggestions that have voteIconClickable as true
+      _voteIconClicked.value =
+          _state.value
+              .filter { it.voteIconClicked }
+              .map {
+                it.suggestionId
+              } // get the list of suggestions that have the vote icon that have been clicked
 
       _isLoading.value = false
     }
@@ -156,7 +156,7 @@ open class SuggestionsViewModel(
       // Update the backend by calling the TripsRepository function
       viewModelScope.launch {
         val currentSuggestion =
-          suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+            suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
 
         Log.d("Liked Suggestions", _likedSuggestions.value.toString())
         Log.d("Suggestions Liked Users", currentSuggestion.userLikes.toString())
@@ -166,20 +166,20 @@ open class SuggestionsViewModel(
 
         // Toggle the like status in the local state
         _likedSuggestions.value =
-          if (liked) {
-            _likedSuggestions.value - currentSuggestion.suggestionId
-          } else {
-            _likedSuggestions.value + currentSuggestion.suggestionId
-          }
+            if (liked) {
+              _likedSuggestions.value - currentSuggestion.suggestionId
+            } else {
+              _likedSuggestions.value + currentSuggestion.suggestionId
+            }
 
         // Prepare the updated suggestion for backend update
         val newUserLike =
-          if (liked) { // if the suggestion is already liked, remove the current user's ID
-            currentSuggestion.userLikes -
-                    currentLoggedInUId // Remove the current user's ID from the list
-          } else {
-            currentSuggestion.userLikes + currentLoggedInUId
-          }
+            if (liked) { // if the suggestion is already liked, remove the current user's ID
+              currentSuggestion.userLikes -
+                  currentLoggedInUId // Remove the current user's ID from the list
+            } else {
+              currentSuggestion.userLikes + currentLoggedInUId
+            }
         val updatedSuggestion = currentSuggestion.copy(userLikes = newUserLike)
 
         // Fetch all users from the trip:
@@ -187,14 +187,14 @@ open class SuggestionsViewModel(
 
         // Call the repository function to update the suggestion
         val wasUpdateSuccessful =
-          suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+            suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
         if (wasUpdateSuccessful) { // If the backend update is successful,
           _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
 
           _likedSuggestions.value =
-            _state.value
-              .filter { it.userLikes.contains(currentLoggedInUId) }
-              .map { it.suggestionId }
+              _state.value
+                  .filter { it.userLikes.contains(currentLoggedInUId) }
+                  .map { it.suggestionId }
 
           if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
             _selectedSuggestion.value = updatedSuggestion
@@ -208,15 +208,6 @@ open class SuggestionsViewModel(
     }
   }
 
-  // Add a MutableStateFlow to store the initial remaining time for each suggestion
-  private val _initialRemainingTimeMap = mutableMapOf<String, MutableStateFlow<String>>()
-
-  /**
-   * Get the remaining time for a suggestion.
-   *
-   * @param suggestionId The ID of the suggestion to get the remaining time for.
-   * @return A MutableStateFlow containing the remaining time for the suggestion.
-   */
   open fun getRemainingTimeFlow(suggestionId: String): MutableStateFlow<String> {
     val startTime = _voteStartTimeMap[suggestionId]
     val remainingTimeFlow = MutableStateFlow("23:59:59")
@@ -224,7 +215,7 @@ open class SuggestionsViewModel(
     startTime?.let {
       val now = LocalDateTime.now()
       val endTime = it.plusHours(24)
-      val duration = Duration.between(now, endTime)
+      val duration = java.time.Duration.between(now, endTime)
 
       if (!duration.isNegative) {
         val hours = duration.toHours().toString().padStart(2, '0')
@@ -239,27 +230,29 @@ open class SuggestionsViewModel(
     return remainingTimeFlow
   }
 
-  /* newer
-  open fun toggleVoteIconClickable(suggestion: Suggestion) {
+  open fun toggleVoteIconClicked(suggestion: Suggestion) {
     viewModelScope.launch {
-      val currentSuggestion = suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+      val currentSuggestion =
+          suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
 
       // Check if the vote icon is not clicked
-      if (!getVoteIconClickable(currentSuggestion.suggestionId)) {
+      if (!getVoteIconClicked(currentSuggestion.suggestionId)) {
         // Store the start time when the vote icon is clicked
         val startTime = LocalDateTime.now()
         _voteStartTimeMap[currentSuggestion.suggestionId] = startTime
 
-        // Add the suggestion ID to the list of clickable vote icons
-        _voteIconClickable.value += currentSuggestion.suggestionId
+        // Add the suggestion ID to the list of clicked vote icons
+        _voteIconClicked.value += currentSuggestion.suggestionId
 
         // Prepare the updated suggestion for backend update
-        val updatedSuggestion = currentSuggestion.copy(voteIconClickable = true)
-        val wasUpdateSuccessful = suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+        val updatedSuggestion = currentSuggestion.copy(voteIconClicked = true)
+        val wasUpdateSuccessful =
+            suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
 
         if (wasUpdateSuccessful) {
           _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
-          _voteIconClickable.value = _state.value.filter { it.voteIconClickable }.map { it.suggestionId }
+          _voteIconClicked.value =
+              _state.value.filter { it.voteIconClicked }.map { it.suggestionId }
           if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
             _selectedSuggestion.value = updatedSuggestion
           }
@@ -267,41 +260,6 @@ open class SuggestionsViewModel(
       }
     }
   }
-*/
-// Update the initial remaining time when the vote icon is clicked
-  //older
-  open fun toggleVoteIconClickable(suggestion: Suggestion) {
-    viewModelScope.launch {
-      val currentSuggestion = suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
-      val voteIconClickable = getVoteIconClickable(currentSuggestion.suggestionId)
-      val initialRemainingTimeFlow = getRemainingTimeFlow(currentSuggestion.suggestionId)
-
-      // Toggle the vote icon clickable status in the local state
-      _voteIconClickable.value = if (voteIconClickable) {
-        _voteIconClickable.value - currentSuggestion.suggestionId
-      } else {
-        // Store the start time when the vote icon is clicked
-        val startTime = LocalDateTime.now()
-        _voteStartTimeMap[currentSuggestion.suggestionId] = startTime
-        initialRemainingTimeFlow.value = "23:59:59" // Reset initial remaining time
-
-        _voteIconClickable.value + currentSuggestion.suggestionId
-      }
-
-      // Prepare the updated suggestion for backend update
-      val updatedSuggestion = currentSuggestion.copy(voteIconClickable = !voteIconClickable)
-      val wasUpdateSuccessful = suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
-
-      if (wasUpdateSuccessful) {
-        _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
-        _voteIconClickable.value = _state.value.filter { it.voteIconClickable }.map { it.suggestionId }
-        if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
-          _selectedSuggestion.value = updatedSuggestion
-        }
-      }
-    }
-  }
-
 
   // Add a new function to get the start time for a suggestion
   open fun getStartTime(suggestionId: String): LocalDateTime? {
@@ -316,19 +274,19 @@ open class SuggestionsViewModel(
    */
   open fun addComment(suggestion: Suggestion, comment: Comment) {
     val updatedSuggestion =
-      suggestion.copy(
-        comments =
-        suggestion.comments +
-                Comment(
-                  commentId = UUID.randomUUID().toString(),
-                  userId = currentLoggedInUId,
-                  userName = SessionManager.getCurrentUser()?.name!!,
-                  text = comment.text,
-                  createdAt = comment.createdAt,
-                  createdAtTime = LocalTime.now()))
+        suggestion.copy(
+            comments =
+                suggestion.comments +
+                    Comment(
+                        commentId = UUID.randomUUID().toString(),
+                        userId = currentLoggedInUId,
+                        userName = SessionManager.getCurrentUser()?.name!!,
+                        text = comment.text,
+                        createdAt = comment.createdAt,
+                        createdAtTime = LocalTime.now()))
     viewModelScope.launch {
       val wasUpdateSuccessful =
-        suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
       if (wasUpdateSuccessful) {
         loadSuggestion(tripId)
       }
@@ -343,11 +301,11 @@ open class SuggestionsViewModel(
    */
   open fun updateComment(suggestion: Suggestion, comment: Comment) {
     val updatedSuggestion =
-      suggestion.copy(
-        comments = suggestion.comments.filter { it.commentId != comment.commentId } + comment)
+        suggestion.copy(
+            comments = suggestion.comments.filter { it.commentId != comment.commentId } + comment)
     viewModelScope.launch {
       val wasUpdateSuccessful =
-        suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
       if (wasUpdateSuccessful) {
         loadSuggestion(tripId)
       }
@@ -370,10 +328,10 @@ open class SuggestionsViewModel(
   open fun deleteComment(suggestion: Suggestion) {
     // delete selected comment logic
     val updatedSuggestion =
-      suggestion.copy(comments = suggestion.comments - _selectedComment.value!!)
+        suggestion.copy(comments = suggestion.comments - _selectedComment.value!!)
     viewModelScope.launch {
       val wasUpdateSuccessful =
-        suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
+          suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)!!
       if (wasUpdateSuccessful) {
         loadSuggestion(tripId)
       }
@@ -403,29 +361,29 @@ open class SuggestionsViewModel(
    * @param suggestion The suggestion of a trip to check and add as a stop.
    */
   open fun checkAndAddSuggestionAsStop(
-    suggestion: Suggestion,
-    allUsers: List<User>,
-    threshold: Int
+      suggestion: Suggestion,
+      allUsers: List<User>,
+      threshold: Int
   ) {
     viewModelScope.launch {
       val likesCount = suggestion.userLikes.size
 
       val isMajority =
-        if (allUsers.size % 2 == 1) {
-          likesCount >=
-                  threshold // If the number of users is odd, the threshold of likes is the middle
-          // user to ensure majority
-        } else {
-          likesCount >
-                  threshold +
-                  1 // If the number of users is even, the threshold of likes is the middle two
-          // users (one extra) to ensure majority
-        }
+          if (allUsers.size % 2 == 1) {
+            likesCount >=
+                threshold // If the number of users is odd, the threshold of likes is the middle
+            // user to ensure majority
+          } else {
+            likesCount >
+                threshold +
+                    1 // If the number of users is even, the threshold of likes is the middle two
+            // users (one extra) to ensure majority
+          }
 
       if (isMajority &&
-        !_addedSuggestionsToStops.value.contains(
-          suggestion
-            .suggestionId)) { // If the suggestion has reached the majority of likes and has
+          !_addedSuggestionsToStops.value.contains(
+              suggestion
+                  .suggestionId)) { // If the suggestion has reached the majority of likes and has
         // not been added as a stop yet
 
         val wasStopAdded = suggestionRepository?.addStopToTrip(tripId, suggestion.stop) ?: false
@@ -436,9 +394,9 @@ open class SuggestionsViewModel(
 
           // Update the state flow list to include this updated suggestion
           _state.value =
-            _state.value.map {
-              if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
-            }
+              _state.value.map {
+                if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
+              }
 
           suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)
 
@@ -463,7 +421,7 @@ open class SuggestionsViewModel(
     viewModelScope.launch {
       NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
       val wasDeleteSuccessful =
-        suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+          suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)!!
       if (wasDeleteSuccessful) {
         loadSuggestion(tripId)
       }
@@ -510,8 +468,8 @@ open class SuggestionsViewModel(
 
       // Insert the updated suggestion at the beginning of the list
       _state.value =
-        listOf(updatedSuggestion) +
-                _state.value.filter { it.suggestionId != suggestion.suggestionId }
+          listOf(updatedSuggestion) +
+              _state.value.filter { it.suggestionId != suggestion.suggestionId }
 
       suggestionRepository?.updateSuggestionInTrip(tripId, updatedSuggestion)
       // Add the suggestion ID to the list of added stops
@@ -522,8 +480,8 @@ open class SuggestionsViewModel(
   }
 
   class SuggestionsViewModelFactory(
-    private val tripsRepository: TripsRepository,
-    private val tripId: String
+      private val tripsRepository: TripsRepository,
+      private val tripId: String
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
