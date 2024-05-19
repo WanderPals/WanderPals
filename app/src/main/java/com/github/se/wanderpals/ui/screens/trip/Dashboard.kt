@@ -218,6 +218,7 @@ fun Menu(
         },
         onClick = {
           scope.launch {
+            SessionManager.setListOfTokensTrip(emptyList())
             drawerState.close()
             navActions.navigateTo(Route.OVERVIEW)
           }

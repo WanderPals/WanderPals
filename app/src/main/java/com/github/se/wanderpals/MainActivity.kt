@@ -1,6 +1,8 @@
 package com.github.se.wanderpals
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,8 +27,10 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.service.NetworkHelper
+import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
+import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -41,17 +45,19 @@ import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.config.GservicesValue.isInitialized
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.Firebase
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.runBlocking
 
 const val EMPTY_CODE = ""
 
 lateinit var navigationActions: NavigationActions
-lateinit var mapManager: MapManager
+@SuppressLint("StaticFieldLeak") lateinit var mapManager: MapManager
 
 class MainActivity : ComponentActivity() {
 
@@ -174,6 +180,24 @@ class MainActivity : ComponentActivity() {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+          Log.d("Hello", "Hello")
+
+          FirebaseMessaging.getInstance()
+              .token
+              .addOnCompleteListener(
+                  OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                      Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                      return@OnCompleteListener
+                    }
+                    // Get new FCM registration token
+                    // Send the token to the server
+                    val token = task.result
+                    SessionManager.setNotificationToken(task.result)
+
+                    Log.d(TAG, token)
+                  })
+
           navigationActions =
               NavigationActions(
                   mainNavigation = rememberMultiNavigationAppState(startDestination = ROOT_ROUTE),
@@ -252,6 +276,13 @@ class MainActivity : ComponentActivity() {
                                   }
                             }
                       })
+                  NotificationPermission(context = context)
+
+                  Log.d("MainActivity", "User is signed in")
+                  Log.d("token", SessionManager.getNotificationToken())
+                  runBlocking {
+                    sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
+                  }
                 }
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
@@ -276,7 +307,12 @@ class MainActivity : ComponentActivity() {
                               OverviewViewModel.OverviewViewModelFactory(
                                   viewModel.getTripsRepository()),
                           key = "Overview")
+                  Log.d("CREATE_TRIP", "Create Trip")
+
                   CreateTrip(overviewViewModel, navigationActions)
+                  // create notification to send to the list of tokens
+                  // iterate on the list of tokens and send the notification
+
                 }
 
                 composable(Route.CREATE_SUGGESTION) {

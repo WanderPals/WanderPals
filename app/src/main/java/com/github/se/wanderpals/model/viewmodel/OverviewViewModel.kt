@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SessionUser
+import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -97,12 +99,36 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
    */
   open fun joinTrip(tripId: String): Boolean {
     var success = false
+    var newListOfTokens = emptyList<String>()
     runBlocking {
       success = tripsRepository.addTripId(tripId)
       if (success) {
         // update the state of the user by adding the new trip in its list of trips
         val newState = _state.value.toMutableList()
         val newTrip = tripsRepository.getTrip(tripId)!!
+
+        Log.d("JoinTrip", "Tokens: ${SessionManager.getListOfTokensTrip()}")
+        Log.d("JoinTripExistingToken", "Tokens: ${newTrip.tokenIds}")
+
+        // check if SessionManager.getNotificationToken() is already in the list of tokens
+
+        newListOfTokens =
+            if (newTrip.tokenIds.contains(SessionManager.getNotificationToken())) {
+              newTrip.tokenIds
+            } else {
+              newTrip.tokenIds + SessionManager.getNotificationToken()
+            }
+
+        // add the token to the token list of the trip
+        // tripsRepository.updateTrip(newTrip.copy(tokenIds = newListOfTokens))
+
+        // send a notification to all the users of the trip
+        for (userToken in newListOfTokens) {
+          sendMessageToListOfUsers(
+              userToken,
+              "${SessionManager.getCurrentUser()?.name} has been added to ${newTrip.title}")
+        }
+
         newState.add(newTrip)
         _state.value = newState.toList()
         NotificationsManager.addJoinTripNotification(tripId)

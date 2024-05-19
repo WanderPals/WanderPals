@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,6 +9,7 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -112,7 +114,18 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
    * @return A boolean representing the success of the operation.
    */
   open fun addAnnouncement(announcement: Announcement) {
-    runBlocking { tripsRepository.addAnnouncementToTrip(tripId, announcement) }
+    runBlocking {
+      tripsRepository.addAnnouncementToTrip(tripId, announcement)
+      val listOfTokens = tripsRepository.getTrip(tripId)
+      if (listOfTokens != null) {
+        Log.d("NotificationAnnouncement", "List of tokens: ${listOfTokens.tokenIds}")
+      }
+      if (listOfTokens != null) {
+        for (token in listOfTokens.tokenIds) {
+          sendMessageToListOfUsers(token, announcement.title)
+        }
+      }
+    }
   }
 
   /**

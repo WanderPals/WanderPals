@@ -5,6 +5,7 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.toPackage
 import androidx.test.espresso.intent.rule.IntentsTestRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.github.se.wanderpals.MainActivity
 import com.github.se.wanderpals.screens.SignIn
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -18,6 +19,9 @@ class LoginTest : TestCase() {
   @get:Rule val composeTestRule = createAndroidComposeRule<MainActivity>()
 
   @get:Rule val intentsTestRule = IntentsTestRule(MainActivity::class.java)
+
+  @get:Rule
+  val permission = GrantPermissionRule.grant(android.Manifest.permission.POST_NOTIFICATIONS)
 
   @Test
   fun titleAndButtonAreCorrectlyDisplayed() {

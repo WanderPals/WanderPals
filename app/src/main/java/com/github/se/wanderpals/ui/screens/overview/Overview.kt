@@ -173,9 +173,12 @@ fun DialogHandler(closeDialogueAction: () -> Unit, addTripCodeAction: (String) -
                         enabled = SessionManager.getIsNetworkAvailable(),
                         onClick = {
                           val success = addTripCodeAction(tripCode)
+
                           if (success) {
+
                             isError = false
                             tripCode = EMPTY_CODE
+
                             closeDialogueAction()
                           } else {
                             isError = true
