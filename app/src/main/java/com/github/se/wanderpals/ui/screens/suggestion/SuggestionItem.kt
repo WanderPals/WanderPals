@@ -120,7 +120,11 @@ fun SuggestionItem(
       colors = cardColors) {
         Column(
             modifier =
-                Modifier.padding(16.dp).fillMaxWidth().verticalScroll(rememberScrollState())) {
+                Modifier.padding(16.dp)
+                    .fillMaxWidth()
+                    .verticalScroll(
+                        rememberScrollState())) { // Add vertical scrolling for testing purposes on
+                                                  // small phones
               Row(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.fillMaxWidth(0.6f).padding(end = 8.dp)) {
                   Text(
@@ -231,16 +235,14 @@ fun SuggestionItem(
                                         if (!isVoteClicked) 1f
                                         else
                                             0.5f), // if the icon is not clicked, make it opaque; if
-                                                   // the
+                            // the
                             // icon is clicked, make it semi-transparent
                             modifier =
                                 Modifier.size(20.dp)
                                     .padding(
                                         bottom = 4.dp,
-                                        end =
-                                            4
-                                                .dp // end=4.dp is the space between the icon and
-                                                    // the text
+                                        end = 4.dp // end=4.dp is the space between the icon and
+                                        // the text
                                         )
                                     .clickable(
                                         enabled =
@@ -328,9 +330,8 @@ fun SuggestionItem(
                           tint = MaterialTheme.colorScheme.tertiary,
                           modifier =
                               Modifier.size(
-                                      18
-                                          .dp) // Make sure to set the size as you did with other
-                                               // icons
+                                      18.dp) // Make sure to set the size as you did with other
+                                  // icons
                                   .clickable { viewModel.showSuggestionBottomSheet(suggestion) }
                                   .testTag("suggestionOptionIcon" + suggestion.suggestionId)
                                   .graphicsLayer {

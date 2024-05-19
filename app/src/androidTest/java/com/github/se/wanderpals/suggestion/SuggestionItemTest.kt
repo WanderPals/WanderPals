@@ -70,9 +70,8 @@ class SuggestionItemTest {
         "userId",
         "user@example.com",
         "token",
-        Role
-            .MEMBER) // Set current user role to MEMBER, who has less permissions than ADMIN or
-                     // OWNER
+        Role.MEMBER) // Set current user role to MEMBER, who has less permissions than ADMIN or
+    // OWNER
 
     composeTestRule.setContent {
       WanderPalsTheme {
@@ -96,9 +95,8 @@ class SuggestionItemTest {
         "adminId",
         "admin@example.com",
         "token",
-        Role
-            .ADMIN) // the admin can launch the vote, so the vote icon should be visible for the
-                    // admin
+        Role.ADMIN) // the admin can launch the vote, so the vote icon should be visible for the
+    // admin
 
     composeTestRule.setContent {
       WanderPalsTheme {
@@ -129,9 +127,8 @@ class SuggestionItemTest {
         "ownerId",
         "owner@example.com",
         "token",
-        Role
-            .OWNER) // the owner can launch the vote, so the vote icon should be visible for the
-                    // owner
+        Role.OWNER) // the owner can launch the vote, so the vote icon should be visible for the
+    // owner
 
     composeTestRule.setContent {
       WanderPalsTheme {
