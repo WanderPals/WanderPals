@@ -182,7 +182,7 @@ fun SuggestionHistoryItem(
                                   bottom = 4.dp,
                                   end = 4.dp) // 4.dp is the space between the icon and the text
                               .testTag(
-                                  "staticLikeIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
+                                  "staticUpIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
 
                   Text(
                       text = likesCount,
@@ -196,7 +196,7 @@ fun SuggestionHistoryItem(
                           ),
                       modifier =
                           Modifier.testTag(
-                              "suggestionHistoryLikesNumber" + suggestion.suggestionId))
+                              "suggestionHistoryUpsNumber" + suggestion.suggestionId))
 
                   Spacer(
                       modifier =

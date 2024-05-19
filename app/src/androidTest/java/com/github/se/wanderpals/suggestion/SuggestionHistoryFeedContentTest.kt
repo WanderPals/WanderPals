@@ -186,10 +186,10 @@ class SuggestionHistoryFeedContentTest {
         .onNodeWithTag("suggestionHistoryUserName" + suggestion.suggestionId)
         .assertExists()
     composeTestRule
-        .onNodeWithTag("staticLikeIconSuggestionHistoryFeedScreen_" + suggestion.suggestionId)
+        .onNodeWithTag("staticUpIconSuggestionHistoryFeedScreen_" + suggestion.suggestionId)
         .assertExists()
     composeTestRule
-        .onNodeWithTag("suggestionHistoryLikesNumber" + suggestion.suggestionId)
+        .onNodeWithTag("suggestionHistoryUpsNumber" + suggestion.suggestionId)
         .assertExists()
     composeTestRule
         .onNodeWithTag("staticCommentIconSuggestionHistoryFeedScreen" + suggestion.suggestionId)
