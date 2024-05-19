@@ -517,15 +517,12 @@ class SuggestionsViewModelTest {
         assertTrue(viewModel.editingComment.value)
       }
 
-  /**
-   * Test for User Role Restriction on Vote Icon Click, the case when the user is not an admin or
-   * owner.
-   */
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun testNonAdminNonOwnerCannotSeeVoteIcon() =
       runBlockingTest(testDispatcher) {
-        // Set current user role to MEMBER
+        // Set current user role to MEMBER for testing the role restriction on the vote icon click.
+        // This is the case when the user is not an admin or owner.
         SessionManager.setUserSession("user", "user@example.com", "token", Role.MEMBER)
 
         // Load suggestions to establish initial state
