@@ -54,6 +54,8 @@ class FakeSuggestionsViewModel(
         suggestions.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
   }
 
+  override fun toggleVoteIconClicked(suggestion: Suggestion) {}
+
   fun toggleLikeSuggestion(tripId: String, suggestion: Suggestion) {
     val suggestionIndex = _state.value.indexOfFirst { it.suggestionId == suggestion.suggestionId }
     val isLiked = _likedSuggestions.value.contains(suggestion.suggestionId)
