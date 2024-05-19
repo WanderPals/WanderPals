@@ -1,0 +1,63 @@
+Title	URL	Assignees	Status	Labels	Linked pull requests	Milestone	Repository	Reviewers
+Log out from the app			Done in Sprint #7					
+Remember sign-in option			Done in Sprint #7					
+List of all stops			Done in Sprint #7					
+Delete expense			Done in Sprint #7					
+Delete trip			Done in Sprint #7					
+Oflline access			Sprint Backlog					
+Settle debt			Sprint Backlog					
+Chose currency exchange			Sprint Backlog					
+Documents storing and sharing			Done in Sprint #8					
+Push notifications	https://github.com/WanderPals/WanderPals/issues/238	Polo150202	Done in Sprint #8	4h, Backend, Code Implementation, Sprint#6, Sprint#7	https://github.com/WanderPals/WanderPals/pull/286		WanderPals/WanderPals	
+Image for the trip			Done in Sprint #8					
+Finance category and debt			Done in Sprint #8					
+Delete stops			Done in Sprint #8					
+Suggestion history			Done in Sprint #8					
+At the end of the trip or at any designated point, the app provides a summary of expenses and balances.			Done in Sprint #8					
+Figma mockups for the members list	https://github.com/WanderPals/WanderPals/issues/241	ForestDope	Done in Sprint #8	3h, Figma, Sprint#6			WanderPals/WanderPals	
+Log out from the app	https://github.com/WanderPals/WanderPals/issues/288	mtv47	Done in Sprint #7	2h, Code Implementation, Frontend, Sprint#7	https://github.com/WanderPals/WanderPals/pull/308		WanderPals/WanderPals	
+Remember sign in when starting the app	https://github.com/WanderPals/WanderPals/issues/289	mtv47	Done in Sprint #7	4h, Backend, Code Implementation, Sprint#7	https://github.com/WanderPals/WanderPals/pull/308		WanderPals/WanderPals	
+Finance category screen UI	https://github.com/WanderPals/WanderPals/issues/293	Exino329	Done in Sprint #7	4h, Code Implementation, Frontend, Sprint#7	https://github.com/WanderPals/WanderPals/pull/311		WanderPals/WanderPals	
+Finance category screen Logic	https://github.com/WanderPals/WanderPals/issues/294	Exino329	Done in Sprint #7	3h, Backend, Code Implementation, Sprint#7	https://github.com/WanderPals/WanderPals/pull/311		WanderPals/WanderPals	
+Private document screen	https://github.com/WanderPals/WanderPals/issues/290	Polo150202	Done in Sprint #7	4h, Backend, Code Implementation, Frontend, Sprint#7	https://github.com/WanderPals/WanderPals/pull/340		WanderPals/WanderPals	
+Image for the trip	https://github.com/WanderPals/WanderPals/issues/292	Polo150202	Done in Sprint #8	2h, Backend, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/343		WanderPals/WanderPals	
+Fix ViewModel tests 	https://github.com/WanderPals/WanderPals/issues/295	tosigame	Done in Sprint #7	4h, Backend, Code Implementation, Sprint#7	https://github.com/WanderPals/WanderPals/pull/310, https://github.com/WanderPals/WanderPals/pull/312		WanderPals/WanderPals	
+Make fakeTripsRepository for viewModel testing	https://github.com/WanderPals/WanderPals/issues/296	tosigame	Done in Sprint #7	4h, Backend, Code Implementation, Sprint#7	https://github.com/WanderPals/WanderPals/pull/310, https://github.com/WanderPals/WanderPals/pull/312		WanderPals/WanderPals	
+Fix deleteTrip	https://github.com/WanderPals/WanderPals/issues/297	tosigame	Done in Sprint #8	4h, Backend, Code Implementation, Sprint#7	https://github.com/WanderPals/WanderPals/pull/307		WanderPals/WanderPals	
+List of all stops	https://github.com/WanderPals/WanderPals/issues/302	ForestDope	Done in Sprint #7	4h, Code Implementation, Frontend, Sprint#7	https://github.com/WanderPals/WanderPals/pull/316		WanderPals/WanderPals	
+Finance Debt screen	https://github.com/WanderPals/WanderPals/issues/298	AgeX21	Done in Sprint #7	4h, Code Implementation, Frontend, Sprint#7	https://github.com/WanderPals/WanderPals/pull/313		WanderPals/WanderPals	
+Create the widgets that are missing in the dashboard	https://github.com/WanderPals/WanderPals/issues/332	AgeX21	Done in Sprint #8	4h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/337		WanderPals/WanderPals	
+Refactor admin screen	https://github.com/WanderPals/WanderPals/issues/303	ForestDope	Done in Sprint #8	4h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/342		WanderPals/WanderPals	
+Add marker in Agenda for clarity	https://github.com/WanderPals/WanderPals/issues/300	annhit29	Done in Sprint #7	3h, Code Implementation, Frontend, Sprint#7	https://github.com/WanderPals/WanderPals/pull/317		WanderPals/WanderPals	
+Delete Expense	https://github.com/WanderPals/WanderPals/issues/304	AgeX21	Done in Sprint #7	2h, Backend, Code Implementation, Sprint#7	https://github.com/WanderPals/WanderPals/pull/314		WanderPals/WanderPals	
+Delete Trip	https://github.com/WanderPals/WanderPals/issues/305	AgeX21	Done in Sprint #7	3h, Backend, Code Implementation, Sprint#7	https://github.com/WanderPals/WanderPals/pull/315		WanderPals/WanderPals	
+Live Location in Map and Sharing	https://github.com/WanderPals/WanderPals/issues/318	mtv47	Done in Sprint #8	3h, Code Implementation, Sprint#8	https://github.com/WanderPals/WanderPals/pull/330		WanderPals/WanderPals	
+Fix trip creation button	https://github.com/WanderPals/WanderPals/issues/321	tosigame	Done in Sprint #8	3h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/328		WanderPals/WanderPals	
+Improve caching usage in repository functions	https://github.com/WanderPals/WanderPals/issues/322	tosigame	Done in Sprint #8	4h, Backend, Code Implementation, Sprint#8	https://github.com/WanderPals/WanderPals/pull/326		WanderPals/WanderPals	
+Delete stops	https://github.com/WanderPals/WanderPals/issues/301	ForestDope	Done in Sprint #8	3h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/335		WanderPals/WanderPals	
+Expenses info display on click	https://github.com/WanderPals/WanderPals/issues/323	Exino329	Done in Sprint #8	3h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/327		WanderPals/WanderPals	
+Suggestion History	https://github.com/WanderPals/WanderPals/issues/299	annhit29	Done in Sprint #8	4h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/329		WanderPals/WanderPals	
+Add missing notifications	https://github.com/WanderPals/WanderPals/issues/324	Exino329	Done in Sprint #8	4h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/331		WanderPals/WanderPals	
+Voting system with deadline	https://github.com/WanderPals/WanderPals/issues/325	annhit29	Done in Sprint #8	4h, Code Implementation, Frontend, Sprint#8	https://github.com/WanderPals/WanderPals/pull/338		WanderPals/WanderPals	
+Visual cues for offline mode	https://github.com/WanderPals/WanderPals/issues/339	mtv47	Done in Sprint #8	4h, Code Implementation, Sprint#8	https://github.com/WanderPals/WanderPals/pull/341		WanderPals/WanderPals	
+Group document screen	https://github.com/WanderPals/WanderPals/issues/291	Polo150202	Done in Sprint #8	4h, Backend, Code Implementation, Frontend, Sprint#7	https://github.com/WanderPals/WanderPals/pull/340		WanderPals/WanderPals	
+Add currency management in finance	https://github.com/WanderPals/WanderPals/issues/344	Exino329	In Development	4h, Backend, Frontend, Sprint#9			WanderPals/WanderPals	
+fix overview display bug with title	https://github.com/WanderPals/WanderPals/issues/345	Exino329	In Development	3h, Backend, Code Implementation, Sprint#9			WanderPals/WanderPals	
+start working on PRD	https://github.com/WanderPals/WanderPals/issues/346	Exino329	In Development	4h, Organization, Sprint#9			WanderPals/WanderPals	
+Refactor Trips Repository	https://github.com/WanderPals/WanderPals/issues/347	tosigame	In Development	4h, Backend, Code Implementation, Sprint#9			WanderPals/WanderPals	
+start working on PRD	https://github.com/WanderPals/WanderPals/issues/348	tosigame	In Development	3h, Organization, Sprint#9			WanderPals/WanderPals	
+fix create Announcement button bug	https://github.com/WanderPals/WanderPals/issues/349	tosigame	In Development	3h, Code Implementation, Frontend, Sprint#9			WanderPals/WanderPals	
+Add offline visuals for Admin Panel	https://github.com/WanderPals/WanderPals/issues/350	mtv47	In Development	3h, Backend, Code Implementation, Sprint#9			WanderPals/WanderPals	
+Modify Geocords to make less api requests	https://github.com/WanderPals/WanderPals/issues/351	mtv47	In Development	3h, Backend, Code Implementation, Sprint#9			WanderPals/WanderPals	
+Start working on PRD	https://github.com/WanderPals/WanderPals/issues/352	mtv47	In Development	3h, Organization, Sprint#9			WanderPals/WanderPals	
+Rework the menu in the dashboard	https://github.com/WanderPals/WanderPals/issues/353	AgeX21	In Development	4h, Backend, Frontend, Sprint#9			WanderPals/WanderPals	
+Redesign UI for Expenses, Debt and Notification 	https://github.com/WanderPals/WanderPals/issues/354	AgeX21	In Development	4h, Code Implementation, Frontend, Sprint#9			WanderPals/WanderPals	
+Add the possibility to settle debt in the debt screen	https://github.com/WanderPals/WanderPals/issues/355	AgeX21	In Development	4h, Code Implementation, Frontend, Sprint#9			WanderPals/WanderPals	
+Fix dark theme troughout all the app	https://github.com/WanderPals/WanderPals/issues/356	ForestDope	In Development	4h, Code Implementation, Frontend, Sprint#9			WanderPals/WanderPals	
+Fix user names displayed in various screens	https://github.com/WanderPals/WanderPals/issues/357	ForestDope	In Development	3h, Figma, Frontend, Sprint#9			WanderPals/WanderPals	
+Augment code coverage and reduce code complexity 	https://github.com/WanderPals/WanderPals/issues/358	ForestDope	In Development	4h, Backend, Code Implementation, Frontend, Sprint#9			WanderPals/WanderPals	
+Create a Server to secure and avoid depreciation	https://github.com/WanderPals/WanderPals/issues/359	Polo150202	In Development	4h, Backend, Code Implementation, Sprint#9			WanderPals/WanderPals	
+start PRD	https://github.com/WanderPals/WanderPals/issues/360	Polo150202	In Development	3h, Organization, Sprint#9			WanderPals/WanderPals	
+Develop the agenda markers for more status associated with different colors.	https://github.com/WanderPals/WanderPals/issues/361	annhit29	In Development	4h, Backend, Code Implementation, Sprint#9			WanderPals/WanderPals	
+In Suggestions, make the suggestion UI coherant with other screens 	https://github.com/WanderPals/WanderPals/issues/362	annhit29	In Development	3h, Backend, Code Implementation, Sprint#10			WanderPals/WanderPals	
+In Suggestions, make the code cleaner	https://github.com/WanderPals/WanderPals/issues/363	annhit29	In Development	3h, Backend, Code Implementation, Frontend, Sprint#10			WanderPals/WanderPals	
