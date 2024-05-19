@@ -106,8 +106,6 @@ data class FirestoreSuggestion(
         comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
         userLikes = userLikes,
         voteIconClicked = voteIconClicked,
-        //            voteStartTime = LocalTime.parse(voteStartTime, timeFormatter) // Parse time
-        // string back into LocalTime
         voteStartTime = parsedVoteStartTime)
   }
 }

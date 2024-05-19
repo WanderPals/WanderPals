@@ -40,9 +40,7 @@ data class Suggestion(
     val stop: Stop = Stop(), // Embed the Stop object directly
     val comments: List<Comment> = emptyList(),
     val userLikes: List<String> = emptyList(),
-    val voteIconClicked: Boolean = false, // By default, the vote icon has not been clicked.
-    // voteIconClicked implies countdownStarted has not started; voteIconClicked is false implies
-    // countdownStarted has started
+    val voteIconClicked: Boolean = false, // By default, the vote icon has not been clicked
     val voteStartTime: LocalDateTime =
         LocalDateTime.MIN // Use LocalDateTime to represent the start time
 )
