@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
@@ -51,8 +50,6 @@ import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.google.firebase.Firebase
-import com.google.firebase.storage.storage
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
@@ -234,21 +231,10 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                   text = errorText,
                   color = Color.Red,
               )
-              // create a add image button
-              Button(
-                  onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) },
-                  modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text("Add Image")
-                  }
 
               Button(
                   modifier = Modifier.testTag("tripSave").fillMaxWidth().padding(16.dp),
                   onClick = {
-                    overviewViewModel.addDocument(
-                        documentsURL = selectedImagesLocal!!,
-                        path = "trip",
-                        context = context,
-                        storageReference = Firebase.storage.reference)
                     val error = validateInputs(name, budget, description, startDate, endDate)
                     if (error.isNotEmpty()) {
                       errorText = error

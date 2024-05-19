@@ -56,8 +56,7 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
   open val isAddingTrip: StateFlow<Boolean> = _isAddingTrip.asStateFlow()
 
   // images URL
-  private val _imagesURL = MutableStateFlow("")
-  open val imagesURL: StateFlow<String> = _imagesURL.asStateFlow()
+  open val imagesURL = MutableStateFlow("")
 
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun getAllTrips() {
@@ -141,46 +140,55 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
     _canSend.value = false
   }
 
+  private fun updateTripImages(tripID: String, documentURL: String) {
+    viewModelScope.launch {
+      val trip = tripsRepository.getTrip(tripID)
+      imagesURL.value += documentURL
+      if (trip != null) {
+        tripsRepository.updateTrip(trip.copy(imageUrl = imagesURL.value))
+      }
+    }
+  }
+
   // Method to add the document to the current user
   open fun addDocument(
+      tripId: String,
       documentsURL: Uri,
       path: String,
       context: Context,
       storageReference: StorageReference?
   ) {
-    runBlocking {
-      // create a reference to the uri of the image
-      val riversRef = storageReference?.child("documents/${path}/${documentsURL.lastPathSegment}")
-      // upload the image to the firebase storage
-      val taskUp = riversRef?.putFile(documentsURL)
+    // create a reference to the uri of the image
+    val riversRef = storageReference?.child("documents/${path}/${documentsURL.lastPathSegment}")
+    // upload the image to the firebase storage
+    val taskUp = riversRef?.putFile(documentsURL)
 
-      // Register observers to listen for state changes
-      // and progress of the upload
-      taskUp
-          ?.addOnFailureListener {
-            // Handle unsuccessful uploads
-            Log.d("Admin", "Failed to upload image")
+    // Register observers to listen for state changes
+    // and progress of the upload
+    taskUp
+        ?.addOnFailureListener {
+          // Handle unsuccessful uploads
+          Log.d("Admin", "Failed to upload image")
+        }
+        ?.addOnSuccessListener {
+          // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
+          Log.d("Document", "Image uploaded successfully")
+          Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+        }
+    // Continue with the task to get the download URL
+    taskUp
+        ?.continueWithTask { task ->
+          if (!task.isSuccessful) {
+            task.exception?.let { throw it }
           }
-          ?.addOnSuccessListener {
-            // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-            Log.d("Document", "Image uploaded successfully")
-            Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+          riversRef.downloadUrl
+        }
+        ?.addOnCompleteListener { task ->
+          if (task.isSuccessful) {
+            Log.d("Admin", "Image URL: ${task.result}")
+            viewModelScope.launch { updateTripImages(tripId, task.result.toString()) }
           }
-      // Continue with the task to get the download URL
-      taskUp
-          ?.continueWithTask { task ->
-            if (!task.isSuccessful) {
-              task.exception?.let { throw it }
-            }
-            riversRef.downloadUrl
-          }
-          ?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-              Log.d("Admin", "Image URL: ${task.result}")
-              _imagesURL.value = task.result.toString()
-            }
-          }
-    }
+        }
   }
 
   class OverviewViewModelFactory(private val tripsRepository: TripsRepository) :

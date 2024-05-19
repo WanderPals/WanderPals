@@ -155,50 +155,6 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
         }
       }
 
-  /*if (selectedImagesLocal != Uri.EMPTY) {
-      // create a reference to the uri of the image
-      val riversRef =
-          storageReference?.child(
-              "documents/${titles[state]}/${selectedImagesLocal[0]?.lastPathSegment}"
-          )
-      // upload the image to the firebase storage
-      val taskUp = riversRef?.putFile(selectedImagesLocal[0]!!)
-
-      // Register observers to listen for state changes
-      // and progress of the upload
-      taskUp
-          ?.addOnFailureListener {
-              // Handle unsuccessful uploads
-              Log.d("Admin", "Failed to upload image")
-          }
-          ?.addOnSuccessListener {
-              // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-              Log.d("Document", "Image uploaded successfully")
-              Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-          }
-      // Continue with the task to get the download URL
-      taskUp
-          ?.continueWithTask { task ->
-              if (!task.isSuccessful) {
-                  task.exception?.let { throw it }
-              }
-              riversRef.downloadUrl
-          }
-          ?.addOnCompleteListener { task ->
-              if (task.isSuccessful && state == 0) {
-                  viewModel.updateDocumentsOfCurrentUser(task.result.toString())
-                  // empty the list
-                  selectedImagesLocal = emptyList()
-                  Log.d("Admin", "Image URL: ${task.result}")
-              } else if (task.isSuccessful && state == 1) {
-                  viewModel.addDocumentToTrip(task.result.toString(), tripId)
-                  // empty the list
-                  selectedImagesLocal = emptyList()
-                  Log.d("Admin", "Image URL: ${task.result}")
-              }
-          }
-  }*/
-
   if (isDisplayed) {
     Box(
         modifier =
