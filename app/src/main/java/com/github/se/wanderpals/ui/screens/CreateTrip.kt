@@ -1,10 +1,8 @@
 package com.github.se.wanderpals.ui.screens
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,7 +52,6 @@ import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.google.firebase.Firebase
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.storage
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -104,9 +101,10 @@ class DateInteractionSource(val onClick: () -> Unit) : MutableInteractionSource 
 @Composable
 fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
 
-    val context = LocalContext.current
+  val context = LocalContext.current
 
   val createTripFinished by overviewViewModel.createTripFinished.collectAsState()
+  val imageURL by overviewViewModel.imagesURL.collectAsState()
 
   // Effect to react to the createTripFinished state change
   LaunchedEffect(createTripFinished) {
@@ -115,12 +113,12 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
       overviewViewModel.setCreateTripFinished(false) // Reset the flag after handling it
     }
   }
-    var selectedImagesLocal by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
+  var selectedImagesLocal by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
 
-    val singlePhotoPickerLauncher =
-        rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia(),
-            onResult = { uri -> selectedImagesLocal = uri })
+  val singlePhotoPickerLauncher =
+      rememberLauncherForActivityResult(
+          contract = ActivityResultContracts.PickVisualMedia(),
+          onResult = { uri -> selectedImagesLocal = uri })
 
   val MAX_TITLE_LENGTH = 35
 
@@ -129,13 +127,10 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
   var startDate by remember { mutableStateOf("") }
   var endDate by remember { mutableStateOf("") }
   var description by remember { mutableStateOf("") }
-    var imageURL by remember { mutableStateOf("") }
 
   var errorText by remember { mutableStateOf("") }
   var showDatePickerStart by remember { mutableStateOf(false) }
   var showDatePickerEnd by remember { mutableStateOf(false) }
-
-
 
   Scaffold(
       modifier = Modifier.testTag("createTripScreen"),
@@ -239,65 +234,29 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
                   text = errorText,
                   color = Color.Red,
               )
-            //create a add image button
-            Button(onClick = {
-                singlePhotoPickerLauncher.launch(PickVisualMediaRequest())
-            },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)) {
-                Text("Add Image")
-            }
-            fun addDocument(
-                documentsURL: Uri,
-                path: String,
-                context: Context,
-                storageReference: StorageReference?
-            ) {
-                // create a reference to the uri of the image
-                val riversRef = storageReference?.child("tripImage/${path}/${documentsURL.lastPathSegment}")
-                // upload the image to the firebase storage
-                val taskUp = riversRef?.putFile(documentsURL)
-
-                // Register observers to listen for state changes
-                // and progress of the upload
-                taskUp
-                    ?.addOnFailureListener {
-                        // Handle unsuccessful uploads
-                        Log.d("Admin", "Failed to upload image")
-                    }
-                    ?.addOnSuccessListener {
-                        // taskSnapshot.metadata contains file metadata such as size, content-type, etc.
-                        Log.d("Document", "Image uploaded successfully")
-                        Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-                    }
-                // Continue with the task to get the download URL
-                taskUp
-                    ?.continueWithTask { task ->
-                        if (!task.isSuccessful) {
-                            task.exception?.let { throw it }
-                        }
-                        riversRef.downloadUrl
-                    }
-                    ?.addOnCompleteListener { task ->
-                        Log.d( "Admin", "Image URL: ${task.result}")
-                        imageURL = task.result.toString()
-
-                    }
-            }
+              // create a add image button
+              Button(
+                  onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) },
+                  modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                    Text("Add Image")
+                  }
 
               Button(
                   modifier = Modifier.testTag("tripSave").fillMaxWidth().padding(16.dp),
                   onClick = {
+                    overviewViewModel.addDocument(
+                        documentsURL = selectedImagesLocal!!,
+                        path = "trip",
+                        context = context,
+                        storageReference = Firebase.storage.reference)
                     val error = validateInputs(name, budget, description, startDate, endDate)
                     if (error.isNotEmpty()) {
                       errorText = error
                     } else {
-                        Log.d("CreateTrip", "Selected images: $selectedImagesLocal")
-                        addDocument(selectedImagesLocal!!, name, context, Firebase.storage.reference)
-                        Log.d("CreateTrip", "Image URL: $imageURL")
+                      Log.d("CreateTrip", "Selected images: $selectedImagesLocal")
+                      Log.d("CreateTrip", "Image URL: $imageURL")
 
-                        val startDateTrip =
+                      val startDateTrip =
                           LocalDate.of(
                               startDate.split("/")[2].toInt(),
                               startDate.split("/")[1].toInt(),
@@ -329,8 +288,6 @@ fun CreateTrip(overviewViewModel: OverviewViewModel, nav: NavigationActions) {
               }
             }
       })
-
-
 }
 
 /**

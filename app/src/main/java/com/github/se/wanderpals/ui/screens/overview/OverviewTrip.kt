@@ -166,9 +166,7 @@ fun OverviewTrip(
         })
   }
 
-  Box(modifier = Modifier
-      .fillMaxWidth()
-      .padding(bottom = 30.dp)) {
+  Box(modifier = Modifier.fillMaxWidth().padding(bottom = 30.dp)) {
     // Button representing the trip overview
     Button(
         onClick = {
@@ -182,22 +180,18 @@ fun OverviewTrip(
           }
         },
         modifier =
-        Modifier
-            .align(Alignment.TopCenter)
-            .width(360.dp)
-            .height(130.dp)
-            .padding(top = 1.dp)
-            .testTag("buttonTrip" + trip.tripId),
+            Modifier.align(Alignment.TopCenter)
+                .width(360.dp)
+                .height(130.dp)
+                .padding(top = 1.dp)
+                .testTag("buttonTrip" + trip.tripId),
         shape = RoundedCornerShape(size = 15.dp),
         colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)) {
-        AsyncImage(model = trip.imageUrl, contentDescription = "Image of the trip")
-        // Column containing trip information
+          // Column containing trip information
           Column(modifier = Modifier.width(320.dp)) {
             Row(
                 modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp) // Ensure padding for visual spacing
+                    Modifier.fillMaxWidth().padding(top = 8.dp) // Ensure padding for visual spacing
                 ) {
                   // Trip title
                   Text(
@@ -221,11 +215,9 @@ fun OverviewTrip(
                   Text(
                       text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
                       modifier =
-                      Modifier
-                          .height(24.dp)
-                          .padding(
-                              top = 4.dp
-                          ), // the padding is for having the text on the same
+                          Modifier.height(24.dp)
+                              .padding(
+                                  top = 4.dp), // the padding is for having the text on the same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
@@ -243,11 +235,9 @@ fun OverviewTrip(
                   Text(
                       text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
                       modifier =
-                      Modifier
-                          .height(24.dp)
-                          .padding(
-                              top = 4.dp
-                          ), // the padding is for having the text on the same
+                          Modifier.height(24.dp)
+                              .padding(
+                                  top = 4.dp), // the padding is for having the text on the same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
@@ -269,10 +259,9 @@ fun OverviewTrip(
                   // Share trip code button
                   IconButton(
                       modifier =
-                      Modifier
-                          .width(24.dp)
-                          .height(28.dp)
-                          .testTag("sendTripButton" + trip.tripId),
+                          Modifier.width(24.dp)
+                              .height(28.dp)
+                              .testTag("sendTripButton" + trip.tripId),
                       onClick = {
                         isEmailSelected.value = true
                         dialogIsOpenEmail = true
@@ -292,10 +281,9 @@ fun OverviewTrip(
                   // Share trip code button
                   IconButton(
                       modifier =
-                      Modifier
-                          .width(24.dp)
-                          .height(28.dp)
-                          .testTag("shareTripButton" + trip.tripId),
+                          Modifier.width(24.dp)
+                              .height(28.dp)
+                              .testTag("shareTripButton" + trip.tripId),
                       onClick = {
                         isSelected.value = true
                         context.shareTripCodeIntent(trip.tripId)
@@ -310,6 +298,7 @@ fun OverviewTrip(
                       }
                 }
           }
+          AsyncImage(model = trip.imageUrl, contentDescription = "Image of the trip")
         }
   }
 }
@@ -332,9 +321,7 @@ fun DialogHandlerEmail(
         closeDialogueAction()
       }) {
         Surface(
-            modifier = Modifier
-                .height(220.dp)
-                .testTag("emailDialog"),
+            modifier = Modifier.height(220.dp).testTag("emailDialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)) {
               Column(
