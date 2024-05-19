@@ -195,8 +195,7 @@ fun SuggestionHistoryItem(
                               letterSpacing = 0.14.sp,
                           ),
                       modifier =
-                          Modifier.testTag(
-                              "suggestionHistoryUpsNumber" + suggestion.suggestionId))
+                          Modifier.testTag("suggestionHistoryUpsNumber" + suggestion.suggestionId))
 
                   Spacer(
                       modifier =
