@@ -9,29 +9,19 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.github.se.wanderpals.R
-import com.google.firebase.Firebase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.firebase.messaging.messaging
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -39,6 +29,11 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+
+const val FCM_ENDPOINT2 = "https://fcm.googleapis.com/fcm/send"
+
+const val TOKEN =
+    "AAAALI85TW0:APA91bHQIiTEFkzRUv6FQMlyL1TxtPBztg6lByt18vDaVLkssIEXkPrQu1WLX5Wc_WmTdYqoOWBITP2yp7ej4gH4LeH_iMZbz9lkQQJ-DVC8w2gRxhW8lp8gAuzCqaY136urySlFw-0p"
 
 /** Class responsible for handling notifications on the device. */
 class NotificationDevice : FirebaseMessagingService() {
@@ -78,7 +73,6 @@ class NotificationDevice : FirebaseMessagingService() {
 fun NotificationPermission(context: Context) {
   Log.d("Permission", "Checking Permission")
 
-  val openDialog = remember { mutableStateOf(false) }
   var permissionDenied by remember { mutableStateOf(false) }
 
   val requestPermissionLauncher =
@@ -103,65 +97,16 @@ fun NotificationPermission(context: Context) {
         PackageManager.PERMISSION_GRANTED) {
       Log.d("Permission", "Permission Granted")
       // FCM SDK (and your app) can post notifications.
-    } else if (ComponentActivity()
-        .shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-
-      ShowRationalPermissionDialog(openDialog) {
-        requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-      }
     } else {
       // Directly ask for the permission
-      requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+      SideEffect { requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) }
     }
   }
   Log.d("Permission", "Permission already granted")
 }
 
-@Composable
-fun ShowRationalPermissionDialog(openDialog: MutableState<Boolean>, onclick: () -> Unit) {
-  if (openDialog.value) {
-    AlertDialog(
-        onDismissRequest = { openDialog.value = false },
-        title = { Text(text = "Alert") },
-        text = { Text("Notification permission is required, to show notification") },
-        confirmButton = {
-          TextButton(onClick = { onclick() }, modifier = Modifier.testTag("confirmDeleteButton")) {
-            Text("Ok", color = Color.Red)
-          }
-        },
-        dismissButton = {
-          TextButton(
-              onClick = { openDialog.value = false }, modifier = Modifier.testTag("cancelDelete")) {
-                Text("Cancel")
-              }
-        },
-        modifier = Modifier.testTag("deleteDialog"))
-  }
-}
-
-// function to subscribe to a topic
-fun firebaseSuscribedForGroupNotifications(tripName: String, baseContext: Context) {
-  Firebase.messaging.subscribeToTopic("Trip_$tripName").addOnCompleteListener { task ->
-    var msg = "Subscribed to Trip_$tripName"
-    if (!task.isSuccessful) {
-      msg = "Failed to subscribe to Trip_$tripName"
-    }
-    Log.d("Firebase", msg)
-    Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
-  }
-}
-
-// function to send message to a topic from a client app
-
 @SuppressLint("SuspiciousIndentation")
 suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
-  // Define the FCM endpoint
-  // val FCM_ENDPOINT = "https://fcm.googleapis.com/v1/projects/wanderpals/messages:send"
-  val FCM_ENDPOINT2 = "https://fcm.googleapis.com/fcm/send"
-
-  val TOKEN =
-      "AAAALI85TW0:APA91bHQIiTEFkzRUv6FQMlyL1TxtPBztg6lByt18vDaVLkssIEXkPrQu1WLX5Wc_WmTdYqoOWBITP2yp7ej4gH4LeH_iMZbz9lkQQJ-DVC8w2gRxhW8lp8gAuzCqaY136urySlFw-0p"
-
   // Create the notification payload
   val notificationPayload =
       mapOf("notification" to mapOf("body" to message, "time" to "Wanderpals"), "to" to deviceToken)
