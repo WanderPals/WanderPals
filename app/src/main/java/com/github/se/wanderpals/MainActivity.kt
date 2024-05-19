@@ -2,6 +2,7 @@ package com.github.se.wanderpals
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
@@ -15,7 +16,12 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -178,6 +184,14 @@ class MainActivity : ComponentActivity() {
 
     setContent {
       WanderPalsTheme {
+          val statusBarColor = MaterialTheme.colorScheme.primary.copy(alpha = 1.0f) // Ensuring full opacity
+          val activity = LocalContext.current as Activity
+
+          // Updating status bar color based on the theme dynamically
+          SideEffect {
+              activity.window.statusBarColor = statusBarColor.toArgb()
+              WindowInsetsControllerCompat(activity.window, activity.window.decorView).isAppearanceLightStatusBars = statusBarColor.luminance() > 0.5
+          }
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           Log.d("Hello", "Hello")
