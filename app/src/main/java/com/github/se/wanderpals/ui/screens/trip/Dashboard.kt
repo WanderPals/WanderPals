@@ -2,7 +2,6 @@ package com.github.se.wanderpals.ui.screens.trip
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +25,7 @@ import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -306,18 +306,18 @@ fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: 
                 Alignment
                     .CenterVertically // This aligns all children vertically centered in the Row
             ) {
-              Icon(
-                  Icons.Default.Menu,
-                  contentDescription = "Menu",
-                  modifier =
-                      Modifier.testTag("menuButton")
-                          .clickable {
-                            scope.launch { drawerState.apply { if (isClosed) open() else close() } }
-                          }
-                          .padding(8.dp)
-                          .size(40.dp),
-                  tint = MaterialTheme.colorScheme.onPrimary)
-
+              IconButton(
+                  onClick = {
+                    scope.launch { drawerState.apply { if (isClosed) open() else close() } }
+                  },
+                  modifier = Modifier.testTag("menuButton").padding(horizontal = 8.dp),
+              ) {
+                Icon(
+                    Icons.Default.Menu,
+                    contentDescription = "Menu",
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary)
+              }
               Text(
                   text = tripTitle,
                   modifier =

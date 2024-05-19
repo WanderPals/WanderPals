@@ -150,11 +150,9 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     thickness = 1.dp,
                                     modifier = Modifier.padding(horizontal = 8.dp))
-                                if (sortedSuggestion.size > 2) {
-                                  SuggestionWidgetItem(suggestion = sortedSuggestion[2])
-                                } else {
-                                  Box(modifier = Modifier.fillMaxSize())
-                                }
+                              }
+                              if (sortedSuggestion.size > 2) {
+                                SuggestionWidgetItem(suggestion = sortedSuggestion[2])
                               } else {
                                 Box(modifier = Modifier.fillMaxSize())
                               }
