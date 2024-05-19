@@ -256,7 +256,7 @@ fun SuggestionItem(
                                     .testTag("voteIcon"))
                       }
 
-                        // Remaining time
+                      // Remaining time
                       Text(
                           text = remainingTime.value,
                           style =
