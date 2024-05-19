@@ -45,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -55,14 +54,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import coil.compose.AsyncImage
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
-import com.github.se.wanderpals.ui.theme.primaryContainerLight
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import java.time.format.DateTimeFormatter
@@ -127,7 +123,7 @@ fun OverviewTrip(
 ) {
 
   // Date pattern for formatting start and end dates
-  val DATE_PATTERN = "dd/MM/yyyy"
+  val date_pattern = "dd/MM/yyyy"
 
   // Local context
   val context = LocalContext.current
@@ -139,9 +135,6 @@ fun OverviewTrip(
   // Mutable state to check if the dialog is open
   var dialogIsOpen by remember { mutableStateOf(false) }
   var dialogIsOpenEmail by remember { mutableStateOf(false) }
-
-  // image selection
-  val imageURL by overviewViewModel.imagesURL.collectAsState()
 
   var displayedTheBoxSelector by remember { mutableStateOf(false) }
   var selectedImagesLocal by remember { mutableStateOf<Uri?>(Uri.EMPTY) }
@@ -191,9 +184,8 @@ fun OverviewTrip(
 
   Card(
       modifier =
-          Modifier
-              // .fillMaxSize()
-              .padding(bottom = 30.dp, start = 15.dp)
+          Modifier.fillMaxSize()
+              .padding(start = 32.dp, end = 32.dp, bottom = 32.dp)
               .clickable {
                 if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
                   dialogIsOpen = false
@@ -205,27 +197,22 @@ fun OverviewTrip(
                 }
               }
               .width(360.dp)
-              .height(130.dp)
+              .height(100.dp)
               .testTag("buttonTrip" + trip.tripId),
       shape = RoundedCornerShape(15.dp),
       elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-      colors = CardDefaults.cardColors(containerColor = primaryContainerLight)) {
+      colors =
+          CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
         Box(modifier = Modifier.fillMaxSize()) {
-          // Box containing the trip image
-          AsyncImage(
-              model = trip.imageUrl,
-              contentDescription = "",
-              contentScale = ContentScale.Crop,
-              modifier = Modifier.fillMaxWidth().height(150.dp))
-
-          // Button representing the trip overview
-
           // Column containing trip information
-          Column(modifier = Modifier.width(380.dp)) {
+          Column(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier =
                     Modifier.fillMaxWidth()
-                        .padding(top = 8.dp, start = 8.dp) // Ensure padding for visual spacing
+                        .padding(
+                            top = 12.dp,
+                            start = 16.dp,
+                            end = 16.dp) // Ensure padding for visual spacing
                 ) {
                   // Trip title
                   Text(
@@ -236,7 +223,7 @@ fun OverviewTrip(
                               fontSize = 18.sp,
                               lineHeight = 24.sp,
                               fontWeight = FontWeight(500),
-                              color = onPrimaryContainerLight,
+                              color = MaterialTheme.colorScheme.onPrimaryContainer,
                               letterSpacing = 0.1.sp,
                           ),
                       textAlign = TextAlign.Start,
@@ -247,7 +234,7 @@ fun OverviewTrip(
 
                   // Start date
                   Text(
-                      text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
+                      text = trip.startDate.format(DateTimeFormatter.ofPattern(date_pattern)),
                       modifier =
                           Modifier.height(24.dp)
                               .padding(
@@ -258,7 +245,7 @@ fun OverviewTrip(
                               fontSize = 14.sp,
                               lineHeight = 24.sp,
                               fontWeight = FontWeight(500),
-                              color = onPrimaryContainerLight,
+                              color = MaterialTheme.colorScheme.onPrimaryContainer,
                               letterSpacing = 0.1.sp,
                           ),
                       textAlign = TextAlign.End)
@@ -267,7 +254,7 @@ fun OverviewTrip(
 
                   // End date
                   Text(
-                      text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
+                      text = trip.endDate.format(DateTimeFormatter.ofPattern(date_pattern)),
                       modifier =
                           Modifier.height(24.dp)
                               .padding(
@@ -278,17 +265,18 @@ fun OverviewTrip(
                               fontSize = 14.sp,
                               lineHeight = 24.sp,
                               fontWeight = FontWeight(500),
-                              color = onPrimaryContainerLight,
+                              color = MaterialTheme.colorScheme.onPrimaryContainer,
                               letterSpacing = 0.1.sp,
                           ),
                       textAlign = TextAlign.End)
                 }
 
-            Spacer(Modifier.height(50.dp))
+            Spacer(Modifier.height(20.dp))
             Row(
-                modifier = Modifier.fillMaxWidth() // Ensure padding for visual spacing
-                ) {
-                  Spacer(Modifier.weight(1f)) // Pushes the icon to the end
+                modifier =
+                    Modifier.fillMaxWidth() // Ensure padding for visual spacing
+                        .padding(start = 16.dp, end = 16.dp)) {
+                  Spacer(Modifier.weight(0.9f)) // Pushes the icon to the end
 
                   // Share trip code button
                   IconButton(
