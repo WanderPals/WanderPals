@@ -27,6 +27,7 @@ import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import io.mockk.Called
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
@@ -197,6 +198,16 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
   }
 
   @Test
+  fun offlineCantAddExpense() = run {
+    SessionManager.setIsNetworkAvailable(false)
+    setUpFinanceTest()
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      financeFloatingActionButton { assertIsNotDisplayed() }
+    }
+    SessionManager.setIsNetworkAvailable(true)
+  }
+
+  @Test
   fun debtScreenDisplaysProperly() = run {
     SessionManager.setUserSession("user001", "Alice")
     navigationActions = mockNavActions
@@ -363,6 +374,22 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
       assert(financeViewModelTest.expenseStateList.value.size == 2)
     }
+  }
+
+  @Test
+  fun expensesDeletesNotWorkingOffline() = run {
+    SessionManager.setIsNetworkAvailable(false)
+    setUpExpenseInfoTest()
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("deleteTextButton").performClick()
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("confirmDeleteExpenseButton").performClick()
+      verify { mockNavActions wasNot Called }
+      confirmVerified(mockNavActions)
+      composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
+      assert(financeViewModelTest.expenseStateList.value.size == 3)
+    }
+    SessionManager.setIsNetworkAvailable(true)
   }
 
   @Test

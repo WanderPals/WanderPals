@@ -1,3 +1,4 @@
+import com.github.se.wanderpals.model.data.Documents
 import com.github.se.wanderpals.model.data.Trip
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -35,7 +36,8 @@ data class FirestoreTrip(
     val tokenIds: List<String> = emptyList(),
     val suggestions: List<String> = emptyList(),
     val announcements: List<String> = emptyList(),
-    val expenses: List<String> = emptyList()
+    val expenses: List<String> = emptyList(),
+    val documentsURL: List<Documents> = emptyList()
 ) {
   companion object {
     /**
@@ -59,7 +61,8 @@ data class FirestoreTrip(
           tokenIds = trip.tokenIds,
           suggestions = trip.suggestions,
           announcements = trip.announcements,
-          expenses = trip.expenses)
+          expenses = trip.expenses,
+          documentsURL = trip.documentsURL)
     }
   }
 
@@ -83,6 +86,7 @@ data class FirestoreTrip(
         tokenIds = tokenIds,
         suggestions = suggestions,
         announcements = announcements,
-        expenses = expenses)
+        expenses = expenses,
+        documentsURL = documentsURL)
   }
 }

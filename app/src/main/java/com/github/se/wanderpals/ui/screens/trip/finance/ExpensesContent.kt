@@ -39,6 +39,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import java.time.format.DateTimeFormatter
 
@@ -61,7 +62,11 @@ fun ExpensesContent(
     Box(modifier = Modifier.fillMaxSize()) {
       Text(
           modifier = Modifier.align(Alignment.Center).testTag("noExpensesTripText"),
-          text = "Looks like you have no expenses. ",
+          text =
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Looks like you have no expenses. "
+                false -> "No internet connection"
+              },
           style =
               TextStyle(
                   fontSize = 18.sp,
@@ -72,6 +77,7 @@ fun ExpensesContent(
               ),
       )
       IconButton(
+          enabled = SessionManager.getIsNetworkAvailable(),
           onClick = { onRefresh() },
           modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
           content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh expense list") })

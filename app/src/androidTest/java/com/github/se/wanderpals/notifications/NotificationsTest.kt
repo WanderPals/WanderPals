@@ -212,6 +212,33 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
   }
 
   @Test
+  fun createAnnoucementButtonOnline() = run {
+    notificationsViewModelTest.removeAnnouncement("1")
+    SessionManager.setIsNetworkAvailable(true)
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notificationButton { assertIsDisplayed() }
+      announcementButton { assertIsDisplayed() }
+      announcementButton { performClick() }
+      createAnnouncementButton { assertIsEnabled() }
+    }
+    notificationsViewModelTest.addAnnouncement(announcement1)
+  }
+
+  @Test
+  fun createAnnoucementButtonOffline() = run {
+    notificationsViewModelTest.removeAnnouncement("1")
+    SessionManager.setIsNetworkAvailable(false)
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notificationButton { assertIsDisplayed() }
+      announcementButton { assertIsDisplayed() }
+      announcementButton { performClick() }
+      createAnnouncementButton { assertIsNotEnabled() }
+    }
+    notificationsViewModelTest.addAnnouncement(announcement1)
+    SessionManager.setIsNetworkAvailable(true)
+  }
+
+  @Test
   fun viewerOrMemberCanReadAnnouncementInfoOnClick() = run {
     ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
       SessionManager.setRole(Role.VIEWER)

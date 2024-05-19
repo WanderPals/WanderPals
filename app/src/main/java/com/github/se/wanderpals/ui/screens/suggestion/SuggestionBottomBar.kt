@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.service.SessionManager
 
 @Composable
 fun SuggestionBottomBar(
@@ -54,6 +55,7 @@ fun SuggestionBottomBar(
               }
 
           Button(
+              enabled = SessionManager.getIsNetworkAvailable(),
               onClick = { onSuggestionClick() },
               modifier =
                   Modifier // .align(Alignment.BottomEnd) // Align the button to the bottom end of

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -125,7 +126,12 @@ fun SuggestionFeedContent(
                     .height(55.dp)
                     .align(Alignment.Center)
                     .testTag("noSuggestionsForUserText"),
-            text = "Looks like there is no suggestions yet. ",
+            text =
+                when {
+                  SessionManager.getIsNetworkAvailable() ->
+                      "Looks like there is no suggestions yet. "
+                  else -> "Looks like you are offline. Check your connection."
+                },
             style =
                 TextStyle(
                     lineHeight = 20.sp,
@@ -136,6 +142,7 @@ fun SuggestionFeedContent(
                     color = scrimLight),
         )
         IconButton(
+            enabled = SessionManager.getIsNetworkAvailable(),
             onClick = { suggestionsViewModel.loadSuggestion(tripId) },
             modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
             content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestions") })

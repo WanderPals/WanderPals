@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 
@@ -64,7 +65,11 @@ fun OverviewContent(
                   .width(260.dp)
                   .height(55.dp)
                   .testTag("noTripForUserText"),
-          text = "Looks like you have no travel plan yet. ",
+          text =
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Looks like you have no travel plan yet. "
+                false -> "It seems you're not connected to the Internet"
+              },
           style =
               TextStyle(
                   fontSize = 18.sp,
@@ -76,6 +81,7 @@ fun OverviewContent(
               ),
       )
       IconButton(
+          enabled = SessionManager.getIsNetworkAvailable(),
           onClick = { overviewViewModel.getAllTrips() },
           modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
           content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh trips") })

@@ -328,6 +328,7 @@ fun CreateSuggestion(
               modifier = Modifier.height(24.dp)) // the space between the last field and the button
 
           Button(
+              enabled = SessionManager.getIsNetworkAvailable(),
               modifier =
                   Modifier.padding(0.5.dp)
                       .width(300.dp)

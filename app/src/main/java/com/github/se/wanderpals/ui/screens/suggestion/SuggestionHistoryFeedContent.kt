@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 
@@ -104,7 +105,11 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
                           .height(55.dp)
                           .align(Alignment.Center)
                           .testTag("noSuggestionsHistoryToDisplay"),
-                  text = "No stops in the history yet.",
+                  text =
+                      when (SessionManager.getIsNetworkAvailable()) {
+                        true -> "No stops in the history yet."
+                        false -> "No internet connection"
+                      },
                   style =
                       TextStyle(
                           lineHeight = 20.sp,
@@ -115,6 +120,7 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
                           color = MaterialTheme.colorScheme.scrim),
               )
               IconButton(
+                  enabled = SessionManager.getIsNetworkAvailable(),
                   onClick = { suggestionsViewModel.loadSuggestion(tripId) },
                   modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
                   content = {

@@ -107,6 +107,7 @@ fun SuggestionBottomSheet(
                     modifier =
                         Modifier.fillMaxWidth()
                             .clickable(
+                                enabled = SessionManager.getIsNetworkAvailable(),
                                 onClick = { viewModel.transformToStop(selectedSuggestion!!) })
                             .padding(16.dp)
                             .testTag("transformSuggestionOption"),
@@ -131,10 +132,21 @@ fun SuggestionBottomSheet(
     AlertDialog(
         onDismissRequest = { viewModel.hideDeleteDialog() },
         title = { Text("Confirm Deletion") },
-        text = { Text("Are you sure you want to delete this suggestion?") },
+        text = {
+          Text(
+              when (SessionManager.getIsNetworkAvailable()) {
+                true -> "Are you sure you want to delete this suggestion?"
+                false -> "You are offline. You can't delete this suggestion."
+              })
+        },
         confirmButton = {
           TextButton(
-              onClick = { viewModel.confirmDeleteSuggestion(selectedSuggestion!!) },
+              onClick = {
+                when (SessionManager.getIsNetworkAvailable()) {
+                  true -> viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
+                  false -> viewModel.hideDeleteDialog()
+                }
+              },
               modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
                 Text("Confirm", color = MaterialTheme.colorScheme.error)
               }

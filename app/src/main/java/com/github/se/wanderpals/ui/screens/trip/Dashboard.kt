@@ -55,6 +55,7 @@ import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
+import com.github.se.wanderpals.ui.screens.dashboard.DashboardDocumentWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardFinanceWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardStopWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
@@ -83,6 +84,9 @@ fun Dashboard(
     dashboardViewModel.loadExpenses(tripId)
     dashboardViewModel.loadTripTitle(tripId)
     dashboardViewModel.loadStops(tripId)
+    dashboardViewModel.loadLastAddedSharedDocument(tripId)
+    dashboardViewModel.loadLastAddedPrivateDocument(
+        tripId, SessionManager.getCurrentUser()!!.userId)
   }
 
   val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -136,6 +140,12 @@ fun Dashboard(
 
                   Spacer(modifier = Modifier.padding(8.dp))
                 }
+                item {
+                  DashboardDocumentWidget(
+                      onClick = { navActions.navigateTo(Route.DOCUMENT) },
+                      viewModel = dashboardViewModel)
+                  Spacer(modifier = Modifier.padding(8.dp))
+                }
               }
             }
 
@@ -143,12 +153,22 @@ fun Dashboard(
           AlertDialog(
               onDismissRequest = { dashboardViewModel.hideDeleteDialog() },
               title = { Text("Confirm Deletion") },
-              text = { Text("Are you sure you want to delete this Trip?") },
+              text = {
+                Text(
+                    when (SessionManager.getIsNetworkAvailable()) {
+                      true -> "Are you sure you want to delete this Trip?"
+                      false -> "No internet connection. Please try again later."
+                    })
+              },
               confirmButton = {
                 TextButton(
                     onClick = {
-                      dashboardViewModel.confirmDeleteTrip()
-                      navActions.navigateTo(Route.OVERVIEW)
+                      if (SessionManager.getIsNetworkAvailable()) {
+                        dashboardViewModel.confirmDeleteTrip()
+                        navActions.navigateTo(Route.OVERVIEW)
+                      } else {
+                        dashboardViewModel.hideDeleteDialog()
+                      }
                     },
                     modifier = Modifier.testTag("confirmDeleteTripButton")) {
                       Text("Confirm", color = Color.Red)
@@ -241,7 +261,8 @@ fun Menu(
           }
         })
 
-    if (SessionManager.getCurrentUser()!!.role == Role.OWNER) {
+    if (SessionManager.getCurrentUser()!!.role == Role.OWNER &&
+        SessionManager.getIsNetworkAvailable()) {
       ElevatedButton(
           modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("deleteTripButton"),
           content = {

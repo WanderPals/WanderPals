@@ -195,4 +195,36 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
       }
     }
   }
+
+  @Test
+  fun createAnnouncementOffline() = run {
+    ComposeScreen.onComposeScreen<CreateAnnouncementScreen>(composeTestRule) {
+      val vm = NotificationsViewModelTest()
+      SessionManager.setIsNetworkAvailable(false)
+      composeTestRule.setContent {
+        CreateAnnouncement(
+            vm,
+            onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+        )
+      }
+
+      step("Open create tripAnnouncement screen") {
+        inputAnnouncementTitle {
+          assertIsDisplayed()
+          performClick()
+
+          assertTextContains("Trip Announcement Title*")
+
+          performTextClearance()
+          performTextInput("Title1")
+        }
+
+        createAnnouncementButton { assertIsNotEnabled() }
+
+        verify { mockNavActions wasNot Called }
+        confirmVerified(mockNavActions)
+      }
+    }
+    SessionManager.setIsNetworkAvailable(true)
+  }
 }
