@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,8 +26,10 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
@@ -60,6 +64,7 @@ import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
+import com.github.se.wanderpals.ui.theme.primaryContainerLight
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import java.time.format.DateTimeFormatter
@@ -186,35 +191,37 @@ fun OverviewTrip(
         })
   }
 
-  Box(modifier = Modifier.fillMaxSize().padding(bottom = 30.dp)) {
-    // Button representing the trip overview
-    IconButton(
-        onClick = {
+  Card(modifier = Modifier
+      .fillMaxSize()
+      .padding(bottom = 30.dp)
+      .clickable {
           if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
-            dialogIsOpen = false
-            SessionManager.setTripName(trip.title)
-            navigationActions.setVariablesTrip(trip.tripId)
-            navigationActions.navigateTo(Route.TRIP)
+              dialogIsOpen = false
+              SessionManager.setTripName(trip.title)
+              navigationActions.setVariablesTrip(trip.tripId)
+              navigationActions.navigateTo(Route.TRIP)
           } else {
-            dialogIsOpen = true
+              dialogIsOpen = true
           }
-        },
-        modifier =
-            Modifier.align(Alignment.TopCenter)
-                .width(460.dp)
-                .height(280.dp)
-                .padding(top = 1.dp)
-                .testTag("buttonTrip" + trip.tripId),
-        // shape = RoundedCornerShape(size = 15.dp),
-        // colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight)
-    ) {
-      AsyncImage(model = trip.imageUrl, contentDescription = "", modifier = Modifier.fillMaxSize())
+      },
+      shape = RoundedCornerShape(15.dp),
+      elevation = CardDefaults.cardElevation( defaultElevation = 5.dp)
+  ) {
+      Box(modifier = Modifier.fillMaxSize()){
+    // Box containing the trip image
+          AsyncImage(model = trip.imageUrl, contentDescription = "", contentScale = ContentScale.Crop,
+              modifier = Modifier.fillMaxWidth().height(150.dp))
+
+
+    // Button representing the trip overview
 
       // Column containing trip information
-      Column(modifier = Modifier.width(320.dp)) {
+      Column(modifier = Modifier.width(380.dp)) {
         Row(
             modifier =
-                Modifier.fillMaxWidth().padding(top = 8.dp) // Ensure padding for visual spacing
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp) // Ensure padding for visual spacing
             ) {
               // Trip title
               Text(
@@ -238,8 +245,9 @@ fun OverviewTrip(
               Text(
                   text = trip.startDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
                   modifier =
-                      Modifier.height(24.dp)
-                          .padding(top = 4.dp), // the padding is for having the text on the same
+                  Modifier
+                      .height(24.dp)
+                      .padding(top = 4.dp), // the padding is for having the text on the same
                   // line and in the same height as the trip title
                   style =
                       TextStyle(
@@ -257,8 +265,9 @@ fun OverviewTrip(
               Text(
                   text = trip.endDate.format(DateTimeFormatter.ofPattern(DATE_PATTERN)),
                   modifier =
-                      Modifier.height(24.dp)
-                          .padding(top = 4.dp), // the padding is for having the text on the same
+                  Modifier
+                      .height(24.dp)
+                      .padding(top = 4.dp), // the padding is for having the text on the same
                   // line and in the same height as the trip title
                   style =
                       TextStyle(
@@ -280,7 +289,10 @@ fun OverviewTrip(
               // Share trip code button
               IconButton(
                   modifier =
-                      Modifier.width(24.dp).height(28.dp).testTag("sendTripButton" + trip.tripId),
+                  Modifier
+                      .width(24.dp)
+                      .height(28.dp)
+                      .testTag("sendTripButton" + trip.tripId),
                   onClick = {
                     isEmailSelected.value = true
                     dialogIsOpenEmail = true
@@ -299,7 +311,10 @@ fun OverviewTrip(
               // Share trip code button
               IconButton(
                   modifier =
-                      Modifier.width(24.dp).height(28.dp).testTag("shareTripButton" + trip.tripId),
+                  Modifier
+                      .width(24.dp)
+                      .height(28.dp)
+                      .testTag("shareTripButton" + trip.tripId),
                   onClick = {
                     isSelected.value = true
                     context.shareTripCodeIntent(trip.tripId)
@@ -330,7 +345,9 @@ fun OverviewTrip(
     Dialog(onDismissRequest = { displayedTheBoxSelector = false }) {
       Card(
           colors = CardDefaults.cardColors(contentColor = Color.Black),
-          modifier = Modifier.size(370.dp, 300.dp).testTag("documentBox")) {
+          modifier = Modifier
+              .size(370.dp, 300.dp)
+              .testTag("documentBox")) {
 
             // set the name of the documents
             Column(
@@ -342,9 +359,10 @@ fun OverviewTrip(
                   FloatingActionButton(
                       onClick = { singlePhotoPickerLauncher.launch(PickVisualMediaRequest()) },
                       modifier =
-                          Modifier.padding(top = 20.dp)
-                              .size(width = 200.dp, height = 50.dp)
-                              .testTag("addDocumentButton")) {
+                      Modifier
+                          .padding(top = 20.dp)
+                          .size(width = 200.dp, height = 50.dp)
+                          .testTag("addDocumentButton")) {
                         Text(
                             text = "Add Document",
                             style =
@@ -373,9 +391,10 @@ fun OverviewTrip(
                               displayedTheBoxSelector = false
                             },
                             modifier =
-                                Modifier.padding(top = 10.dp)
-                                    .size(width = 100.dp, height = 50.dp)
-                                    .testTag("acceptButton")) {
+                            Modifier
+                                .padding(top = 10.dp)
+                                .size(width = 100.dp, height = 50.dp)
+                                .testTag("acceptButton")) {
                               Text(
                                   text = "Accept",
                                   style =
@@ -394,9 +413,10 @@ fun OverviewTrip(
                               displayedTheBoxSelector = false
                             },
                             modifier =
-                                Modifier.padding(top = 10.dp)
-                                    .size(width = 100.dp, height = 50.dp)
-                                    .testTag("cancelButton")) {
+                            Modifier
+                                .padding(top = 10.dp)
+                                .size(width = 100.dp, height = 50.dp)
+                                .testTag("cancelButton")) {
                               Text(
                                   text = "Cancel",
                                   style =
@@ -432,7 +452,9 @@ fun DialogHandlerEmail(
         closeDialogueAction()
       }) {
         Surface(
-            modifier = Modifier.height(220.dp).testTag("emailDialog"),
+            modifier = Modifier
+                .height(220.dp)
+                .testTag("emailDialog"),
             color = MaterialTheme.colorScheme.background,
             shape = RoundedCornerShape(16.dp)) {
               Column(
