@@ -49,6 +49,7 @@ import com.github.se.wanderpals.ui.theme.scrimLight
  * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  * @param tripId The ID of the trip.
  * @param suggestionsViewModel The ViewModel for managing suggestions.
+ * @param navigationActions The navigation actions used to navigate to different screens.
  */
 @Composable
 fun SuggestionFeedContent(
@@ -59,7 +60,6 @@ fun SuggestionFeedContent(
     suggestionsViewModel: SuggestionsViewModel,
     navigationActions: NavigationActions
 ) {
-
   // State to track the selected filter criteria
   var selectedFilterCriteria by remember { mutableStateOf("Creation date") }
 

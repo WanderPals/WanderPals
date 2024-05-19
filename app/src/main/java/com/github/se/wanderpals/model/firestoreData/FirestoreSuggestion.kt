@@ -2,8 +2,10 @@ package com.github.se.wanderpals.model.firestoreData
 
 import com.github.se.wanderpals.model.data.Suggestion
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 
 /**
  * Firestore-compatible DTO for a Suggestion, adapting complex objects (Stop, Comment) and
@@ -19,6 +21,8 @@ import java.time.format.DateTimeFormatter
  * @property stop Detailed proposed Stop, in a Firestore-compatible format.
  * @property comments List of comments on the suggestion, in Firestore-compatible formats.
  * @property userLikes List of user IDs who liked the suggestion.
+ * @property voteIconClicked Flag indicating whether the vote icon has been clicked.
+ * @property voteStartTime Time when the countdown starts for the suggestion.
  */
 data class FirestoreSuggestion(
     val suggestionId: String = "",
@@ -30,7 +34,9 @@ data class FirestoreSuggestion(
     val stop: FirestoreStop = FirestoreStop(), // Using Firestore-compatible Stop object
     val comments: List<FirestoreComment> =
         emptyList(), // Using Firestore-compatible Comment objects
-    val userLikes: List<String> = emptyList()
+    val userLikes: List<String> = emptyList(),
+    val voteIconClicked: Boolean = true, // Default value
+    val voteStartTime: String = "" // Converted to String for Firestore compatibility
 ) {
   companion object {
     /**
@@ -43,6 +49,7 @@ data class FirestoreSuggestion(
     fun fromSuggestion(suggestion: Suggestion): FirestoreSuggestion {
       val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
       val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+      val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
       return FirestoreSuggestion(
           suggestionId = suggestion.suggestionId,
           userId = suggestion.userId,
@@ -56,7 +63,11 @@ data class FirestoreSuggestion(
               suggestion.comments.map {
                 FirestoreComment.fromComment(it)
               }, // Convert each Comment to FirestoreComment
-          userLikes = suggestion.userLikes)
+          userLikes = suggestion.userLikes,
+          voteIconClicked = suggestion.voteIconClicked,
+          voteStartTime =
+              suggestion.voteStartTime.format(dateTimeFormatter) // Convert LocalTime to String
+          )
     }
   }
 
@@ -69,6 +80,19 @@ data class FirestoreSuggestion(
   fun toSuggestion(): Suggestion {
     val dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
     val timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME
+    val dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+    val parsedVoteStartTime =
+        if (voteStartTime.isNotEmpty()) {
+          try {
+            LocalDateTime.parse(voteStartTime, dateTimeFormatter)
+          } catch (e: DateTimeParseException) {
+            LocalDateTime.MIN
+          }
+        } else {
+          LocalDateTime.MIN
+        }
+
     return Suggestion(
         suggestionId = suggestionId,
         userId = userId,
@@ -80,6 +104,8 @@ data class FirestoreSuggestion(
             LocalTime.parse(createdAtTime, timeFormatter), // Parse time string back into LocalTime
         stop = stop.toStop(), // Convert FirestoreStop back to Stop
         comments = comments.map { it.toComment() }, // Convert each FirestoreComment back to Comment
-        userLikes = userLikes)
+        userLikes = userLikes,
+        voteIconClicked = voteIconClicked,
+        voteStartTime = parsedVoteStartTime)
   }
 }

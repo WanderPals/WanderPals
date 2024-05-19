@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Comment
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 import kotlin.math.ceil
@@ -79,12 +81,33 @@ open class SuggestionsViewModel(
   // item:
   private val _likedSuggestions = MutableStateFlow<List<String>>(emptyList())
 
+  private val _voteIconClicked = MutableStateFlow<List<String>>(emptyList())
+
   // This will hold the IDs of suggestions that have been added to stops
   private val _addedSuggestionsToStops = MutableStateFlow<List<String>>(emptyList())
   open val addedSuggestionsToStops: StateFlow<List<String>> = _addedSuggestionsToStops.asStateFlow()
 
+  // stores the suggestionId with its start time when the vote icon is clicked
+  private val _voteStartTimeMap = mutableMapOf<String, LocalDateTime>()
+  /**
+   * Returns whether the suggestion is liked by the current user.
+   *
+   * @param suggestionId The ID of the suggestion to check.
+   * @return True if the suggestion is liked, false otherwise.
+   */
   open fun getIsLiked(suggestionId: String): Boolean {
     return _likedSuggestions.value.contains(suggestionId)
+  }
+
+  /**
+   * Returns whether the vote icon has been clicked for a suggestion.
+   *
+   * @param suggestionId The ID of the suggestion to check.
+   * @return True if the vote icon has been clicked, false if the icon is no longer clickable
+   *   because it has been clicked.
+   */
+  open fun getVoteIconClicked(suggestionId: String): Boolean {
+    return _voteIconClicked.value.contains(suggestionId)
   }
 
   open fun getNbrLiked(suggestionId: String): Int {
@@ -101,8 +124,16 @@ open class SuggestionsViewModel(
       val suggestions = suggestionRepository?.getAllSuggestionsFromTrip(tripId)!!
       _state.value = suggestions
 
+      // Update the liked suggestions list with the current user's liked suggestions
       _likedSuggestions.value =
           _state.value.filter { it.userLikes.contains(currentLoggedInUId) }.map { it.suggestionId }
+
+      _voteIconClicked.value =
+          _state.value
+              .filter { it.voteIconClicked }
+              .map {
+                it.suggestionId
+              } // get the list of suggestions that have the vote icon that have been clicked
 
       _isLoading.value = false
     }
@@ -176,6 +207,64 @@ open class SuggestionsViewModel(
         }
       }
     }
+  }
+
+  open fun getRemainingTimeFlow(suggestionId: String): MutableStateFlow<String> {
+    val startTime = _voteStartTimeMap[suggestionId]
+    val remainingTimeFlow = MutableStateFlow("23:59:59")
+
+    startTime?.let {
+      val now = LocalDateTime.now()
+      val endTime = it.plusHours(24)
+      val duration = java.time.Duration.between(now, endTime)
+
+      if (!duration.isNegative) {
+        val hours = duration.toHours().toString().padStart(2, '0')
+        val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
+        val seconds = (duration.seconds % 60).toString().padStart(2, '0')
+        remainingTimeFlow.value = "$hours:$minutes:$seconds"
+      } else {
+        remainingTimeFlow.value = "00:00:00"
+      }
+    }
+
+    return remainingTimeFlow
+  }
+
+  open fun toggleVoteIconClicked(suggestion: Suggestion) {
+    viewModelScope.launch {
+      val currentSuggestion =
+          suggestionRepository?.getSuggestionFromTrip(tripId, suggestion.suggestionId)!!
+
+      // Check if the vote icon is not clicked
+      if (!getVoteIconClicked(currentSuggestion.suggestionId)) {
+        // Store the start time when the vote icon is clicked
+        val startTime = LocalDateTime.now()
+        _voteStartTimeMap[currentSuggestion.suggestionId] = startTime
+
+        // Add the suggestion ID to the list of clicked vote icons
+        _voteIconClicked.value += currentSuggestion.suggestionId
+
+        // Prepare the updated suggestion for backend update
+        val updatedSuggestion = currentSuggestion.copy(voteIconClicked = true)
+        val wasUpdateSuccessful =
+            suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+
+        if (wasUpdateSuccessful) {
+          _state.value = suggestionRepository.getAllSuggestionsFromTrip(tripId)
+          _voteIconClicked.value =
+              _state.value.filter { it.voteIconClicked }.map { it.suggestionId }
+          if (selectedSuggestion.value?.suggestionId == updatedSuggestion.suggestionId) {
+            _selectedSuggestion.value = updatedSuggestion
+          }
+        }
+      }
+    }
+  }
+
+  // Add a new function to get the start time for a suggestion
+  open fun getStartTime(suggestionId: String): LocalDateTime? {
+    return _voteStartTimeMap[suggestionId]
   }
 
   /**
@@ -360,6 +449,11 @@ open class SuggestionsViewModel(
 
   open fun cancelEditComment() {
     _editingComment.value = false
+  }
+
+  open fun getCurrentUserRole(): Role {
+    val currentUser = SessionManager.getCurrentUser()
+    return currentUser?.role ?: Role.MEMBER
   }
 
   /** Transforms a suggestion to a stop and updates the backend and local state accordingly. */

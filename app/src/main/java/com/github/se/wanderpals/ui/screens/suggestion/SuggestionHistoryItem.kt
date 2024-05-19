@@ -15,31 +15,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
-import com.github.se.wanderpals.ui.theme.backgroundLight
-import com.github.se.wanderpals.ui.theme.onBackgroundLight
-import com.github.se.wanderpals.ui.theme.primaryLight
-import com.github.se.wanderpals.ui.theme.secondaryLight
-import com.github.se.wanderpals.ui.theme.surfaceVariantLight
-import com.github.se.wanderpals.ui.theme.tertiaryLight
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -58,7 +53,8 @@ fun SuggestionHistoryItem(
 ) {
   val isLiked = viewModel.getIsLiked(suggestion.suggestionId)
   val likesCount = viewModel.getNbrLiked(suggestion.suggestionId).toString()
-  val cardColors = CardDefaults.cardColors(containerColor = surfaceVariantLight)
+  val cardColors =
+      CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
   Card(
       modifier =
@@ -66,7 +62,10 @@ fun SuggestionHistoryItem(
               .padding(start = 27.dp, end = 27.dp, top = 16.dp, bottom = 16.dp)
               .fillMaxWidth()
               .height(166.dp)
-              .border(width = 1.dp, color = surfaceVariantLight, shape = RoundedCornerShape(10.dp))
+              .border(
+                  width = 1.dp,
+                  color = MaterialTheme.colorScheme.surfaceVariant,
+                  shape = RoundedCornerShape(10.dp))
               .testTag("suggestionHistory"),
       colors = cardColors) {
         Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
@@ -79,7 +78,7 @@ fun SuggestionHistoryItem(
                           fontSize = 15.sp,
                           lineHeight = 20.sp,
                           fontWeight = FontWeight(500),
-                          color = primaryLight,
+                          color = MaterialTheme.colorScheme.primary,
                           letterSpacing = 0.15.sp,
                       ),
                   modifier = Modifier.testTag("suggestionHistoryTitle"))
@@ -91,7 +90,7 @@ fun SuggestionHistoryItem(
                           fontSize = 14.sp,
                           lineHeight = 20.sp,
                           fontWeight = FontWeight(500),
-                          color = secondaryLight,
+                          color = MaterialTheme.colorScheme.secondary,
                           letterSpacing = 0.14.sp,
                       ),
                   modifier = Modifier.testTag("suggestionHistoryCreatedAt"))
@@ -106,7 +105,7 @@ fun SuggestionHistoryItem(
                           fontSize = 14.sp,
                           lineHeight = 20.sp,
                           fontWeight = FontWeight(500),
-                          color = secondaryLight,
+                          color = MaterialTheme.colorScheme.secondary,
                           letterSpacing = 0.14.sp,
                       ),
                   modifier = Modifier.testTag("suggestionHistoryStart" + suggestion.suggestionId))
@@ -118,7 +117,7 @@ fun SuggestionHistoryItem(
                           fontSize = 14.sp,
                           lineHeight = 20.sp,
                           fontWeight = FontWeight(500),
-                          color = secondaryLight,
+                          color = MaterialTheme.colorScheme.secondary,
                           letterSpacing = 0.14.sp,
                       ),
                   modifier = Modifier.testTag("suggestionHistoryEnd" + suggestion.suggestionId))
@@ -131,7 +130,7 @@ fun SuggestionHistoryItem(
               modifier =
                   Modifier.fillMaxWidth()
                       .height(55.dp)
-                      .background(backgroundLight, RoundedCornerShape(10.dp))
+                      .background(MaterialTheme.colorScheme.background, RoundedCornerShape(10.dp))
                       .padding(8.dp)
                       .testTag("suggestionHistoryDescription")) {
                 Text(
@@ -141,7 +140,7 @@ fun SuggestionHistoryItem(
                             fontSize = 12.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
-                            color = onBackgroundLight,
+                            color = MaterialTheme.colorScheme.onBackground,
                             letterSpacing = 0.12.sp,
                         ),
                     maxLines = 2,
@@ -162,7 +161,7 @@ fun SuggestionHistoryItem(
                             fontSize = 14.sp,
                             lineHeight = 20.sp,
                             fontWeight = FontWeight(500),
-                            color = tertiaryLight,
+                            color = MaterialTheme.colorScheme.tertiary,
                             letterSpacing = 0.14.sp,
                         ),
                     modifier =
@@ -172,16 +171,18 @@ fun SuggestionHistoryItem(
 
                 Row {
                   Icon(
-                      imageVector =
-                          if (isLiked) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
-                      contentDescription = "Like",
-                      tint = if (isLiked) Color.Red else tertiaryLight,
+                      painter =
+                          if (isLiked) painterResource(R.drawable.up_filled)
+                          else painterResource(R.drawable.up_outlined),
+                      contentDescription = "Up",
+                      tint = if (isLiked) Color.Red else MaterialTheme.colorScheme.tertiary,
                       modifier =
-                          Modifier.size(18.dp)
+                          Modifier.size(20.dp)
                               .padding(
+                                  bottom = 4.dp,
                                   end = 4.dp) // 4.dp is the space between the icon and the text
                               .testTag(
-                                  "staticLikeIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
+                                  "staticUpIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
 
                   Text(
                       text = likesCount,
@@ -190,12 +191,11 @@ fun SuggestionHistoryItem(
                               fontSize = 14.sp,
                               lineHeight = 20.sp,
                               fontWeight = FontWeight(500),
-                              color = tertiaryLight,
+                              color = MaterialTheme.colorScheme.tertiary,
                               letterSpacing = 0.14.sp,
                           ),
                       modifier =
-                          Modifier.testTag(
-                              "suggestionHistoryLikesNumber" + suggestion.suggestionId))
+                          Modifier.testTag("suggestionHistoryUpsNumber" + suggestion.suggestionId))
 
                   Spacer(
                       modifier =
@@ -205,7 +205,7 @@ fun SuggestionHistoryItem(
                   Icon(
                       imageVector = Icons.Default.MailOutline,
                       contentDescription = null,
-                      tint = tertiaryLight,
+                      tint = MaterialTheme.colorScheme.tertiary,
                       modifier =
                           Modifier.size(18.dp)
                               .padding(
@@ -221,7 +221,7 @@ fun SuggestionHistoryItem(
                               fontSize = 14.sp,
                               lineHeight = 20.sp,
                               fontWeight = FontWeight(500),
-                              color = tertiaryLight,
+                              color = MaterialTheme.colorScheme.tertiary,
                               letterSpacing = 0.14.sp,
                           ),
                       modifier =

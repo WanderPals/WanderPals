@@ -20,6 +20,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkObject
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 import junit.framework.TestCase.assertEquals
@@ -30,8 +31,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 
@@ -512,4 +516,137 @@ class SuggestionsViewModelTest {
         assertFalse(viewModel.bottomSheetVisible.value)
         assertTrue(viewModel.editingComment.value)
       }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testNonAdminNonOwnerCannotSeeVoteIcon() =
+      runBlockingTest(testDispatcher) {
+        // Set current user role to MEMBER for testing the role restriction on the vote icon click.
+        // This is the case when the user is not an admin or owner.
+        SessionManager.setUserSession("user", "user@example.com", "token", Role.MEMBER)
+
+        // Load suggestions to establish initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Identify the suggestion
+        val suggestion = viewModel.state.value.first()
+
+        // Ensure non-admin/non-owner cannot see the vote icon
+        assertFalse(
+            viewModel.getCurrentUserRole() == Role.ADMIN ||
+                viewModel.getCurrentUserRole() == Role.OWNER)
+        assertFalse(viewModel.getVoteIconClicked(suggestion.suggestionId))
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testVoteIconClickWithStartTime() =
+      runBlockingTest(testDispatcher) {
+        // Load suggestions to establish initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Identify the suggestion to vote on
+        val suggestion = viewModel.state.value.first()
+
+        // Ensure initial state has the vote icon not clicked
+        assertFalse(viewModel.getVoteIconClicked(suggestion.suggestionId))
+
+        // Mock the repository to simulate the vote icon click and countdown start
+        val updatedSuggestion =
+            suggestion.copy(voteIconClicked = true, voteStartTime = LocalDateTime.now())
+        coEvery { mockTripsRepository.getSuggestionFromTrip(any(), any()) } returns
+            updatedSuggestion
+        coEvery { mockTripsRepository.updateSuggestionInTrip(tripId, any()) } returns true
+
+        // Perform the action to click the vote icon
+        viewModel.toggleVoteIconClicked(suggestion)
+        advanceUntilIdle()
+
+        // Verify that the vote icon click has started the countdown
+        assertFalse(
+            viewModel.getVoteIconClicked(
+                suggestion
+                    .suggestionId)) // as the icon has been clicked, it is no longer clickable, so
+        // it returns false
+
+        val startTime = viewModel.getStartTime(suggestion.suggestionId)
+        assertNotNull(startTime) // Check if the start time is not null
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testStartCountdown() =
+      runBlockingTest(testDispatcher) {
+        // Load the suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Capture the suggestion state before clicking the vote icon
+        val suggestion = viewModel.state.value.first()
+        assertFalse(viewModel.getVoteIconClicked(suggestion.suggestionId))
+
+        // Perform the action to toggle the vote icon and start the countdown
+        viewModel.toggleVoteIconClicked(suggestion)
+        advanceUntilIdle()
+
+        // Assert that the countdown is running
+        val remainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
+        assertTrue(remainingTimeFlow.value == "23:59:59") // the countdown starts at 23:59:59
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testCountdownFormat() =
+      runBlockingTest(testDispatcher) {
+        // Load the suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Capture the suggestion state before clicking the vote icon
+        val suggestion = viewModel.state.value.first()
+        assertFalse(viewModel.getVoteIconClicked(suggestion.suggestionId))
+
+        // Perform the action to toggle the vote icon and start the countdown
+        viewModel.toggleVoteIconClicked(suggestion)
+        advanceUntilIdle()
+
+        // Assert that the countdown is in the correct format
+        val remainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
+        assertTrue(remainingTimeFlow.value.matches(Regex("\\d{2}:\\d{2}:\\d{2}")))
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun testIconReplacement() =
+      runBlockingTest(testDispatcher) {
+        // Load the suggestions to set initial state
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Capture the suggestion state before clicking the vote icon
+        val suggestion = viewModel.state.value.first()
+        assertFalse(viewModel.getVoteIconClicked(suggestion.suggestionId))
+
+        // Perform the action to toggle the vote icon and start the countdown
+        viewModel.toggleVoteIconClicked(suggestion)
+        advanceUntilIdle()
+
+        // Reload suggestions to simulate the updated state from the backend
+        coEvery { mockTripsRepository.getAllSuggestionsFromTrip(any()) } returns
+            listOf(suggestion.copy(voteIconClicked = true))
+        viewModel.loadSuggestion(tripId)
+        advanceUntilIdle()
+
+        // Assert that the vote icon is replaced and the up icon is displayed
+        assertTrue(viewModel.getVoteIconClicked(suggestion.suggestionId))
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @After
+  fun tearDown() {
+    // Reset the main dispatcher to the original Main dispatcher after tests
+    Dispatchers.resetMain()
+  }
 }

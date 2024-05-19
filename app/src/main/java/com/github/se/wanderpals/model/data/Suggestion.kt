@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.model.data
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 /**
@@ -25,6 +26,9 @@ import java.time.LocalTime
  *   facilitates discussion and feedback, allowing for collaborative planning and decision-making.
  * @param userLikes A list of user IDs who have liked the suggestion, indicating its popularity and
  *   acceptance among the community.
+ *     @param voteIconClicked A boolean flag indicating whether the vote icon has been clicked or
+ *       not.
+ *     @param voteStartTime The time when the countdown starts for the suggestion.
  */
 data class Suggestion(
     val suggestionId: String = "",
@@ -36,4 +40,7 @@ data class Suggestion(
     val stop: Stop = Stop(), // Embed the Stop object directly
     val comments: List<Comment> = emptyList(),
     val userLikes: List<String> = emptyList(),
+    val voteIconClicked: Boolean = false, // By default, the vote icon has not been clicked
+    val voteStartTime: LocalDateTime =
+        LocalDateTime.MIN // Use LocalDateTime to represent the start time
 )
