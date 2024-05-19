@@ -185,8 +185,6 @@ class MainActivity : ComponentActivity() {
       WanderPalsTheme {
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-          NotificationPermission(context = context)
-
           Log.d("Hello", "Hello")
 
           FirebaseMessaging.getInstance()
@@ -283,6 +281,8 @@ class MainActivity : ComponentActivity() {
                                   }
                             }
                       })
+                  NotificationPermission(context = context)
+
                   Log.d("MainActivity", "User is signed in")
                   Log.d("token", SessionManager.getNotificationToken())
                   runBlocking {
