@@ -94,6 +94,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
     var selectedCurrency by remember { mutableStateOf("CHF") }
     var expanded by remember { mutableStateOf(false) }
 
+    val currencies = Currency.getAvailableCurrencies().filterNot{it.displayName.contains("(")}
 
     LaunchedEffect(Unit) {
         financeViewModel.updateStateLists()
@@ -176,7 +177,15 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Top
                         ) {
-                           items(Currency.getAvailableCurrencies().toList().sortedBy { it.displayName}){ currency ->
+                           val filteredCurrencies =
+                               currencies
+                                   .toList()
+                                   .filter {
+                                       it.displayName.contains(selectedCurrency,ignoreCase = true) ||
+                                       it.currencyCode.contains(selectedCurrency,ignoreCase = true)
+                                        }
+                                   .sortedBy { it.displayName }
+                           items(filteredCurrencies){ currency ->
                                Box( modifier = Modifier
                                    .fillMaxWidth()
                                    .padding(horizontal = 20.dp)
