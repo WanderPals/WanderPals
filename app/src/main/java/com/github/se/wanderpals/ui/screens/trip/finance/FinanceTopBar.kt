@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -27,12 +28,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
+
+@Preview
+@Composable
+fun FinanceTopBarPreview() {
+    FinanceTopBar(
+        currentSelectedOption = FinanceOption.EXPENSES,
+        onSelectOption = { /* handle option selection */ },
+        onCurrencyClick = {}
+    )
+}
 /**
  * Composable function for displaying the top bar in the Finance screen. Provides navigation options
  * and a back button.
@@ -41,33 +53,57 @@ import com.github.se.wanderpals.ui.navigation.Route
  * @param onSelectOption Callback function for selecting a finance option.
  */
 @Composable
-fun FinanceTopBar(currentSelectedOption: FinanceOption, onSelectOption: (FinanceOption) -> Unit) {
+fun FinanceTopBar(
+    currentSelectedOption: FinanceOption,
+    onSelectOption: (FinanceOption) -> Unit,
+    onCurrencyClick: () -> Unit) {
   Column(
       modifier = Modifier.testTag("financeTopBar"),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier.padding(15.dp).fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .padding(15.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
-              OutlinedButton(
-                  modifier = Modifier.testTag("financeBackButton"),
-                  onClick = { navigationActions.navigateTo(Route.DASHBOARD) },
-              ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back",
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement =  Arrangement.Center
+            ){
+                IconButton(
+                    modifier = Modifier.testTag("financeBackButton"),
+                    onClick = { navigationActions.navigateTo(Route.DASHBOARD) },
+                ) {
+                    Icon(
+                        modifier = Modifier.size(35.dp),
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = "Back",
+                    )
+                }
+                Text(
+                    modifier = Modifier.padding(start = 20.dp),
+                    text = "Finance",
+                    textAlign = TextAlign.Center,
+                    style =
+                    TextStyle(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold
+                    ),
                 )
-              }
-              Text(
-                  text = "Finance",
-                  textAlign = TextAlign.Center,
-                  style =
-                      TextStyle(
-                          fontSize = 24.sp, // Taille de police personnalisée
-                          fontWeight = FontWeight.Bold // Police en gras
-                          ),
-                  modifier = Modifier.padding(start = 30.dp))
+            }
+
+            OutlinedButton(
+                modifier = Modifier.padding(end = 20.dp),
+                onClick = {  },
+            ) {
+                Text(
+                    text = "CHF",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+
+                )
+            }
             }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -104,7 +140,9 @@ fun FinanceTopBar(currentSelectedOption: FinanceOption, onSelectOption: (Finance
 fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: () -> Unit) {
 
   Column(
-      modifier = Modifier.clickable(onClick = onClick).testTag(text + "Button"),
+      modifier = Modifier
+          .clickable(onClick = onClick)
+          .testTag(text + "Button"),
       horizontalAlignment = Alignment.CenterHorizontally) {
         Image(
             painterResource(id = imageId),
@@ -121,10 +159,12 @@ fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: (
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-                Modifier.width(100.dp)
-                    .height(4.dp)
-                    .background(
-                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
+            Modifier
+                .width(100.dp)
+                .height(4.dp)
+                .background(
+                    if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+                ),
         ) {}
       }
 }
