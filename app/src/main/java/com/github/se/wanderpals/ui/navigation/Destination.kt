@@ -2,22 +2,29 @@ package com.github.se.wanderpals.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material.icons.outlined.DateRange
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Data class representing a destination in the app.
  *
  * @param route The route of the destination.
- * @param icon The icon of the destination.
+ * @param filledIcon The icon of the destination.
  * @param text The text of the destination.
  */
-data class Destination(val route: String, val icon: ImageVector, val text: String)
+data class Destination(val route: String, val filledIcon: ImageVector, val outlinedIcon: ImageVector,  val text: String)
 
 val MAIN_ROUTES =
     listOf(
@@ -34,27 +41,30 @@ val TRIP_BOTTOM_BAR by lazy { TRIP_DESTINATIONS.subList(0, 5) }
 val TRIP_DESTINATIONS =
     listOf(
         Destination(
-            route = Route.SUGGESTION, icon = Icons.AutoMirrored.Filled.List, text = "Suggestion"),
-        Destination(route = Route.AGENDA, icon = Icons.Default.DateRange, text = "Agenda"),
-        Destination(route = Route.DASHBOARD, icon = Icons.Default.Home, text = "Dashboard"),
-        Destination(route = Route.MAP, icon = Icons.Default.Place, text = "Map"),
+            route = Route.SUGGESTION, filledIcon = Icons.AutoMirrored.Filled.List, outlinedIcon = Icons.AutoMirrored.Outlined.List,  text = "Suggestion"),
+        Destination(route = Route.AGENDA, filledIcon = Icons.Default.DateRange, outlinedIcon = Icons.Outlined.DateRange, text = "Agenda"),
+        Destination(route = Route.DASHBOARD, filledIcon = Icons.Default.Home, Icons.Outlined.Home, text = "Dashboard"),
+        Destination(route = Route.MAP, filledIcon = Icons.Default.Place, Icons.Outlined.Place, text = "Map"),
         Destination(
-            route = Route.NOTIFICATION, icon = Icons.Default.Notifications, text = "Notification"),
+            route = Route.NOTIFICATION, filledIcon = Icons.Default.Notifications, Icons.Outlined.Notifications, text = "Notification"),
         Destination(
             route = Route.SUGGESTION_DETAIL,
-            icon = Icons.AutoMirrored.Filled.List,
+            filledIcon = Icons.AutoMirrored.Filled.List,
+            outlinedIcon = Icons.AutoMirrored.Outlined.List,
             text = "Detail Suggestion"),
         Destination(
             route = Route.CREATE_ANNOUNCEMENT,
-            icon = Icons.Default.Create,
+            filledIcon = Icons.Default.Create,
+            outlinedIcon = Icons.Outlined.Create,
             text = "CreateAnnouncement"),
-        Destination(route = Route.FINANCE, icon = Icons.Default.Menu, text = "finance"),
+        Destination(route = Route.FINANCE, filledIcon = Icons.Default.Menu, Icons.Outlined.Menu, text = "finance"),
         Destination(
-            route = Route.CREATE_EXPENSE, icon = Icons.Default.Create, text = "Create Expense"),
-        Destination(route = Route.STOPS_LIST, icon = Icons.Default.Menu, text = "Stops List"),
-        Destination(route = Route.EXPENSE_INFO, icon = Icons.Default.Create, text = "Expense info"),
+            route = Route.CREATE_EXPENSE, filledIcon = Icons.Default.Create, Icons.Outlined.Create, text = "Create Expense"),
+        Destination(route = Route.STOPS_LIST, filledIcon = Icons.Default.Menu, Icons.Outlined.Menu, text = "Stops List"),
+        Destination(route = Route.EXPENSE_INFO, filledIcon = Icons.Default.Create, Icons.Outlined.Create, text = "Expense info"),
         Destination(
             route = Route.SUGGESTION_HISTORY,
-            icon = Icons.Default.Menu,
+            filledIcon = Icons.Default.Menu,
+            Icons.Outlined.Menu,
             text = "gSuggestion History"),
-        Destination(route = Route.DOCUMENT, icon = Icons.Default.Menu, text = "Document"))
+        Destination(route = Route.DOCUMENT, filledIcon = Icons.Default.Menu, Icons.Outlined.Menu, text = "Document"))
