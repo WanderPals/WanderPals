@@ -2,6 +2,7 @@ package com.github.se.wanderpals.ui.screens.trip.finance
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,6 +14,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -62,6 +65,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
   val users by financeViewModel.users.collectAsState()
+  val currencyDialogIsOpen by financeViewModel.showCurrencyDialog.collectAsState()
 
   LaunchedEffect(Unit) {
     financeViewModel.updateStateLists()
@@ -73,7 +77,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       topBar = {
         FinanceTopBar(
             currentSelectedOption = currentSelectedOption,
-            onSelectOption = { newOption -> currentSelectedOption = newOption })
+            onSelectOption = { newOption -> currentSelectedOption = newOption },
+            onCurrencyClick = {financeViewModel.setShowCurrencyDialogState(true)})
       },
       bottomBar = {
         if (currentSelectedOption == FinanceOption.EXPENSES) {
@@ -99,6 +104,18 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
+      if(currencyDialogIsOpen){
+          Dialog(
+              onDismissRequest = { financeViewModel.setShowCurrencyDialogState(false) }) {
+              Surface(
+                  modifier =
+                  Modifier.fillMaxSize()
+                      .padding(top = 100.dp, bottom = 100.dp),
+                  color = MaterialTheme.colorScheme.background,){
+
+              }
+          }
+      }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
             ExpensesContent(
@@ -117,7 +134,9 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                 onRefresh = { financeViewModel.updateStateLists() })
           }
           FinanceOption.DEBTS -> {
-            Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
+            Box(modifier = Modifier
+                .padding(innerPadding)
+                .testTag("debtsContent")) {
               HorizontalDivider()
               Spacer(modifier = Modifier.height(10.dp))
               DebtContent(expenses = expenseList, users = users)

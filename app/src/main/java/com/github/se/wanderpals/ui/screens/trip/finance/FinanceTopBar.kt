@@ -28,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
@@ -36,15 +35,6 @@ import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
 
-@Preview
-@Composable
-fun FinanceTopBarPreview() {
-    FinanceTopBar(
-        currentSelectedOption = FinanceOption.EXPENSES,
-        onSelectOption = { /* handle option selection */ },
-        onCurrencyClick = {}
-    )
-}
 /**
  * Composable function for displaying the top bar in the Finance screen. Provides navigation options
  * and a back button.
@@ -95,7 +85,7 @@ fun FinanceTopBar(
 
             OutlinedButton(
                 modifier = Modifier.padding(end = 20.dp),
-                onClick = {  },
+                onClick = { onCurrencyClick() },
             ) {
                 Text(
                     text = "CHF",

@@ -32,6 +32,9 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _selectedExpense = MutableStateFlow<Expense?>(null)
   open val selectedExpense: StateFlow<Expense?> = _selectedExpense.asStateFlow()
 
+  private val _showCurrencyDialog = MutableStateFlow(false)
+  val showCurrencyDialog = _showCurrencyDialog.asStateFlow()
+
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
     viewModelScope.launch {
@@ -84,6 +87,10 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   open fun setSelectedExpense(expense: Expense) {
     _selectedExpense.value = expense
+  }
+
+  open fun setShowCurrencyDialogState(value: Boolean) {
+    _showCurrencyDialog.value = value
   }
 
   class FinanceViewModelFactory(
