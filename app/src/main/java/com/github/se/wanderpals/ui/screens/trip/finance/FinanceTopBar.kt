@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -77,7 +78,8 @@ fun FinanceTopBar(currentSelectedOption: FinanceOption, onSelectOption: (Finance
                   text = FinanceOption.EXPENSES.toString(),
                   imageId = R.drawable.expenses,
                   isSelected = currentSelectedOption == FinanceOption.EXPENSES,
-                  onClick = { onSelectOption(FinanceOption.EXPENSES) })
+                  onClick = { onSelectOption(FinanceOption.EXPENSES) },
+              )
               NavigationButton(
                   text = FinanceOption.CATEGORIES.toString(),
                   imageId = R.drawable.categories,
@@ -110,18 +112,24 @@ fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: (
             painterResource(id = imageId),
             contentDescription = text,
             modifier = Modifier.size(20.dp),
-        )
+            colorFilter =
+                ColorFilter.tint(
+                    if (isSelected) MaterialTheme.colorScheme.primary
+                    else MaterialTheme.colorScheme.onSurface))
 
         Text(
             text = text,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
+            color =
+                if (isSelected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurface,
         )
 
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-                Modifier.width(100.dp)
+                Modifier.width(160.dp)
                     .height(4.dp)
                     .background(
                         if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),

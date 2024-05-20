@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Expense
@@ -38,7 +37,7 @@ fun FinanceBottomBar(expenses: List<Expense>) {
             modifier = Modifier.padding(start = 18.dp)) {
               Text(
                   text = "My total expenses",
-                  color = Color.White,
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.Start))
               Text(
                   text =
@@ -46,7 +45,7 @@ fun FinanceBottomBar(expenses: List<Expense>) {
                           .filter { it.userId == SessionManager.getCurrentUser()?.userId }
                           .sumOf { it.amount }
                           .toString(),
-                  color = Color.White,
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.Start),
               )
             }
@@ -56,11 +55,11 @@ fun FinanceBottomBar(expenses: List<Expense>) {
             modifier = Modifier.padding(end = 18.dp)) {
               Text(
                   text = "Total trip expenses",
-                  color = Color.White,
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.End))
               Text(
                   text = expenses.sumOf { it.amount }.toString(),
-                  color = Color.White,
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.End))
             }
       }

@@ -21,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Role
@@ -93,7 +92,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                     imageVector = Icons.Default.Add,
                     Icons.Default.Add.name,
                     modifier = Modifier.size(35.dp),
-                    tint = Color.White)
+                    tint = MaterialTheme.colorScheme.onPrimary)
               }
         }
       }) {
