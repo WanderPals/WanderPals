@@ -288,10 +288,7 @@ fun BottomBar(navActions: NavigationActions) {
             Image(
                 imageVector = if (isSelected) destination.filledIcon else destination.outlinedIcon,
                 contentDescription = null,
-                colorFilter =
-                    ColorFilter.tint(
-                        if (isSelected) MaterialTheme.colorScheme.onSurface
-                        else MaterialTheme.colorScheme.onSurface))
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface))
           },
           colors =
               NavigationBarItemDefaults.colors(
