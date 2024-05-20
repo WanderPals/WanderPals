@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,8 +37,6 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
-import com.github.se.wanderpals.ui.theme.onSurfaceLight
-import com.github.se.wanderpals.ui.theme.primaryLight
 import com.github.se.wanderpals.ui.theme.scrimLight
 
 /**
@@ -95,20 +94,20 @@ fun SuggestionFeedContent(
                 fontSize = 20.sp,
                 lineHeight = 24.sp,
                 fontWeight = FontWeight(500),
-                color = primaryLight,
+                color = MaterialTheme.colorScheme.primary,
                 letterSpacing = 0.2.sp),
         textAlign = TextAlign.Center)
 
     // Add the filter options UI
     Text(
-        text = "Filter by:",
+        text = "Sort by:",
         modifier = Modifier.padding(start = 27.dp, top = 8.dp, end = 16.dp),
         style =
             TextStyle(
                 fontSize = 16.sp,
                 lineHeight = 24.sp,
                 fontWeight = FontWeight(500),
-                color = onSurfaceLight,
+                color = MaterialTheme.colorScheme.onSurface,
                 letterSpacing = 0.16.sp,
             ))
 

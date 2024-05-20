@@ -184,14 +184,16 @@ class MainActivity : ComponentActivity() {
 
     setContent {
       WanderPalsTheme {
-          val statusBarColor = MaterialTheme.colorScheme.primary.copy(alpha = 1.0f) // Ensuring full opacity
-          val activity = LocalContext.current as Activity
+        val statusBarColor =
+            MaterialTheme.colorScheme.primary.copy(alpha = 1.0f) // Ensuring full opacity
+        val activity = LocalContext.current as Activity
 
-          // Updating status bar color based on the theme dynamically
-          SideEffect {
-              activity.window.statusBarColor = statusBarColor.toArgb()
-              WindowInsetsControllerCompat(activity.window, activity.window.decorView).isAppearanceLightStatusBars = statusBarColor.luminance() > 0.5
-          }
+        // Updating status bar color based on the theme dynamically
+        SideEffect {
+          activity.window.statusBarColor = statusBarColor.toArgb()
+          WindowInsetsControllerCompat(activity.window, activity.window.decorView)
+              .isAppearanceLightStatusBars = statusBarColor.luminance() > 0.5
+        }
         // A surface container using the 'background' color from the theme
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
           Log.d("Hello", "Hello")

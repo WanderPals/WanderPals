@@ -269,39 +269,37 @@ fun Trip(
  */
 @Composable
 fun BottomBar(navActions: NavigationActions) {
-    val currentRoute by navActions.currentRouteTrip.collectAsState()
+  val currentRoute by navActions.currentRouteTrip.collectAsState()
 
-    NavigationBar(
-        modifier = Modifier.testTag("bottomNav").height(56.dp),
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        tonalElevation = NavigationBarDefaults.Elevation,
-        windowInsets = NavigationBarDefaults.windowInsets,
-    ) {
-        TRIP_BOTTOM_BAR.forEach { destination ->
-            val isSelected = currentRoute == destination.route
-            NavigationBarItem(
-                modifier = Modifier.testTag(destination.text).size(56.dp),
-                selected = isSelected,
-                onClick = { navActions.navigateTo(destination.route) },
-                icon = {
-                    Image(
-                        imageVector = if (isSelected) destination.filledIcon else destination.outlinedIcon,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(
-                            if (isSelected) MaterialTheme.colorScheme.onSurface
-                            else MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    indicatorColor = MaterialTheme.colorScheme.inversePrimary,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurface,
-                    disabledIconColor = MaterialTheme.colorScheme.onSurface,
-                )
-            )
-        }
+  NavigationBar(
+      modifier = Modifier.testTag("bottomNav").height(56.dp),
+      containerColor = MaterialTheme.colorScheme.secondaryContainer,
+      contentColor = MaterialTheme.colorScheme.onSurface,
+      tonalElevation = NavigationBarDefaults.Elevation,
+      windowInsets = NavigationBarDefaults.windowInsets,
+  ) {
+    TRIP_BOTTOM_BAR.forEach { destination ->
+      val isSelected = currentRoute == destination.route
+      NavigationBarItem(
+          modifier = Modifier.testTag(destination.text).size(56.dp),
+          selected = isSelected,
+          onClick = { navActions.navigateTo(destination.route) },
+          icon = {
+            Image(
+                imageVector = if (isSelected) destination.filledIcon else destination.outlinedIcon,
+                contentDescription = null,
+                colorFilter =
+                    ColorFilter.tint(
+                        if (isSelected) MaterialTheme.colorScheme.onSurface
+                        else MaterialTheme.colorScheme.onSurface))
+          },
+          colors =
+              NavigationBarItemDefaults.colors(
+                  selectedIconColor = MaterialTheme.colorScheme.primary,
+                  indicatorColor = MaterialTheme.colorScheme.inversePrimary,
+                  unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+                  disabledIconColor = MaterialTheme.colorScheme.onSurface,
+              ))
     }
+  }
 }
-
