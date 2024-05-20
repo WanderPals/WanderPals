@@ -19,7 +19,7 @@ class AnnouncementRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : IAnnouncementRepository {
 
   // Reference to the 'Trips' collection in Firestore
   private lateinit var tripsCollection: CollectionReference
@@ -40,7 +40,7 @@ class AnnouncementRepository(
    * @return A `Announcement` object if found, or `null` if the Announcement is not found or if an
    *   error occurs. The method logs an error and returns `null` in case of failure.
    */
-  open suspend fun getAnnouncementFromTrip(
+  override suspend fun getAnnouncementFromTrip(
       tripId: String,
       announcementId: String,
       source: Source
@@ -82,7 +82,10 @@ class AnnouncementRepository(
    *   there are no Announcements associated with the trip, or in case of an error during data
    *   retrieval.
    */
-  open suspend fun getAllAnnouncementsFromTrip(tripId: String, source: Source): List<Announcement> =
+  override suspend fun getAllAnnouncementsFromTrip(
+      tripId: String,
+      source: Source
+  ): List<Announcement> =
       withContext(dispatcher) {
         try {
           val trip = tripsRepository.getTrip(tripId)
@@ -123,7 +126,7 @@ class AnnouncementRepository(
    * @param announcement The Announcement object to add.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  open suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
+  override suspend fun addAnnouncementToTrip(tripId: String, announcement: Announcement): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -177,7 +180,7 @@ class AnnouncementRepository(
    * @param announcementId The unique identifier of the Announcement to be removed.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  open suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
+  override suspend fun removeAnnouncementFromTrip(tripId: String, announcementId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -221,7 +224,10 @@ class AnnouncementRepository(
    * @param announcement The Announcement object that contains updated data.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  open suspend fun updateAnnouncementInTrip(tripId: String, announcement: Announcement): Boolean =
+  override suspend fun updateAnnouncementInTrip(
+      tripId: String,
+      announcement: Announcement
+  ): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(

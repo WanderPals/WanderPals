@@ -18,7 +18,7 @@ class TripRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : ITripRepository {
 
   private lateinit var firestore: FirebaseFirestore
 
@@ -36,7 +36,7 @@ class TripRepository(
    * @param tripId The unique identifier of the trip to retrieve.
    * @return The Trip object if found, null otherwise.
    */
-  open suspend fun getTrip(tripId: String, source: Source): Trip? =
+  override suspend fun getTrip(tripId: String, source: Source): Trip? =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTrip: Retrieving trip with ID $tripId.")
@@ -56,7 +56,7 @@ class TripRepository(
    *
    * @return List of Trip objects.
    */
-  open suspend fun getAllTrips(source: Source): List<Trip> =
+  override suspend fun getAllTrips(source: Source): List<Trip> =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getAllTrips: Fetching all trips for user $uid.")
@@ -76,7 +76,7 @@ class TripRepository(
    * @param trip The Trip object to add.
    * @return Boolean indicating success or failure of the operation.
    */
-  open suspend fun addTrip(trip: Trip): Boolean =
+  override suspend fun addTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "addTrip: Adding a trip")
@@ -108,7 +108,7 @@ class TripRepository(
    * @param trip The Trip object to update.
    * @return Boolean indicating success or failure of the operation.
    */
-  open suspend fun updateTrip(trip: Trip): Boolean =
+  override suspend fun updateTrip(trip: Trip): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateTrip: Updating a trip")
@@ -135,7 +135,7 @@ class TripRepository(
    * @param tripId The unique identifier of the trip to delete.
    * @return Boolean indicating success or failure of the operation.
    */
-  open suspend fun deleteTrip(tripId: String): Boolean =
+  override suspend fun deleteTrip(tripId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteTrip: Deleting trip")

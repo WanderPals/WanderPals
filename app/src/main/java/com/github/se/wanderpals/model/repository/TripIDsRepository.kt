@@ -15,7 +15,7 @@ class TripIDsRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : ITripIDsRepository {
   private lateinit var firestore: FirebaseFirestore
 
   // Reference to the 'Trips' collection in Firestore
@@ -38,7 +38,7 @@ class TripIDsRepository(
    * @return A list containing the trip IDs or an empty list if either the user's document does not
    *   exist or it doesn't contain any trip IDs.
    */
-  open suspend fun getTripsIds(source: Source): List<String> =
+  override suspend fun getTripsIds(source: Source): List<String> =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "getTripsIds: Getting Trips linked to user")
@@ -134,7 +134,7 @@ class TripIDsRepository(
    * @param tripId The unique identifier of the trip to add to the user's list of trip IDs.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  open suspend fun addTripId(tripId: String, isOwner: Boolean = false, source: Source): Boolean =
+  override suspend fun addTripId(tripId: String, isOwner: Boolean, source: Source): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "addTripId: Adding tripId to user")
 
@@ -210,7 +210,7 @@ class TripIDsRepository(
    *   be removed. If not provided, the ID of the current user is used as the default.
    * @return Boolean indicating the success (true) or failure (false) of the operation.
    */
-  open suspend fun removeTripId(tripId: String, userId: String = uid): Boolean =
+  override suspend fun removeTripId(tripId: String, userId: String): Boolean =
       withContext(dispatcher) {
         Log.d("TripsRepository", "removeTripId: Removing tripId from user")
 

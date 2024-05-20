@@ -16,7 +16,7 @@ class SuggestionRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : ISuggestionRepository {
 
   private lateinit var firestore: FirebaseFirestore
 
@@ -38,7 +38,7 @@ class SuggestionRepository(
    * @return A `Suggestion` object if found, `null` otherwise. The method logs an error and returns
    *   `null` if the suggestion is not found or if an error occurs during the Firestore query.
    */
-  open suspend fun getSuggestionFromTrip(
+  override suspend fun getSuggestionFromTrip(
       tripId: String,
       suggestionId: String,
       source: Source
@@ -79,7 +79,7 @@ class SuggestionRepository(
    *   there are no suggestions associated with the trip, or in case of an error during data
    *   retrieval.
    */
-  open suspend fun getAllSuggestionsFromTrip(tripId: String, source: Source): List<Suggestion> =
+  override suspend fun getAllSuggestionsFromTrip(tripId: String, source: Source): List<Suggestion> =
       withContext(dispatcher) {
         try {
           val trip = tripsRepository.getTrip(tripId)
@@ -114,7 +114,7 @@ class SuggestionRepository(
    * @return `true` if the suggestion was added successfully, `false` otherwise. Errors during the
    *   process are logged.
    */
-  open suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
+  override suspend fun addSuggestionToTrip(tripId: String, suggestion: Suggestion): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -164,7 +164,7 @@ class SuggestionRepository(
    * @return `true` if the suggestion was successfully deleted and the trip updated, `false`
    *   otherwise. Errors during the process are logged.
    */
-  open suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
+  override suspend fun removeSuggestionFromTrip(tripId: String, suggestionId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -211,7 +211,7 @@ class SuggestionRepository(
    * @return `true` if the suggestion was successfully updated, `false` otherwise. Errors during the
    *   update process are logged.
    */
-  open suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
+  override suspend fun updateSuggestionInTrip(tripId: String, suggestion: Suggestion): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateSuggestionInTrip: Updating a Suggestion in trip $tripId")

@@ -16,7 +16,7 @@ class ExpenseRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : IExpenseRepository {
 
   private lateinit var firestore: FirebaseFirestore
 
@@ -41,7 +41,7 @@ class ExpenseRepository(
    *   of an error during data retrieval. Errors during the operation are logged and an empty map is
    *   returned.
    */
-  open suspend fun getBalances(tripId: String, source: Source): Map<String, Double> =
+  override suspend fun getBalances(tripId: String, source: Source): Map<String, Double> =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -71,7 +71,7 @@ class ExpenseRepository(
    *   the operation is successful, and `false` if there is an error during the setting operation.
    *   Errors are logged.
    */
-  open suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
+  override suspend fun setBalances(tripId: String, balancesMap: Map<String, Double>): Boolean =
       withContext(dispatcher) {
         try {
           val balanceDocument =
@@ -101,7 +101,11 @@ class ExpenseRepository(
    * @return An `Expense` object if found, or `null` if the expense is not found or if an error
    *   occurs. The method logs an error and returns `null` in case of failure.
    */
-  open suspend fun getExpenseFromTrip(tripId: String, expenseId: String, source: Source): Expense? =
+  override suspend fun getExpenseFromTrip(
+      tripId: String,
+      expenseId: String,
+      source: Source
+  ): Expense? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -138,7 +142,7 @@ class ExpenseRepository(
    * @return A list of `Expense` objects. Returns an empty list if the trip is not found or if an
    *   error occurs during fetching. Errors are logged and an empty list is returned in these cases.
    */
-  open suspend fun getAllExpensesFromTrip(tripId: String, source: Source): List<Expense> =
+  override suspend fun getAllExpensesFromTrip(tripId: String, source: Source): List<Expense> =
       withContext(dispatcher) {
         try {
           val trip = tripsRepository.getTrip(tripId)
@@ -170,7 +174,7 @@ class ExpenseRepository(
    * @return The unique identifier of the newly added expense if the operation is successful, or an
    *   empty string if it fails. The method logs the outcome of the operation.
    */
-  open suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
+  override suspend fun addExpenseToTrip(tripId: String, expense: Expense): String =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString()
@@ -216,7 +220,7 @@ class ExpenseRepository(
    * @return `true` if the expense is successfully removed and the trip is updated; `false` if the
    *   trip is not found or if any error occurs during the operation. Errors are logged.
    */
-  open suspend fun removeExpenseFromTrip(tripId: String, expenseId: String): Boolean =
+  override suspend fun removeExpenseFromTrip(tripId: String, expenseId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d(
@@ -260,7 +264,7 @@ class ExpenseRepository(
    * @return `true` if the expense is successfully updated; `false` if the trip is not found or an
    *   error occurs. Errors are logged and the method returns `false` in these cases.
    */
-  open suspend fun updateExpenseInTrip(tripId: String, expense: Expense): Boolean =
+  override suspend fun updateExpenseInTrip(tripId: String, expense: Expense): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateExpenseInTrip: Updating a Expense in trip $tripId")

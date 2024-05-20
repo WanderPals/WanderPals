@@ -14,7 +14,7 @@ open class NotificationRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : INotificationRepository {
 
   private lateinit var firestore: FirebaseFirestore
 
@@ -40,7 +40,7 @@ open class NotificationRepository(
    *   notifications in the document, or in case of an error during data retrieval. Errors during
    *   the operation are logged and an empty list is returned.
    */
-  open suspend fun getNotificationList(tripId: String, source: Source): List<TripNotification> =
+  override suspend fun getNotificationList(tripId: String, source: Source): List<TripNotification> =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -87,7 +87,7 @@ open class NotificationRepository(
    *   the operation is successful, and `false` if there is an error during the setting operation.
    *   Errors are logged.
    */
-  open suspend fun setNotificationList(
+  override suspend fun setNotificationList(
       tripId: String,
       notifications: List<TripNotification>,
       source: Source

@@ -16,7 +16,7 @@ class StopRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : IStopRepository {
 
   private lateinit var firestore: FirebaseFirestore
   // Reference to the 'Trips' collection in Firestore
@@ -37,7 +37,7 @@ class StopRepository(
    * @return A `Stop` object if found, `null` otherwise. The method logs an error and returns `null`
    *   if the stop is not found or if an error occurs during the Firestore query.
    */
-  open suspend fun getStopFromTrip(tripId: String, stopId: String, source: Source): Stop? =
+  override suspend fun getStopFromTrip(tripId: String, stopId: String, source: Source): Stop? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -71,7 +71,7 @@ class StopRepository(
    * @return A list of `Stop` objects. Returns an empty list if the trip is not found, if there are
    *   no stops associated with the trip, or in case of an error during data retrieval.
    */
-  open suspend fun getAllStopsFromTrip(tripId: String, source: Source): List<Stop> =
+  override suspend fun getAllStopsFromTrip(tripId: String, source: Source): List<Stop> =
       withContext(dispatcher) {
         try {
           val trip = tripsRepository.getTrip(tripId)
@@ -100,7 +100,7 @@ class StopRepository(
    * @return `true` if the stop was added successfully, `false` otherwise. Errors during the process
    *   are logged.
    */
-  open suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
+  override suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
           val uniqueID = UUID.randomUUID().toString() + "," + stop.stopId
@@ -142,7 +142,7 @@ class StopRepository(
    * @return `true` if the stop was successfully deleted and the trip updated, `false` otherwise.
    *   Errors during the process are logged.
    */
-  open suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
+  override suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "deleteStopFromTrip: Deleting stop $stopId from trip $tripId")
@@ -188,7 +188,7 @@ class StopRepository(
    * @return `true` if the stop was successfully updated, `false` otherwise. Errors during the
    *   update process are logged.
    */
-  open suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
+  override suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateStopInTrip: Updating a stop in trip $tripId")

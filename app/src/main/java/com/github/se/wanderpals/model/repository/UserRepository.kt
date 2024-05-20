@@ -16,7 +16,7 @@ open class UserRepository(
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
-) {
+) : IUserRepository {
 
   private lateinit var firestore: FirebaseFirestore
 
@@ -44,7 +44,7 @@ open class UserRepository(
    * @return The email associated with the username if found, or null if no such username exists or
    *   an error occurs.
    */
-  open suspend fun getUserEmail(username: String, source: Source): String? =
+  override suspend fun getUserEmail(username: String, source: Source): String? =
       withContext(dispatcher) {
         try {
           val documentSnapshot = usernameCollection.document(username).get(source).await()
@@ -68,7 +68,11 @@ open class UserRepository(
    * @return True if the email was successfully added, false if the username already exists or an
    *   error occurs.
    */
-  open suspend fun addEmailToUsername(username: String, email: String, source: Source): Boolean =
+  override suspend fun addEmailToUsername(
+      username: String,
+      email: String,
+      source: Source
+  ): Boolean =
       withContext(dispatcher) {
         try {
 
@@ -101,7 +105,7 @@ open class UserRepository(
    * @return True if the deletion was successful or the username did not exist, false if an error
    *   occurs during deletion.
    */
-  open suspend fun deleteEmailByUsername(username: String, source: Source): Boolean =
+  override suspend fun deleteEmailByUsername(username: String, source: Source): Boolean =
       withContext(dispatcher) {
         try {
           val documentRef = usernameCollection.document(username)
@@ -135,7 +139,7 @@ open class UserRepository(
    * @param userId The unique identifier of the user.
    * @return A `User` object if found, `null` otherwise.
    */
-  open suspend fun getUserFromTrip(tripId: String, userId: String, source: Source): User? =
+  override suspend fun getUserFromTrip(tripId: String, userId: String, source: Source): User? =
       withContext(dispatcher) {
         try {
           val documentSnapshot =
@@ -171,7 +175,7 @@ open class UserRepository(
    * @return A list of `User` objects. Returns an empty list if the trip is not found or in case of
    *   an error.
    */
-  open suspend fun getAllUsersFromTrip(tripId: String, source: Source): List<User> =
+  override suspend fun getAllUsersFromTrip(tripId: String, source: Source): List<User> =
       withContext(dispatcher) {
         try {
           val trip = tripsRepository.getTrip(tripId)
@@ -196,7 +200,7 @@ open class UserRepository(
    * @param user The `User` object containing the user's details.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  open suspend fun addUserToTrip(tripId: String, user: User): Boolean =
+  override suspend fun addUserToTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
           // for users, there IDs are google ids currently no need to gen a new one
@@ -243,7 +247,7 @@ open class UserRepository(
    * @param user The `User` object to be updated.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  open suspend fun updateUserInTrip(tripId: String, user: User): Boolean =
+  override suspend fun updateUserInTrip(tripId: String, user: User): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "updateUserInTrip: Updating a user in trip $tripId")
@@ -276,7 +280,7 @@ open class UserRepository(
    * @param userId The unique identifier of the user to be removed.
    * @return `true` if the operation is successful, `false` otherwise.
    */
-  open suspend fun removeUserFromTrip(tripId: String, userId: String): Boolean =
+  override suspend fun removeUserFromTrip(tripId: String, userId: String): Boolean =
       withContext(dispatcher) {
         try {
           Log.d("TripsRepository", "removeUserFromTrip: Deleting user $userId from trip $tripId")
