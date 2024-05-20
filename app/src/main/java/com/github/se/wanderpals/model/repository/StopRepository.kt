@@ -27,6 +27,16 @@ class StopRepository(
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
+  /**
+   * Retrieves a specific stop from a trip based on the stop's unique identifier. This method
+   * queries a subcollection within a trip document to retrieve a stop object based on the provided
+   * `stopId`.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param stopId The unique identifier of the stop.
+   * @return A `Stop` object if found, `null` otherwise. The method logs an error and returns `null`
+   *   if the stop is not found or if an error occurs during the Firestore query.
+   */
   open suspend fun getStopFromTrip(tripId: String, stopId: String, source: Source): Stop? =
       withContext(dispatcher) {
         try {
@@ -53,6 +63,14 @@ class StopRepository(
         }
       }
 
+  /**
+   * Retrieves all stops associated with a specific trip. It iterates over all stop IDs stored
+   * within a trip document and fetches their corresponding stop objects.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @return A list of `Stop` objects. Returns an empty list if the trip is not found, if there are
+   *   no stops associated with the trip, or in case of an error during data retrieval.
+   */
   open suspend fun getAllStopsFromTrip(tripId: String, source: Source): List<Stop> =
       withContext(dispatcher) {
         try {
@@ -71,6 +89,17 @@ class StopRepository(
         }
       }
 
+  /**
+   * Adds a stop to a specified trip. This involves creating a unique identifier for the stop,
+   * converting the stop to a Firestore-compatible format, and updating the trip's document to
+   * include the new stop. If successful, the method also updates the trip document to include the
+   * newly added stop's ID in the list of stops.
+   *
+   * @param tripId The unique identifier of the trip to which the stop is being added.
+   * @param stop The `Stop` object to be added to the trip.
+   * @return `true` if the stop was added successfully, `false` otherwise. Errors during the process
+   *   are logged.
+   */
   open suspend fun addStopToTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {
@@ -103,6 +132,16 @@ class StopRepository(
         }
       }
 
+  /**
+   * Removes a specific stop from a trip. This method deletes the stop document from the Firestore
+   * subcollection and updates the trip document to remove the stop's ID from the list of associated
+   * stops.
+   *
+   * @param tripId The unique identifier of the trip.
+   * @param stopId The unique identifier of the stop to remove.
+   * @return `true` if the stop was successfully deleted and the trip updated, `false` otherwise.
+   *   Errors during the process are logged.
+   */
   open suspend fun removeStopFromTrip(tripId: String, stopId: String): Boolean =
       withContext(dispatcher) {
         try {
@@ -137,6 +176,18 @@ class StopRepository(
         }
       }
 
+  /**
+   * Updates an existing stop within a trip. This method replaces the stop document in the Firestore
+   * subcollection with the updated stop details.
+   *
+   * It is important that the `stopId` within the `Stop` object matches the ID of the stop being
+   * updated to ensure the correct document is replaced.
+   *
+   * @param tripId The unique identifier of the trip containing the stop.
+   * @param stop The updated `Stop` object.
+   * @return `true` if the stop was successfully updated, `false` otherwise. Errors during the
+   *   update process are logged.
+   */
   open suspend fun updateStopInTrip(tripId: String, stop: Stop): Boolean =
       withContext(dispatcher) {
         try {

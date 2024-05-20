@@ -73,7 +73,6 @@ open class TripsRepository(
   fun initFirestore() {
     Log.d("TripsRepository", "initFirestore: Initializing with default FirebaseApp.")
     firestore = FirebaseFirestore.getInstance()
-
     userRepository.init(firestore)
     notificationRepository.init(firestore)
     expenseRepository.init(firestore)
