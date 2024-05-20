@@ -16,7 +16,6 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class AnnouncementRepository(
-    private val firestore: FirebaseFirestore,
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
@@ -24,8 +23,10 @@ class AnnouncementRepository(
 
   // Reference to the 'Trips' collection in Firestore
   private lateinit var tripsCollection: CollectionReference
+  private lateinit var firestore: FirebaseFirestore
 
-  fun init() {
+  fun init(firestore: FirebaseFirestore) {
+    this.firestore = firestore
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 

@@ -13,18 +13,20 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
 class ExpenseRepository(
-    private val firestore: FirebaseFirestore,
     private val dispatcher: CoroutineDispatcher,
     var uid: String,
     private val tripsRepository: TripsRepository
 ) {
+
+  private lateinit var firestore: FirebaseFirestore
 
   private val balancesId = "Balances"
 
   // Reference to the 'Trips' collection in Firestore
   private lateinit var tripsCollection: CollectionReference
 
-  fun init() {
+  fun init(firestore: FirebaseFirestore) {
+    this.firestore = firestore
     tripsCollection = firestore.collection(FirebaseCollections.TRIPS.path)
   }
 
