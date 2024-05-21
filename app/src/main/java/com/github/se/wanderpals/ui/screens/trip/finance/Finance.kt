@@ -12,12 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text2.input.TextFieldCharSequence
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -26,8 +23,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,6 +47,8 @@ import android.icu.util.Currency
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 
@@ -91,8 +88,10 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
     val users by financeViewModel.users.collectAsState()
 
     val currencyDialogIsOpen by financeViewModel.showCurrencyDialog.collectAsState()
-    var selectedCurrency by remember { mutableStateOf("CHF") }
-    var expanded by remember { mutableStateOf(false) }
+    var tripCurrency by remember { mutableStateOf("CHF") }
+    var selectedCurrency by remember { mutableStateOf("") }
+
+    var isError by remember { mutableStateOf(false) }
 
     val currencies = Currency.getAvailableCurrencies().filterNot{it.displayName.contains("(")}
 
@@ -137,8 +136,11 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
         // Content
             innerPadding ->
         if (currencyDialogIsOpen) {
+            selectedCurrency = ""
             Dialog(
-                onDismissRequest = { financeViewModel.setShowCurrencyDialogState(false) }) {
+                onDismissRequest = {
+                    isError = false
+                    financeViewModel.setShowCurrencyDialogState(false) }) {
                 Surface(
                     modifier =
                     Modifier
@@ -151,24 +153,50 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top
                     ) {
-                        TextField(
+                        OutlinedTextField(
                             value = selectedCurrency,
                             onValueChange = { value -> selectedCurrency = value },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(20.dp)
-                                .clip(RoundedCornerShape(5.dp))
-                                .border(
-                                    1.dp, Color.DarkGray, RoundedCornerShape(5.dp),
-                                ),
-                            placeholder = { Text(text = "Search a currency ") },
-                            colors = TextFieldDefaults.textFieldColors(containerColor = Color.White),
+                                .clip(RoundedCornerShape(5.dp)),
+
+                            label = {
+
+                                    Text(
+                                        text = if (isError) "Invalid currency" else "Select a currency",
+                                        color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                                    )
+
+                            },
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = Color.White,
+                                errorContainerColor = Color.White),
+                            isError = isError,
+
+                            // Text to display if an error occurs while inputing the trip code
                             trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.CheckCircle,
-                                    Icons.Default.CheckCircle.name,
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
+                                IconButton(
+                                    onClick = {
+                                        val newCurrency = currencies.find {
+                                            it.displayName.equals(selectedCurrency,ignoreCase = true) ||
+                                            it.currencyCode.equals(selectedCurrency,ignoreCase = true)
+                                        }
+                                        if(newCurrency != null){
+                                            tripCurrency = newCurrency.currencyCode
+                                            financeViewModel.setShowCurrencyDialogState(false)
+                                            isError = false
+                                        }else{
+                                            isError = true
+                                        }
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        contentDescription = Icons.Default.CheckCircle.name,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
                             },
                             maxLines = 1,
                         )
