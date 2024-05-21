@@ -45,6 +45,29 @@ class MapViewModelTest {
   private lateinit var mockTripsRepository: TripsRepository
   private val testDispatcher = StandardTestDispatcher()
 
+  private val suggestion =
+      Suggestion(
+          "suggestion1",
+          "user1",
+          "Alice",
+          "Check this out!",
+          LocalDate.now(),
+          LocalTime.now(),
+          Stop(
+              "stop1",
+              "Statue of Liberty",
+              "Liberty Island",
+              LocalDate.now(),
+              LocalTime.MIDNIGHT,
+              120,
+              25.0,
+              "Must see",
+              GeoCords(40.689247, -74.044502),
+              "https://liberty.com",
+              "https://liberty.img"),
+          emptyList(),
+          emptyList())
+
   @OptIn(ExperimentalCoroutinesApi::class)
   @Before
   fun setup() {
@@ -85,29 +108,7 @@ class MapViewModelTest {
                 GeoCords(40.785091, -73.968285),
                 "https://example.com",
                 "https://image.url"))
-    coEvery { mockTripsRepository.getAllSuggestionsFromTrip("tripId") } returns
-        listOf(
-            Suggestion(
-                "suggestion1",
-                "user1",
-                "Alice",
-                "Check this out!",
-                LocalDate.now(),
-                LocalTime.now(),
-                Stop(
-                    "stop1",
-                    "Statue of Liberty",
-                    "Liberty Island",
-                    LocalDate.now(),
-                    LocalTime.MIDNIGHT,
-                    120,
-                    25.0,
-                    "Must see",
-                    GeoCords(40.689247, -74.044502),
-                    "https://liberty.com",
-                    "https://liberty.img"),
-                emptyList(),
-                emptyList()))
+    coEvery { mockTripsRepository.getAllSuggestionsFromTrip("tripId") } returns listOf(suggestion)
     coEvery { mockTripsRepository.getAllUsersFromTrip("tripId") } returns
         listOf(
             User(
@@ -123,6 +124,10 @@ class MapViewModelTest {
     coEvery { mockTripsRepository.getUserFromTrip(any(), any()) } returns User(name = "user")
 
     coEvery { mockTripsRepository.updateUserInTrip(any(), any()) } returns true
+
+    coEvery { mockTripsRepository.updateStopInTrip(any(), any()) } returns true
+
+    coEvery { mockTripsRepository.updateSuggestionInTrip(any(), any()) } returns true
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -198,6 +203,52 @@ class MapViewModelTest {
     verify { SharedPreferencesManager.deletePlaceData(placeData) }
     assertEquals(emptyList<GeoCords>(), viewModel.listOfTempPlaceData.value)
   }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updating stop in trip updates repository and LiveData`() =
+      runBlockingTest(testDispatcher) {
+        val stop =
+            Stop(
+                "stop1",
+                "Central Park",
+                "123 Park Ave",
+                LocalDate.now(),
+                LocalTime.NOON,
+                60,
+                0.0,
+                "Nice place",
+                GeoCords(40.785091, -73.968285),
+                "https://example.com",
+                "https://image.url")
+
+        viewModel.updateStop(stop)
+
+        advanceUntilIdle()
+        coVerify { mockTripsRepository.updateStopInTrip("tripId", stop) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updating suggestion in trip updates repository and LiveData`() =
+      runBlockingTest(testDispatcher) {
+        viewModel.getAllSuggestions()
+        viewModel.updateSuggestion(suggestion.stop)
+
+        advanceUntilIdle()
+        coVerify { mockTripsRepository.updateSuggestionInTrip("tripId", suggestion) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updating suggestion doesn't work if stop isn't in any suggestion`() =
+      runBlockingTest(testDispatcher) {
+        val suggestion = suggestion.copy(suggestionId = "suggestion2")
+        viewModel.updateSuggestion(suggestion.stop)
+
+        advanceUntilIdle()
+        coVerify(exactly = 0) { mockTripsRepository.updateSuggestionInTrip("tripId", suggestion) }
+      }
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @After
