@@ -92,6 +92,9 @@ class NotificationsViewModelTest :
   private val _isLoading = MutableStateFlow(false)
   override val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+  private val _createTripFinished = MutableStateFlow(false)
+  val createTripFinished: StateFlow<Boolean> = _createTripFinished.asStateFlow()
+
   override fun getSuggestion(suggestionId: String) {
     _isLoading.value = true
   }
@@ -109,6 +112,7 @@ class NotificationsViewModelTest :
   override fun addAnnouncement(announcement: Announcement) {
     _announcementStateList.value =
         _announcementStateList.value.toMutableList().apply { add(announcement2) }
+    _createTripFinished.value = true
   }
 
   override fun removeAnnouncement(announcementId: String) {
