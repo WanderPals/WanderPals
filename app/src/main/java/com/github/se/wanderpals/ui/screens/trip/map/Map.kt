@@ -88,7 +88,7 @@ fun Map(
   // get the list of stops from the view model
   val stopList by mapViewModel.stops.collectAsState()
   // get the list of suggestions from the view model
-  val suggestionList by mapViewModel.suggestions.collectAsState()
+  val suggestionList by mapViewModel.suggestionsStop.collectAsState()
   // get the list of users positions from the view model
   val usersPositions by mapViewModel.usersPositions.collectAsState()
   // get the list of user names from the view model
@@ -365,6 +365,7 @@ fun Map(
                       mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
                         val place = response.place
                         placeData = setPlaceData(place, placeId, place.latLng!!)
+                        mapViewModel.updateStop(stop.copy(geoCords = placeData))
                         bottomSheetExpanded = true
                       }
                     }
@@ -393,6 +394,7 @@ fun Map(
                     mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
                       val place = response.place
                       placeData = setPlaceData(place, stop.stopId, place.latLng!!)
+                      mapViewModel.updateSuggestion(stop.copy(geoCords = placeData))
                       bottomSheetExpanded = true
                     }
                   }

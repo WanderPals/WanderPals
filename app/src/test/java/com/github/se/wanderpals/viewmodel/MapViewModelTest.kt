@@ -155,8 +155,8 @@ class MapViewModelTest {
         viewModel.refreshData()
 
         advanceUntilIdle()
-        assertEquals(1, viewModel.suggestions.value.size)
-        assertEquals("Statue of Liberty", viewModel.suggestions.value[0].title)
+        assertEquals(1, viewModel.suggestionsStop.value.size)
+        assertEquals("Statue of Liberty", viewModel.suggestionsStop.value[0].title)
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)
