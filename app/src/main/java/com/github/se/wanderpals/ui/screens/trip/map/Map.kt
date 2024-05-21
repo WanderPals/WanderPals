@@ -46,6 +46,7 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.data.setPlaceData
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -135,7 +136,7 @@ fun Map(
   // Bottom Sheet Variables
 
   // place data of the searched location
-  var placeData by remember { mutableStateOf(PlaceData()) }
+  var placeData by remember { mutableStateOf(GeoCords()) }
   // bottom sheet state
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
   // bottom sheet state expanded
@@ -233,7 +234,7 @@ fun Map(
 
             mapManager.fetchPlace(clickedPlace).addOnSuccessListener { response ->
               val place = response.place
-              placeData.setPlaceData(place, clickedPlace, place.latLng!!)
+              placeData = setPlaceData(place, clickedPlace, place.latLng!!)
               finalLocation = place.latLng!!
               mapViewModel.savePlaceDataState(placeData)
             }
@@ -316,7 +317,7 @@ fun Map(
           listOfTempPlaceData.forEach { place ->
             Marker(
                 // Add a marker to the map
-                state = MarkerState(position = place.placeCoordinates),
+                state = MarkerState(position = place.getPlaceCoordinates()),
                 title = "Click to Create Suggestions",
                 onInfoWindowClick = {
                   bottomSheetExpanded = false
@@ -327,16 +328,13 @@ fun Map(
                               stop =
                                   Stop(
                                       stopId = place.placeId,
-                                      geoCords =
-                                          GeoCords(
-                                              place.placeCoordinates.latitude,
-                                              place.placeCoordinates.longitude),
+                                      geoCords = place,
                                       address = place.placeAddress)))
                   oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                 },
                 onClick = {
                   bottomSheetExpanded = false
-                  finalLocation = place.placeCoordinates
+                  finalLocation = place.getPlaceCoordinates()
                   placeData = place
                   bottomSheetExpanded = true
                   false
@@ -358,10 +356,17 @@ fun Map(
                   // check if stop.stopId contains a "," and if it does, split it and get the first
                   if (stop.stopId.last() != ',' && stop.stopId.contains(',')) {
                     val placeId = stop.stopId.split(",")[1]
-                    mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
-                      val place = response.place
-                      placeData.setPlaceData(place, placeId, place.latLng!!)
+                    if (stop.geoCords.placeId != "") {
+                      Log.d("Map", "Already has placeId: ${stop.geoCords.placeId}")
+                      placeData = stop.geoCords
                       bottomSheetExpanded = true
+                    } else {
+                      Log.d("Map", "Fetching placeId: $placeId")
+                      mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
+                        val place = response.place
+                        placeData = setPlaceData(place, placeId, place.latLng!!)
+                        bottomSheetExpanded = true
+                      }
                     }
                   }
                   false
@@ -379,11 +384,17 @@ fun Map(
                 onClick = {
                   bottomSheetExpanded = false
                   finalLocation = latLng
-
-                  mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
-                    val place = response.place
-                    placeData.setPlaceData(place, stop.stopId, place.latLng!!)
+                  if (stop.geoCords.placeId != "") {
+                    Log.d("Map", "Already has placeId: ${stop.geoCords.placeId}")
+                    placeData = stop.geoCords
                     bottomSheetExpanded = true
+                  } else {
+                    Log.d("Map", "Fetching placeId: ${stop.stopId}")
+                    mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
+                      val place = response.place
+                      placeData = setPlaceData(place, stop.stopId, place.latLng!!)
+                      bottomSheetExpanded = true
+                    }
                   }
                   false
                 })
