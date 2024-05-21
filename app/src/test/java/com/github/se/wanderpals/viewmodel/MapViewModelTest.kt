@@ -11,7 +11,6 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
-import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.google.android.gms.maps.model.LatLng
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -56,9 +55,9 @@ class MapViewModelTest {
 
     every { SharedPreferencesManager.clearAll() } just Runs
     every { SharedPreferencesManager.savePlaceData(any()) } returns
-        listOf(PlaceData(placeId = "someplaceId")).toMutableList()
+        listOf(GeoCords(placeId = "someplaceId")).toMutableList()
     every { SharedPreferencesManager.deletePlaceData(any()) } returns
-        listOf<PlaceData>().toMutableList()
+        listOf<GeoCords>().toMutableList()
 
     SessionManager.setUserSession(userId = "user1")
     // Mock the TripsRepository to be used in the ViewModel
@@ -177,12 +176,12 @@ class MapViewModelTest {
     viewModel.clearAllSharedPreferences()
 
     verify { SharedPreferencesManager.clearAll() }
-    assertEquals(emptyList<PlaceData>(), viewModel.listOfTempPlaceData.value)
+    assertEquals(emptyList<GeoCords>(), viewModel.listOfTempPlaceData.value)
   }
 
   @Test
   fun `savePlaceDataState saves place data and updates LiveData`() = runBlockingTest {
-    val placeData = PlaceData("someplaceId")
+    val placeData = GeoCords(placeId = "someplaceId")
 
     viewModel.savePlaceDataState(placeData)
 
@@ -192,12 +191,12 @@ class MapViewModelTest {
 
   @Test
   fun `deletePlaceDataState deletes place data and updates LiveData`() = runBlockingTest {
-    val placeData = PlaceData("Some place")
+    val placeData = GeoCords(placeId = "Some place")
 
     viewModel.deletePlaceDataState(placeData)
 
     verify { SharedPreferencesManager.deletePlaceData(placeData) }
-    assertEquals(emptyList<PlaceData>(), viewModel.listOfTempPlaceData.value)
+    assertEquals(emptyList<GeoCords>(), viewModel.listOfTempPlaceData.value)
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
