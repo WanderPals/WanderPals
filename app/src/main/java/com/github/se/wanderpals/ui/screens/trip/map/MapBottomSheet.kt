@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.UriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.model.data.GeoCords
 
 /**
  * Composable function to display the bottom sheet with the place details.
@@ -38,7 +39,7 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapBottomSheet(
-    placeData: PlaceData,
+    placeData: GeoCords,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     uriHandler: UriHandler
 ) {

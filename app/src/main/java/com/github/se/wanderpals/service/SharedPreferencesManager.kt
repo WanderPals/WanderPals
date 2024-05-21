@@ -3,7 +3,7 @@ package com.github.se.wanderpals.service
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
+import com.github.se.wanderpals.model.data.GeoCords
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
@@ -30,7 +30,7 @@ object SharedPreferencesManager {
    * @param placeData The place data to save.
    * @return The list of place data with the new place data added
    */
-  fun savePlaceData(placeData: PlaceData): MutableList<PlaceData> {
+  fun savePlaceData(placeData: GeoCords): MutableList<GeoCords> {
     val listPlaceData = getAllPlaceData().toMutableList()
     listPlaceData.add(placeData)
     val json = Gson().toJson(listPlaceData)
@@ -44,7 +44,7 @@ object SharedPreferencesManager {
    * @param placeData The place data to delete.
    * @return The list of place data
    */
-  fun deletePlaceData(placeData: PlaceData): MutableList<PlaceData> {
+  fun deletePlaceData(placeData: GeoCords): MutableList<GeoCords> {
     val listPlaceData = getAllPlaceData().toMutableList()
     listPlaceData.remove(placeData)
     val json = Gson().toJson(listPlaceData)
@@ -57,12 +57,12 @@ object SharedPreferencesManager {
    *
    * @return The list of place data
    */
-  fun getAllPlaceData(): MutableList<PlaceData> {
-    var arrayItems: List<PlaceData> = emptyList()
+  fun getAllPlaceData(): MutableList<GeoCords> {
+    var arrayItems: List<GeoCords> = emptyList()
     val serializedObject: String? = sharedPreferencesMap.getString(LIST_OF_TEMP_MARKERS, null)
     Log.d("SharedPreferencesManager", "serializedObject: $serializedObject")
     if (serializedObject != null) {
-      val type: Type = object : TypeToken<List<PlaceData>>() {}.type
+      val type: Type = object : TypeToken<List<GeoCords>>() {}.type
       arrayItems = Gson().fromJson(serializedObject, type)
     }
     return arrayItems.toMutableList()

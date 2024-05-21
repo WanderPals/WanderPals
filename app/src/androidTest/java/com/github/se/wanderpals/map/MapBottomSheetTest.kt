@@ -7,9 +7,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.ViewModel
+import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.screens.MapBottomSheetScreen
 import com.github.se.wanderpals.ui.screens.trip.map.MapBottomSheet
-import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -22,7 +22,7 @@ import org.junit.Test
 class FakeMapBottomSheetViewModel : ViewModel() {
 
   private val place =
-      PlaceData(
+      GeoCords(
           placeName = "placeName",
           placeBusinessStatus = "placeBusinessStatus",
           placeAddress = "placeAddress",
@@ -32,7 +32,7 @@ class FakeMapBottomSheetViewModel : ViewModel() {
           placeWebsite = "placeWebsite")
 
   private val emptyPlace =
-      PlaceData(
+      GeoCords(
           placeName = "",
           placeBusinessStatus = "",
           placeAddress = "",
@@ -41,7 +41,7 @@ class FakeMapBottomSheetViewModel : ViewModel() {
           placeUserRatingsTotal = "",
           placeWebsite = "")
 
-  fun getPlace(empty: Boolean): PlaceData {
+  fun getPlace(empty: Boolean): GeoCords {
     return if (empty) emptyPlace else place
   }
 }

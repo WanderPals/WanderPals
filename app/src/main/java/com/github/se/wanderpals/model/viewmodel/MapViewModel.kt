@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
-import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -23,12 +23,13 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
     ViewModel() {
   private val _tripsRepository = tripsRepository
   open var stops = MutableStateFlow(emptyList<Stop>())
-  open var suggestions = MutableStateFlow(emptyList<Stop>())
+  open var suggestionsStop = MutableStateFlow(emptyList<Stop>())
+  open var suggestions = MutableStateFlow(emptyList<Suggestion>())
   open var usersPositions = MutableStateFlow(emptyList<LatLng>())
   open var userNames = MutableStateFlow(emptyList<String>())
   open var userPosition = MutableStateFlow(LatLng(0.0, 0.0))
   open var seeUserPosition = MutableStateFlow(false)
-  open var listOfTempPlaceData = MutableStateFlow(emptyList<PlaceData>())
+  open var listOfTempPlaceData = MutableStateFlow(emptyList<GeoCords>())
 
   /**
    * Execute a job on the view model scope.
@@ -57,7 +58,7 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
    *
    * @param placeData The place data to save.
    */
-  open fun savePlaceDataState(placeData: PlaceData) {
+  open fun savePlaceDataState(placeData: GeoCords) {
     listOfTempPlaceData.value = SharedPreferencesManager.savePlaceData(placeData)
   }
 
@@ -66,7 +67,7 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
    *
    * @param placeData The place data to delete.
    */
-  open fun deletePlaceDataState(placeData: PlaceData) {
+  open fun deletePlaceDataState(placeData: GeoCords) {
     listOfTempPlaceData.value = SharedPreferencesManager.deletePlaceData(placeData)
   }
 
@@ -87,11 +88,11 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   open fun getAllSuggestions() {
     viewModelScope.launch {
       val allSuggestions =
-          _tripsRepository
-              .getAllSuggestionsFromTrip(tripId)
-              .map { it.stop }
-              .filter { it.geoCords != GeoCords(0.0, 0.0) }
+          _tripsRepository.getAllSuggestionsFromTrip(tripId).filter {
+            it.stop.geoCords != GeoCords(0.0, 0.0)
+          }
       suggestions.value = allSuggestions
+      suggestionsStop.value = allSuggestions.map { it.stop }
     }
   }
 
@@ -143,6 +144,19 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
         }
       }
     }
+  }
+
+  /** Update suggestion in the trip. */
+  open fun updateSuggestion(stop: Stop) {
+    viewModelScope.launch {
+      val suggestion = suggestions.value.firstOrNull { it.stop == stop } ?: return@launch
+      _tripsRepository.updateSuggestionInTrip(tripId, suggestion)
+    }
+  }
+
+  /** Update stop in the trip. */
+  open fun updateStop(stop: Stop) {
+    viewModelScope.launch { _tripsRepository.updateStopInTrip(tripId, stop) }
   }
 
   class MapViewModelFactory(
