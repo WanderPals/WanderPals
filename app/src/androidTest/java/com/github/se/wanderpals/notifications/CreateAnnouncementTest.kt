@@ -105,52 +105,51 @@ class CreateAnnouncementTest : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun multipleCallsToAddAnnouncementDoNotCreateMultipleObjects() =
-      runBlockingTest {
-        val tripsRepository = mockk<TripsRepository>()
-        val tripId = "test_trip_id"
+  fun multipleCallsToAddAnnouncementDoNotCreateMultipleObjects() = runBlockingTest {
+    val tripsRepository = mockk<TripsRepository>()
+    val tripId = "test_trip_id"
 
-        // Create a spy of the NotificationsViewModel
-        val vm = spyk(NotificationsViewModel(tripsRepository, tripId), recordPrivateCalls = true)
+    // Create a spy of the NotificationsViewModel
+    val vm = spyk(NotificationsViewModel(tripsRepository, tripId), recordPrivateCalls = true)
 
-        // Set user session and role
-        SessionManager.setUserSession()
-        SessionManager.setRole(Role.OWNER)
+    // Set user session and role
+    SessionManager.setUserSession()
+    SessionManager.setRole(Role.OWNER)
 
-        // Mock the repository functions as needed
-        coEvery { tripsRepository.addAnnouncementToTrip(any(), any()) } returns true
-        coEvery { tripsRepository.getTrip(any()) } coAnswers
-            {
-              // Simulate a delay to mimic the coroutine execution time
-              delay(500)
-              null
-            }
-
-        // Set the content of the test
-        composeTestRule.setContent {
-          CreateAnnouncement(
-              viewModel = vm,
-              onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
-          )
+    // Mock the repository functions as needed
+    coEvery { tripsRepository.addAnnouncementToTrip(any(), any()) } returns true
+    coEvery { tripsRepository.getTrip(any()) } coAnswers
+        {
+          // Simulate a delay to mimic the coroutine execution time
+          delay(500)
+          null
         }
 
-        // Access the UI controls using your custom screen class
-        val screen = CreateAnnouncementScreen(composeTestRule)
+    // Set the content of the test
+    composeTestRule.setContent {
+      CreateAnnouncement(
+          viewModel = vm,
+          onNavigationBack = { mockNavActions.navigateTo(Route.NOTIFICATION) },
+      )
+    }
 
-        // Simulate user inputs and interactions
-        screen.inputAnnouncementTitle.performTextInput("Title1")
-        screen.inputAnnouncementDescription.performTextInput("This is Title1.")
+    // Access the UI controls using your custom screen class
+    val screen = CreateAnnouncementScreen(composeTestRule)
 
-        // Simulate clicking the create button twice concurrently
-        launch { screen.createAnnouncementButton.performClick() }
-        launch { screen.createAnnouncementButton.performClick() }
+    // Simulate user inputs and interactions
+    screen.inputAnnouncementTitle.performTextInput("Title1")
+    screen.inputAnnouncementDescription.performTextInput("This is Title1.")
 
-        // Wait for Compose to process potential recompositions due to state changes
-        composeTestRule.waitForIdle()
+    // Simulate clicking the create button twice concurrently
+    launch { screen.createAnnouncementButton.performClick() }
+    launch { screen.createAnnouncementButton.performClick() }
 
-        // Verify that the addAnnouncement method was only called once
-        coVerify(exactly = 1) { tripsRepository.addAnnouncementToTrip(any(), any()) }
-      }
+    // Wait for Compose to process potential recompositions due to state changes
+    composeTestRule.waitForIdle()
+
+    // Verify that the addAnnouncement method was only called once
+    coVerify(exactly = 1) { tripsRepository.addAnnouncementToTrip(any(), any()) }
+  }
 
   @Test
   fun createAnnouncementFailsWithMissingTitleAndDoesNotWorkWithEmptyTitle() = run {
