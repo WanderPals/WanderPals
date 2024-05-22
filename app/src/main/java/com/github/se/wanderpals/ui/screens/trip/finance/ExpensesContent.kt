@@ -56,7 +56,8 @@ fun ExpensesContent(
     innerPadding: PaddingValues,
     expenseList: List<Expense>,
     onRefresh: () -> Unit,
-    onExpenseItemClick: (Expense) -> Unit
+    onExpenseItemClick: (Expense) -> Unit,
+    currencySymbol: String
 ) {
   if (expenseList.isEmpty()) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -91,7 +92,9 @@ fun ExpensesContent(
                 items(expenseList) { expense ->
                   HorizontalDivider(
                       color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
-                  ExpenseItem(expense = expense) { onExpenseItemClick(it) }
+                  ExpenseItem(expense = expense, currencySymbol = currencySymbol) {
+                    onExpenseItemClick(it)
+                  }
                 }
               }
         }
@@ -106,7 +109,7 @@ fun ExpensesContent(
  * @param onExpenseItemClick Callback function for when an expense item is clicked.
  */
 @Composable
-fun ExpenseItem(expense: Expense, onExpenseItemClick: (Expense) -> Unit) {
+fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (Expense) -> Unit) {
   Box(modifier = Modifier.fillMaxWidth().height(90.dp)) {
     Button(
         onClick = { onExpenseItemClick(expense) },
@@ -167,7 +170,7 @@ fun ExpenseItem(expense: Expense, onExpenseItemClick: (Expense) -> Unit) {
                     horizontalAlignment = Alignment.End) {
                       // Expense amount
                       Text(
-                          text = "%.2f CHF".format(expense.amount),
+                          text = ("%.2f $currencySymbol" + "").format(expense.amount),
                           style = TextStyle(fontSize = 14.sp, color = Color.Gray))
 
                       // Expense date

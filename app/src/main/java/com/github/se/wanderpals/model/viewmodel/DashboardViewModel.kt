@@ -41,6 +41,9 @@ open class DashboardViewModel(
   private var _lastPrivateDocument = MutableStateFlow("")
   open val lastPrivateDocument: StateFlow<String> = _lastPrivateDocument.asStateFlow()
 
+  private var _currencyCode = MutableStateFlow("CHF")
+  open val currencyCode: StateFlow<String> = _currencyCode.asStateFlow()
+
   /** Fetches all trips from the repository and updates the state flow accordingly. */
   open fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
@@ -55,6 +58,7 @@ open class DashboardViewModel(
     viewModelScope.launch {
       // Fetch all expenses from the trip
       _expenses.value = tripsRepository.getAllExpensesFromTrip(tripId)
+      _currencyCode.value = tripsRepository.getTrip(tripId)?.currencyCode ?: ""
     }
   }
 

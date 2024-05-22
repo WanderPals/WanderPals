@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
+import java.util.Locale
 
 /**
  * Composable function for displaying the finance widget in the Dashboard screen. The finance widget
@@ -50,6 +51,8 @@ import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
 fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
   val expenses by viewModel.expenses.collectAsState()
   val sortedExpenses = expenses.sortedByDescending { it.localDate }
+
+  val currencyCode by viewModel.currencyCode.collectAsState()
 
   ElevatedCard(
       modifier =
@@ -104,7 +107,8 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
                           Text(
                               text =
-                                  "Total: ${String.format("%.02f", expenses.sumOf { it.amount })} CHF",
+                                  "Total: ${String.format(Locale.US,"%.02f", expenses.sumOf { it.amount })} " +
+                                      currencyCode,
                               modifier =
                                   Modifier.testTag("totalAmount")
                                       .clip(RoundedCornerShape(4.dp))
@@ -136,13 +140,14 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                                 }
                           } else {
                             Column {
-                              ExpenseItem(expense = sortedExpenses[0])
+                              ExpenseItem(expense = sortedExpenses[0], currencyCode = currencyCode)
                               HorizontalDivider(
                                   color = MaterialTheme.colorScheme.surfaceVariant,
                                   thickness = 1.dp,
                                   modifier = Modifier.padding(horizontal = 8.dp))
                               if (expenses.size > 1) {
-                                ExpenseItem(expense = sortedExpenses[1])
+                                ExpenseItem(
+                                    expense = sortedExpenses[1], currencyCode = currencyCode)
                               } else {
                                 Box(modifier = Modifier.fillMaxSize())
                               }
@@ -176,7 +181,7 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 }
 
 @Composable
-fun ExpenseItem(expense: Expense) {
+fun ExpenseItem(expense: Expense, currencyCode: String) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -200,7 +205,7 @@ fun ExpenseItem(expense: Expense) {
         }
 
         Text(
-            text = "${String.format("%.02f", expense.amount)} CHF",
+            text = "${String.format(Locale.US,"%.02f", expense.amount)} $currencyCode",
             style =
                 TextStyle(
                     fontWeight = FontWeight.Bold,
