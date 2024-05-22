@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -60,6 +61,9 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
 
   val showDeleteDialog by financeViewModel.showDeleteDialog.collectAsState()
 
+  val tripCurrency by financeViewModel.tripCurrency.collectAsState()
+
+  LaunchedEffect(Unit) { financeViewModel.updateStateLists() }
   // Dialog for deleting expense
   if (showDeleteDialog) {
     AlertDialog(
@@ -101,10 +105,12 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
         // Top information of the expenses
-        ExpenseTopInfo(expense = expense) { financeViewModel.setShowDeleteDialogState(true) }
+        ExpenseTopInfo(expense = expense, currencySymbol = tripCurrency.symbol) {
+          financeViewModel.setShowDeleteDialogState(true)
+        }
 
         // Display of the list of participant related to the expense
-        ExpenseParticipantsInfo(expense = expense)
+        ExpenseParticipantsInfo(expense = expense, currencySmybol = tripCurrency.symbol)
       }
 }
 
@@ -116,7 +122,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
  *   triggered.
  */
 @Composable
-fun ExpenseTopInfo(expense: Expense, onDeleteExpenseClick: () -> Unit) {
+fun ExpenseTopInfo(expense: Expense, currencySymbol: String, onDeleteExpenseClick: () -> Unit) {
   val userIsViewer = SessionManager.getCurrentUser()!!.role == Role.VIEWER
 
   Surface(color = MaterialTheme.colorScheme.primary, contentColor = Color.White) {
@@ -168,7 +174,7 @@ fun ExpenseTopInfo(expense: Expense, onDeleteExpenseClick: () -> Unit) {
           // Expense amount
           Text(
               modifier = Modifier.padding(top = 10.dp).testTag("expenseAmount" + expense.expenseId),
-              text = String.format("%.2f CHF", expense.amount),
+              text = String.format("%.2f $currencySymbol", expense.amount),
               style =
                   MaterialTheme.typography.bodyLarge.copy(
                       color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold))
@@ -213,7 +219,7 @@ fun ExpenseTopInfo(expense: Expense, onDeleteExpenseClick: () -> Unit) {
  * @param expense The expense object containing participant information.
  */
 @Composable
-fun ExpenseParticipantsInfo(expense: Expense) {
+fun ExpenseParticipantsInfo(expense: Expense, currencySmybol: String) {
   LazyColumn(modifier = Modifier.fillMaxSize()) {
     items(expense.names) { userName ->
       Box(modifier = Modifier.fillMaxWidth().height(80.dp).padding(horizontal = 15.dp)) {
@@ -225,7 +231,9 @@ fun ExpenseParticipantsInfo(expense: Expense) {
               maxLines = 1,
               overflow = TextOverflow.Ellipsis)
           Text(
-              text = String.format("%.2f CHF", expense.amount / expense.participantsIds.size),
+              text =
+                  String.format(
+                      "%.2f $currencySmybol", expense.amount / expense.participantsIds.size),
               style = MaterialTheme.typography.bodyLarge)
         }
       }

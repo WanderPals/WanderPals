@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -51,9 +52,12 @@ enum class FinanceOption(private val optionName: String) {
  * - Categories view allows the user to watch the categories of expense during the trip
  * - Debts view display the balances between each member of the trip
  *
+ * The user can also set the currency he wants for the corresponding trip if he is not a viewer.
+ *
  * @param financeViewModel The ViewModel for finance-related data.
  * @param navigationActions The navigation actions for the Finance screen.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationActions) {
 
@@ -61,6 +65,9 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
 
   val expenseList by financeViewModel.expenseStateList.collectAsState()
   val users by financeViewModel.users.collectAsState()
+
+  val currencyDialogIsOpen by financeViewModel.showCurrencyDialog.collectAsState()
+  val tripCurrency by financeViewModel.tripCurrency.collectAsState()
 
   LaunchedEffect(Unit) {
     financeViewModel.updateStateLists()
@@ -72,11 +79,13 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       topBar = {
         FinanceTopBar(
             currentSelectedOption = currentSelectedOption,
-            onSelectOption = { newOption -> currentSelectedOption = newOption })
+            onSelectOption = { newOption -> currentSelectedOption = newOption },
+            onCurrencyClick = { financeViewModel.setShowCurrencyDialogState(true) },
+            tripCurrency.currencyCode)
       },
       bottomBar = {
         if (currentSelectedOption == FinanceOption.EXPENSES) {
-          FinanceBottomBar(expenseList)
+          FinanceBottomBar(expenseList, tripCurrency.symbol)
         }
       },
       floatingActionButton = {
@@ -98,6 +107,9 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
       }) {
           // Content
           innerPadding ->
+        if (currencyDialogIsOpen) {
+          CurrencySelectionDialog(financeViewModel = financeViewModel)
+        }
         when (currentSelectedOption) {
           FinanceOption.EXPENSES -> {
             ExpensesContent(
@@ -107,19 +119,22 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                 onExpenseItemClick = {
                   navigationActions.setVariablesExpense(it)
                   navigationActions.navigateTo(Route.EXPENSE_INFO)
-                })
+                },
+                tripCurrency.symbol)
           }
           FinanceOption.CATEGORIES -> {
             CategoryContent(
                 innerPadding = innerPadding,
                 expenseList = expenseList,
-                onRefresh = { financeViewModel.updateStateLists() })
+                onRefresh = { financeViewModel.updateStateLists() },
+                currencySymbol = tripCurrency.symbol)
           }
           FinanceOption.DEBTS -> {
             Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
               HorizontalDivider()
               Spacer(modifier = Modifier.height(10.dp))
-              DebtContent(expenses = expenseList, users = users)
+              DebtContent(
+                  expenses = expenseList, users = users, currencySymbol = tripCurrency.symbol)
             }
           }
         }

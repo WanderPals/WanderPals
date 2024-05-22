@@ -148,6 +148,29 @@ object NotificationsManager {
   }
 
   /**
+   * Adds a notification for a new meeting at a given stop to the notification list of a trip.
+   *
+   * @param tripId The ID of the trip to which to add the notification.
+   * @param stop The meeting stop for which to create the notification.
+   */
+  suspend fun addMeetingStopNotification(tripId: String, stop: Stop) {
+    val notifList = tripsRepository.getNotificationList(tripId).toMutableList()
+    val navActions = navigationActions.copy()
+    navActions.setVariablesLocation(stop.geoCords, stop.address)
+    val newNotif =
+        TripNotification(
+            "${SessionManager.getCurrentUser()?.name} wants to meet at ${stop.geoCords.placeName}",
+            Route.MAP,
+            LocalDateTime.now(),
+            navActions.serializeNavigationVariable())
+    addNewNotification(notifList, newNotif)
+    broadcastNotification(
+        tripId,
+        "${SessionManager.getCurrentUser()?.name} wants to meet at ${stop.geoCords.placeName}")
+    tripsRepository.setNotificationList(tripId, notifList.toList())
+  }
+
+  /**
    * Adds a notification for a new expense to the notification list of a trip.
    *
    * @param tripId The ID of the trip to which to add the notification.

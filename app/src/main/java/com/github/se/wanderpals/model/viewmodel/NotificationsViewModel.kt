@@ -56,6 +56,15 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
   private val _isExpenseReady = MutableStateFlow(false)
   val isExpenseReady: StateFlow<Boolean> = _isExpenseReady.asStateFlow()
 
+  // signal that the announcement was added successfully
+  private val _createAnnouncementFinished = MutableStateFlow(false)
+  open val createAnnouncementFinished: StateFlow<Boolean> =
+      _createAnnouncementFinished.asStateFlow()
+
+  // don't add an announcement twice
+  private val _isAddingAnnouncement = MutableStateFlow(false)
+  open val isAddingAnnouncement: StateFlow<Boolean> = _isAddingAnnouncement.asStateFlow()
+
   /**
    * Updates the state lists of notifications and announcements by launching a coroutine within the
    * viewModel scope.
@@ -114,18 +123,28 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
    * @return A boolean representing the success of the operation.
    */
   open fun addAnnouncement(announcement: Announcement) {
-    runBlocking {
-      tripsRepository.addAnnouncementToTrip(tripId, announcement)
-      val listOfTokens = tripsRepository.getTrip(tripId)
-      if (listOfTokens != null) {
-        Log.d("NotificationAnnouncement", "List of tokens: ${listOfTokens.tokenIds}")
-      }
-      if (listOfTokens != null) {
-        for (token in listOfTokens.tokenIds) {
-          sendMessageToListOfUsers(token, announcement.title)
+    viewModelScope.launch {
+      if (!isAddingAnnouncement.value && !createAnnouncementFinished.value) {
+
+        _isAddingAnnouncement.value = true
+        tripsRepository.addAnnouncementToTrip(tripId, announcement)
+        val listOfTokens = tripsRepository.getTrip(tripId)
+        if (listOfTokens != null) {
+          Log.d("NotificationAnnouncement", "List of tokens: ${listOfTokens.tokenIds}")
+          for (token in listOfTokens.tokenIds) {
+            sendMessageToListOfUsers(token, announcement.title)
+          }
         }
+
+        _isAddingAnnouncement.value = false
+        _createAnnouncementFinished.value = true
       }
     }
+  }
+
+  /** Resets the CreateAnnouncementFinished flag */
+  fun setCreateAnnouncementFinished(value: Boolean) {
+    _createAnnouncementFinished.value = value
   }
 
   /**

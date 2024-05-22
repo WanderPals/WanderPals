@@ -78,6 +78,7 @@ import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardMemberDetail
@@ -214,14 +215,15 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                       MaterialTheme.colorScheme.error
                                   else MaterialTheme.colorScheme.primary,
                               modifier =
-                                  Modifier.clickable {
-                                        if (modifierButton && !isAlreadyClicked) {
-                                          isAlreadyClicked = true
-                                          modifierButton = false
-                                          newName = currentUser!!.name
-                                          editNameDialog = true
-                                        }
-                                      }
+                                  Modifier.clickable(
+                                          enabled = SessionManager.getIsNetworkAvailable()) {
+                                            if (modifierButton && !isAlreadyClicked) {
+                                              isAlreadyClicked = true
+                                              modifierButton = false
+                                              newName = currentUser!!.name
+                                              editNameDialog = true
+                                            }
+                                          }
                                       .padding(horizontal = 10.dp)
                                       .testTag("userName"),
                               fontWeight = FontWeight.Bold)
@@ -365,7 +367,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                           MaterialTheme.colorScheme.error
                                       else MaterialTheme.colorScheme.surfaceVariant,
                                   CircleShape)
-                              .clickable {
+                              .clickable(enabled = SessionManager.getIsNetworkAvailable()) {
                                 if (modifierButton && !isAlreadyClicked) {
                                   isAlreadyClicked = true
                                   modifierButton = false
@@ -446,6 +448,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                             if (currentUser!!.role == Role.OWNER &&
                                 currentUser!!.userId != user.userId) {
                               IconButton(
+                                  enabled = SessionManager.getIsNetworkAvailable(),
                                   onClick = {
                                     userToPromote = user
                                     promoteMemberDialog = true
@@ -463,6 +466,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                                 currentUser!!.role.ordinal < user.role.ordinal) &&
                                 user.role != Role.OWNER) {
                               IconButton(
+                                  enabled = SessionManager.getIsNetworkAvailable(),
                                   onClick = {
                                     deleteMemberDialog = true
                                     userToDelete = user.userId
@@ -484,7 +488,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
           inputLazyColumn = lazyColumn, onRefresh = { adminViewModel.getUsers() })
 
       // Dialog to promote a member of the trip to owner
-      if (promoteMemberDialog) {
+      if (promoteMemberDialog && SessionManager.getIsNetworkAvailable()) {
         AlertDialog(
             onDismissRequest = { promoteMemberDialog = false },
             confirmButton = {
@@ -509,7 +513,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
       }
 
       // Dialog to kick a member of the trip
-      if (deleteMemberDialog) {
+      if (deleteMemberDialog && SessionManager.getIsNetworkAvailable()) {
         AlertDialog(
             onDismissRequest = { deleteMemberDialog = false },
             confirmButton = {
@@ -581,6 +585,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
                   HorizontalDivider()
                   Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(
+                        enabled = SessionManager.getIsNetworkAvailable(),
                         onClick = {
                           if (currentUser?.userId != userToUpdate.userId &&
                               userToUpdate.role.ordinal > currentUser?.role!!.ordinal) {
@@ -603,7 +608,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
       }
 
       // Dialog to edit the user name
-      if (editNameDialog) {
+      if (editNameDialog && SessionManager.getIsNetworkAvailable()) {
         AlertDialog(
             onDismissRequest = { editNameDialog = false },
             confirmButton = {

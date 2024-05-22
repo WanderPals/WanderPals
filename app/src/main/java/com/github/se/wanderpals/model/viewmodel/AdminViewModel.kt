@@ -70,6 +70,7 @@ open class AdminViewModel(
 
   // Modify the current user's profil photo
   open fun modifyCurrentUserProfilePhoto(profilePhoto: String) {
+    if (!SessionManager.getIsNetworkAvailable()) return // Check if the network is available
     currentUser.value = currentUser.value?.copy(profilePhoto = profilePhoto)
     SessionManager.setPhoto(profilePhoto)
     val user = listOfUsers.value.find { it.userId == currentUser.value?.userId }

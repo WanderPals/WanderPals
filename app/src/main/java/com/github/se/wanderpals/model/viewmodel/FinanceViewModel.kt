@@ -7,13 +7,22 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
+import java.util.Currency
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-/** Finance View model, not doing anything with database for the moment */
+/**
+ * ViewModel for managing the financial data of a trip.
+ *
+ * This ViewModel handles the state and logic for expenses, users, and currency settings related to
+ * a trip. It interacts with the TripsRepository to fetch and update trip data.
+ *
+ * @param tripsRepository The repository to access trip data.
+ * @param tripId The ID of the trip this ViewModel is associated with.
+ */
 open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String) :
     ViewModel() {
 
@@ -32,11 +41,18 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _selectedExpense = MutableStateFlow<Expense?>(null)
   open val selectedExpense: StateFlow<Expense?> = _selectedExpense.asStateFlow()
 
+  private val _showCurrencyDialog = MutableStateFlow(false)
+  val showCurrencyDialog = _showCurrencyDialog.asStateFlow()
+
+  private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
+  open val tripCurrency = _tripCurrency.asStateFlow()
+
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
     viewModelScope.launch {
       _isLoading.value = true
-
+      val currencyCode = tripsRepository.getTrip(tripId)!!.currencyCode
+      _tripCurrency.value = Currency.getInstance(currencyCode)
       _expenseStateList.value = tripsRepository.getAllExpensesFromTrip(tripId)
 
       _isLoading.value = false
@@ -77,6 +93,22 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     setShowDeleteDialogState(false)
   }
 
+  /**
+   * Updates the currency code of the current trip.
+   *
+   * This method retrieves the current trip from the repository, updates it with the new currency
+   * code, and refreshes the related state lists.
+   *
+   * @param currencyCode The new currency code to be used for the trip.
+   */
+  open fun updateCurrency(currencyCode: String) {
+    viewModelScope.launch {
+      val currentTrip = tripsRepository.getTrip(tripId)!!
+      tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))
+      updateStateLists()
+    }
+  }
+
   /** Setter functions */
   open fun setShowDeleteDialogState(value: Boolean) {
     _showDeleteDialog.value = value
@@ -84,6 +116,10 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   open fun setSelectedExpense(expense: Expense) {
     _selectedExpense.value = expense
+  }
+
+  open fun setShowCurrencyDialogState(value: Boolean) {
+    _showCurrencyDialog.value = value
   }
 
   class FinanceViewModelFactory(

@@ -26,13 +26,15 @@ import com.github.se.wanderpals.model.data.Expense
  * @param chartBandWidth The width of the pie chart bands.
  * @param totalValueDisplayIsEnabled boolean value to indicate if the total value of the expenses
  *   has to be displayed at the center of the pie-chart.
+ * @param currencySymbol Symbol of the currency.
  */
 @Composable
 fun FinancePieChart(
     expenses: List<Expense>,
     radiusOuter: Dp = 100.dp,
     chartBandWidth: Dp = 20.dp,
-    totalValueDisplayIsEnabled: Boolean = false
+    totalValueDisplayIsEnabled: Boolean = false,
+    currencySymbol: String = "CHF"
 ) {
 
   val totalExpense = expenses.sumOf { it.amount }
@@ -69,7 +71,7 @@ fun FinancePieChart(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = "$totalExpense CHF",
+                    text = "$totalExpense $currencySymbol",
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary,
                 )
