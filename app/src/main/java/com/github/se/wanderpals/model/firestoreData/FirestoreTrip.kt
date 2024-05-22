@@ -37,7 +37,8 @@ data class FirestoreTrip(
     val suggestions: List<String> = emptyList(),
     val announcements: List<String> = emptyList(),
     val expenses: List<String> = emptyList(),
-    val documentsURL: List<Documents> = emptyList()
+    val documentsURL: List<Documents> = emptyList(),
+    val currencyCode: String = "CHF"
 ) {
   companion object {
     /**
@@ -62,7 +63,8 @@ data class FirestoreTrip(
           suggestions = trip.suggestions,
           announcements = trip.announcements,
           expenses = trip.expenses,
-          documentsURL = trip.documentsURL)
+          documentsURL = trip.documentsURL,
+          currencyCode = trip.currencyCode)
     }
   }
 
@@ -87,6 +89,7 @@ data class FirestoreTrip(
         suggestions = suggestions,
         announcements = announcements,
         expenses = expenses,
-        documentsURL = documentsURL)
+        documentsURL = documentsURL,
+        currencyCode = currencyCode)
   }
 }

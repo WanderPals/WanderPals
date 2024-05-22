@@ -88,7 +88,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
     val users by financeViewModel.users.collectAsState()
 
     val currencyDialogIsOpen by financeViewModel.showCurrencyDialog.collectAsState()
-    var tripCurrency by remember { mutableStateOf(Currency.getInstance("CHF")) }
+    val tripCurrency by financeViewModel.tripCurrency.collectAsState()
     var selectedCurrency by remember { mutableStateOf("") }
 
     var isError by remember { mutableStateOf(false) }
@@ -184,7 +184,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                                             it.currencyCode.equals(selectedCurrency,ignoreCase = true)
                                         }
                                         if(newCurrency != null){
-                                            tripCurrency = newCurrency
+                                            financeViewModel.updateCurrency(newCurrency.currencyCode)
                                             financeViewModel.setShowCurrencyDialogState(false)
                                             isError = false
                                         }else{

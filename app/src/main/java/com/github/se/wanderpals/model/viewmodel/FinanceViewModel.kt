@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.icu.util.Currency
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -35,11 +36,16 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _showCurrencyDialog = MutableStateFlow(false)
   val showCurrencyDialog = _showCurrencyDialog.asStateFlow()
 
+
+  private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
+  open val tripCurrency = _tripCurrency.asStateFlow()
+
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
     viewModelScope.launch {
       _isLoading.value = true
-
+      val currencyCode = tripsRepository.getTrip(tripId)!!.currencyCode
+      _tripCurrency.value = Currency.getInstance(currencyCode)
       _expenseStateList.value = tripsRepository.getAllExpensesFromTrip(tripId)
 
       _isLoading.value = false
@@ -78,6 +84,14 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
       updateStateLists()
     }
     setShowDeleteDialogState(false)
+  }
+
+  open fun updateCurrency(currencyCode : String){
+    viewModelScope.launch {
+      val currentTrip = tripsRepository.getTrip(tripId)!!
+      tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))
+      updateStateLists()
+    }
   }
 
   /** Setter functions */
