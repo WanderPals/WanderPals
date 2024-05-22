@@ -87,7 +87,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
         },
         bottomBar = {
             if (currentSelectedOption == FinanceOption.EXPENSES) {
-                FinanceBottomBar(expenseList)
+                FinanceBottomBar(expenseList,tripCurrency.symbol)
             }
         },
         floatingActionButton = {
