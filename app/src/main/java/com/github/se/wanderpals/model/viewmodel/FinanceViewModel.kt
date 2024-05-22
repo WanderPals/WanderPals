@@ -14,7 +14,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-/** Finance View model, not doing anything with database for the moment */
+/**
+ * ViewModel for managing the financial data of a trip.
+ *
+ * This ViewModel handles the state and logic for expenses, users, and currency settings related to a trip.
+ * It interacts with the TripsRepository to fetch and update trip data.
+ *
+ * @param tripsRepository The repository to access trip data.
+ * @param tripId The ID of the trip this ViewModel is associated with.
+ */
 open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String) :
     ViewModel() {
 
@@ -35,7 +43,6 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   private val _showCurrencyDialog = MutableStateFlow(false)
   val showCurrencyDialog = _showCurrencyDialog.asStateFlow()
-
 
   private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
   open val tripCurrency = _tripCurrency.asStateFlow()
@@ -86,6 +93,14 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     setShowDeleteDialogState(false)
   }
 
+  /**
+   * Updates the currency code of the current trip.
+   *
+   * This method retrieves the current trip from the repository, updates it with the new currency code,
+   * and refreshes the related state lists.
+   *
+   * @param currencyCode The new currency code to be used for the trip.
+   */
   open fun updateCurrency(currencyCode : String){
     viewModelScope.launch {
       val currentTrip = tripsRepository.getTrip(tripId)!!
