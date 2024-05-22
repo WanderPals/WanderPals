@@ -85,7 +85,7 @@ fun FinanceTopBar(
             }
 
             OutlinedButton(
-                modifier = Modifier.padding(end = 20.dp).width(75.dp),
+                modifier = Modifier.padding(end = 20.dp).width(80.dp),
                 onClick = { onCurrencyClick() },
             ) {
                 Text(
