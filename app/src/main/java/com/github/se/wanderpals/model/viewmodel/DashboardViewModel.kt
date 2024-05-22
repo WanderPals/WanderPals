@@ -58,7 +58,7 @@ open class DashboardViewModel(
     viewModelScope.launch {
       // Fetch all expenses from the trip
       _expenses.value = tripsRepository.getAllExpensesFromTrip(tripId)
-      _currencyCode.value = tripsRepository.getTrip(tripId)!!.currencyCode
+      _currencyCode.value = tripsRepository.getTrip(tripId)?.currencyCode ?: ""
     }
   }
 
