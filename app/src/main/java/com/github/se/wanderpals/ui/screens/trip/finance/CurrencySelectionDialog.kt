@@ -49,75 +49,72 @@ import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
+fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
 
-    var searchedCurrency by remember { mutableStateOf("") }
-    var isError by remember { mutableStateOf(false) }
-    val currencies = Currency.getAvailableCurrencies().filterNot{it.displayName.contains("(")}
+  var searchedCurrency by remember { mutableStateOf("") }
+  var isError by remember { mutableStateOf(false) }
+  val currencies = Currency.getAvailableCurrencies().filterNot { it.displayName.contains("(") }
 
-
-    Dialog(
-        onDismissRequest = {
-            isError = false
-            financeViewModel.setShowCurrencyDialogState(false) }) {
+  Dialog(
+      onDismissRequest = {
+        isError = false
+        financeViewModel.setShowCurrencyDialogState(false)
+      }) {
         Surface(
             modifier =
-            Modifier
-                .fillMaxSize()
-                .padding(top = 100.dp, bottom = 100.dp)
-                .testTag("currencyDialog"),
+                Modifier.fillMaxSize()
+                    .padding(top = 100.dp, bottom = 100.dp)
+                    .testTag("currencyDialog"),
             color = MaterialTheme.colorScheme.background,
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
+          Column(
+              modifier = Modifier.fillMaxSize(),
+              horizontalAlignment = Alignment.CenterHorizontally,
+              verticalArrangement = Arrangement.Top) {
                 // Text allowing user to input text and perform search
                 OutlinedTextField(
                     value = searchedCurrency,
                     onValueChange = { value -> searchedCurrency = value },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp)
-                        .clip(RoundedCornerShape(5.dp))
-                        .testTag("currencySearchText"),
-
+                    modifier =
+                        Modifier.fillMaxWidth()
+                            .padding(20.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .testTag("currencySearchText"),
                     label = {
-                        Text(
-                            text = if (isError) "Invalid currency" else "Select a currency",
-                            color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-                        )
+                      Text(
+                          text = if (isError) "Invalid currency" else "Select a currency",
+                          color =
+                              if (isError) MaterialTheme.colorScheme.error
+                              else MaterialTheme.colorScheme.onSurface)
                     },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color.White,
-                        errorContainerColor = Color.White),
+                    colors =
+                        TextFieldDefaults.textFieldColors(
+                            containerColor = Color.White, errorContainerColor = Color.White),
                     isError = isError,
 
                     // Button for validation checking of the selected currency
                     trailingIcon = {
-                        IconButton(
-                            modifier = Modifier.testTag("currencyValidationButton"),
-                            onClick = {
-                                val newCurrency = currencies.find {
-                                    it.displayName.equals(searchedCurrency,ignoreCase = true) ||
-                                            it.currencyCode.equals(searchedCurrency,ignoreCase = true)
+                      IconButton(
+                          modifier = Modifier.testTag("currencyValidationButton"),
+                          onClick = {
+                            val newCurrency =
+                                currencies.find {
+                                  it.displayName.equals(searchedCurrency, ignoreCase = true) ||
+                                      it.currencyCode.equals(searchedCurrency, ignoreCase = true)
                                 }
-                                if(newCurrency != null){
-                                    financeViewModel.updateCurrency(newCurrency.currencyCode)
-                                    financeViewModel.setShowCurrencyDialogState(false)
-                                    isError = false
-                                }else{
-                                    isError = true
-                                }
+                            if (newCurrency != null) {
+                              financeViewModel.updateCurrency(newCurrency.currencyCode)
+                              financeViewModel.setShowCurrencyDialogState(false)
+                              isError = false
+                            } else {
+                              isError = true
                             }
-                        ) {
+                          }) {
                             Icon(
                                 imageVector = Icons.Default.CheckCircle,
                                 contentDescription = Icons.Default.CheckCircle.name,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
+                                tint = MaterialTheme.colorScheme.primary)
+                          }
                     },
                     maxLines = 1,
                 )
@@ -126,46 +123,47 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    // currencies filtered based on text input search
-                    val filteredCurrencies =
-                        currencies
-                            .toList()
-                            .filter {
-                                it.displayName.contains(searchedCurrency,ignoreCase = true) ||
-                                        it.currencyCode.contains(searchedCurrency,ignoreCase = true)
-                            }
-                            .sortedBy { it.displayName }
-                    items(filteredCurrencies){ currency ->
-                        Box( modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
-                            .clip(RoundedCornerShape(5.dp))
-                            .border(
-                                1.dp, Color.Gray, RoundedCornerShape(5.dp),
-                            )
-                            .testTag("currencyItem"),
-                            contentAlignment = Alignment.CenterStart){
-                            Button(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors =
-                                ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent),
-                                onClick = { searchedCurrency = currency.displayName }) {
+                    verticalArrangement = Arrangement.Top) {
+                      // currencies filtered based on text input search
+                      val filteredCurrencies =
+                          currencies
+                              .toList()
+                              .filter {
+                                it.displayName.contains(searchedCurrency, ignoreCase = true) ||
+                                    it.currencyCode.contains(searchedCurrency, ignoreCase = true)
+                              }
+                              .sortedBy { it.displayName }
+                      items(filteredCurrencies) { currency ->
+                        Box(
+                            modifier =
+                                Modifier.fillMaxWidth()
+                                    .padding(horizontal = 20.dp)
+                                    .clip(RoundedCornerShape(5.dp))
+                                    .border(
+                                        1.dp,
+                                        Color.Gray,
+                                        RoundedCornerShape(5.dp),
+                                    )
+                                    .testTag("currencyItem"),
+                            contentAlignment = Alignment.CenterStart) {
+                              Button(
+                                  modifier = Modifier.fillMaxWidth(),
+                                  colors =
+                                      ButtonDefaults.buttonColors(
+                                          containerColor = Color.Transparent),
+                                  onClick = { searchedCurrency = currency.displayName }) {}
 
+                              Text(
+                                  modifier = Modifier.padding(start = 5.dp),
+                                  text = currency.displayName,
+                                  textAlign = TextAlign.Start,
+                                  maxLines = 1,
+                                  overflow = TextOverflow.Ellipsis)
                             }
-                            Text(
-                                modifier = Modifier.padding(start = 5. dp),
-                                text = currency.displayName,
-                                textAlign = TextAlign.Start,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis)
-                        }
                         Spacer(modifier = Modifier.height(7.dp))
+                      }
                     }
-                }
-            }
+              }
         }
-    }
+      }
 }

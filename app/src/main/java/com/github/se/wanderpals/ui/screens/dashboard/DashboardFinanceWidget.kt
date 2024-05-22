@@ -57,11 +57,10 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
   ElevatedCard(
       modifier =
-      Modifier
-          .padding(horizontal = 16.dp)
-          .fillMaxWidth()
-          .clickable(onClick = onClick)
-          .testTag("financeCard"),
+          Modifier.padding(horizontal = 16.dp)
+              .fillMaxWidth()
+              .clickable(onClick = onClick)
+              .testTag("financeCard"),
       colors =
           CardDefaults.cardColors(
               containerColor =
@@ -72,16 +71,13 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
       elevation = CardDefaults.cardElevation(10.dp)) {
         // Finance Widget
         Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Max)
-                .fillMaxWidth(),
+            modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
               // Finance Details, Left part of the widget
               Column(
                   modifier =
-                  Modifier
-                      .padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
-                      .width(IntrinsicSize.Max)) {
+                      Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
+                          .width(IntrinsicSize.Max)) {
                     // Top part of the texts
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -91,16 +87,13 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                               verticalAlignment = Alignment.CenterVertically,
                               horizontalArrangement = Arrangement.Start,
                               modifier =
-                              Modifier
-                                  .clip(RoundedCornerShape(4.dp))
-                                  .background(MaterialTheme.colorScheme.primaryContainer)
-                                  .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                                  Modifier.clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.primaryContainer)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp)) {
                                 Icon(
                                     Icons.Default.ShoppingCart,
                                     contentDescription = "Finance Icon",
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .testTag("financeIcon"),
+                                    modifier = Modifier.size(16.dp).testTag("financeIcon"),
                                     tint = MaterialTheme.colorScheme.onPrimaryContainer)
                                 Text(
                                     text = "Finance",
@@ -115,14 +108,13 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
                           Text(
                               text =
-                              "Total: ${String.format("%.02f", expenses.sumOf { it.amount })} "+
-                                  currencyCode,
+                                  "Total: ${String.format("%.02f", expenses.sumOf { it.amount })} " +
+                                      currencyCode,
                               modifier =
-                              Modifier
-                                  .testTag("totalAmount")
-                                  .clip(RoundedCornerShape(4.dp))
-                                  .background(MaterialTheme.colorScheme.surface)
-                                  .padding(horizontal = 8.dp, vertical = 4.dp),
+                                  Modifier.testTag("totalAmount")
+                                      .clip(RoundedCornerShape(4.dp))
+                                      .background(MaterialTheme.colorScheme.surface)
+                                      .padding(horizontal = 8.dp, vertical = 4.dp),
                               style =
                                   TextStyle(
                                       color = MaterialTheme.colorScheme.primary,
@@ -134,16 +126,13 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                     // Latest expenses
                     Box(
                         modifier =
-                        Modifier
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(MaterialTheme.colorScheme.surface)) {
+                            Modifier.clip(RoundedCornerShape(4.dp))
+                                .background(MaterialTheme.colorScheme.surface)) {
                           if (expenses.isEmpty()) {
                             Box(
                                 contentAlignment = Alignment.Center,
                                 modifier =
-                                Modifier
-                                    .padding(top = 16.dp, bottom = 40.dp)
-                                    .fillMaxSize()) {
+                                    Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
                                   Text(
                                       text = "No expenses yet.",
                                       modifier = Modifier.testTag("noExpenses"),
@@ -152,13 +141,14 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                                 }
                           } else {
                             Column {
-                              ExpenseItem(expense = sortedExpenses[0],currencyCode = currencyCode)
+                              ExpenseItem(expense = sortedExpenses[0], currencyCode = currencyCode)
                               HorizontalDivider(
                                   color = MaterialTheme.colorScheme.surfaceVariant,
                                   thickness = 1.dp,
                                   modifier = Modifier.padding(horizontal = 8.dp))
                               if (expenses.size > 1) {
-                                ExpenseItem(expense = sortedExpenses[1],currencyCode = currencyCode)
+                                ExpenseItem(
+                                    expense = sortedExpenses[1], currencyCode = currencyCode)
                               } else {
                                 Box(modifier = Modifier.fillMaxSize())
                               }
@@ -170,11 +160,10 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
               // Finance Pie Chart
               Box(
                   modifier =
-                  Modifier
-                      .padding(top = 8.dp, start = 4.dp, bottom = 8.dp, end = 8.dp)
-                      .clip(RoundedCornerShape(4.dp))
-                      .background(MaterialTheme.colorScheme.surface)
-                      .fillMaxSize(),
+                      Modifier.padding(top = 8.dp, start = 4.dp, bottom = 8.dp, end = 8.dp)
+                          .clip(RoundedCornerShape(4.dp))
+                          .background(MaterialTheme.colorScheme.surface)
+                          .fillMaxSize(),
                   contentAlignment = Alignment.Center) {
                     if (expenses.isEmpty()) {
                       Text(
@@ -182,9 +171,7 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
                           modifier = Modifier.testTag("noExpensesBox"),
                           style = TextStyle(color = MaterialTheme.colorScheme.primary))
                     } else {
-                      Box(modifier = Modifier
-                          .padding(4.dp)
-                          .testTag("pieChartBox")) {
+                      Box(modifier = Modifier.padding(4.dp).testTag("pieChartBox")) {
                         FinancePieChart(
                             expenses = expenses, radiusOuter = 50.dp, chartBandWidth = 10.dp)
                       }
@@ -196,13 +183,11 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun ExpenseItem(expense: Expense,currencyCode : String) {
+fun ExpenseItem(expense: Expense, currencyCode: String) {
   Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
-      modifier = Modifier
-          .fillMaxWidth()
-          .testTag("expenseItem" + expense.expenseId)) {
+      modifier = Modifier.fillMaxWidth().testTag("expenseItem" + expense.expenseId)) {
         Column(modifier = Modifier.padding(8.dp)) {
           Text(
               text =
@@ -228,8 +213,6 @@ fun ExpenseItem(expense: Expense,currencyCode : String) {
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.tertiary,
                     fontSize = 15.sp),
-            modifier = Modifier
-                .padding(8.dp)
-                .testTag("expenseAmount" + expense.expenseId))
+            modifier = Modifier.padding(8.dp).testTag("expenseAmount" + expense.expenseId))
       }
 }

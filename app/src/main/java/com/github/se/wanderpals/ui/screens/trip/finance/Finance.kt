@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -32,20 +31,19 @@ import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 
-
 /**
  * Enum class representing different finance options available in the Finance screen.
  *
  * @param optionName The name of the finance option.
  */
 enum class FinanceOption(private val optionName: String) {
-    EXPENSES("Expenses"),
-    CATEGORIES("Categories"),
-    DEBTS("Debts");
+  EXPENSES("Expenses"),
+  CATEGORIES("Categories"),
+  DEBTS("Debts");
 
-    override fun toString(): String {
-        return this.optionName
-    }
+  override fun toString(): String {
+    return this.optionName
+  }
 }
 
 /**
@@ -64,96 +62,82 @@ enum class FinanceOption(private val optionName: String) {
 @Composable
 fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationActions) {
 
-    var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
+  var currentSelectedOption by remember { mutableStateOf(FinanceOption.EXPENSES) }
 
-    val expenseList by financeViewModel.expenseStateList.collectAsState()
-    val users by financeViewModel.users.collectAsState()
+  val expenseList by financeViewModel.expenseStateList.collectAsState()
+  val users by financeViewModel.users.collectAsState()
 
-    val currencyDialogIsOpen by financeViewModel.showCurrencyDialog.collectAsState()
-    val tripCurrency by financeViewModel.tripCurrency.collectAsState()
+  val currencyDialogIsOpen by financeViewModel.showCurrencyDialog.collectAsState()
+  val tripCurrency by financeViewModel.tripCurrency.collectAsState()
 
+  LaunchedEffect(Unit) {
+    financeViewModel.updateStateLists()
+    financeViewModel.loadMembers(navigationActions.variables.currentTrip)
+  }
 
-    LaunchedEffect(Unit) {
-        financeViewModel.updateStateLists()
-        financeViewModel.loadMembers(navigationActions.variables.currentTrip)
-    }
-
-    Scaffold(
-        modifier = Modifier.testTag("financeScreen"),
-        topBar = {
-            FinanceTopBar(
-                currentSelectedOption = currentSelectedOption,
-                onSelectOption = { newOption -> currentSelectedOption = newOption },
-                onCurrencyClick = { financeViewModel.setShowCurrencyDialogState(true) },
-                tripCurrency.currencyCode)
-        },
-        bottomBar = {
-            if (currentSelectedOption == FinanceOption.EXPENSES) {
-                FinanceBottomBar(expenseList,tripCurrency.symbol)
-            }
-        },
-        floatingActionButton = {
-            if (currentSelectedOption == FinanceOption.EXPENSES &&
-                SessionManager.getCurrentUser()!!.role != Role.VIEWER &&
-                SessionManager.getIsNetworkAvailable()
-            ) {
-                FloatingActionButton(
-                    modifier = Modifier.testTag("financeFloatingActionButton"),
-                    onClick = { navigationActions.navigateTo(Route.CREATE_EXPENSE) },
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(50.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        Icons.Default.Add.name,
-                        modifier = Modifier.size(35.dp),
-                        tint = Color.White
-                    )
-                }
-            }
-        }) {
-        // Content
-            innerPadding ->
+  Scaffold(
+      modifier = Modifier.testTag("financeScreen"),
+      topBar = {
+        FinanceTopBar(
+            currentSelectedOption = currentSelectedOption,
+            onSelectOption = { newOption -> currentSelectedOption = newOption },
+            onCurrencyClick = { financeViewModel.setShowCurrencyDialogState(true) },
+            tripCurrency.currencyCode)
+      },
+      bottomBar = {
+        if (currentSelectedOption == FinanceOption.EXPENSES) {
+          FinanceBottomBar(expenseList, tripCurrency.symbol)
+        }
+      },
+      floatingActionButton = {
+        if (currentSelectedOption == FinanceOption.EXPENSES &&
+            SessionManager.getCurrentUser()!!.role != Role.VIEWER &&
+            SessionManager.getIsNetworkAvailable()) {
+          FloatingActionButton(
+              modifier = Modifier.testTag("financeFloatingActionButton"),
+              onClick = { navigationActions.navigateTo(Route.CREATE_EXPENSE) },
+              containerColor = MaterialTheme.colorScheme.primary,
+              shape = RoundedCornerShape(50.dp)) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    Icons.Default.Add.name,
+                    modifier = Modifier.size(35.dp),
+                    tint = Color.White)
+              }
+        }
+      }) {
+          // Content
+          innerPadding ->
         if (currencyDialogIsOpen) {
-            CurrencySelectionDialog(financeViewModel = financeViewModel)
+          CurrencySelectionDialog(financeViewModel = financeViewModel)
         }
         when (currentSelectedOption) {
-            FinanceOption.EXPENSES -> {
-                ExpensesContent(
-                    innerPadding = innerPadding,
-                    expenseList = expenseList,
-                    onRefresh = { financeViewModel.updateStateLists() },
-                    onExpenseItemClick = {
-                        navigationActions.setVariablesExpense(it)
-                        navigationActions.navigateTo(Route.EXPENSE_INFO)
-                    },
-                    tripCurrency.symbol)
+          FinanceOption.EXPENSES -> {
+            ExpensesContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() },
+                onExpenseItemClick = {
+                  navigationActions.setVariablesExpense(it)
+                  navigationActions.navigateTo(Route.EXPENSE_INFO)
+                },
+                tripCurrency.symbol)
+          }
+          FinanceOption.CATEGORIES -> {
+            CategoryContent(
+                innerPadding = innerPadding,
+                expenseList = expenseList,
+                onRefresh = { financeViewModel.updateStateLists() },
+                currencySymbol = tripCurrency.symbol)
+          }
+          FinanceOption.DEBTS -> {
+            Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
+              HorizontalDivider()
+              Spacer(modifier = Modifier.height(10.dp))
+              DebtContent(
+                  expenses = expenseList, users = users, currencySymbol = tripCurrency.symbol)
             }
-
-            FinanceOption.CATEGORIES -> {
-                CategoryContent(
-                    innerPadding = innerPadding,
-                    expenseList = expenseList,
-                    onRefresh = { financeViewModel.updateStateLists() },
-                    currencySymbol = tripCurrency.symbol)
-            }
-
-            FinanceOption.DEBTS -> {
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .testTag("debtsContent")
-                ) {
-                    HorizontalDivider()
-                    Spacer(modifier = Modifier.height(10.dp))
-                    DebtContent(
-                        expenses = expenseList,
-                        users = users,
-                        currencySymbol = tripCurrency.symbol)
-                }
-            }
+          }
         }
-    }
+      }
 }
-
-

@@ -37,7 +37,6 @@ import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
 
-
 /**
  * Composable function for displaying the top bar in the Finance screen. Provides navigation options
  * and a back button.
@@ -52,62 +51,55 @@ fun FinanceTopBar(
     currentSelectedOption: FinanceOption,
     onSelectOption: (FinanceOption) -> Unit,
     onCurrencyClick: () -> Unit,
-    currencyCode: String) {
+    currencyCode: String
+) {
   Column(
       modifier = Modifier.testTag("financeTopBar"),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier
-                .padding(15.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.padding(15.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement =  Arrangement.Center
-            ){
-                IconButton(
-                    modifier = Modifier.testTag("financeBackButton"),
-                    onClick = { navigationActions.navigateTo(Route.DASHBOARD) },
-                ) {
-                    Icon(
-                        modifier = Modifier.size(35.dp),
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back",
+              Row(
+                  verticalAlignment = Alignment.CenterVertically,
+                  horizontalArrangement = Arrangement.Center) {
+                    IconButton(
+                        modifier = Modifier.testTag("financeBackButton"),
+                        onClick = { navigationActions.navigateTo(Route.DASHBOARD) },
+                    ) {
+                      Icon(
+                          modifier = Modifier.size(35.dp),
+                          imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                          contentDescription = "Back",
+                      )
+                    }
+                    Text(
+                        modifier = Modifier.padding(start = 20.dp),
+                        text = "Finance",
+                        textAlign = TextAlign.Center,
+                        style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                     )
-                }
-                Text(
-                    modifier = Modifier.padding(start = 20.dp),
-                    text = "Finance",
-                    textAlign = TextAlign.Center,
-                    style =
-                    TextStyle(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
-                )
-            }
+                  }
 
-            OutlinedButton(
-                modifier = Modifier
-                    .padding(end = 20.dp)
-                    .width(80.dp)
-                    .testTag("currencyButton"),
-                onClick = { onCurrencyClick() },
-                enabled = SessionManager.getIsNetworkAvailable() &&
-                        SessionManager.getCurrentUser()!!.role != Role.VIEWER,
-                colors = ButtonDefaults.buttonColors().copy(contentColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Text(
-                    modifier = Modifier.testTag("currencyButtonText"),
-                    text = currencyCode,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                    color = Color.White,
-
-                )
-            }
+              OutlinedButton(
+                  modifier = Modifier.padding(end = 20.dp).width(80.dp).testTag("currencyButton"),
+                  onClick = { onCurrencyClick() },
+                  enabled =
+                      SessionManager.getIsNetworkAvailable() &&
+                          SessionManager.getCurrentUser()!!.role != Role.VIEWER,
+                  colors =
+                      ButtonDefaults.buttonColors()
+                          .copy(contentColor = MaterialTheme.colorScheme.primary)) {
+                    Text(
+                        modifier = Modifier.testTag("currencyButtonText"),
+                        text = currencyCode,
+                        textAlign = TextAlign.Center,
+                        style =
+                            MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Color.White,
+                    )
+                  }
             }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -144,9 +136,7 @@ fun FinanceTopBar(
 fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: () -> Unit) {
 
   Column(
-      modifier = Modifier
-          .clickable(onClick = onClick)
-          .testTag(text + "Button"),
+      modifier = Modifier.clickable(onClick = onClick).testTag(text + "Button"),
       horizontalAlignment = Alignment.CenterHorizontally) {
         Image(
             painterResource(id = imageId),
@@ -163,12 +153,10 @@ fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: (
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-            Modifier
-                .width(100.dp)
-                .height(4.dp)
-                .background(
-                    if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
-                ),
+                Modifier.width(100.dp)
+                    .height(4.dp)
+                    .background(
+                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
         ) {}
       }
 }

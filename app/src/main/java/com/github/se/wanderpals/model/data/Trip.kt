@@ -47,5 +47,5 @@ data class Trip(
     val announcements: List<String> = emptyList(),
     val expenses: List<String> = emptyList(),
     val documentsURL: List<Documents> = emptyList(),
-    val currencyCode : String = "CHF"
+    val currencyCode: String = "CHF"
 )

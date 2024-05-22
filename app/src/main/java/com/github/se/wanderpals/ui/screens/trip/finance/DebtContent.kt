@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
-
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,7 +47,7 @@ import com.github.se.wanderpals.service.SessionManager
  * @param currencySymbol Symbol of the currency.
  */
 @Composable
-fun DebtContent(expenses: List<Expense>, users: List<User>,currencySymbol : String) {
+fun DebtContent(expenses: List<Expense>, users: List<User>, currencySymbol: String) {
 
   // transform a list of Expense to a Map of userId to a double by taking the list of expenses and
   // summing the amount corresponding to each participants
@@ -123,8 +122,7 @@ fun DebtContent(expenses: List<Expense>, users: List<User>,currencySymbol : Stri
                                   user2 = key.name,
                                   isClickable = true,
                                   onClick = {},
-                                  currencySymbol = currencySymbol
-                                  )
+                                  currencySymbol = currencySymbol)
                               HorizontalDivider()
                             }
                           }
@@ -233,7 +231,7 @@ fun DebtItem(
  */
 @SuppressLint("DefaultLocale")
 @Composable
-fun DebtInfo(amount: Double, user: String,currencySymbol: String) {
+fun DebtInfo(amount: Double, user: String, currencySymbol: String) {
 
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,

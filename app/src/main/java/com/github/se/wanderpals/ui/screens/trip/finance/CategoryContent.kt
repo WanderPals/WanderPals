@@ -51,89 +51,78 @@ fun CategoryContent(
     currencySymbol: String
 ) {
 
-    /*Grouping expenses by category and calculating total number of transactions
-    and total amount for each category which are by default 0 if the category
-    has no associated expenses */
-    val categoryTransactionMap =
-        expenseList
-            .groupBy { it.category }
-            .mapValues { (_, expenses) ->
-                val nbPayments = expenses.size
-                val totalAmount = expenses.sumOf { it.amount }
-                Pair(nbPayments, totalAmount)
-            }
-            .withDefault { _ -> Pair(0, 0.0) }
+  /*Grouping expenses by category and calculating total number of transactions
+  and total amount for each category which are by default 0 if the category
+  has no associated expenses */
+  val categoryTransactionMap =
+      expenseList
+          .groupBy { it.category }
+          .mapValues { (_, expenses) ->
+            val nbPayments = expenses.size
+            val totalAmount = expenses.sumOf { it.amount }
+            Pair(nbPayments, totalAmount)
+          }
+          .withDefault { _ -> Pair(0, 0.0) }
 
-    val lazyColumn =
-        @Composable {
-            LazyColumn(
-                modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(innerPadding)
-                    .testTag("categoryOptionLazyColumn"),
-                contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp)
-            ) {
+  val lazyColumn =
+      @Composable {
+        LazyColumn(
+            modifier =
+                Modifier.fillMaxWidth().padding(innerPadding).testTag("categoryOptionLazyColumn"),
+            contentPadding = PaddingValues(horizontal = 25.dp, vertical = 10.dp)) {
 
-                // Pie chart
-                item {
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        modifier = Modifier.testTag("categoryOptionPieChart"),
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 10.dp),
-                            verticalArrangement = Arrangement.SpaceBetween,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            FinancePieChart(
-                                expenses = expenseList,
-                                radiusOuter = 80.dp,
-                                totalValueDisplayIsEnabled = true,
-                                currencySymbol = currencySymbol
-                            )
+              // Pie chart
+              item {
+                Surface(
+                    shape = RoundedCornerShape(20.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    modifier = Modifier.testTag("categoryOptionPieChart"),
+                ) {
+                  Column(
+                      modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                      verticalArrangement = Arrangement.SpaceBetween,
+                      horizontalAlignment = Alignment.CenterHorizontally) {
+                        FinancePieChart(
+                            expenses = expenseList,
+                            radiusOuter = 80.dp,
+                            totalValueDisplayIsEnabled = true,
+                            currencySymbol = currencySymbol)
 
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                PieChartCategoryText(category = Category.TRANSPORT)
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly) {
+                              PieChartCategoryText(category = Category.TRANSPORT)
 
-                                PieChartCategoryText(category = Category.ACCOMMODATION)
+                              PieChartCategoryText(category = Category.ACCOMMODATION)
 
-                                PieChartCategoryText(category = Category.ACTIVITIES)
+                              PieChartCategoryText(category = Category.ACTIVITIES)
                             }
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                PieChartCategoryText(category = Category.FOOD)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly) {
+                              PieChartCategoryText(category = Category.FOOD)
 
-                                PieChartCategoryText(category = Category.OTHER)
+                              PieChartCategoryText(category = Category.OTHER)
                             }
-                        }
-                    }
+                      }
                 }
+              }
 
-                // Category information items
-                items(Category.values()) { category ->
-                    val categoryInfo = categoryTransactionMap.getValue(category)
-                    Spacer(modifier = Modifier.height(20.dp))
-                    CategoryInfoItem(
-                        category = category,
-                        nbTransaction = categoryInfo.first,
-                        totalCategoryAmount = categoryInfo.second,
-                        currencySymbol = currencySymbol
-                    )
-                }
+              // Category information items
+              items(Category.values()) { category ->
+                val categoryInfo = categoryTransactionMap.getValue(category)
+                Spacer(modifier = Modifier.height(20.dp))
+                CategoryInfoItem(
+                    category = category,
+                    nbTransaction = categoryInfo.first,
+                    totalCategoryAmount = categoryInfo.second,
+                    currencySymbol = currencySymbol)
+              }
             }
-        }
-    PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
+      }
+  PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
 }
 
 /**
@@ -144,19 +133,16 @@ fun CategoryContent(
  */
 @Composable
 fun PieChartCategoryText(category: Category) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(
-            modifier =
-            Modifier
-                .size(10.dp)
-                .background(category.color, shape = RoundedCornerShape(size = 2.dp))
-        )
-        Text(
-            text = category.nameToDisplay,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Box(
+        modifier =
+            Modifier.size(10.dp)
+                .background(category.color, shape = RoundedCornerShape(size = 2.dp)))
+    Text(
+        text = category.nameToDisplay,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = Modifier.padding(start = 8.dp))
+  }
 }
 
 /**
@@ -176,66 +162,55 @@ fun CategoryInfoItem(
     currencySymbol: String
 ) {
 
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .testTag(category.nameToDisplay + "InfoItem"),
-        shape = RoundedCornerShape(10.dp),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+  Surface(
+      modifier = Modifier.fillMaxWidth().height(60.dp).testTag(category.nameToDisplay + "InfoItem"),
+      shape = RoundedCornerShape(10.dp),
+      color = MaterialTheme.colorScheme.secondaryContainer,
+  ) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically) {
+          Row(
+              horizontalArrangement = Arrangement.SpaceBetween,
+              verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier =
-                    Modifier
-                        .padding(start = 10.dp)
-                        .size(35.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(category.color)
-                )
+                        Modifier.padding(start = 10.dp)
+                            .size(35.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(category.color))
 
                 Column {
-                    Text(
-                        modifier = Modifier.padding(start = 10.dp),
-                        text = category.nameToDisplay,
-                        style =
-                        MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(
-                        modifier =
-                        Modifier
-                            .padding(start = 10.dp)
-                            .testTag(category.nameToDisplay + "NbTransactions"),
-                        text =
-                        if (nbTransaction == 1) "$nbTransaction transaction"
-                        else "$nbTransaction transactions",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                    )
+                  Text(
+                      modifier = Modifier.padding(start = 10.dp),
+                      text = category.nameToDisplay,
+                      style =
+                          MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                      color = MaterialTheme.colorScheme.primary,
+                  )
+                  Text(
+                      modifier =
+                          Modifier.padding(start = 10.dp)
+                              .testTag(category.nameToDisplay + "NbTransactions"),
+                      text =
+                          if (nbTransaction == 1) "$nbTransaction transaction"
+                          else "$nbTransaction transactions",
+                      style = MaterialTheme.typography.bodyMedium,
+                      color = Color.Gray,
+                  )
                 }
-            }
+              }
 
-            Text(
-                modifier =
-                Modifier
-                    .padding(end = 15.dp)
-                    .testTag(category.nameToDisplay + "TotalAmount"),
-                text = "%.2f $currencySymbol".format(totalCategoryAmount),
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.End,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
+          Text(
+              modifier =
+                  Modifier.padding(end = 15.dp).testTag(category.nameToDisplay + "TotalAmount"),
+              text = "%.2f $currencySymbol".format(totalCategoryAmount),
+              style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+              color = MaterialTheme.colorScheme.primary,
+              textAlign = TextAlign.End,
+              overflow = TextOverflow.Ellipsis,
+              maxLines = 1)
         }
-    }
+  }
 }

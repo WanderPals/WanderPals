@@ -184,6 +184,7 @@ class DashboardViewModelTest(list: List<Suggestion>) :
 
   private var _currencyCode = MutableStateFlow("CHF")
   override val currencyCode = _currencyCode.asStateFlow()
+
   override fun loadSuggestion(tripId: String) {}
 
   override fun loadExpenses(tripId: String) {}

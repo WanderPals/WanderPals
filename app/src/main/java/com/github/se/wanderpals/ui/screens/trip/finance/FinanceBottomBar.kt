@@ -18,16 +18,15 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.service.SessionManager
 
-
 /**
- * Composable function for displaying the bottom bar in the Finance screen.
- * Provides information about total expenses for the user and total expenses for the trip.
+ * Composable function for displaying the bottom bar in the Finance screen. Provides information
+ * about total expenses for the user and total expenses for the trip.
  *
  * @param expenses The list of [Expense] objects representing all the expenses related to the trip.
  * @param currencySymbol Symbol of the currency.
  */
 @Composable
-fun FinanceBottomBar(expenses: List<Expense>,currencySymbol : String) {
+fun FinanceBottomBar(expenses: List<Expense>, currencySymbol: String) {
   Row(
       modifier =
           Modifier.fillMaxWidth()
@@ -62,7 +61,7 @@ fun FinanceBottomBar(expenses: List<Expense>,currencySymbol : String) {
                   color = Color.White,
                   modifier = Modifier.align(Alignment.End))
               Text(
-                  text = "${expenses.sumOf { it.amount }} $currencySymbol" ,
+                  text = "${expenses.sumOf { it.amount }} $currencySymbol",
                   color = Color.White,
                   modifier = Modifier.align(Alignment.End))
             }

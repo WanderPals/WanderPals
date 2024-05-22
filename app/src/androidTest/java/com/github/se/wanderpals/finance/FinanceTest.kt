@@ -129,7 +129,6 @@ class FinanceViewModelTest :
   override fun updateCurrency(currencyCode: String) {}
 }
 
-
 @RunWith(AndroidJUnit4::class)
 class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
 
@@ -422,12 +421,13 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
 
   @Test
   fun currencyChangeOnValidInput() = run {
-      setUpFinanceTest()
-      composeTestRule.onNodeWithTag("currencyButton").performClick()
-      composeTestRule.onNodeWithTag("currencySearchText").performTextInput("Euro")
-      composeTestRule.onNodeWithTag("currencyValidationButton").performClick()
-      composeTestRule.onNodeWithTag("currencyDialog").assertIsNotDisplayed()
+    setUpFinanceTest()
+    composeTestRule.onNodeWithTag("currencyButton").performClick()
+    composeTestRule.onNodeWithTag("currencySearchText").performTextInput("Euro")
+    composeTestRule.onNodeWithTag("currencyValidationButton").performClick()
+    composeTestRule.onNodeWithTag("currencyDialog").assertIsNotDisplayed()
   }
+
   @Test
   fun currencyChangeFailsOnWrongInput() = run {
     setUpFinanceTest()
@@ -444,6 +444,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("currencyButton").performClick()
     composeTestRule.onNodeWithTag("currencyDialog").assertIsNotDisplayed()
   }
+
   @Test
   fun currencySearchSucceedsOnCurrencyCodeSearch() = run {
     setUpFinanceTest()
@@ -451,15 +452,12 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("currencySearchText").performTextInput("USD")
     composeTestRule.onAllNodesWithTag("currencyItem").assertCountEquals(1)
   }
+
   @Test
   fun currencySearchIsCaseInsensitive() = run {
     setUpFinanceTest()
     composeTestRule.onNodeWithTag("currencyButton").performClick()
     composeTestRule.onNodeWithTag("currencySearchText").performTextInput("uS dOlLAr")
     composeTestRule.onAllNodesWithTag("currencyItem").assertCountEquals(1)
-    }
-
-
-
-
+  }
 }

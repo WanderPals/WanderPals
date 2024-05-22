@@ -17,8 +17,8 @@ import kotlinx.coroutines.runBlocking
 /**
  * ViewModel for managing the financial data of a trip.
  *
- * This ViewModel handles the state and logic for expenses, users, and currency settings related to a trip.
- * It interacts with the TripsRepository to fetch and update trip data.
+ * This ViewModel handles the state and logic for expenses, users, and currency settings related to
+ * a trip. It interacts with the TripsRepository to fetch and update trip data.
  *
  * @param tripsRepository The repository to access trip data.
  * @param tripId The ID of the trip this ViewModel is associated with.
@@ -96,12 +96,12 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   /**
    * Updates the currency code of the current trip.
    *
-   * This method retrieves the current trip from the repository, updates it with the new currency code,
-   * and refreshes the related state lists.
+   * This method retrieves the current trip from the repository, updates it with the new currency
+   * code, and refreshes the related state lists.
    *
    * @param currencyCode The new currency code to be used for the trip.
    */
-  open fun updateCurrency(currencyCode : String){
+  open fun updateCurrency(currencyCode: String) {
     viewModelScope.launch {
       val currentTrip = tripsRepository.getTrip(tripId)!!
       tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))

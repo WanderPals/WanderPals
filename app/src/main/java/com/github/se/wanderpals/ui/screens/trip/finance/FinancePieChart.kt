@@ -34,7 +34,7 @@ fun FinancePieChart(
     radiusOuter: Dp = 100.dp,
     chartBandWidth: Dp = 20.dp,
     totalValueDisplayIsEnabled: Boolean = false,
-    currencySymbol : String = "CHF"
+    currencySymbol: String = "CHF"
 ) {
 
   val totalExpense = expenses.sumOf { it.amount }
