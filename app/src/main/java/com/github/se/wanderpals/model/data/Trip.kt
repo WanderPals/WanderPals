@@ -28,6 +28,8 @@ import java.time.LocalDate
  *   are the Announcement linked to a particular trip
  * @param expenses A list of document IDs referencing the Expenses sub-collection. This list
  *   contains entries related to financial expenditures incurred during the trip.
+ * @param documentsURL A list of Documents used in the trip.
+ * @param currencyCode The currency code used in the trip.
  */
 data class Trip(
     val tripId: String,

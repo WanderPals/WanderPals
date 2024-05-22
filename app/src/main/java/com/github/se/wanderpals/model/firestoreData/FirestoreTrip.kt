@@ -22,6 +22,9 @@ import java.time.format.DateTimeFormatter
  * @property users List of participant user IDs.
  * @property suggestions List of IDs for suggested activities or stops.
  * @property announcements List of IDs for trip announcements.
+ * @property expenses List of expenses Ids of the trip.
+ * @property documentsURL List of Documents
+ * @property currencyCode The currency code used in the trip.
  */
 data class FirestoreTrip(
     val tripId: String = "",
