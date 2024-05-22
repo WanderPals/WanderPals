@@ -2,11 +2,13 @@ package com.github.se.wanderpals.viewmodel
 
 import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.NotificationsManager
+import com.github.se.wanderpals.service.SessionManager
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -38,6 +40,7 @@ class FinanceViewModelTest {
 
     mockTripsRepository = mockk(relaxed = true)
     NotificationsManager.initNotificationsManager(mockTripsRepository)
+    SessionManager.setUserSession()
     navigationActions = mockk(relaxed = true)
 
     every { navigationActions.goBack() } just Runs
@@ -54,6 +57,8 @@ class FinanceViewModelTest {
     coEvery { mockTripsRepository.getAllUsersFromTrip(tripId) } returns
         listOf(User(userId = "1", name = "Alice"))
     coEvery { mockTripsRepository.addExpenseToTrip(tripId, any()) } returns "true"
+    coEvery { mockTripsRepository.getTrip(any()) } returns
+            Trip("-1","",LocalDate.now(),LocalDate.now(),0.0,"")
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
