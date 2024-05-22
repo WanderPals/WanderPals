@@ -9,6 +9,7 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
+import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
 import com.google.android.gms.maps.model.LatLng
@@ -86,6 +87,11 @@ class MapViewModelTest {
     // Mock the TripsRepository to be used in the ViewModel
     mockTripsRepository = mockk(relaxed = true)
     setupMockResponses()
+
+    // Mock NotificationsManager and its interactions
+    NotificationsManager.initNotificationsManager(mockTripsRepository)
+    mockkObject(NotificationsManager)
+    coEvery { NotificationsManager.addMeetingStopNotification(any(), any()) } returns Unit
 
     // Create the ViewModel using a factory with the mocked repository
     val factory = MapViewModel.MapViewModelFactory(mockTripsRepository, "tripId")
@@ -237,6 +243,15 @@ class MapViewModelTest {
 
         advanceUntilIdle()
         coVerify { mockTripsRepository.updateSuggestionInTrip("tripId", suggestion) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `setting a meet sends a notification`() =
+      runBlockingTest(testDispatcher) {
+        viewModel.sendMeetingNotification(suggestion.stop)
+        advanceUntilIdle()
+        coVerify { NotificationsManager.addMeetingStopNotification("tripId", suggestion.stop) }
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)

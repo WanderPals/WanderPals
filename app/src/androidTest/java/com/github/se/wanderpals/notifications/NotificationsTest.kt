@@ -60,6 +60,13 @@ private val notification5 =
         timestamp = LocalDateTime.now(),
         "currentTrip: 1 |latitude: 0.0|longitude: 0.0|currentAddress: |suggestionId: |expenseId: 1")
 
+private val notification6 =
+    TripNotification(
+        title = "user wants to meet at Pizza My Heart",
+        route = Route.MAP,
+        timestamp = LocalDateTime.now(),
+        "currentTrip: 1 |latitude: 37.7088766|longitude: -121.9302073|currentAddress: 7281 Amador Plaza Rd, Dublin, CA 94568, USA|suggestionId: |expenseId: 1")
+
 private val announcement1 =
     Announcement(
         announcementId = "1", // Replace with actual announcement ID
@@ -105,7 +112,13 @@ class NotificationsViewModelTest :
 
   override fun updateStateLists() {
     _notifStateList.value =
-        listOf(notification1, notification2, notification3, notification4, notification5)
+        listOf(
+            notification1,
+            notification2,
+            notification3,
+            notification4,
+            notification5,
+            notification6)
     _announcementStateList.value = listOf(announcement1)
   }
 
@@ -164,6 +177,19 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
         performClick()
       }
       verify { mockNavActions.navigateTo(Route.STOPS_LIST) }
+      confirmVerified(mockNavActions)
+    }
+  }
+
+  @Test
+  fun notifMeetNavigatesToMap() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      notifMeetItemButton {
+        assertIsDisplayed()
+        performClick()
+      }
+      verify { mockNavActions.deserializeNavigationVariables(notification6.navActionVariables) }
+      verify { mockNavActions.navigateTo(Route.MAP) }
       confirmVerified(mockNavActions)
     }
   }
