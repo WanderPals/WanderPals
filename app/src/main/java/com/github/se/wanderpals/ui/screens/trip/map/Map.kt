@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.trip.map
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -347,8 +348,12 @@ fun Map(
             Marker( // Add a marker to the map
                 state = MarkerState(position = latLng),
                 title = stop.title,
-                snippet = stop.description,
+                snippet = "Long Click to set a meeting",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
+                onInfoWindowLongClick = {
+                  Toast.makeText(context, "Meeting Notification Sent", Toast.LENGTH_SHORT).show()
+                  mapViewModel.sendMeetingNotification(stop)
+                },
                 onClick = {
                   bottomSheetExpanded = false
                   finalLocation = latLng
