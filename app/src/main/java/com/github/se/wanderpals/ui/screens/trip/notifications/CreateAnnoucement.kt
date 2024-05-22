@@ -33,6 +33,16 @@ import java.time.LocalDateTime
 @Composable
 fun CreateAnnouncement(viewModel: NotificationsViewModel, onNavigationBack: () -> Unit) {
 
+  val createAnnouncementFinished by viewModel.createAnnouncementFinished.collectAsState()
+  // Effect to react to the createAnnouncementFinished state change
+  LaunchedEffect(createAnnouncementFinished) {
+    if (createAnnouncementFinished) {
+      viewModel.setNotificationSelectionState(false)
+      onNavigationBack()
+      viewModel.setCreateAnnouncementFinished(false) // Reset the flag after handling it
+    }
+  }
+
   val MAX_ANNOUNCEMENT_TITLE_LENGTH = 55 // limit the trip Announcement title to 55 characters
 
   var title by remember { mutableStateOf("") }
@@ -158,8 +168,7 @@ fun CreateAnnouncement(viewModel: NotificationsViewModel, onNavigationBack: () -
                           timestamp = LocalDateTime.now())
 
                   viewModel.addAnnouncement(announcement)
-                  viewModel.setNotificationSelectionState(false)
-                  onNavigationBack()
+                  // navigation done in launch effects
                 }
               }) {
                 Text("Announce", fontSize = 24.sp)
