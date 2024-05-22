@@ -7,8 +7,10 @@ import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -89,7 +91,8 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
     viewModelScope.launch {
       val allSuggestions =
           _tripsRepository.getAllSuggestionsFromTrip(tripId).filter {
-            it.stop.geoCords != GeoCords(0.0, 0.0)
+            it.stop.geoCords != GeoCords(0.0, 0.0) &&
+                it.stop.stopStatus == CalendarUiState.StopStatus.NONE
           }
       suggestions.value = allSuggestions
       suggestionsStop.value = allSuggestions.map { it.stop }
@@ -157,6 +160,11 @@ open class MapViewModel(tripsRepository: TripsRepository, private val tripId: St
   /** Update stop in the trip. */
   open fun updateStop(stop: Stop) {
     viewModelScope.launch { _tripsRepository.updateStopInTrip(tripId, stop) }
+  }
+
+  /** Send meeting notification */
+  open fun sendMeetingNotification(stop: Stop) {
+    viewModelScope.launch { NotificationsManager.addMeetingStopNotification(tripId, stop) }
   }
 
   class MapViewModelFactory(
