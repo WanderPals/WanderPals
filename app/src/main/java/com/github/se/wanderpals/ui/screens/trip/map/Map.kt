@@ -50,6 +50,7 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.setPlaceData
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.service.MapManager
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -351,8 +352,12 @@ fun Map(
                 snippet = "Long Click to set a meeting",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
                 onInfoWindowLongClick = {
-                  Toast.makeText(context, "Meeting Notification Sent", Toast.LENGTH_SHORT).show()
-                  mapViewModel.sendMeetingNotification(stop)
+                  if (SessionManager.getIsNetworkAvailable()) {
+                    Toast.makeText(context, "Meeting Notification Sent", Toast.LENGTH_SHORT).show()
+                    mapViewModel.sendMeetingNotification(stop)
+                  } else {
+                    Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show()
+                  }
                 },
                 onClick = {
                   bottomSheetExpanded = false
