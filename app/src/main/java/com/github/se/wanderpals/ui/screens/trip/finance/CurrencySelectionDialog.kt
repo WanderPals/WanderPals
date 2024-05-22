@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -63,7 +64,8 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
             modifier =
             Modifier
                 .fillMaxSize()
-                .padding(top = 100.dp, bottom = 100.dp),
+                .padding(top = 100.dp, bottom = 100.dp)
+                .testTag("currencyDialog"),
             color = MaterialTheme.colorScheme.background,
         ) {
             Column(
@@ -78,7 +80,8 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp)
-                        .clip(RoundedCornerShape(5.dp)),
+                        .clip(RoundedCornerShape(5.dp))
+                        .testTag("currencySearchText"),
 
                     label = {
                         Text(
@@ -94,6 +97,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                     // Button for validation checking of the selected currency
                     trailingIcon = {
                         IconButton(
+                            modifier = Modifier.testTag("currencyValidationButton"),
                             onClick = {
                                 val newCurrency = currencies.find {
                                     it.displayName.equals(searchedCurrency,ignoreCase = true) ||
@@ -140,7 +144,8 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                             .clip(RoundedCornerShape(5.dp))
                             .border(
                                 1.dp, Color.Gray, RoundedCornerShape(5.dp),
-                            ),
+                            )
+                            .testTag("currencyItem"),
                             contentAlignment = Alignment.CenterStart){
                             Button(
                                 modifier = Modifier.fillMaxWidth(),

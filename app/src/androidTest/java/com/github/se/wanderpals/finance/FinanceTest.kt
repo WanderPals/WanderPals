@@ -1,13 +1,17 @@
 package com.github.se.wanderpals.finance
 
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
+import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewModelScope
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Category
@@ -120,7 +124,11 @@ class FinanceViewModelTest :
     _expenseStateList.value = _expenseStateList.value.filter { it.expenseId != expense.expenseId }
     setShowDeleteDialogState(false)
   }
+
+  // Override the updateCurrencyFunction to avoid call from the tripsRepository in tests
+  override fun updateCurrency(currencyCode: String) {}
 }
+
 
 @RunWith(AndroidJUnit4::class)
 class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
@@ -154,6 +162,7 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     setUpFinanceTest()
     ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
       financeBackButton { assertIsDisplayed() }
+      composeTestRule.onNodeWithTag("currencyButton").assertIsDisplayed()
       financeTopBar { assertIsDisplayed() }
       financeBottomBar { assertIsDisplayed() }
       financeFloatingActionButton { assertIsDisplayed() }
@@ -410,4 +419,47 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
     composeTestRule.onNodeWithTag("deleteTextButton").performClick()
     composeTestRule.onNodeWithTag("deleteExpenseDialog").assertIsNotDisplayed()
   }
+
+  @Test
+  fun currencyChangeOnValidInput() = run {
+      setUpFinanceTest()
+      composeTestRule.onNodeWithTag("currencyButton").performClick()
+      composeTestRule.onNodeWithTag("currencySearchText").performTextInput("Euro")
+      composeTestRule.onNodeWithTag("currencyValidationButton").performClick()
+      composeTestRule.onNodeWithTag("currencyDialog").assertIsNotDisplayed()
+  }
+  @Test
+  fun currencyChangeFailsOnWrongInput() = run {
+    setUpFinanceTest()
+    composeTestRule.onNodeWithTag("currencyButton").performClick()
+    composeTestRule.onNodeWithTag("currencySearchText").performTextInput("r")
+    composeTestRule.onNodeWithTag("currencyValidationButton").performClick()
+    composeTestRule.onNodeWithTag("currencyDialog").assertIsDisplayed()
+  }
+
+  @Test
+  fun viewerCantChangeCurrency() = run {
+    setUpFinanceTest(Role.VIEWER)
+    composeTestRule.onNodeWithTag("currencyButton").assertIsNotEnabled()
+    composeTestRule.onNodeWithTag("currencyButton").performClick()
+    composeTestRule.onNodeWithTag("currencyDialog").assertIsNotDisplayed()
+  }
+  @Test
+  fun currencySearchSucceedsOnCurrencyCodeSearch() = run {
+    setUpFinanceTest()
+    composeTestRule.onNodeWithTag("currencyButton").performClick()
+    composeTestRule.onNodeWithTag("currencySearchText").performTextInput("USD")
+    composeTestRule.onAllNodesWithTag("currencyItem").assertCountEquals(1)
+  }
+  @Test
+  fun currencySearchIsCaseInsensitive() = run {
+    setUpFinanceTest()
+    composeTestRule.onNodeWithTag("currencyButton").performClick()
+    composeTestRule.onNodeWithTag("currencySearchText").performTextInput("uS dOlLAr")
+    composeTestRule.onAllNodesWithTag("currencyItem").assertCountEquals(1)
+    }
+
+
+
+
 }

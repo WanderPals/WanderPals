@@ -89,12 +89,13 @@ fun FinanceTopBar(
             }
 
             OutlinedButton(
-                modifier = Modifier.padding(end = 20.dp).width(80.dp),
+                modifier = Modifier.padding(end = 20.dp).width(80.dp).testTag("currencyButton"),
                 onClick = { onCurrencyClick() },
                 enabled = SessionManager.getIsNetworkAvailable() &&
                         SessionManager.getCurrentUser()!!.role != Role.VIEWER
             ) {
                 Text(
+                    modifier = Modifier.testTag("currencyButtonText"),
                     text = currencyCode,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
