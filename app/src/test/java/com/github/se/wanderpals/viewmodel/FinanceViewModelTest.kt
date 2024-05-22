@@ -58,7 +58,7 @@ class FinanceViewModelTest {
         listOf(User(userId = "1", name = "Alice"))
     coEvery { mockTripsRepository.addExpenseToTrip(tripId, any()) } returns "true"
     coEvery { mockTripsRepository.getTrip(any()) } returns
-            Trip("-1","",LocalDate.now(),LocalDate.now(),0.0,"")
+        Trip("-1", "", LocalDate.now(), LocalDate.now(), 0.0, "")
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
