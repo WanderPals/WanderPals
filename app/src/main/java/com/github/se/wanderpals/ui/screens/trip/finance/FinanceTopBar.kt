@@ -31,7 +31,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.navigationActions
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
 
 
@@ -87,6 +89,8 @@ fun FinanceTopBar(
             OutlinedButton(
                 modifier = Modifier.padding(end = 20.dp).width(80.dp),
                 onClick = { onCurrencyClick() },
+                enabled = SessionManager.getIsNetworkAvailable() &&
+                        SessionManager.getCurrentUser()!!.role != Role.VIEWER
             ) {
                 Text(
                     text = currencyCode,
