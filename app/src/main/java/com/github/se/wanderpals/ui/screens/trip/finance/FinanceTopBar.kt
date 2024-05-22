@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -89,16 +90,21 @@ fun FinanceTopBar(
             }
 
             OutlinedButton(
-                modifier = Modifier.padding(end = 20.dp).width(80.dp).testTag("currencyButton"),
+                modifier = Modifier
+                    .padding(end = 20.dp)
+                    .width(80.dp)
+                    .testTag("currencyButton"),
                 onClick = { onCurrencyClick() },
                 enabled = SessionManager.getIsNetworkAvailable() &&
-                        SessionManager.getCurrentUser()!!.role != Role.VIEWER
+                        SessionManager.getCurrentUser()!!.role != Role.VIEWER,
+                colors = ButtonDefaults.buttonColors().copy(contentColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(
                     modifier = Modifier.testTag("currencyButtonText"),
                     text = currencyCode,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Color.White,
 
                 )
             }
