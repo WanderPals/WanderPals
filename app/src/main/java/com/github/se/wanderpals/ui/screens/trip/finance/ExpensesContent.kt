@@ -91,7 +91,9 @@ fun ExpensesContent(
                   Modifier.padding(innerPadding).fillMaxHeight().testTag("expensesContent")) {
                 items(expenseList) { expense ->
                   HorizontalDivider(
-                      color = MaterialTheme.colorScheme.surfaceVariant, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+                      color = MaterialTheme.colorScheme.surfaceVariant,
+                      thickness = 2.dp,
+                      modifier = Modifier.fillMaxWidth())
                   ExpenseItem(expense = expense, currencySymbol = currencySymbol) {
                     onExpenseItemClick(it)
                   }
@@ -171,7 +173,9 @@ fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (E
                       // Expense amount
                       Text(
                           text = ("%.2f $currencySymbol" + "").format(expense.amount),
-                          style = TextStyle(fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary))
+                          style =
+                              TextStyle(
+                                  fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary))
                       // Expense date
                       Text(
                           text =
