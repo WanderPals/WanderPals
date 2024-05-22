@@ -210,6 +210,7 @@ fun Notification(
                                   Route.EXPENSE_INFO ->
                                       notificationsViewModel.getExpense(
                                           navigationActions.variables.expense.expenseId)
+                                  Route.MAP -> navigationActions.navigateTo(Route.MAP)
                                 }
                               } else {
                                 navigationActions.navigateTo(item.route)
