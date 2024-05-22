@@ -55,6 +55,8 @@ enum class FinanceOption(private val optionName: String) {
  * - Categories view allows the user to watch the categories of expense during the trip
  * - Debts view display the balances between each member of the trip
  *
+ * The user can also set the currency he wants for the corresponding trip if he is not a viewer.
+ *
  * @param financeViewModel The ViewModel for finance-related data.
  * @param navigationActions The navigation actions for the Finance screen.
  */
