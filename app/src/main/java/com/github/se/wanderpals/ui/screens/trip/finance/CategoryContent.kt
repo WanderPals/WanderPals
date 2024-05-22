@@ -46,7 +46,8 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 fun CategoryContent(
     innerPadding: PaddingValues,
     expenseList: List<Expense>,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    currencySymbol : String
 ) {
 
   /*Grouping expenses by category and calculating total number of transactions
@@ -83,7 +84,8 @@ fun CategoryContent(
                         FinancePieChart(
                             expenses = expenseList,
                             radiusOuter = 80.dp,
-                            totalValueDisplayIsEnabled = true)
+                            totalValueDisplayIsEnabled = true,
+                            currencySymbol = currencySymbol)
 
                         Spacer(modifier = Modifier.height(20.dp))
                         Row(
@@ -114,7 +116,8 @@ fun CategoryContent(
                 CategoryInfoItem(
                     category = category,
                     nbTransaction = categoryInfo.first,
-                    totalCategoryAmount = categoryInfo.second)
+                    totalCategoryAmount = categoryInfo.second,
+                    currencySymbol = currencySymbol)
               }
             }
       }
@@ -149,7 +152,7 @@ fun PieChartCategoryText(category: Category) {
  * @param totalCategoryAmount The total amount spent in the category.
  */
 @Composable
-fun CategoryInfoItem(category: Category, nbTransaction: Int, totalCategoryAmount: Double) {
+fun CategoryInfoItem(category: Category, nbTransaction: Int, totalCategoryAmount: Double,currencySymbol: String) {
 
   Surface(
       modifier = Modifier.fillMaxWidth().height(60.dp).testTag(category.nameToDisplay + "InfoItem"),
@@ -194,7 +197,7 @@ fun CategoryInfoItem(category: Category, nbTransaction: Int, totalCategoryAmount
           Text(
               modifier =
                   Modifier.padding(end = 15.dp).testTag(category.nameToDisplay + "TotalAmount"),
-              text = "%.2f CHF".format(totalCategoryAmount),
+              text = "%.2f $currencySymbol".format(totalCategoryAmount),
               style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
               color = MaterialTheme.colorScheme.primary,
               textAlign = TextAlign.End,

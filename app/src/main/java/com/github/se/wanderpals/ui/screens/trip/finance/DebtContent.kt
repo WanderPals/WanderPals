@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +46,7 @@ import com.github.se.wanderpals.service.SessionManager
  * @param users List of users to display.
  */
 @Composable
-fun DebtContent(expenses: List<Expense>, users: List<User>) {
+fun DebtContent(expenses: List<Expense>, users: List<User>,currencySymbol : String) {
 
   // transform a list of Expense to a Map of userId to a double by taking the list of expenses and
   // summing the amount corresponding to each participants
@@ -87,7 +88,8 @@ fun DebtContent(expenses: List<Expense>, users: List<User>) {
                             amount =
                                 debt[key.userId]!!.values.sumOf { it } -
                                     debt[key.userId]!![key.userId]!!,
-                            user = key.name)
+                            user = key.name,
+                            currencySymbol = currencySymbol)
                       }
                     }
                   }
@@ -118,7 +120,9 @@ fun DebtContent(expenses: List<Expense>, users: List<User>) {
                                   user = SessionManager.getCurrentUser()!!.name,
                                   user2 = key.name,
                                   isClickable = true,
-                                  onClick = {})
+                                  onClick = {},
+                                  currencySymbol = currencySymbol
+                                  )
                               HorizontalDivider()
                             }
                           }
@@ -146,13 +150,14 @@ fun DebtItem(
     user: String,
     user2: String,
     isClickable: Boolean = false,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    currencySymbol: String
 ) {
 
   // start and end are the text to display at the start and end of the row
   val money =
-      if (amount >= 0) "${String.format("%.02f", amount)} CHF"
-      else "${String.format("%.02f", -amount)} CHF"
+      if (amount >= 0) "${String.format("%.02f", amount)} $currencySymbol"
+      else "${String.format("%.02f", -amount)} $currencySymbol"
 
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -222,7 +227,7 @@ fun DebtItem(
  * @param user User to whom the debt is owed.
  */
 @Composable
-fun DebtInfo(amount: Double, user: String) {
+fun DebtInfo(amount: Double, user: String,currencySymbol: String) {
 
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -248,8 +253,8 @@ fun DebtInfo(amount: Double, user: String) {
               Column {
                 Text(
                     text =
-                        if (amount >= 0) "+${String.format("%.02f", amount)} CHF"
-                        else "${String.format("%.02f", amount)} CHF",
+                        if (amount >= 0) "+${String.format("%.02f", amount)} $currencySymbol"
+                        else "${String.format("%.02f", amount)} $currencySymbol",
                     modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("end$user"),
                     textAlign = TextAlign.End)
               }

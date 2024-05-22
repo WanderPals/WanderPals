@@ -32,7 +32,8 @@ fun FinancePieChart(
     expenses: List<Expense>,
     radiusOuter: Dp = 100.dp,
     chartBandWidth: Dp = 20.dp,
-    totalValueDisplayIsEnabled: Boolean = false
+    totalValueDisplayIsEnabled: Boolean = false,
+    currencySymbol : String = "CHF"
 ) {
 
   val totalExpense = expenses.sumOf { it.amount }
@@ -69,7 +70,7 @@ fun FinancePieChart(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = "$totalExpense CHF",
+                    text = "$totalExpense $currencySymbol",
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary,
                 )

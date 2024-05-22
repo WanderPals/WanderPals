@@ -46,7 +46,8 @@ import com.github.se.wanderpals.ui.navigation.Route
 fun FinanceTopBar(
     currentSelectedOption: FinanceOption,
     onSelectOption: (FinanceOption) -> Unit,
-    onCurrencyClick: () -> Unit) {
+    onCurrencyClick: () -> Unit,
+    currencyCode: String) {
   Column(
       modifier = Modifier.testTag("financeTopBar"),
       verticalArrangement = Arrangement.Center,
@@ -88,7 +89,7 @@ fun FinanceTopBar(
                 onClick = { onCurrencyClick() },
             ) {
                 Text(
-                    text = "CHF",
+                    text = currencyCode,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
 

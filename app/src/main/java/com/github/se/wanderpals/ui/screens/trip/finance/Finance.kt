@@ -88,7 +88,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
     val users by financeViewModel.users.collectAsState()
 
     val currencyDialogIsOpen by financeViewModel.showCurrencyDialog.collectAsState()
-    var tripCurrency by remember { mutableStateOf("CHF") }
+    var tripCurrency by remember { mutableStateOf(Currency.getInstance("CHF")) }
     var selectedCurrency by remember { mutableStateOf("") }
 
     var isError by remember { mutableStateOf(false) }
@@ -106,7 +106,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             FinanceTopBar(
                 currentSelectedOption = currentSelectedOption,
                 onSelectOption = { newOption -> currentSelectedOption = newOption },
-                onCurrencyClick = { financeViewModel.setShowCurrencyDialogState(true) })
+                onCurrencyClick = { financeViewModel.setShowCurrencyDialogState(true) },
+                tripCurrency.currencyCode)
         },
         bottomBar = {
             if (currentSelectedOption == FinanceOption.EXPENSES) {
@@ -183,7 +184,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                                             it.currencyCode.equals(selectedCurrency,ignoreCase = true)
                                         }
                                         if(newCurrency != null){
-                                            tripCurrency = newCurrency.currencyCode
+                                            tripCurrency = newCurrency
                                             financeViewModel.setShowCurrencyDialogState(false)
                                             isError = false
                                         }else{
@@ -253,14 +254,16 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                     onExpenseItemClick = {
                         navigationActions.setVariablesExpense(it)
                         navigationActions.navigateTo(Route.EXPENSE_INFO)
-                    })
+                    },
+                    tripCurrency.symbol)
             }
 
             FinanceOption.CATEGORIES -> {
                 CategoryContent(
                     innerPadding = innerPadding,
                     expenseList = expenseList,
-                    onRefresh = { financeViewModel.updateStateLists() })
+                    onRefresh = { financeViewModel.updateStateLists() },
+                    currencySymbol = tripCurrency.symbol)
             }
 
             FinanceOption.DEBTS -> {
@@ -271,7 +274,10 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                 ) {
                     HorizontalDivider()
                     Spacer(modifier = Modifier.height(10.dp))
-                    DebtContent(expenses = expenseList, users = users)
+                    DebtContent(
+                        expenses = expenseList,
+                        users = users,
+                        currencySymbol = tripCurrency.symbol)
                 }
             }
         }
