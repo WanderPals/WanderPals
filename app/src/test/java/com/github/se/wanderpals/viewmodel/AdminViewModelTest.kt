@@ -96,6 +96,28 @@ class AdminViewModelTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
+  fun testModifyCurrentUserProfilePhotoOffline() =
+      runBlockingTest(testDispatcher) {
+        SessionManager.setIsNetworkAvailable(false)
+        // Given
+        viewModel.currentUser.value =
+            SessionUser(userId = "currentUser", role = Role.MEMBER, profilePhoto = "oldUrl")
+        viewModel.listOfUsers.value =
+            listOf(User(userId = "currentUser", profilePictureURL = "oldUrl"))
+
+        // When
+        viewModel.modifyCurrentUserProfilePhoto("newUrl")
+
+        // Then
+        assertEquals("oldUrl", viewModel.currentUser.value?.profilePhoto)
+        assertEquals(
+            "oldUrl",
+            viewModel.listOfUsers.value.find { it.userId == "currentUser" }?.profilePictureURL)
+        SessionManager.setIsNetworkAvailable(true)
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
   fun testGetUsers() =
       runBlockingTest(testDispatcher) {
         // When
