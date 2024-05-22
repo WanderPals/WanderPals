@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,8 +77,10 @@ fun FinanceTopBar(
                         modifier = Modifier.padding(start = 20.dp),
                         text = "Finance",
                         textAlign = TextAlign.Center,
-                        style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
-                    )
+                        style =
+                            MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.Bold, fontSize = 24.sp),
+                        color = MaterialTheme.colorScheme.primary)
                   }
 
               OutlinedButton(

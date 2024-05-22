@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.dashboard
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
+import java.util.Locale
 
 /**
  * Composable function for displaying the finance widget in the Dashboard screen. The finance widget
@@ -47,7 +47,6 @@ import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
  * @param viewModel The ViewModel for the Dashboard screen.
  * @param onClick The callback function for when the widget is clicked.
  */
-@SuppressLint("DefaultLocale")
 @Composable
 fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
   val expenses by viewModel.expenses.collectAsState()
@@ -108,7 +107,7 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
                           Text(
                               text =
-                                  "Total: ${String.format("%.02f", expenses.sumOf { it.amount })} " +
+                                  "Total: ${String.format(Locale.US,"%.02f", expenses.sumOf { it.amount })} " +
                                       currencyCode,
                               modifier =
                                   Modifier.testTag("totalAmount")
@@ -181,7 +180,6 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
       }
 }
 
-@SuppressLint("DefaultLocale")
 @Composable
 fun ExpenseItem(expense: Expense, currencyCode: String) {
   Row(
@@ -207,7 +205,7 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
         }
 
         Text(
-            text = "${String.format("%.02f", expense.amount)} $currencyCode",
+            text = "${String.format(Locale.US,"%.02f", expense.amount)} $currencyCode",
             style =
                 TextStyle(
                     fontWeight = FontWeight.Bold,
