@@ -40,11 +40,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 
+/**
+ * A composable function that displays a dialog for currency selection. The user can search the
+ * currency among a list to update the currency used for the trip
+ *
+ * @param financeViewModel The [FinanceViewModel] used to manage the currency selection state.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
 
-    var selectedCurrency by remember { mutableStateOf("") }
+    var searchedCurrency by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
     val currencies = Currency.getAvailableCurrencies().filterNot{it.displayName.contains("(")}
 
@@ -65,9 +71,10 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
+                // Text allowing user to input text and perform search
                 OutlinedTextField(
-                    value = selectedCurrency,
-                    onValueChange = { value -> selectedCurrency = value },
+                    value = searchedCurrency,
+                    onValueChange = { value -> searchedCurrency = value },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp)
@@ -84,13 +91,13 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                         errorContainerColor = Color.White),
                     isError = isError,
 
-                    // Text to display if an error occurs while inputing the trip code
+                    // Button for validation checking of the selected currency
                     trailingIcon = {
                         IconButton(
                             onClick = {
                                 val newCurrency = currencies.find {
-                                    it.displayName.equals(selectedCurrency,ignoreCase = true) ||
-                                            it.currencyCode.equals(selectedCurrency,ignoreCase = true)
+                                    it.displayName.equals(searchedCurrency,ignoreCase = true) ||
+                                            it.currencyCode.equals(searchedCurrency,ignoreCase = true)
                                 }
                                 if(newCurrency != null){
                                     financeViewModel.updateCurrency(newCurrency.currencyCode)
@@ -110,17 +117,20 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                     },
                     maxLines = 1,
                 )
+
+                // Currency list to display, based on user search input
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
+                    // currencies filtered based on text input search
                     val filteredCurrencies =
                         currencies
                             .toList()
                             .filter {
-                                it.displayName.contains(selectedCurrency,ignoreCase = true) ||
-                                        it.currencyCode.contains(selectedCurrency,ignoreCase = true)
+                                it.displayName.contains(searchedCurrency,ignoreCase = true) ||
+                                        it.currencyCode.contains(searchedCurrency,ignoreCase = true)
                             }
                             .sortedBy { it.displayName }
                     items(filteredCurrencies){ currency ->
@@ -137,7 +147,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel){
                                 colors =
                                 ButtonDefaults.buttonColors(
                                     containerColor = Color.Transparent),
-                                onClick = { selectedCurrency = currency.displayName }) {
+                                onClick = { searchedCurrency = currency.displayName }) {
 
                             }
                             Text(

@@ -43,6 +43,8 @@ import com.github.se.wanderpals.ui.navigation.Route
  *
  * @param currentSelectedOption The currently selected finance option.
  * @param onSelectOption Callback function for selecting a finance option.
+ * @param onCurrencyClick Callback function for handling currency selection click.
+ * @param currencyCode Code of the currency.
  */
 @Composable
 fun FinanceTopBar(

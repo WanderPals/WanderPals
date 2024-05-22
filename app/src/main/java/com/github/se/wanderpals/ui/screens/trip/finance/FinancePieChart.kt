@@ -26,6 +26,7 @@ import com.github.se.wanderpals.model.data.Expense
  * @param chartBandWidth The width of the pie chart bands.
  * @param totalValueDisplayIsEnabled boolean value to indicate if the total value of the expenses
  *   has to be displayed at the center of the pie-chart.
+ * @param currencySymbol Symbol of the currency.
  */
 @Composable
 fun FinancePieChart(

@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.trip.finance
 
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +45,7 @@ import com.github.se.wanderpals.service.SessionManager
  *
  * @param expenses List of expenses to display.
  * @param users List of users to display.
+ * @param currencySymbol Symbol of the currency.
  */
 @Composable
 fun DebtContent(expenses: List<Expense>, users: List<User>,currencySymbol : String) {
@@ -143,7 +145,9 @@ fun DebtContent(expenses: List<Expense>, users: List<User>,currencySymbol : Stri
  * @param user2 User to whom the debt is owed/who owes the debt.
  * @param isClickable Boolean to determine if the item is clickable.
  * @param onClick Function to execute when the item is clicked.
+ * @param currencySymbol Symbol of the currency.
  */
+@SuppressLint("DefaultLocale")
 @Composable
 fun DebtItem(
     amount: Double,
@@ -225,7 +229,9 @@ fun DebtItem(
  *
  * @param amount Amount of the debt.
  * @param user User to whom the debt is owed.
+ * @param currencySymbol Symbol of the currency.
  */
+@SuppressLint("DefaultLocale")
 @Composable
 fun DebtInfo(amount: Double, user: String,currencySymbol: String) {
 
