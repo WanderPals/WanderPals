@@ -182,6 +182,8 @@ class DashboardViewModelTest(list: List<Suggestion>) :
   private val _stops = MutableStateFlow(emptyList<Stop>())
   override val stops: StateFlow<List<Stop>> = _stops.asStateFlow()
 
+  private var _currencyCode = MutableStateFlow("CHF")
+  override val currencyCode = _currencyCode.asStateFlow()
   override fun loadSuggestion(tripId: String) {}
 
   override fun loadExpenses(tripId: String) {}
