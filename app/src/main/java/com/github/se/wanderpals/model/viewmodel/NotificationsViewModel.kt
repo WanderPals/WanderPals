@@ -131,8 +131,6 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
         val listOfTokens = tripsRepository.getTrip(tripId)
         if (listOfTokens != null) {
           Log.d("NotificationAnnouncement", "List of tokens: ${listOfTokens.tokenIds}")
-        }
-        if (listOfTokens != null) {
           for (token in listOfTokens.tokenIds) {
             sendMessageToListOfUsers(token, announcement.title)
           }
