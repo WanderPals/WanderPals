@@ -1,10 +1,12 @@
 package com.github.se.wanderpals.overview
 
 import android.content.Intent
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -471,6 +473,25 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       }
       logoutDialog { assertIsNotDisplayed() }
       overviewScreen { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun tripTitleDoesNotOverFlowStartAndEndDate() = run {
+    overviewViewModelTest.state.value.forEachIndexed { index, trip ->
+      composeTestRule.onNodeWithTag("overviewLazyColumn").performScrollToIndex(index)
+
+      composeTestRule
+          .onNodeWithTag("tripTitle${trip.tripId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+
+      composeTestRule
+          .onNodeWithTag("startDate${trip.tripId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+
+      composeTestRule
+          .onNodeWithTag("endDate${trip.tripId}", useUnmergedTree = true)
+          .assertIsDisplayed()
     }
   }
 }
