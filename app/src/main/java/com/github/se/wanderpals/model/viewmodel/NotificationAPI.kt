@@ -26,7 +26,7 @@ open class NotificationAPI : ViewModel() {
 
   private val api: NotificationInterface =
       Retrofit.Builder()
-          .baseUrl("http://255.255.240.0:8080/")
+          .baseUrl("http://128.179.179.77:8080/")
           .addConverterFactory(GsonConverterFactory.create())
           .client(clientBuilder.build())
           .build()
@@ -39,6 +39,8 @@ open class NotificationAPI : ViewModel() {
       try {
         api.sendMessage(newNotif)
       } catch (e: HttpException) {
+        e.printStackTrace()
+      } catch (e: Exception) {
         e.printStackTrace()
       }
     }
