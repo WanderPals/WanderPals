@@ -135,7 +135,22 @@ open class SuggestionsViewModel(
                 it.suggestionId
               } // get the list of suggestions that have the vote icon that have been clicked
 
+      _state.value.forEach { updateSuggestionUsername(it) }
+
       _isLoading.value = false
+    }
+  }
+
+  /**
+   * Updates the backend and local state with the new suggestion.
+   *
+   * @param suggestion The new suggestion to be added.
+   */
+  open fun updateSuggestionUsername(suggestion: Suggestion) {
+    viewModelScope.launch {
+      val userName = suggestionRepository?.getUserFromTrip(tripId, suggestion.userId)!!.name
+      val updatedSuggestion = suggestion.copy(userName = userName)
+      suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
     }
   }
 
