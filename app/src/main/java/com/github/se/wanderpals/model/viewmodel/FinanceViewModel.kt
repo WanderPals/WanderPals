@@ -55,17 +55,14 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
       _tripCurrency.value = Currency.getInstance(currencyCode)
       _expenseStateList.value = tripsRepository.getAllExpensesFromTrip(tripId)
 
-      _isLoading.value = false
       updateExpenseItemUsernames() // Ensure usernames are updated after expenses are loaded
+      _isLoading.value = false
     }
   }
 
   /** Fetches all members from the trip and updates the state flow accordingly. */
   open fun loadMembers(tripId: String) {
-    viewModelScope.launch {
-      _users.value = tripsRepository.getAllUsersFromTrip(tripId)
-      updateExpenseItemUsernames() // Ensure usernames are updated after users are loaded
-    }
+    viewModelScope.launch { _users.value = tripsRepository.getAllUsersFromTrip(tripId) }
   }
 
   /** Updates the expenses item usernames with the corresponding user names. */
@@ -73,8 +70,14 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     viewModelScope.launch {
       for (expense in _expenseStateList.value) {
         val userName = tripsRepository.getUserFromTrip(tripId, expense.userId)!!.name
-        val updatedExpense = expense.copy(userName = userName)
-        tripsRepository.updateExpenseInTrip(tripId, updatedExpense)
+        if (userName != expense.userName) {
+          val updatedExpense = expense.copy(userName = userName)
+          tripsRepository.updateExpenseInTrip(tripId, updatedExpense)
+          _expenseStateList.value =
+              expenseStateList.value.map {
+                if (it.expenseId == expense.expenseId) updatedExpense else it
+              }
+        }
       }
     }
   }

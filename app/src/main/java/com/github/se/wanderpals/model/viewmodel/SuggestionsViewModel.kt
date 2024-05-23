@@ -135,22 +135,49 @@ open class SuggestionsViewModel(
                 it.suggestionId
               } // get the list of suggestions that have the vote icon that have been clicked
 
-      _state.value.forEach { updateSuggestionUsername(it) }
+      // Update the usernames of the suggestions
+      updateSuggestionUsernames()
+      updateSuggestionCommentUsername()
 
       _isLoading.value = false
     }
   }
 
-  /**
-   * Updates the backend and local state with the new suggestion.
-   *
-   * @param suggestion The new suggestion to be added.
-   */
-  open fun updateSuggestionUsername(suggestion: Suggestion) {
+  /** Updates the usernames of the suggestions. */
+  open fun updateSuggestionUsernames() {
     viewModelScope.launch {
-      val userName = suggestionRepository?.getUserFromTrip(tripId, suggestion.userId)!!.name
-      val updatedSuggestion = suggestion.copy(userName = userName)
-      suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+      for (suggestion in _state.value) {
+        val userName = suggestionRepository?.getUserFromTrip(tripId, suggestion.userId)!!.name
+        if (userName != suggestion.userName) {
+          val updatedSuggestion = suggestion.copy(userName = userName)
+          suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+          _state.value =
+              _state.value.map {
+                if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
+              }
+        }
+      }
+    }
+  }
+
+  /** Updates the usernames of the comments in the suggestions. */
+  open fun updateSuggestionCommentUsername() {
+    viewModelScope.launch {
+      for (suggestion in _state.value) {
+        suggestion.comments.forEach { it ->
+          val userName = suggestionRepository?.getUserFromTrip(tripId, it.userId)!!.name
+          if (userName != it.userName) {
+            val updatedComment = it.copy(userName = userName)
+            val updatedSuggestion =
+                suggestion.copy(comments = suggestion.comments - it + updatedComment)
+            suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
+            _state.value =
+                _state.value.map {
+                  if (it.suggestionId == suggestion.suggestionId) updatedSuggestion else it
+                }
+          }
+        }
+      }
     }
   }
 
