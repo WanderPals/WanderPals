@@ -124,17 +124,16 @@ fun OverviewContent(
         val lazyColumn =
             @Composable {
               LazyColumn(
-                  Modifier
-                      .padding(top = 10.dp, bottom = 20.dp)
+                  Modifier.padding(top = 10.dp, bottom = 20.dp)
                       .fillMaxSize()
                       .testTag("overviewLazyColumn")) {
-                items(filteredTripsByTitle) { trip ->
-                  OverviewTrip(
-                      trip = trip,
-                      navigationActions = navigationActions,
-                      overviewViewModel = overviewViewModel)
-                }
-              }
+                    items(filteredTripsByTitle) { trip ->
+                      OverviewTrip(
+                          trip = trip,
+                          navigationActions = navigationActions,
+                          overviewViewModel = overviewViewModel)
+                    }
+                  }
             }
         PullToRefreshLazyColumn(
             inputLazyColumn = lazyColumn, onRefresh = { overviewViewModel.getAllTrips() })

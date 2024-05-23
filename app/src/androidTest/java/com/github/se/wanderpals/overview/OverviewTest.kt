@@ -478,22 +478,20 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
   @Test
   fun tripTitleDoesNotOverFlowStartAndEndDate() = run {
+    overviewViewModelTest.state.value.forEachIndexed { index, trip ->
+      composeTestRule.onNodeWithTag("overviewLazyColumn").performScrollToIndex(index)
 
-
-      overviewViewModelTest.state.value.forEachIndexed{index,trip ->
-        composeTestRule
-          .onNodeWithTag("overviewLazyColumn")
-          .performScrollToIndex(index)
-
-        composeTestRule.onNodeWithTag("tripTitle${trip.tripId}", useUnmergedTree = true)
+      composeTestRule
+          .onNodeWithTag("tripTitle${trip.tripId}", useUnmergedTree = true)
           .assertIsDisplayed()
 
-        composeTestRule.onNodeWithTag("startDate${trip.tripId}", useUnmergedTree = true)
+      composeTestRule
+          .onNodeWithTag("startDate${trip.tripId}", useUnmergedTree = true)
           .assertIsDisplayed()
 
-        composeTestRule.onNodeWithTag("endDate${trip.tripId}", useUnmergedTree = true)
+      composeTestRule
+          .onNodeWithTag("endDate${trip.tripId}", useUnmergedTree = true)
           .assertIsDisplayed()
-      }
+    }
   }
-
 }

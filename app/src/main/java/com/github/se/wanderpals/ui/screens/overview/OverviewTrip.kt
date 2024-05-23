@@ -111,15 +111,15 @@ fun Context.sendTripCodeIntent(tripId: String, address: String) {
 /**
  * Enum class representing the state of the currently selected icon button in the UI.
  *
- * This enum is used to track which icon button is currently selected or pressed
- * in the `OverviewTrip` composable function. It helps manage the visual feedback
- * and actions associated with each button.
+ * This enum is used to track which icon button is currently selected or pressed in the
+ * `OverviewTrip` composable function. It helps manage the visual feedback and actions associated
+ * with each button.
  */
 private enum class SelectedIconButton {
-    NONE,
-    SEND,
-    SHARE,
-    DOCUMENT
+  NONE,
+  SEND,
+  SHARE,
+  DOCUMENT
 }
 
 /**
@@ -136,7 +136,6 @@ fun OverviewTrip(
     overviewViewModel: OverviewViewModel
 ) {
 
-
   // Date pattern for formatting start and end dates
   val datePattern = "dd/MM/yyyy"
 
@@ -145,7 +144,6 @@ fun OverviewTrip(
 
   // Mutable state to check which button is selected
   val selectedIconButton = remember { mutableStateOf(SelectedIconButton.NONE) }
-
 
   // Mutable state to check if the dialog is open
   var dialogIsOpen by remember { mutableStateOf(false) }
@@ -166,7 +164,6 @@ fun OverviewTrip(
       selectedIconButton.value = SelectedIconButton.NONE
     }
   }
-
 
   if (dialogIsOpenEmail) {
     DialogHandlerEmail(
@@ -215,26 +212,20 @@ fun OverviewTrip(
         Box(modifier = Modifier.fillMaxSize()) {
           // Column containing trip information
           Column(
-              modifier = Modifier.fillMaxSize(),
-              verticalArrangement = Arrangement.SpaceBetween
-              ) {
-            Row(
-                modifier =
-                    Modifier.fillMaxWidth()
-                        .padding(
-                            top = 12.dp,
-                            start = 16.dp,
-                            end = 16.dp) ,
-                // Ensure padding for visual spacing
+              modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+                Row(
+                    modifier =
+                        Modifier.fillMaxWidth().padding(top = 12.dp, start = 16.dp, end = 16.dp),
+                    // Ensure padding for visual spacing
                 ) {
                   // Trip title
                   Text(
                       text = trip.title,
-                      modifier = Modifier
-                          .fillMaxWidth()
-                          .weight(1f)
-                          .height(24.dp)
-                          .testTag("tripTitle" + trip.tripId),
+                      modifier =
+                          Modifier.fillMaxWidth()
+                              .weight(1f)
+                              .height(24.dp)
+                              .testTag("tripTitle" + trip.tripId),
                       style =
                           TextStyle(
                               fontSize = 18.sp,
@@ -253,10 +244,13 @@ fun OverviewTrip(
                   Text(
                       text = trip.startDate.format(DateTimeFormatter.ofPattern(datePattern)),
                       modifier =
-                          Modifier
-                              .height(24.dp)
+                          Modifier.height(24.dp)
                               .padding(top = 4.dp)
-                              .testTag("startDate"+trip.tripId), // the padding is for having the text on the same
+                              .testTag(
+                                  "startDate" +
+                                      trip
+                                          .tripId), // the padding is for having the text on the
+                                                    // same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
@@ -274,10 +268,13 @@ fun OverviewTrip(
                   Text(
                       text = trip.endDate.format(DateTimeFormatter.ofPattern(datePattern)),
                       modifier =
-                          Modifier
-                              .height(24.dp)
+                          Modifier.height(24.dp)
                               .padding(top = 4.dp)
-                              .testTag("endDate"+trip.tripId), // the padding is for having the text on the same
+                              .testTag(
+                                  "endDate" +
+                                      trip
+                                          .tripId), // the padding is for having the text on the
+                                                    // same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
@@ -290,76 +287,76 @@ fun OverviewTrip(
                       textAlign = TextAlign.End)
                 }
 
-            Spacer(Modifier.height(20.dp))
-            Row(
-                modifier =
-                    Modifier.fillMaxWidth() // Ensure padding for visual spacing
-                        .padding(start = 16.dp, end = 16.dp,bottom = 16.dp)) {
-                  Spacer(Modifier.weight(0.9f)) // Pushes the icon to the end
+                Spacer(Modifier.height(20.dp))
+                Row(
+                    modifier =
+                        Modifier.fillMaxWidth() // Ensure padding for visual spacing
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+                      Spacer(Modifier.weight(0.9f)) // Pushes the icon to the end
 
-                  // Send trip code button
-                  IconButton(
-                      modifier =
-                          Modifier.width(24.dp)
-                              .height(28.dp)
-                              .testTag("sendTripButton" + trip.tripId),
-                      onClick = {
-                        selectedIconButton.value = SelectedIconButton.SEND
-                        dialogIsOpenEmail = true
-                      }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.Send,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier =
-                                Modifier.background(
-                                    if (selectedIconButton.value == SelectedIconButton.SEND) Color.LightGray
-                                    else Color.Transparent))
-                      }
+                      // Send trip code button
+                      IconButton(
+                          modifier =
+                              Modifier.width(24.dp)
+                                  .height(28.dp)
+                                  .testTag("sendTripButton" + trip.tripId),
+                          onClick = {
+                            selectedIconButton.value = SelectedIconButton.SEND
+                            dialogIsOpenEmail = true
+                          }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Send,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier =
+                                    Modifier.background(
+                                        if (selectedIconButton.value == SelectedIconButton.SEND)
+                                            Color.LightGray
+                                        else Color.Transparent))
+                          }
 
-                  Spacer(Modifier.width(10.dp))
+                      Spacer(Modifier.width(10.dp))
 
-                  // Share trip code button
-                  IconButton(
-                      modifier =
-                          Modifier.width(24.dp)
-                              .height(28.dp)
-                              .testTag("shareTripButton" + trip.tripId),
-                      onClick = {
-                        selectedIconButton.value = SelectedIconButton.SHARE
-                        context.shareTripCodeIntent(trip.tripId)
-                      }) {
-                        Icon(
-                            imageVector = Icons.Default.Share,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier =
-                                Modifier.background(
-                                    if (selectedIconButton.value == SelectedIconButton.SHARE)
-                                        Color.LightGray
-                                    else Color.Transparent)
-                        )
-                      }
-                  Spacer(Modifier.width(10.dp))
-                  IconButton(
-                      onClick = {
-                          selectedIconButton.value = SelectedIconButton.DOCUMENT
-                          displayedTheBoxSelector = true
-                         },
-                      modifier = Modifier.width(24.dp).height(28.dp).testTag("documentButton")) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier =
-                                Modifier.background(
-                                    if (selectedIconButton.value == SelectedIconButton.DOCUMENT)
-                                        Color.LightGray
-                                    else Color.Transparent)
-                        )
-                      }
-                }
-          }
+                      // Share trip code button
+                      IconButton(
+                          modifier =
+                              Modifier.width(24.dp)
+                                  .height(28.dp)
+                                  .testTag("shareTripButton" + trip.tripId),
+                          onClick = {
+                            selectedIconButton.value = SelectedIconButton.SHARE
+                            context.shareTripCodeIntent(trip.tripId)
+                          }) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier =
+                                    Modifier.background(
+                                        if (selectedIconButton.value == SelectedIconButton.SHARE)
+                                            Color.LightGray
+                                        else Color.Transparent))
+                          }
+                      Spacer(Modifier.width(10.dp))
+                      IconButton(
+                          onClick = {
+                            selectedIconButton.value = SelectedIconButton.DOCUMENT
+                            displayedTheBoxSelector = true
+                          },
+                          modifier =
+                              Modifier.width(24.dp).height(28.dp).testTag("documentButton")) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier =
+                                    Modifier.background(
+                                        if (selectedIconButton.value == SelectedIconButton.DOCUMENT)
+                                            Color.LightGray
+                                        else Color.Transparent))
+                          }
+                    }
+              }
         }
       }
   if (displayedTheBoxSelector) {
