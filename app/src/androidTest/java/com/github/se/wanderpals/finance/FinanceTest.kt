@@ -227,6 +227,8 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       // Testing debtContent
 
       debtsButton { performClick() }
+
+      composeTestRule.waitForIdle()
       composeTestRule.onNodeWithTag("debtsContent").assertIsDisplayed()
       composeTestRule.onNodeWithTag("defaultDebtContent").assertIsDisplayed()
       composeTestRule.onNodeWithTag("debtColumn").assertIsDisplayed()
