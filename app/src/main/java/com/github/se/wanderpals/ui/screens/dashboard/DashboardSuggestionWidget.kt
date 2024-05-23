@@ -39,8 +39,6 @@ import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-private const val DISPLAY_COUNT = 3
-
 /**
  * The Suggestion widget for the dashboard screen.
  *
@@ -71,95 +69,92 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
             modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
               // List of Suggestions
-              Column(
-                  modifier =
-                      Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
-                          .fillMaxWidth()) {
-                    // Top part of the texts
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()) {
-                          Row(
-                              verticalAlignment = Alignment.CenterVertically,
-                              horizontalArrangement = Arrangement.Start,
-                              modifier =
-                                  Modifier.clip(RoundedCornerShape(4.dp))
-                                      .background(MaterialTheme.colorScheme.primaryContainer)
-                                      .padding(horizontal = 8.dp, vertical = 4.dp)) {
-                                Icon(
-                                    Icons.Default.Menu,
-                                    contentDescription = "Suggestion Icon",
-                                    modifier = Modifier.size(16.dp).testTag("suggestionIcon"),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                                Text(
-                                    text = "Suggestions",
-                                    modifier = Modifier.testTag("suggestionTitle"),
-                                    style =
-                                        TextStyle(
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            fontWeight = FontWeight.Bold))
-                              }
+              Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+                // Top part of the texts
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()) {
+                      Row(
+                          verticalAlignment = Alignment.CenterVertically,
+                          horizontalArrangement = Arrangement.Start,
+                          modifier =
+                              Modifier.clip(RoundedCornerShape(4.dp))
+                                  .background(MaterialTheme.colorScheme.primaryContainer)
+                                  .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = "Suggestion Icon",
+                                modifier = Modifier.size(16.dp).testTag("suggestionIcon"),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Text(
+                                text = "Suggestions",
+                                modifier = Modifier.testTag("suggestionTitle"),
+                                style =
+                                    TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        fontWeight = FontWeight.Bold))
+                          }
 
-                          Spacer(modifier = Modifier.padding(4.dp))
+                      Spacer(modifier = Modifier.padding(4.dp))
 
-                          Text(
-                              text =
-                                  "Total: ${sortedSuggestion.size} suggestion" +
-                                      if (sortedSuggestion.size > 1) "s" else "",
-                              modifier =
-                                  Modifier.testTag("totalSuggestions")
-                                      .clip(RoundedCornerShape(4.dp))
-                                      .background(MaterialTheme.colorScheme.surface)
-                                      .padding(horizontal = 8.dp, vertical = 4.dp),
-                              style =
-                                  TextStyle(
-                                      color = MaterialTheme.colorScheme.primary,
-                                      fontWeight = FontWeight.Bold))
-                        }
+                      Text(
+                          text =
+                              "Total: ${sortedSuggestion.size} suggestion" +
+                                  if (sortedSuggestion.size > 1) "s" else "",
+                          modifier =
+                              Modifier.testTag("totalSuggestions")
+                                  .clip(RoundedCornerShape(4.dp))
+                                  .background(MaterialTheme.colorScheme.surface)
+                                  .padding(horizontal = 8.dp, vertical = 4.dp),
+                          style =
+                              TextStyle(
+                                  color = MaterialTheme.colorScheme.primary,
+                                  fontWeight = FontWeight.Bold))
+                    }
 
-                    Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.padding(4.dp))
 
-                    // List of suggestions
-                    Box(
-                        modifier =
-                            Modifier.clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.surface)
-                                .fillMaxWidth()) {
-                          if (sortedSuggestion.isEmpty()) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier =
-                                    Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
-                                  Text(
-                                      text = "No suggestions yet.",
-                                      modifier = Modifier.testTag("noSuggestions"),
-                                      style = TextStyle(color = MaterialTheme.colorScheme.primary),
-                                  )
-                                }
-                          } else {
-                            Column {
-                              SuggestionWidgetItem(suggestion = sortedSuggestion[0])
-                              HorizontalDivider(
-                                  color = MaterialTheme.colorScheme.surfaceVariant,
-                                  thickness = 1.dp,
-                                  modifier = Modifier.padding(horizontal = 8.dp))
-                              if (sortedSuggestion.size > 1) {
-                                SuggestionWidgetItem(suggestion = sortedSuggestion[1])
-                                HorizontalDivider(
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
-                                    thickness = 1.dp,
-                                    modifier = Modifier.padding(horizontal = 8.dp))
-                              }
-                              if (sortedSuggestion.size > 2) {
-                                SuggestionWidgetItem(suggestion = sortedSuggestion[2])
-                              } else {
-                                Box(modifier = Modifier.fillMaxSize())
-                              }
+                // List of suggestions
+                Box(
+                    modifier =
+                        Modifier.clip(RoundedCornerShape(4.dp))
+                            .background(MaterialTheme.colorScheme.surface)
+                            .fillMaxWidth()) {
+                      if (sortedSuggestion.isEmpty()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier =
+                                Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
+                              Text(
+                                  text = "No suggestions yet.",
+                                  modifier = Modifier.testTag("noSuggestions"),
+                                  style = TextStyle(color = MaterialTheme.colorScheme.primary),
+                              )
                             }
+                      } else {
+                        Column {
+                          SuggestionWidgetItem(suggestion = sortedSuggestion[0])
+                          HorizontalDivider(
+                              color = MaterialTheme.colorScheme.surfaceVariant,
+                              thickness = 1.dp,
+                              modifier = Modifier.padding(horizontal = 8.dp))
+                          if (sortedSuggestion.size > 1) {
+                            SuggestionWidgetItem(suggestion = sortedSuggestion[1])
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 8.dp))
+                          }
+                          if (sortedSuggestion.size > 2) {
+                            SuggestionWidgetItem(suggestion = sortedSuggestion[2])
+                          } else {
+                            Box(modifier = Modifier.fillMaxSize())
                           }
                         }
-                  }
+                      }
+                    }
+              }
             }
       }
 }

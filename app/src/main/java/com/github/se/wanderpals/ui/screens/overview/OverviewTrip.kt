@@ -123,7 +123,7 @@ fun OverviewTrip(
 ) {
 
   // Date pattern for formatting start and end dates
-  val date_pattern = "dd/MM/yyyy"
+  val datePattern = "dd/MM/yyyy"
 
   // Local context
   val context = LocalContext.current
@@ -197,7 +197,7 @@ fun OverviewTrip(
                 }
               }
               .width(360.dp)
-              .height(100.dp)
+              .height(130.dp)
               .testTag("buttonTrip" + trip.tripId),
       shape = RoundedCornerShape(15.dp),
       elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
@@ -234,7 +234,7 @@ fun OverviewTrip(
 
                   // Start date
                   Text(
-                      text = trip.startDate.format(DateTimeFormatter.ofPattern(date_pattern)),
+                      text = trip.startDate.format(DateTimeFormatter.ofPattern(datePattern)),
                       modifier =
                           Modifier.height(24.dp)
                               .padding(
@@ -254,7 +254,7 @@ fun OverviewTrip(
 
                   // End date
                   Text(
-                      text = trip.endDate.format(DateTimeFormatter.ofPattern(date_pattern)),
+                      text = trip.endDate.format(DateTimeFormatter.ofPattern(datePattern)),
                       modifier =
                           Modifier.height(24.dp)
                               .padding(

@@ -141,28 +141,25 @@ fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: (
   Column(
       modifier = Modifier.clickable(onClick = onClick).testTag(text + "Button"),
       horizontalAlignment = Alignment.CenterHorizontally) {
+        val colorSelection =
+            if (isSelected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurface
         Image(
             painterResource(id = imageId),
             contentDescription = text,
             modifier = Modifier.size(20.dp),
-            colorFilter =
-                ColorFilter.tint(
-                    if (isSelected) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurface))
-
+            colorFilter = ColorFilter.tint(colorSelection))
         Text(
             text = text,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
-            color =
-                if (isSelected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.onSurface,
+            color = colorSelection,
         )
 
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-                Modifier.width(160.dp)
+                Modifier.width(100.dp)
                     .height(4.dp)
                     .background(
                         if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),

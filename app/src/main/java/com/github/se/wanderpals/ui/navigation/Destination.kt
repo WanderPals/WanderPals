@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
  *
  * @param route The route of the destination.
  * @param filledIcon The icon of the destination.
+ * @param outlinedIcon The outlined icon of the destination.
  * @param text The text of the destination.
  */
 data class Destination(

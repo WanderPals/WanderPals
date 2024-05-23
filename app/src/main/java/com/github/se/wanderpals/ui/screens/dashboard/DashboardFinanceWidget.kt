@@ -75,88 +75,84 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
             modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
               // Finance Details, Left part of the widget
-              Column(
-                  modifier =
-                      Modifier.padding(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp)
-                          .width(IntrinsicSize.Max)) {
-                    // Top part of the texts
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()) {
-                          Row(
-                              verticalAlignment = Alignment.CenterVertically,
-                              horizontalArrangement = Arrangement.Start,
-                              modifier =
-                                  Modifier.clip(RoundedCornerShape(4.dp))
-                                      .background(MaterialTheme.colorScheme.primaryContainer)
-                                      .padding(horizontal = 8.dp, vertical = 4.dp)) {
-                                Icon(
-                                    Icons.Default.ShoppingCart,
-                                    contentDescription = "Finance Icon",
-                                    modifier = Modifier.size(16.dp).testTag("financeIcon"),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                                Text(
-                                    text = "Finance",
-                                    modifier = Modifier.testTag("financeTitle"),
-                                    style =
-                                        TextStyle(
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            fontWeight = FontWeight.Bold))
-                              }
+              Column(modifier = Modifier.padding(8.dp).width(IntrinsicSize.Max)) {
+                // Top part of the texts
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()) {
+                      Row(
+                          verticalAlignment = Alignment.CenterVertically,
+                          horizontalArrangement = Arrangement.Start,
+                          modifier =
+                              Modifier.clip(RoundedCornerShape(4.dp))
+                                  .background(MaterialTheme.colorScheme.primaryContainer)
+                                  .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                            Icon(
+                                Icons.Default.ShoppingCart,
+                                contentDescription = "Finance Icon",
+                                modifier = Modifier.size(16.dp).testTag("financeIcon"),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Text(
+                                text = "Finance",
+                                modifier = Modifier.testTag("financeTitle"),
+                                style =
+                                    TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        fontWeight = FontWeight.Bold))
+                          }
 
-                          Spacer(modifier = Modifier.padding(4.dp))
+                      Spacer(modifier = Modifier.padding(4.dp))
 
-                          Text(
-                              text =
-                                  "Total: ${String.format(Locale.US,"%.02f", expenses.sumOf { it.amount })} " +
-                                      currencyCode,
-                              modifier =
-                                  Modifier.testTag("totalAmount")
-                                      .clip(RoundedCornerShape(4.dp))
-                                      .background(MaterialTheme.colorScheme.surface)
-                                      .padding(horizontal = 8.dp, vertical = 4.dp),
-                              style =
-                                  TextStyle(
-                                      color = MaterialTheme.colorScheme.primary,
-                                      fontWeight = FontWeight.Bold))
-                        }
+                      Text(
+                          text =
+                              "Total: ${String.format(Locale.US,"%.02f", expenses.sumOf { it.amount })} " +
+                                  currencyCode,
+                          modifier =
+                              Modifier.testTag("totalAmount")
+                                  .clip(RoundedCornerShape(4.dp))
+                                  .background(MaterialTheme.colorScheme.surface)
+                                  .padding(horizontal = 8.dp, vertical = 4.dp),
+                          style =
+                              TextStyle(
+                                  color = MaterialTheme.colorScheme.primary,
+                                  fontWeight = FontWeight.Bold))
+                    }
 
-                    Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.padding(4.dp))
 
-                    // Latest expenses
-                    Box(
-                        modifier =
-                            Modifier.clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.surface)) {
-                          if (expenses.isEmpty()) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier =
-                                    Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
-                                  Text(
-                                      text = "No expenses yet.",
-                                      modifier = Modifier.testTag("noExpenses"),
-                                      style = TextStyle(color = MaterialTheme.colorScheme.primary),
-                                  )
-                                }
-                          } else {
-                            Column {
-                              ExpenseItem(expense = sortedExpenses[0], currencyCode = currencyCode)
-                              HorizontalDivider(
-                                  color = MaterialTheme.colorScheme.surfaceVariant,
-                                  thickness = 1.dp,
-                                  modifier = Modifier.padding(horizontal = 8.dp))
-                              if (expenses.size > 1) {
-                                ExpenseItem(
-                                    expense = sortedExpenses[1], currencyCode = currencyCode)
-                              } else {
-                                Box(modifier = Modifier.fillMaxSize())
-                              }
+                // Latest expenses
+                Box(
+                    modifier =
+                        Modifier.clip(RoundedCornerShape(4.dp))
+                            .background(MaterialTheme.colorScheme.surface)) {
+                      if (expenses.isEmpty()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier =
+                                Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
+                              Text(
+                                  text = "No expenses yet.",
+                                  modifier = Modifier.testTag("noExpenses"),
+                                  style = TextStyle(color = MaterialTheme.colorScheme.primary),
+                              )
                             }
+                      } else {
+                        Column {
+                          ExpenseItem(expense = sortedExpenses[0], currencyCode = currencyCode)
+                          HorizontalDivider(
+                              color = MaterialTheme.colorScheme.surfaceVariant,
+                              thickness = 1.dp,
+                              modifier = Modifier.padding(horizontal = 8.dp))
+                          if (expenses.size > 1) {
+                            ExpenseItem(expense = sortedExpenses[1], currencyCode = currencyCode)
+                          } else {
+                            Box(modifier = Modifier.fillMaxSize())
                           }
                         }
-                  }
+                      }
+                    }
+              }
 
               // Finance Pie Chart
               Box(
