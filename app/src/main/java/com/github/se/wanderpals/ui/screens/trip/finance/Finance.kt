@@ -130,7 +130,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
                 currencySymbol = tripCurrency.symbol)
           }
           FinanceOption.DEBTS -> {
-            Box(modifier = Modifier.padding(innerPadding)) {
+            Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
               HorizontalDivider()
               Spacer(modifier = Modifier.height(10.dp))
               DebtContent(
