@@ -248,9 +248,8 @@ fun OverviewTrip(
                               .padding(top = 4.dp)
                               .testTag(
                                   "startDate" +
-                                      trip
-                                          .tripId), // the padding is for having the text on the
-                                                    // same
+                                      trip.tripId), // the padding is for having the text on the
+                      // same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
@@ -272,9 +271,8 @@ fun OverviewTrip(
                               .padding(top = 4.dp)
                               .testTag(
                                   "endDate" +
-                                      trip
-                                          .tripId), // the padding is for having the text on the
-                                                    // same
+                                      trip.tripId), // the padding is for having the text on the
+                      // same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
