@@ -15,6 +15,7 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,7 +36,6 @@ import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.default_profile_photo
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.theme.onSurfaceVariantLight
 import com.google.firebase.auth.FirebaseAuth
 
 // Constant for empty search text
@@ -110,7 +110,7 @@ fun OverviewTopBar(
                       imageVector = Icons.Default.Clear,
                       contentDescription = Icons.Default.Clear.name,
                       modifier = Modifier.size(24.dp),
-                      tint = onSurfaceVariantLight)
+                      tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
           } else {
             AsyncImage(
@@ -120,7 +120,7 @@ fun OverviewTopBar(
                 modifier =
                     Modifier.size(34.dp)
                         .clip(CircleShape)
-                        .border(3.dp, onSurfaceVariantLight, CircleShape)
+                        .border(1.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
                         .clickable { logout = true }
                         .testTag("profilePhoto"))
           }
@@ -130,7 +130,7 @@ fun OverviewTopBar(
               imageVector = Icons.Default.Search,
               contentDescription = Icons.Default.Search.name,
               modifier = Modifier.size(24.dp),
-              tint = onSurfaceVariantLight)
+              tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }) {}
   }
 }

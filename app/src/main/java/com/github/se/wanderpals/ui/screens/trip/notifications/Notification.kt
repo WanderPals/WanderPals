@@ -115,7 +115,7 @@ fun Notification(
         modifier =
             Modifier.fillMaxWidth().height(100.dp).padding(horizontal = 16.dp, vertical = 22.dp),
         shape = RoundedCornerShape(70.dp),
-        color = Color(0xFFA5B2C2)) {
+        color = MaterialTheme.colorScheme.surfaceVariant) {
           Row(
               modifier = Modifier.fillMaxSize(),
               horizontalArrangement = Arrangement.Center,
@@ -126,15 +126,18 @@ fun Notification(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor =
-                                if (notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
-                            contentColor = Color.White)) {
+                                if (notificationSelected) MaterialTheme.colorScheme.primary
+                                else Color.Transparent)) {
                       Text(
                           text = "Notifications",
                           style =
                               MaterialTheme.typography.bodyLarge.copy(
                                   fontWeight =
                                       if (notificationSelected) FontWeight.Bold
-                                      else FontWeight.Normal))
+                                      else FontWeight.Normal),
+                          color =
+                              if (notificationSelected) MaterialTheme.colorScheme.onPrimary
+                              else MaterialTheme.colorScheme.onSurface)
                     }
                 Button(
                     modifier = Modifier.fillMaxHeight().weight(1f).testTag("announcementButton"),
@@ -142,7 +145,8 @@ fun Notification(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor =
-                                if (!notificationSelected) Color(0xFF5A7BF0) else Color.Transparent,
+                                if (!notificationSelected) MaterialTheme.colorScheme.primary
+                                else Color.Transparent,
                             contentColor = Color.White)) {
                       Text(
                           text = "Announcements",
@@ -150,12 +154,18 @@ fun Notification(
                               MaterialTheme.typography.bodyLarge.copy(
                                   fontWeight =
                                       if (!notificationSelected) FontWeight.Bold
-                                      else FontWeight.Normal))
+                                      else FontWeight.Normal),
+                          color =
+                              if (!notificationSelected) MaterialTheme.colorScheme.onPrimary
+                              else MaterialTheme.colorScheme.onSurface)
                     }
               }
         }
 
-    HorizontalDivider(color = Color.Black, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+    HorizontalDivider(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        thickness = 2.dp,
+        modifier = Modifier.fillMaxWidth())
 
     val itemsList = if (notificationSelected) notificationsList else announcementList
 
@@ -228,7 +238,9 @@ fun Notification(
                     }
                   }
                   HorizontalDivider(
-                      color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+                      color = MaterialTheme.colorScheme.surfaceVariant,
+                      thickness = 1.dp,
+                      modifier = Modifier.fillMaxWidth())
                 }
               }
             }
@@ -250,7 +262,8 @@ fun Notification(
                     .height(50.dp)
                     .align(Alignment.Center)
                     .testTag("createAnnouncementButton"),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+            colors =
+                ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)) {
               Row(
                   horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                   verticalAlignment = Alignment.CenterVertically,
@@ -258,7 +271,7 @@ fun Notification(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = Icons.Default.Add.name,
-                    tint = Color(0xFF000000),
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(20.dp))
                 Text(
                     text = "Make an announcement",
@@ -266,9 +279,9 @@ fun Notification(
                         TextStyle(
                             fontSize = 18.sp,
                             fontWeight = FontWeight(500),
-                            color = Color(0xFF000000),
-                            textAlign = TextAlign.Center,
-                        ))
+                            color = MaterialTheme.colorScheme.onPrimary),
+                    textAlign = TextAlign.Center,
+                )
               }
             }
       }
