@@ -224,12 +224,13 @@ fun OverviewTrip(
                         .padding(
                             top = 12.dp,
                             start = 16.dp,
-                            end = 16.dp) // Ensure padding for visual spacing
+                            end = 16.dp) ,
+                // Ensure padding for visual spacing
                 ) {
                   // Trip title
                   Text(
                       text = trip.title,
-                      modifier = Modifier.height(24.dp),
+                      modifier = Modifier.fillMaxWidth().weight(1f).height(24.dp),
                       style =
                           TextStyle(
                               fontSize = 18.sp,
@@ -242,7 +243,7 @@ fun OverviewTrip(
                       overflow = TextOverflow.Ellipsis,
                       maxLines = 1)
 
-                  Spacer(Modifier.weight(1f))
+                  Spacer(Modifier.weight(0.1f))
 
                   // Start date
                   Text(
