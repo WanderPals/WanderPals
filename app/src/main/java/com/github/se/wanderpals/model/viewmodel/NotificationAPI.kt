@@ -26,7 +26,7 @@ open class NotificationAPI : ViewModel() {
 
   private val api: NotificationInterface =
       Retrofit.Builder()
-          .baseUrl("http://128.179.179.77:8080/")
+          .baseUrl("http://wanderpals.duckdns.org:8080/")
           .addConverterFactory(GsonConverterFactory.create())
           .client(clientBuilder.build())
           .build()

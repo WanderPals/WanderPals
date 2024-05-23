@@ -303,11 +303,8 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
-                  if (viewModelAPI.state) {
-                    viewModelAPI.sendNotification(
-                        listOf(SessionManager.getNotificationToken()), "hello2")
-                    viewModelAPI.state = false
-                  }
+                  viewModelAPI.sendNotification(
+                      listOf(SessionManager.getNotificationToken()), "hello2")
 
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
