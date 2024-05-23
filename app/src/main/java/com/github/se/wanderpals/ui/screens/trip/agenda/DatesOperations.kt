@@ -35,16 +35,20 @@ data class CalendarUiState(
     val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
   }
 
-  /**
-   * Enum class representing the status of the stop addition.
-   *
-   * @property ADDED Suggestion was added to the trip, it is a stop of the trip now.
-   * @property NONE Suggestion has not been added, it is still a suggestion of the trip.
-   */
-  enum class StopStatus {
-    ADDED,
-    NONE
-  }
+    /**
+     * Enum class representing the status of the stop addition.
+     *
+     * @property ADDED Suggestion was added to the trip, it is a stop of the trip now.
+     * @property NONE Suggestion has not been added, it is still a suggestion of the trip.
+     * @property COMING_SOON Stop is the next event of the current stop of the trip.
+     * @property PAST Stop is a past event of the current stop of the trip.
+     */
+    enum class StopStatus {
+        ADDED,
+        NONE,
+        COMING_SOON,
+        PAST
+    }
 
   /**
    * Data class representing a single date in the calendar. Includes information about the day of
