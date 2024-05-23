@@ -109,6 +109,20 @@ fun Context.sendTripCodeIntent(tripId: String, address: String) {
 }
 
 /**
+ * Enum class representing the state of the currently selected icon button in the UI.
+ *
+ * This enum is used to track which icon button is currently selected or pressed
+ * in the `OverviewTrip` composable function. It helps manage the visual feedback
+ * and actions associated with each button.
+ */
+private enum class SelectedIconButton {
+    NONE,
+    SEND,
+    SHARE,
+    DOCUMENT
+}
+
+/**
  * Composable function that represents an overview of a trip. Displays basic trip information such
  * as title, start date, and end date.
  *
@@ -122,15 +136,16 @@ fun OverviewTrip(
     overviewViewModel: OverviewViewModel
 ) {
 
+
   // Date pattern for formatting start and end dates
   val datePattern = "dd/MM/yyyy"
 
   // Local context
   val context = LocalContext.current
 
-  // Mutable state to check if the icon button for sharing the trip is selected
-  val isSelected = remember { mutableStateOf(false) }
-  val isEmailSelected = remember { mutableStateOf(false) }
+  // Mutable state to check which button is selected
+  val selectedIconButton = remember { mutableStateOf(SelectedIconButton.NONE) }
+
 
   // Mutable state to check if the dialog is open
   var dialogIsOpen by remember { mutableStateOf(false) }
@@ -145,19 +160,13 @@ fun OverviewTrip(
           onResult = { uri -> selectedImagesLocal = uri })
 
   // Use of a launch effect to reset the value of isSelected to false after 100ms
-  LaunchedEffect(isSelected.value) {
-    if (isSelected.value) {
+  LaunchedEffect(selectedIconButton.value) {
+    if (selectedIconButton.value != SelectedIconButton.NONE) {
       delay(100)
-      isSelected.value = false
+      selectedIconButton.value = SelectedIconButton.NONE
     }
   }
 
-  LaunchedEffect(isEmailSelected.value) {
-    if (isEmailSelected.value) {
-      delay(100)
-      isEmailSelected.value = false
-    }
-  }
 
   if (dialogIsOpenEmail) {
     DialogHandlerEmail(
@@ -281,14 +290,14 @@ fun OverviewTrip(
                         .padding(start = 16.dp, end = 16.dp,bottom = 16.dp)) {
                   Spacer(Modifier.weight(0.9f)) // Pushes the icon to the end
 
-                  // Share trip code button
+                  // Send trip code button
                   IconButton(
                       modifier =
                           Modifier.width(24.dp)
                               .height(28.dp)
                               .testTag("sendTripButton" + trip.tripId),
                       onClick = {
-                        isEmailSelected.value = true
+                        selectedIconButton.value = SelectedIconButton.SEND
                         dialogIsOpenEmail = true
                       }) {
                         Icon(
@@ -297,7 +306,7 @@ fun OverviewTrip(
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier =
                                 Modifier.background(
-                                    if (isEmailSelected.value) Color.LightGray
+                                    if (selectedIconButton.value == SelectedIconButton.SEND) Color.LightGray
                                     else Color.Transparent))
                       }
 
@@ -310,7 +319,7 @@ fun OverviewTrip(
                               .height(28.dp)
                               .testTag("shareTripButton" + trip.tripId),
                       onClick = {
-                        isSelected.value = true
+                        selectedIconButton.value = SelectedIconButton.SHARE
                         context.shareTripCodeIntent(trip.tripId)
                       }) {
                         Icon(
@@ -319,11 +328,17 @@ fun OverviewTrip(
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier =
                                 Modifier.background(
-                                    if (isSelected.value) Color.LightGray else Color.Transparent))
+                                    if (selectedIconButton.value == SelectedIconButton.SHARE)
+                                        Color.LightGray
+                                    else Color.Transparent)
+                        )
                       }
                   Spacer(Modifier.width(10.dp))
                   IconButton(
-                      onClick = { displayedTheBoxSelector = true },
+                      onClick = {
+                          selectedIconButton.value = SelectedIconButton.DOCUMENT
+                          displayedTheBoxSelector = true
+                         },
                       modifier = Modifier.width(24.dp).height(28.dp)) {
                         Icon(
                             imageVector = Icons.Default.Edit,
@@ -331,7 +346,10 @@ fun OverviewTrip(
                             tint = MaterialTheme.colorScheme.onSecondaryContainer,
                             modifier =
                                 Modifier.background(
-                                    if (isSelected.value) Color.LightGray else Color.Transparent))
+                                    if (selectedIconButton.value == SelectedIconButton.DOCUMENT)
+                                        Color.LightGray
+                                    else Color.Transparent)
+                        )
                       }
                 }
           }
