@@ -37,7 +37,8 @@ class AgendaViewModelTest {
 
   /**
    * Test the loadStopsInfo method of the AgendaViewModel class to ensure that the stopsInfo state
-   * is updated correctly. The method should fetch the stops for the trip and update the stopsInfo.
+   * is updated correctly to PAST. The method should fetch the stops for the trip and update the
+   * stopsInfo.
    */
   @Test
   fun `loadStopsInfo updates stopsInfo state`() = runBlockingTest {
@@ -83,8 +84,8 @@ class AgendaViewModelTest {
 
     // Check the resulting state
     assertEquals(2, viewModel._stopsInfo.value.size)
-    assertEquals(CalendarUiState.StopStatus.CURRENT, viewModel._stopsInfo.value[mockStops[0].date])
-    assertEquals(CalendarUiState.StopStatus.CURRENT, viewModel._stopsInfo.value[mockStops[1].date])
+    assertEquals(CalendarUiState.StopStatus.PAST, viewModel._stopsInfo.value[mockStops[0].date])
+    assertEquals(CalendarUiState.StopStatus.PAST, viewModel._stopsInfo.value[mockStops[1].date])
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)

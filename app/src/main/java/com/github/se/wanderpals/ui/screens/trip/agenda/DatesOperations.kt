@@ -10,6 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.github.se.wanderpals.model.data.Trip
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
@@ -31,28 +32,30 @@ import java.util.Locale
 data class CalendarUiState(
     val yearMonth: YearMonth,
     val dates: List<Date>,
-    val selectedDate: LocalDate? = LocalDate.now() // By default selected day is today
+    val selectedDate: LocalDate? = LocalDate.now(), // By default selected day is today
+    val trip: Trip? = null
 ) {
   companion object {
     val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
   }
 
   /**
-   * Enum class representing the status of the stop addition.
+   * Enum class representing the status of a stop in the trip.
    *
-   * @property CURRENT Suggestion was added to the trip, it is a stop of the trip of the current
-   *   day.
-   * @property NONE Suggestion has not been added, it is still a suggestion of the trip.
-   * @property COMING_SOON Suggestion was added to the trip, is is a stop in the following days of
-   *   the current day of the trip.
-   * @property PAST Suggestion was added to the trip, it is a stop of the trip of days before the
-   *   current day of the trip.
+   * @property CURRENT Suggestion was transformed into a stop of the trip, it is a stop of the trip
+   *   of the current day.
+   * @property COMING_SOON Suggestion was transformed into a stop of the trip, is is a stop in the
+   *   following days of the current day of the trip.
+   * @property PAST Suggestion was transformed into a stop of the trip, it is a stop of the trip of
+   *   days before the current day of the trip.
+   * @property NONE Suggestion has not been transformed into a stop of the trip yet, it is still a
+   *   suggestion of the trip.
    */
   enum class StopStatus {
     CURRENT,
-    NONE,
     COMING_SOON,
-    PAST
+    PAST,
+    NONE
   }
 
   /**
