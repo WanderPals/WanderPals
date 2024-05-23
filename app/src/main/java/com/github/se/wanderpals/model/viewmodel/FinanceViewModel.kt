@@ -8,14 +8,13 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
+import java.time.LocalDate
 import java.util.Currency
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import okhttp3.internal.wait
-import java.time.LocalDate
 
 /**
  * ViewModel for managing the financial data of a trip.
@@ -51,10 +50,10 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   open val tripCurrency = _tripCurrency.asStateFlow()
 
   private val _settleDebtData = MutableStateFlow(Pair(User(), 0.0))
-    open val settleDebtData = _settleDebtData.asStateFlow()
+  open val settleDebtData = _settleDebtData.asStateFlow()
 
-    private val _showSettleDebtDialog = MutableStateFlow(false)
-    open val showSettleDebtDialog = _showSettleDebtDialog.asStateFlow()
+  private val _showSettleDebtDialog = MutableStateFlow(false)
+  open val showSettleDebtDialog = _showSettleDebtDialog.asStateFlow()
 
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
@@ -80,9 +79,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
    * @param expense The Expense object to add.
    */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking {
-      tripsRepository.addExpenseToTrip(tripId, expense)
-    }
+    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
     viewModelScope.launch {
       val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
       NotificationsManager.addExpenseNotification(tripId, newExpense)
@@ -138,24 +135,23 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   }
 
   open fun setSettleDebt(receiver: User, amount: Double) {
-      _settleDebtData.value = Pair(receiver, amount)
+    _settleDebtData.value = Pair(receiver, amount)
   }
 
-  open fun settleDebt(userId : String, userName : String)
-  {
+  open fun settleDebt(userId: String, userName: String) {
     _isLoading.value = true
     val (sender, amount) = _settleDebtData.value
-    val expense = Expense(
-      expenseId = "",
-      title = "Debt settlement : ${sender.name} -> " + userName,
-      amount = amount,
-      category = Category.OTHER,
-      userId = sender.userId,
-      userName = sender.name,
-      participantsIds = listOf(userId),
-      names = listOf(userName),
-      localDate = LocalDate.now()
-    )
+    val expense =
+        Expense(
+            expenseId = "",
+            title = "Debt settlement : ${sender.name} -> " + userName,
+            amount = amount,
+            category = Category.OTHER,
+            userId = sender.userId,
+            userName = sender.name,
+            participantsIds = listOf(userId),
+            names = listOf(userName),
+            localDate = LocalDate.now())
     addExpense(tripId, expense)
     setShowSettleDebtDialogState(false)
     _isLoading.value = false
