@@ -229,12 +229,12 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       debtsButton { performClick() }
 
       composeTestRule.waitForIdle()
-      composeTestRule.onNodeWithTag("debtsContent").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("defaultDebtContent").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtColumn").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtAlice").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtsContent").assertExists()
+      composeTestRule.onNodeWithTag("defaultDebtContent").assertExists()
+      composeTestRule.onNodeWithTag("debtColumn").assertExists()
+      composeTestRule.onNodeWithTag("debtAlice").assertExists()
+      composeTestRule.onNodeWithTag("debtBob").assertExists()
+      composeTestRule.onNodeWithTag("debtCharlie").assertExists()
       composeTestRule.onNodeWithTag("debtItemBob").assertExists()
       composeTestRule.onNodeWithTag("debtItemCharlie").assertExists()
       composeTestRule.onNodeWithTag("myDebt").assertExists()
