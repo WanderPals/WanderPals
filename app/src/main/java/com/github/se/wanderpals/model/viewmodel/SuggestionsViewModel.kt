@@ -164,12 +164,12 @@ open class SuggestionsViewModel(
   open fun updateSuggestionCommentUsername() {
     viewModelScope.launch {
       for (suggestion in _state.value) {
-        suggestion.comments.forEach { it ->
-          val userName = suggestionRepository?.getUserFromTrip(tripId, it.userId)!!.name
-          if (userName != it.userName) {
-            val updatedComment = it.copy(userName = userName)
+        suggestion.comments.forEach { comment ->
+          val userName = suggestionRepository?.getUserFromTrip(tripId, comment.userId)!!.name
+          if (userName != comment.userName) {
+            val updatedComment = comment.copy(userName = userName)
             val updatedSuggestion =
-                suggestion.copy(comments = suggestion.comments - it + updatedComment)
+                suggestion.copy(comments = suggestion.comments - comment + updatedComment)
             suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
             _state.value =
                 _state.value.map {
