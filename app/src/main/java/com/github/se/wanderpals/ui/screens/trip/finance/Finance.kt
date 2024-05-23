@@ -70,8 +70,8 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
   val tripCurrency by financeViewModel.tripCurrency.collectAsState()
 
   LaunchedEffect(Unit) {
-    financeViewModel.updateStateLists()
     financeViewModel.loadMembers(navigationActions.variables.currentTrip)
+    financeViewModel.updateStateLists()
   }
 
   Scaffold(
