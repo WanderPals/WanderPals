@@ -132,6 +132,7 @@ class SuggestionsViewModelTest {
 
     coEvery { mockTripsRepository.addStopToTrip(any(), any()) } returns true
     coEvery { mockTripsRepository.removeSuggestionFromTrip(any(), any()) } returns true
+      coEvery { mockTripsRepository.getUserFromTrip(tripId, any()) } returns user1
   }
 
   // Example test for loading suggestions
@@ -178,7 +179,7 @@ class SuggestionsViewModelTest {
         advanceUntilIdle()
 
         // Assert the new comment is included and the comments count is correct
-        assertTrue(viewModel.state.value.first().comments.contains(newComment))
+        assertTrue(viewModel.state.value.first().comments.contains(newComment.copy(userName = "John Doe")))
         assertEquals(suggestion.comments.size + 1, viewModel.state.value.first().comments.size)
       }
 
