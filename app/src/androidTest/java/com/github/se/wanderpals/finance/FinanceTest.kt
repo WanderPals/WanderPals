@@ -229,7 +229,6 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       debtsButton { performClick() }
 
       composeTestRule.waitForIdle()
-      composeTestRule.onNodeWithTag("debtsContent").assertExists()
       composeTestRule.onNodeWithTag("defaultDebtContent").assertExists()
       composeTestRule.onNodeWithTag("debtColumn").assertExists()
       composeTestRule.onNodeWithTag("debtAlice").assertExists()
