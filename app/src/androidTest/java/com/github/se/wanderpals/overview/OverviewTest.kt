@@ -6,6 +6,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
@@ -476,11 +477,13 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
   }
 
   @Test
-  fun tripTitleDoesntOverFlowStartAndEndDate() = run {
+  fun tripTitleDoesNotOverFlowStartAndEndDate() = run {
 
 
-      overviewViewModelTest.state.value.forEach{trip ->
-
+      overviewViewModelTest.state.value.forEachIndexed{index,trip ->
+        composeTestRule
+          .onNodeWithTag("overviewLazyColumn")
+          .performScrollToIndex(index)
 
         composeTestRule.onNodeWithTag("tripTitle${trip.tripId}", useUnmergedTree = true)
           .assertIsDisplayed()

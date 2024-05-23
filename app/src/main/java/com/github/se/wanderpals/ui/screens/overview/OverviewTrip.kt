@@ -346,7 +346,7 @@ fun OverviewTrip(
                           selectedIconButton.value = SelectedIconButton.DOCUMENT
                           displayedTheBoxSelector = true
                          },
-                      modifier = Modifier.width(24.dp).height(28.dp)) {
+                      modifier = Modifier.width(24.dp).height(28.dp).testTag("documentButton")) {
                         Icon(
                             imageVector = Icons.Default.Edit,
                             contentDescription = null,
