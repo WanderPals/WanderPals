@@ -205,7 +205,10 @@ fun OverviewTrip(
           CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
         Box(modifier = Modifier.fillMaxSize()) {
           // Column containing trip information
-          Column(modifier = Modifier.fillMaxSize()) {
+          Column(
+              modifier = Modifier.fillMaxSize(),
+              verticalArrangement = Arrangement.SpaceBetween
+              ) {
             Row(
                 modifier =
                     Modifier.fillMaxWidth()
@@ -275,7 +278,7 @@ fun OverviewTrip(
             Row(
                 modifier =
                     Modifier.fillMaxWidth() // Ensure padding for visual spacing
-                        .padding(start = 16.dp, end = 16.dp)) {
+                        .padding(start = 16.dp, end = 16.dp,bottom = 16.dp)) {
                   Spacer(Modifier.weight(0.9f)) // Pushes the icon to the end
 
                   // Share trip code button
