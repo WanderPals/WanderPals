@@ -134,8 +134,7 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
             Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
               HorizontalDivider()
               Spacer(modifier = Modifier.height(10.dp))
-              DebtContent(
-                  expenses = expenseList, users = users, currencySymbol = tripCurrency.symbol)
+              DebtContent(currencySymbol = tripCurrency.symbol, viewmodel = financeViewModel)
             }
           }
         }

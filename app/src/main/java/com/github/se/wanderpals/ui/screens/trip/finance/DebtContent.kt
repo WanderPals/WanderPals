@@ -13,17 +13,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,7 +41,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
+import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
+import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.navigation.Route
 
 /**
  * Composable function for displaying the list of debts of the trip. It displays the following
@@ -47,7 +59,14 @@ import com.github.se.wanderpals.service.SessionManager
  * @param currencySymbol Symbol of the currency.
  */
 @Composable
-fun DebtContent(expenses: List<Expense>, users: List<User>, currencySymbol: String) {
+fun DebtContent(currencySymbol: String, viewmodel: FinanceViewModel) {
+
+    val showSettleDebtDialog by viewmodel.showSettleDebtDialog.collectAsState()
+    val settleDebtData by viewmodel.settleDebtData.collectAsState()
+    val users by viewmodel.users.collectAsState()
+    val expenses by viewmodel.expenseStateList.collectAsState()
+    val isLoading by viewmodel.isLoading.collectAsState()
+    var settling by remember { mutableStateOf(false) }
 
   // transform a list of Expense to a Map of userId to a double by taking the list of expenses and
   // summing the amount corresponding to each participants
@@ -68,17 +87,71 @@ fun DebtContent(expenses: List<Expense>, users: List<User>, currencySymbol: Stri
 
   Box(
       modifier =
-          Modifier.padding(top = 4.dp, start = 4.dp, end = 4.dp).testTag("defaultDebtContent")) {
-        LazyColumn(modifier = Modifier.fillMaxWidth().testTag("debtColumn")) {
+      Modifier
+          .padding(top = 4.dp, start = 4.dp, end = 4.dp)
+          .testTag("defaultDebtContent")) {
+      if (showSettleDebtDialog) {
+          AlertDialog(
+              onDismissRequest = { viewmodel.setShowSettleDebtDialogState(false) },
+              title = { Text("Confirm Deletion") },
+              text = {
+                  Text(
+                      when (SessionManager.getIsNetworkAvailable()) {
+                          true -> "Do you want to settle the expense with ${settleDebtData.first.name} for ${String.format("%.02f", settleDebtData.second)}?"
+                          false -> "You can't settle this debt because you are offline"
+                      })
+              },
+              confirmButton = {
+                  TextButton(
+                      onClick = {
+                          if (SessionManager.getIsNetworkAvailable()) {
+                              settling = true
+                              viewmodel.settleDebt(SessionManager.getCurrentUser()!!.userId, SessionManager.getCurrentUser()!!.name)
+                          } else {
+                              viewmodel.setShowSettleDebtDialogState(false)
+                          }
+                      },
+                      modifier = Modifier.testTag("confirmSettleDebtButton")) {
+                      Text("Confirm", color = Color.Red)
+                  }
+              },
+              dismissButton = {
+                  TextButton(
+                      onClick = { viewmodel.setShowSettleDebtDialogState(false) },
+                      modifier = Modifier.testTag("cancelSettleDebtButton")) {
+                      Text("Cancel")
+                  }
+              },
+              modifier = Modifier.testTag("settleDebtDialog"))
+      }
+
+      if(isLoading)
+      {
+          Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(
+                  modifier = Modifier
+                      .size(50.dp)
+                      .align(Alignment.Center)
+                      .testTag("loading"))
+          }
+          if(settling) settling = false
+      } else {
+        LazyColumn(modifier = Modifier
+            .fillMaxWidth()
+            .testTag("debtColumn")) {
           item {
             ElevatedCard(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 elevation = CardDefaults.cardElevation(4.dp)) {
                   Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                     Text(
                         text = "Balance Info",
                         modifier =
-                            Modifier.testTag("balanceInfo").padding(top = 12.dp, start = 8.dp),
+                        Modifier
+                            .testTag("balanceInfo")
+                            .padding(top = 12.dp, start = 8.dp),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -98,12 +171,16 @@ fun DebtContent(expenses: List<Expense>, users: List<User>, currencySymbol: Stri
           }
           item {
             ElevatedCard(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 elevation = CardDefaults.cardElevation(4.dp)) {
                   Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                     Text(
                         text = "Fix debt",
-                        modifier = Modifier.testTag("myDebt").padding(top = 12.dp, start = 8.dp),
+                        modifier = Modifier
+                            .testTag("myDebt")
+                            .padding(top = 12.dp, start = 8.dp),
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -114,24 +191,39 @@ fun DebtContent(expenses: List<Expense>, users: List<User>, currencySymbol: Stri
                           .forEach { key ->
                             if (debt[SessionManager.getCurrentUser()!!.userId]!![key.userId]!! !=
                                 0.0) {
+                                val amount = debt[SessionManager.getCurrentUser()!!.userId]!![
+                                    key.userId]!!
                               DebtItem(
-                                  amount =
-                                      debt[SessionManager.getCurrentUser()!!.userId]!![
-                                          key.userId]!!,
+                                  amount = amount,
                                   user = SessionManager.getCurrentUser()!!.name,
                                   user2 = key.name,
-                                  isClickable = true,
-                                  onClick = {},
+                                  isClickable = amount > 0 && !settling,
+                                  onClick = {
+                                      viewmodel.setShowSettleDebtDialogState(true)
+                                      viewmodel.setSettleDebt(key, debt[SessionManager.getCurrentUser()!!.userId]!![key.userId]!!)},
                                   currencySymbol = currencySymbol)
                               HorizontalDivider()
                             }
                           }
+                        if(users.filter { it.userId != SessionManager.getCurrentUser()!!.userId }.all { debt[SessionManager.getCurrentUser()!!.userId]!![it.userId]!! == 0.0 }) {
+                            Text(
+                                text = "No debt to settle",
+                                modifier = Modifier
+                                    .padding(32.dp)
+                                    .testTag("noDebtToSettle")
+                                    .fillMaxWidth(),
+                                color = MaterialTheme.colorScheme.tertiary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
                     }
                   }
                 }
           }
         }
       }
+  }
 }
 
 /**
@@ -164,21 +256,29 @@ fun DebtItem(
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       modifier =
-          Modifier.fillMaxWidth()
-              .background(Color.Transparent)
-              .clickable(enabled = isClickable) { onClick() }
-              .padding(horizontal = 8.dp, vertical = 4.dp)
-              .testTag("debtItem$user2")
-              .height(IntrinsicSize.Max)) {
+      Modifier
+          .fillMaxWidth()
+          .background(Color.Transparent)
+          .clickable(enabled = isClickable) { onClick() }
+          .padding(horizontal = 8.dp, vertical = 4.dp)
+          .testTag("debtItem$user2")
+          .height(IntrinsicSize.Max)) {
         Box(
             contentAlignment = Alignment.CenterStart,
-            modifier = Modifier.padding(8.dp).fillMaxSize().weight(4f)) {
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+                .weight(4f)) {
               Column {
-                Text(text = user2, modifier = Modifier.padding(2.dp).testTag("nameStart$user2"))
+                Text(text = user2, modifier = Modifier
+                    .padding(2.dp)
+                    .testTag("nameStart$user2"))
                 if (amount > 0) {
                   Text(
                       text = money,
-                      modifier = Modifier.padding(2.dp).testTag("moneyStart$user2"),
+                      modifier = Modifier
+                          .padding(2.dp)
+                          .testTag("moneyStart$user2"),
                       color = MaterialTheme.colorScheme.tertiary)
                 }
               }
@@ -186,7 +286,10 @@ fun DebtItem(
 
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(8.dp).fillMaxSize().weight(1f)) {
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+                .weight(1f)) {
               if (amount < 0)
                   Icon(
                       Icons.AutoMirrored.Filled.ArrowBack,
@@ -203,19 +306,28 @@ fun DebtItem(
 
         Box(
             contentAlignment = Alignment.CenterEnd,
-            modifier = Modifier.padding(8.dp).fillMaxSize().weight(4f)) {
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+                .weight(4f)) {
               Column {
                 Text(
                     text = user,
-                    modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("nameEnd$user$user2"),
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .fillMaxWidth()
+                        .testTag("nameEnd$user$user2"),
                     textAlign = TextAlign.End)
-                if (amount < 0) {
+
                   Text(
-                      text = money,
-                      modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("moneyEnd$user2"),
+                      text = if (amount < 0) money else "click to settle debt",
+                      modifier = Modifier
+                          .padding(2.dp)
+                          .fillMaxWidth()
+                          .testTag("moneyEnd$user2"),
                       textAlign = TextAlign.End,
                       color = MaterialTheme.colorScheme.tertiary)
-                }
+
               }
             }
       }
@@ -236,30 +348,43 @@ fun DebtInfo(amount: Double, user: String, currencySymbol: String) {
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       modifier =
-          Modifier.fillMaxWidth()
-              // red color for negative amount, green color for positive amount, transparent for 0,
-              // pale color
-              .background(
-                  if (amount <= 0) if (amount == 0.0) Color.Transparent else Color(0x80f7a8a8)
-                  else Color(0x80a8f7a8))
-              .padding(horizontal = 8.dp, vertical = 4.dp)
-              .testTag("debt$user")
-              .height(IntrinsicSize.Max)) {
+      Modifier
+          .fillMaxWidth()
+          // red color for negative amount, green color for positive amount, transparent for 0,
+          // pale color
+          .background(
+              if (amount <= 0) if (amount == 0.0) Color.Transparent else Color(0x80f7a8a8)
+              else Color(0x80a8f7a8)
+          )
+          .padding(horizontal = 8.dp, vertical = 4.dp)
+          .testTag("debt$user")
+          .height(IntrinsicSize.Max)) {
         Box(
             contentAlignment = Alignment.CenterStart,
-            modifier = Modifier.padding(8.dp).fillMaxSize().weight(4f)) {
-              Column { Text(text = user, modifier = Modifier.padding(2.dp).testTag("start$user")) }
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+                .weight(4f)) {
+              Column { Text(text = user, modifier = Modifier
+                  .padding(2.dp)
+                  .testTag("start$user")) }
             }
 
         Box(
             contentAlignment = Alignment.CenterEnd,
-            modifier = Modifier.padding(8.dp).fillMaxSize().weight(4f)) {
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize()
+                .weight(4f)) {
               Column {
                 Text(
                     text =
                         if (amount >= 0) "+${String.format("%.02f", amount)} $currencySymbol"
                         else "${String.format("%.02f", amount)} $currencySymbol",
-                    modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("end$user"),
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .fillMaxWidth()
+                        .testTag("end$user"),
                     textAlign = TextAlign.End)
               }
             }
