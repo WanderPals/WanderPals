@@ -10,7 +10,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Trip
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Year
@@ -26,14 +25,11 @@ import java.util.Locale
  * @property yearMonth The current year and month being displayed in the calendar.
  * @property dates A list of `Date` objects representing the dates in the current month.
  * @property selectedDate An optional `LocalDate` representing the currently selected date, if any.
- * @property trip An optional `Trip` object representing the trip associated with the calendar. This
- *   is used to indicating the startDate and endDate of the trip.
  */
 data class CalendarUiState(
     val yearMonth: YearMonth,
     val dates: List<Date>,
-    val selectedDate: LocalDate? = LocalDate.now(), // By default selected day is today
-    val trip: Trip? = null
+    val selectedDate: LocalDate? = LocalDate.now() // By default selected day is today
 ) {
   companion object {
     val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
