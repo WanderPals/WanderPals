@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.overview
 
 import android.content.Intent
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -473,4 +474,23 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
       overviewScreen { assertIsDisplayed() }
     }
   }
+
+  @Test
+  fun tripTitleDoesntOverFlowStartAndEndDate() = run {
+
+
+      overviewViewModelTest.state.value.forEach{trip ->
+
+
+        composeTestRule.onNodeWithTag("tripTitle${trip.tripId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("startDate${trip.tripId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("endDate${trip.tripId}", useUnmergedTree = true)
+          .assertIsDisplayed()
+      }
+  }
+
 }

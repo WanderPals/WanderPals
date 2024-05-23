@@ -230,7 +230,11 @@ fun OverviewTrip(
                   // Trip title
                   Text(
                       text = trip.title,
-                      modifier = Modifier.fillMaxWidth().weight(1f).height(24.dp),
+                      modifier = Modifier
+                          .fillMaxWidth()
+                          .weight(1f)
+                          .height(24.dp)
+                          .testTag("tripTitle" + trip.tripId),
                       style =
                           TextStyle(
                               fontSize = 18.sp,
@@ -249,9 +253,10 @@ fun OverviewTrip(
                   Text(
                       text = trip.startDate.format(DateTimeFormatter.ofPattern(datePattern)),
                       modifier =
-                          Modifier.height(24.dp)
-                              .padding(
-                                  top = 4.dp), // the padding is for having the text on the same
+                          Modifier
+                              .height(24.dp)
+                              .padding(top = 4.dp)
+                              .testTag("startDate"+trip.tripId), // the padding is for having the text on the same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
@@ -269,9 +274,10 @@ fun OverviewTrip(
                   Text(
                       text = trip.endDate.format(DateTimeFormatter.ofPattern(datePattern)),
                       modifier =
-                          Modifier.height(24.dp)
-                              .padding(
-                                  top = 4.dp), // the padding is for having the text on the same
+                          Modifier
+                              .height(24.dp)
+                              .padding(top = 4.dp)
+                              .testTag("endDate"+trip.tripId), // the padding is for having the text on the same
                       // line and in the same height as the trip title
                       style =
                           TextStyle(
