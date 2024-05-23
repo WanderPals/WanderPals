@@ -48,7 +48,6 @@ import com.github.se.wanderpals.model.viewmodel.StopItemViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
 import com.github.se.wanderpals.ui.theme.outlineVariantLight
 
 /**

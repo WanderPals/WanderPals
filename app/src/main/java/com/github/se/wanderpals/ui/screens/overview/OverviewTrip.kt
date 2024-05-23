@@ -309,7 +309,7 @@ fun OverviewTrip(
                                 modifier =
                                     Modifier.background(
                                         if (selectedIconButton.value == SelectedIconButton.SEND)
-                                            Color.LightGray
+                                            MaterialTheme.colorScheme.surfaceDim
                                         else Color.Transparent))
                           }
 
@@ -332,7 +332,7 @@ fun OverviewTrip(
                                 modifier =
                                     Modifier.background(
                                         if (selectedIconButton.value == SelectedIconButton.SHARE)
-                                            Color.LightGray
+                                            MaterialTheme.colorScheme.surfaceDim
                                         else Color.Transparent))
                           }
                       Spacer(Modifier.width(10.dp))
@@ -350,7 +350,7 @@ fun OverviewTrip(
                                 modifier =
                                     Modifier.background(
                                         if (selectedIconButton.value == SelectedIconButton.DOCUMENT)
-                                            Color.LightGray
+                                            MaterialTheme.colorScheme.surfaceDim
                                         else Color.Transparent))
                           }
                     }

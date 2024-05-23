@@ -87,7 +87,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
                 }
               },
               modifier = Modifier.testTag("confirmDeleteExpenseButton")) {
-                Text("Confirm", color = Color.Red)
+                Text("Confirm", color = MaterialTheme.colorScheme.error)
               }
         },
         dismissButton = {
@@ -125,91 +125,101 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
 fun ExpenseTopInfo(expense: Expense, currencySymbol: String, onDeleteExpenseClick: () -> Unit) {
   val userIsViewer = SessionManager.getCurrentUser()!!.role == Role.VIEWER
 
-  Surface(color = MaterialTheme.colorScheme.primary, contentColor = Color.White) {
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally) {
-          Row(
-              modifier = Modifier.fillMaxWidth().padding(top = 5.dp, end = 10.dp),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically) {
-                // Go-back button
-                IconButton(
-                    modifier = Modifier.align(Alignment.Top).testTag("expenseInfoBackButton"),
-                    onClick = { navigationActions.goBack() }) {
-                      Icon(
-                          modifier = Modifier.size(35.dp),
-                          imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                          contentDescription = "Back",
-                      )
-                    }
-                // Delete text (clickable)
-                ClickableText(
-                    modifier = Modifier.testTag("deleteTextButton"),
-                    onClick = {
-                      if (!userIsViewer) {
-                        onDeleteExpenseClick()
-                      }
-                    },
-                    text =
-                        AnnotatedString(
-                            text = "DELETE",
-                            spanStyle =
-                                SpanStyle(
-                                    fontSize = 16.sp,
-                                    color = if (userIsViewer) Color.LightGray else Color.White)),
-                )
-              }
+  Surface(
+      color = MaterialTheme.colorScheme.primary,
+      contentColor = MaterialTheme.colorScheme.onPrimary) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
+              Row(
+                  modifier = Modifier.fillMaxWidth().padding(top = 5.dp, end = 10.dp),
+                  horizontalArrangement = Arrangement.SpaceBetween,
+                  verticalAlignment = Alignment.CenterVertically) {
+                    // Go-back button
+                    IconButton(
+                        modifier = Modifier.align(Alignment.Top).testTag("expenseInfoBackButton"),
+                        onClick = { navigationActions.goBack() }) {
+                          Icon(
+                              modifier = Modifier.size(35.dp),
+                              imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                              contentDescription = "Back",
+                              tint = MaterialTheme.colorScheme.onPrimary)
+                        }
+                    // Delete text (clickable)
+                    ClickableText(
+                        modifier = Modifier.testTag("deleteTextButton"),
+                        onClick = {
+                          if (!userIsViewer) {
+                            onDeleteExpenseClick()
+                          }
+                        },
+                        text =
+                            AnnotatedString(
+                                text = "DELETE",
+                                spanStyle =
+                                    SpanStyle(
+                                        fontSize = 16.sp,
+                                        color =
+                                            if (userIsViewer) Color.LightGray
+                                            else MaterialTheme.colorScheme.onPrimary)),
+                    )
+                  }
 
-          // Expense title
-          Text(
-              text = expense.title,
-              style =
-                  MaterialTheme.typography.bodyLarge.copy(
-                      color = Color.White, fontSize = 25.sp, fontWeight = FontWeight.Bold),
-              overflow = TextOverflow.Ellipsis,
-              maxLines = 1)
+              // Expense title
+              Text(
+                  text = expense.title,
+                  style =
+                      MaterialTheme.typography.bodyLarge.copy(
+                          color = MaterialTheme.colorScheme.onPrimary,
+                          fontSize = 25.sp,
+                          fontWeight = FontWeight.Bold),
+                  overflow = TextOverflow.Ellipsis,
+                  maxLines = 1)
 
-          // Expense amount
-          Text(
-              modifier = Modifier.padding(top = 10.dp).testTag("expenseAmount" + expense.expenseId),
-              text = String.format("%.2f $currencySymbol", expense.amount),
-              style =
-                  MaterialTheme.typography.bodyLarge.copy(
-                      color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold))
-          // Username and local date
-          Row(
-              modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
-              horizontalArrangement = Arrangement.SpaceBetween,
-              verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Paid by ${expense.userName}",
-                    style =
-                        MaterialTheme.typography.bodyLarge.copy(
-                            color = Color.White,
-                        ),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1)
-                Text(
-                    modifier = Modifier.padding(horizontal = 10.dp),
-                    text = expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                    style =
-                        MaterialTheme.typography.bodyLarge.copy(
-                            color = Color.White,
-                        ),
-                    maxLines = 1)
-              }
-          Text(
-              modifier = Modifier.padding(bottom = 10.dp).align(Alignment.Start),
-              text = "For ${expense.participantsIds.size} participant(s) :",
-              style =
-                  MaterialTheme.typography.bodyLarge.copy(
-                      color = Color.White, fontWeight = FontWeight.Bold),
-              textAlign = TextAlign.Start)
-        }
-  }
+              // Expense amount
+              Text(
+                  modifier =
+                      Modifier.padding(top = 10.dp).testTag("expenseAmount" + expense.expenseId),
+                  text = String.format("%.2f $currencySymbol", expense.amount),
+                  style =
+                      MaterialTheme.typography.bodyLarge.copy(
+                          color = MaterialTheme.colorScheme.onPrimary,
+                          fontSize = 20.sp,
+                          fontWeight = FontWeight.Bold))
+              // Username and local date
+              Row(
+                  modifier = Modifier.fillMaxWidth().padding(vertical = 15.dp),
+                  horizontalArrangement = Arrangement.SpaceBetween,
+                  verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = "Paid by ${expense.userName}",
+                        style =
+                            MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1)
+                    Text(
+                        modifier = Modifier.padding(horizontal = 10.dp),
+                        text = expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                        style =
+                            MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            ),
+                        maxLines = 1)
+                  }
+              Text(
+                  modifier = Modifier.padding(bottom = 10.dp).align(Alignment.Start),
+                  text = "For ${expense.participantsIds.size} participant(s) :",
+                  style =
+                      MaterialTheme.typography.bodyLarge.copy(
+                          color = MaterialTheme.colorScheme.onPrimary,
+                          fontWeight = FontWeight.Bold),
+                  textAlign = TextAlign.Start)
+            }
+      }
 }
 
 /**
@@ -237,7 +247,10 @@ fun ExpenseParticipantsInfo(expense: Expense, currencySmybol: String) {
               style = MaterialTheme.typography.bodyLarge)
         }
       }
-      HorizontalDivider(color = Color.Gray, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+      HorizontalDivider(
+          color = MaterialTheme.colorScheme.surfaceVariant,
+          thickness = 1.dp,
+          modifier = Modifier.fillMaxWidth())
     }
   }
 }
