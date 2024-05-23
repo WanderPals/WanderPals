@@ -13,13 +13,25 @@ firebaseFirestore = "24.11.0"
 kotlin = "1.8.10"
 coreKtx = "1.12.0"
 kotlinBom = "1.8.0"
+kotlinSerialization = "2.3.0"
 kotlinxCoroutinesCore = "1.7.3"
 kotlinxCoroutinesTest = "1.7.3"
+kotlinxSerializationJson = "1.6.1"
 ktfmt = "0.17.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.6.1"
+ktorClientAndroid = "2.3.0"
+ktorClientCio = "2.3.0"
+ktorClientContentNegotiation = "2.3.0"
+ktorClientCore = "2.3.0"
+ktorClientLogging = "2.3.0"
+ktorGson = "2.3.0"
+ktorSerializationKotlinxJson = "2.3.0"
+ktorClientSerialization = "2.3.0"
+ktorServerCore = "2.3.0"
+ktorServerNetty = "2.3.0"
 mapsCompose = "4.3.3"
 material = "1.11.0"
 composeBom = "2024.04.00"
@@ -30,6 +42,8 @@ kaspresso = "1.5.5"
 mockk = "1.13.7"
 mockkAgent = "1.13.7"
 mockkAndroid = "1.13.7"
+okhttp = "5.0.0-alpha.2"
+okio = "3.8.0"
 retrofit = "2.9.0"
 robolectric = "4.11.1"
 secretsGradlePlugin = "2.0.1"
@@ -43,9 +57,16 @@ androidxCoreKtx = "1.5.0"
 firebaseMessagingKtx = "23.4.1"
 uiDesktop = "1.6.6"
 firebaseStorageKtx = "20.3.0"
+ktor = "2.3.11"
+uiTooling = "1.6.7"
+composePreviewRenderer = "0.0.1-alpha01"
 
 
 [libraries]
+androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "uiTooling" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiTooling" }
+kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlinSerialization" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v220 = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtxVersion" }
@@ -70,6 +91,17 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientCore" }
+ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktorClientLogging" }
+ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorClientSerialization" }
+ktor-gson = { module = "io.ktor:ktor-gson", version.ref = "ktorGson" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktorServerCore" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktorServerNetty" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -91,6 +123,8 @@ kaspresso-compose = { group = "com.kaspersky.android-components", name = "kaspre
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockkAgent" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
@@ -102,6 +136,7 @@ test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "and
 firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 androidx-ui-desktop = { group = "androidx.compose.ui", name = "ui-desktop", version.ref = "uiDesktop" }
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
+compose-preview-renderer = { group = "com.android.tools.compose", name = "compose-preview-renderer", version.ref = "composePreviewRenderer" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

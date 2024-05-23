@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
+import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
@@ -30,7 +31,6 @@ import com.github.se.wanderpals.service.NetworkHelper
 import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
-import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -52,7 +52,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.runBlocking
 
 const val EMPTY_CODE = ""
 
@@ -70,6 +69,8 @@ class MainActivity : ComponentActivity() {
   private val viewModel: MainViewModel by viewModels {
     MainViewModel.MainViewModelFactory(application)
   }
+
+  private val viewModelAPI: NotificationAPI by viewModels()
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -280,9 +281,10 @@ class MainActivity : ComponentActivity() {
 
                   Log.d("MainActivity", "User is signed in")
                   Log.d("token", SessionManager.getNotificationToken())
-                  runBlocking {
+                  /*runBlocking {
                     sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
-                  }
+                  }*/
+
                 }
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
@@ -301,6 +303,12 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
+                  if (viewModelAPI.state) {
+                    viewModelAPI.sendNotification(
+                        listOf(SessionManager.getNotificationToken()), "hello2")
+                    viewModelAPI.state = false
+                  }
+
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
                           factory =
