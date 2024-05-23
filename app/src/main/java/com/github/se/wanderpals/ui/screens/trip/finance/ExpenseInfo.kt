@@ -110,7 +110,7 @@ fun ExpenseInfo(financeViewModel: FinanceViewModel) {
         }
 
         // Display of the list of participant related to the expense
-        ExpenseParticipantsInfo(expense = expense, currencySmybol = tripCurrency.symbol)
+        ExpenseParticipantsInfo(expense = expense, currencySymbol = tripCurrency.symbol)
       }
 }
 
@@ -219,7 +219,7 @@ fun ExpenseTopInfo(expense: Expense, currencySymbol: String, onDeleteExpenseClic
  * @param expense The expense object containing participant information.
  */
 @Composable
-fun ExpenseParticipantsInfo(expense: Expense, currencySmybol: String) {
+fun ExpenseParticipantsInfo(expense: Expense, currencySymbol: String) {
   LazyColumn(modifier = Modifier.fillMaxSize()) {
     items(expense.names) { userName ->
       Box(modifier = Modifier.fillMaxWidth().height(80.dp).padding(horizontal = 15.dp)) {
@@ -233,7 +233,7 @@ fun ExpenseParticipantsInfo(expense: Expense, currencySmybol: String) {
           Text(
               text =
                   String.format(
-                      "%.2f $currencySmybol", expense.amount / expense.participantsIds.size),
+                      "%.2f $currencySymbol", expense.amount / expense.participantsIds.size),
               style = MaterialTheme.typography.bodyLarge)
         }
       }
