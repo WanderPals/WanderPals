@@ -281,7 +281,7 @@ class SuggestionsViewModelTest {
 
         // Modify userLikes to simulate a toggle that reaches majority
         val updatedLikes = suggestion.userLikes + "currentUser"
-        val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+        val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.CURRENT)
         val updatedSuggestion = suggestion.copy(userLikes = updatedLikes, stop = updatedStop)
 
         coEvery { mockTripsRepository.getSuggestionFromTrip(any(), any()) } returns
@@ -303,7 +303,7 @@ class SuggestionsViewModelTest {
                 suggestion.suggestionId)) // Check if added to stops
         coVerify {
           mockTripsRepository.updateSuggestionInTrip(
-              tripId, match { it.stop.stopStatus == CalendarUiState.StopStatus.ADDED })
+              tripId, match { it.stop.stopStatus == CalendarUiState.StopStatus.CURRENT })
         }
       }
 

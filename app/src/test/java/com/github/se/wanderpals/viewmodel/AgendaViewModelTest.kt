@@ -83,8 +83,8 @@ class AgendaViewModelTest {
 
     // Check the resulting state
     assertEquals(2, viewModel._stopsInfo.value.size)
-    assertEquals(CalendarUiState.StopStatus.ADDED, viewModel._stopsInfo.value[mockStops[0].date])
-    assertEquals(CalendarUiState.StopStatus.ADDED, viewModel._stopsInfo.value[mockStops[1].date])
+    assertEquals(CalendarUiState.StopStatus.CURRENT, viewModel._stopsInfo.value[mockStops[0].date])
+    assertEquals(CalendarUiState.StopStatus.CURRENT, viewModel._stopsInfo.value[mockStops[1].date])
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)

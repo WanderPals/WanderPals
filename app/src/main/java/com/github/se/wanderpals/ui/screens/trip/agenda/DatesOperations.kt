@@ -25,6 +25,8 @@ import java.util.Locale
  * @property yearMonth The current year and month being displayed in the calendar.
  * @property dates A list of `Date` objects representing the dates in the current month.
  * @property selectedDate An optional `LocalDate` representing the currently selected date, if any.
+ * @property trip An optional `Trip` object representing the trip associated with the calendar. This
+ *   is used to indicating the startDate and endDate of the trip.
  */
 data class CalendarUiState(
     val yearMonth: YearMonth,
@@ -35,20 +37,23 @@ data class CalendarUiState(
     val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
   }
 
-    /**
-     * Enum class representing the status of the stop addition.
-     *
-     * @property ADDED Suggestion was added to the trip, it is a stop of the trip now.
-     * @property NONE Suggestion has not been added, it is still a suggestion of the trip.
-     * @property COMING_SOON Stop is the next event of the current stop of the trip.
-     * @property PAST Stop is a past event of the current stop of the trip.
-     */
-    enum class StopStatus {
-        ADDED,
-        NONE,
-        COMING_SOON,
-        PAST
-    }
+  /**
+   * Enum class representing the status of the stop addition.
+   *
+   * @property CURRENT Suggestion was added to the trip, it is a stop of the trip of the current
+   *   day.
+   * @property NONE Suggestion has not been added, it is still a suggestion of the trip.
+   * @property COMING_SOON Suggestion was added to the trip, is is a stop in the following days of
+   *   the current day of the trip.
+   * @property PAST Suggestion was added to the trip, it is a stop of the trip of days before the
+   *   current day of the trip.
+   */
+  enum class StopStatus {
+    CURRENT,
+    NONE,
+    COMING_SOON,
+    PAST
+  }
 
   /**
    * Data class representing a single date in the calendar. Includes information about the day of

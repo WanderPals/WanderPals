@@ -70,13 +70,25 @@ open class AgendaViewModel(
     // Fetch all stops related to a specific trip from the repository
     val stops = tripsRepository?.getAllStopsFromTrip(tripId) ?: listOf()
 
+    val today = LocalDate.now()
+
     // Create a map with the date of each stop and mark it as ADDED
     // Continue if the list is not empty
     if (stops.isNotEmpty()) {
+      //      val statusMap =
+      //          stops.associateBy(
+      //              keySelector = { it.date }, valueTransform = { CalendarUiState.StopStatus.ADDED
+      // })
       val statusMap =
-          stops.associateBy(
-              keySelector = { it.date }, valueTransform = { CalendarUiState.StopStatus.ADDED })
-
+          stops.associate { stop ->
+            val status =
+                when {
+                  stop.date.isBefore(today) -> CalendarUiState.StopStatus.PAST
+                  stop.date.isAfter(today) -> CalendarUiState.StopStatus.COMING_SOON
+                  else -> CalendarUiState.StopStatus.CURRENT
+                }
+            stop.date to status
+          }
       _stopsInfo.value = statusMap
     }
   }

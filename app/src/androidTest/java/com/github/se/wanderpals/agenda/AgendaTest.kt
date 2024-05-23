@@ -259,7 +259,7 @@ class AgendaTest {
     val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
 
     // Simulate adding a stop with ADDED status on May 5, 2024
-    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.ADDED)
+    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.CURRENT)
 
     // Set up the environment for the test
     composeTestRule.setContent {
@@ -273,7 +273,7 @@ class AgendaTest {
                       testYearMonth.withMonth(5),
                       year = Year.of(2024),
                       isSelected = false,
-                      stopStatus = CalendarUiState.StopStatus.ADDED)),
+                      stopStatus = CalendarUiState.StopStatus.CURRENT)),
           onPreviousMonthButtonClicked = {},
           onNextMonthButtonClicked = {},
           onDateClickListener = {},
