@@ -23,6 +23,7 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -38,6 +39,7 @@ import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
@@ -458,8 +460,10 @@ fun Map(
                             if (!isTracking) R.drawable.tracking_enabled
                             else R.drawable.tracking_disabled),
                     contentDescription = "Tracking",
-                    modifier = Modifier.size(24.dp))
-              }
+                    modifier = Modifier.size(24.dp),
+                    colorFilter =
+                        ColorFilter.tint(MaterialTheme.colorScheme.onSecondary)) // Tint the image
+          }
 
           Button(
               onClick = {

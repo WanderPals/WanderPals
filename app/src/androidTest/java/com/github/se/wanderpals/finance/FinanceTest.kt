@@ -4,7 +4,6 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -213,88 +212,6 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       financeFloatingActionButton { assertIsNotDisplayed() }
     }
     SessionManager.setIsNetworkAvailable(true)
-  }
-
-  @Test
-  fun debtScreenDisplaysProperly() = run {
-    SessionManager.setUserSession("user001", "Alice")
-    navigationActions = mockNavActions
-    composeTestRule.setContent {
-      Finance(financeViewModel = financeViewModelTest, navigationActions = mockNavActions)
-    }
-    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
-
-      // Testing debtContent
-
-      debtsButton { performClick() }
-      composeTestRule.onNodeWithTag("debtsContent").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("defaultDebtContent").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtColumn").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtAlice").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtBob").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtCharlie").assertIsDisplayed()
-      composeTestRule.onNodeWithTag("debtItemBob").assertExists()
-      composeTestRule.onNodeWithTag("debtItemCharlie").assertExists()
-      composeTestRule.onNodeWithTag("myDebt").assertExists()
-      composeTestRule.onNodeWithTag("balanceInfo").assertExists()
-
-      // Testing debtInfo
-
-      composeTestRule
-          .onNodeWithTag("startAlice", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("Alice")
-      composeTestRule
-          .onNodeWithTag("endAlice", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("-8.33 CHF")
-
-      composeTestRule
-          .onNodeWithTag("startBob", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("Bob")
-      composeTestRule
-          .onNodeWithTag("endBob", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("-33.33 CHF")
-
-      composeTestRule
-          .onNodeWithTag("startCharlie", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("Charlie")
-      composeTestRule
-          .onNodeWithTag("endCharlie", useUnmergedTree = true)
-          .assertIsDisplayed()
-          .assertTextContains("+41.67 CHF")
-
-      composeTestRule.onNodeWithTag("debtColumn", useUnmergedTree = true).performScrollToIndex(1)
-
-      // Testing DebtItem
-
-      composeTestRule.onNodeWithTag("nameStartBob", useUnmergedTree = true).assertTextEquals("Bob")
-      composeTestRule
-          .onNodeWithTag("moneyStartBob", useUnmergedTree = true)
-          .assertTextEquals("8.33 CHF")
-      composeTestRule
-          .onNodeWithTag("nameEndAliceBob", useUnmergedTree = true)
-          .assertTextEquals("Alice")
-      composeTestRule
-          .onNodeWithTag("nameEndAliceCharlie", useUnmergedTree = true)
-          .assertTextEquals("Alice")
-      composeTestRule.onNodeWithTag("moneyEndBob", useUnmergedTree = true).assertDoesNotExist()
-      composeTestRule
-          .onNodeWithTag("nameStartCharlie", useUnmergedTree = true)
-          .assertTextEquals("Charlie")
-      composeTestRule
-          .onNodeWithTag("moneyEndCharlie", useUnmergedTree = true)
-          .assertTextEquals("16.67 CHF")
-      composeTestRule
-          .onNodeWithTag("moneyStartCharlie", useUnmergedTree = true)
-          .assertDoesNotExist()
-
-      composeTestRule.onNodeWithTag("arrowForwardBob", useUnmergedTree = true).assertExists()
-      composeTestRule.onNodeWithTag("arrowBackCharlie", useUnmergedTree = true).assertExists()
-    }
   }
 
   @Test

@@ -73,7 +73,7 @@ fun ExpensesContent(
                   fontSize = 18.sp,
                   lineHeight = 20.sp,
                   fontWeight = FontWeight(500),
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                  color = MaterialTheme.colorScheme.onSurface,
                   textAlign = TextAlign.Center,
               ),
       )
@@ -91,7 +91,9 @@ fun ExpensesContent(
                   Modifier.padding(innerPadding).fillMaxHeight().testTag("expensesContent")) {
                 items(expenseList) { expense ->
                   HorizontalDivider(
-                      color = Color.Gray, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+                      color = MaterialTheme.colorScheme.surfaceVariant,
+                      thickness = 2.dp,
+                      modifier = Modifier.fillMaxWidth())
                   ExpenseItem(expense = expense, currencySymbol = currencySymbol) {
                     onExpenseItemClick(it)
                   }
@@ -131,7 +133,7 @@ fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (E
                       Text(
                           text = expense.title,
                           style = TextStyle(fontSize = 18.sp),
-                          color = Color.Black,
+                          color = MaterialTheme.colorScheme.primary,
                           textAlign = TextAlign.Start,
                           overflow = TextOverflow.Ellipsis,
                           maxLines = 1)
@@ -148,7 +150,7 @@ fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (E
                           style =
                               TextStyle(
                                   fontSize = 14.sp,
-                                  color = Color.Gray,
+                                  color = MaterialTheme.colorScheme.tertiary,
                                   textAlign = TextAlign.Start),
                           overflow = TextOverflow.Ellipsis,
                           maxLines = 1)
@@ -158,7 +160,7 @@ fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (E
                           style =
                               TextStyle(
                                   fontSize = 14.sp,
-                                  color = Color.Gray,
+                                  color = MaterialTheme.colorScheme.secondary,
                                   textAlign = TextAlign.Start))
                     }
 
@@ -171,13 +173,16 @@ fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (E
                       // Expense amount
                       Text(
                           text = ("%.2f $currencySymbol" + "").format(expense.amount),
-                          style = TextStyle(fontSize = 14.sp, color = Color.Gray))
-
+                          style =
+                              TextStyle(
+                                  fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary))
                       // Expense date
                       Text(
                           text =
                               expense.localDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-                          style = TextStyle(fontSize = 14.sp, color = Color.Gray))
+                          style =
+                              TextStyle(
+                                  fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary))
                     }
               }
         }

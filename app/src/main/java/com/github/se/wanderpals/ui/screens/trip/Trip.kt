@@ -5,18 +5,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.BottomAppBarDefaults.containerColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -273,18 +273,30 @@ fun BottomBar(navActions: NavigationActions) {
 
   NavigationBar(
       modifier = Modifier.testTag("bottomNav").height(56.dp),
-      containerColor = NavigationBarDefaults.containerColor,
-      contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor),
+      containerColor = MaterialTheme.colorScheme.secondaryContainer,
+      contentColor = MaterialTheme.colorScheme.onSurface,
       tonalElevation = NavigationBarDefaults.Elevation,
       windowInsets = NavigationBarDefaults.windowInsets,
   ) {
     TRIP_BOTTOM_BAR.forEach { destination ->
+      val isSelected = currentRoute == destination.route
       NavigationBarItem(
           modifier = Modifier.testTag(destination.text).size(56.dp),
-          selected = currentRoute == destination.route,
+          selected = isSelected,
           onClick = { navActions.navigateTo(destination.route) },
-          icon = { Image(imageVector = destination.icon, contentDescription = null) },
-      )
+          icon = {
+            Image(
+                imageVector = if (isSelected) destination.filledIcon else destination.outlinedIcon,
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface))
+          },
+          colors =
+              NavigationBarItemDefaults.colors(
+                  selectedIconColor = MaterialTheme.colorScheme.primary,
+                  indicatorColor = MaterialTheme.colorScheme.inversePrimary,
+                  unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+                  disabledIconColor = MaterialTheme.colorScheme.onSurface,
+              ))
     }
   }
 }
