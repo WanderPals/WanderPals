@@ -3,16 +3,26 @@ package com.github.se.wanderpals.model.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.Response
+import kotlinx.coroutines.Dispatchers
 import java.util.Currency
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
+import org.json.JSONObject
+import java.io.IOException
+import java.time.LocalDate
 
 /**
  * ViewModel for managing the financial data of a trip.
@@ -46,6 +56,8 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
   open val tripCurrency = _tripCurrency.asStateFlow()
+
+  val test = MutableStateFlow("")
 
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
@@ -106,6 +118,46 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
       val currentTrip = tripsRepository.getTrip(tripId)!!
       tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))
       updateStateLists()
+    }
+  }
+
+  suspend fun exchangeRate(fromCurrency: String, toCurrency: String) {
+    withContext(Dispatchers.IO){
+      val client = OkHttpClient()
+
+
+      val currentDate = LocalDate.now()
+      val startDate = currentDate.minusDays(1).toString() // Yesterday's date
+      val endDate = currentDate.toString() // Today's date
+
+      val url = "https://fxds-public-exchange-rates-api.oanda.com/cc-api/currencies?base=$fromCurrency&quote=$toCurrency&data_type=general_currency_pair&start_date=$startDate&end_date=$endDate"
+      val request = Request.Builder()
+        .url(url)
+        .build()
+
+      try {
+          val response: Response = client.newCall(request).execute()
+          if (response.isSuccessful) {
+            val responseBody = response.body()?.string()
+            if(responseBody != null){
+              val jsonObject = JSONObject(responseBody)
+              val responseArray = jsonObject.getJSONArray("response")
+              test.value = ""
+            } else {
+              test.value = "No response body"
+            }
+          } else {
+            null
+          }
+      } catch (e: IOException) {
+          e.printStackTrace()
+          null
+      }
+    }
+  }
+  fun exchangeCurrency(fromCurrency: String, toCurrency: String){
+    viewModelScope.launch {
+      exchangeRate(fromCurrency,toCurrency).toString()
     }
   }
 

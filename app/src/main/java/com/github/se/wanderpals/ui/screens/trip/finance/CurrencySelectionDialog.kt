@@ -26,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
+import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * A composable function that displays a dialog for currency selection. The user can search the
@@ -54,6 +56,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
   var searchedCurrency by remember { mutableStateOf("") }
   var isError by remember { mutableStateOf(false) }
   val currencies = Currency.getAvailableCurrencies().filterNot { it.displayName.contains("(") }
+  val test by financeViewModel.test.asStateFlow().collectAsState()
 
   Dialog(
       onDismissRequest = {
@@ -62,9 +65,10 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
       }) {
         Surface(
             modifier =
-                Modifier.fillMaxSize()
-                    .padding(top = 100.dp, bottom = 100.dp)
-                    .testTag("currencyDialog"),
+            Modifier
+                .fillMaxSize()
+                .padding(top = 100.dp, bottom = 100.dp)
+                .testTag("currencyDialog"),
             color = MaterialTheme.colorScheme.background,
         ) {
           Column(
@@ -76,10 +80,11 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                     value = searchedCurrency,
                     onValueChange = { value -> searchedCurrency = value },
                     modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(20.dp)
-                            .clip(RoundedCornerShape(5.dp))
-                            .testTag("currencySearchText"),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp)
+                        .clip(RoundedCornerShape(5.dp))
+                        .testTag("currencySearchText"),
                     label = {
                       Text(
                           text = if (isError) "Invalid currency" else "Select a currency",
@@ -103,6 +108,8 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                                       it.currencyCode.equals(searchedCurrency, ignoreCase = true)
                                 }
                             if (newCurrency != null) {
+                              financeViewModel.exchangeCurrency(
+                                  financeViewModel.tripCurrency.value.currencyCode,newCurrency.currencyCode)
                               financeViewModel.updateCurrency(newCurrency.currencyCode)
                               financeViewModel.setShowCurrencyDialogState(false)
                               isError = false
@@ -136,15 +143,16 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                       items(filteredCurrencies) { currency ->
                         Box(
                             modifier =
-                                Modifier.fillMaxWidth()
-                                    .padding(horizontal = 20.dp)
-                                    .clip(RoundedCornerShape(5.dp))
-                                    .border(
-                                        1.dp,
-                                        Color.Gray,
-                                        RoundedCornerShape(5.dp),
-                                    )
-                                    .testTag("currencyItem"),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .clip(RoundedCornerShape(5.dp))
+                                .border(
+                                    1.dp,
+                                    Color.Gray,
+                                    RoundedCornerShape(5.dp),
+                                )
+                                .testTag("currencyItem"),
                             contentAlignment = Alignment.CenterStart) {
                               Button(
                                   modifier = Modifier.fillMaxWidth(),
