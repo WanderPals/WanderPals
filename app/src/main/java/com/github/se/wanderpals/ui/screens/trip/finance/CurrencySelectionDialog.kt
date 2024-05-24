@@ -56,7 +56,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
   var searchedCurrency by remember { mutableStateOf("") }
   var isError by remember { mutableStateOf(false) }
   val currencies = Currency.getAvailableCurrencies().filterNot { it.displayName.contains("(") }
-  val test by financeViewModel.test.asStateFlow().collectAsState()
+
 
   Dialog(
       onDismissRequest = {
@@ -108,10 +108,12 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                                       it.currencyCode.equals(searchedCurrency, ignoreCase = true)
                                 }
                             if (newCurrency != null) {
-                              financeViewModel.exchangeCurrency(
-                                  financeViewModel.tripCurrency.value.currencyCode,newCurrency.currencyCode)
+                              val actualCurrencyCode = financeViewModel.tripCurrency.value.currencyCode
+                              val newCurrencyCode = newCurrency.currencyCode
+                              val success = financeViewModel.convertCurrency(actualCurrencyCode,newCurrencyCode)
                               financeViewModel.updateCurrency(newCurrency.currencyCode)
                               financeViewModel.setShowCurrencyDialogState(false)
+
                               isError = false
                             } else {
                               isError = true

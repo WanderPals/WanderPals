@@ -57,7 +57,8 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
   open val tripCurrency = _tripCurrency.asStateFlow()
 
-  val test = MutableStateFlow("")
+  private val _exchangeRate = MutableStateFlow<Double?>(null)
+
 
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
@@ -121,7 +122,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     }
   }
 
-  suspend fun exchangeRate(fromCurrency: String, toCurrency: String) {
+  private suspend fun updateExchangeRate(fromCurrency: String, toCurrency: String){
     withContext(Dispatchers.IO){
       val client = OkHttpClient()
 
@@ -142,23 +143,36 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
             if(responseBody != null){
               val jsonObject = JSONObject(responseBody)
               val responseArray = jsonObject.getJSONArray("response")
-              test.value = ""
+              val exchangeRate = responseArray.getJSONObject(0).getString("average_bid").toDouble()
+              _exchangeRate.value = exchangeRate
             } else {
-              test.value = "No response body"
+              _exchangeRate.value = null
             }
           } else {
-            null
+            _exchangeRate.value = null
           }
       } catch (e: IOException) {
           e.printStackTrace()
-          null
+      }
+
+
+    }
+
+  }
+
+  open fun convertCurrency(fromCurrency: String, toCurrency: String): Boolean{
+    var success = false
+    viewModelScope.launch {
+      updateExchangeRate(fromCurrency,toCurrency)
+      if(_exchangeRate.value != null){
+        val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
+        expenses.forEach{
+          tripsRepository.updateExpenseInTrip(tripId,it.copy(amount = it.amount * _exchangeRate.value!!))
+        }
+        success = true
       }
     }
-  }
-  fun exchangeCurrency(fromCurrency: String, toCurrency: String){
-    viewModelScope.launch {
-      exchangeRate(fromCurrency,toCurrency).toString()
-    }
+    return success
   }
 
   /** Setter functions */
