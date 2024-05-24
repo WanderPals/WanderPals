@@ -58,7 +58,10 @@ fun FinanceTopBar(
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
-            modifier = Modifier.padding(15.dp).fillMaxWidth(),
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceTint)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
               Row(
@@ -72,6 +75,7 @@ fun FinanceTopBar(
                           modifier = Modifier.size(35.dp),
                           imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                           contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onPrimary,
                       )
                     }
                     Text(
@@ -81,48 +85,58 @@ fun FinanceTopBar(
                         style =
                             MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = FontWeight.Bold, fontSize = 24.sp),
-                        color = MaterialTheme.colorScheme.primary)
+                        color = MaterialTheme.colorScheme.onPrimary)
                   }
 
               OutlinedButton(
-                  modifier = Modifier.padding(end = 20.dp).width(80.dp).testTag("currencyButton"),
+                  modifier = Modifier
+                      .padding(end = 20.dp)
+                      .width(80.dp)
+                      .testTag("currencyButton"),
                   onClick = { onCurrencyClick() },
                   enabled =
                       SessionManager.getIsNetworkAvailable() &&
                           SessionManager.getCurrentUser()!!.role != Role.VIEWER,
                   colors =
                       ButtonDefaults.buttonColors()
-                          .copy(contentColor = MaterialTheme.colorScheme.primary)) {
+                          .copy(contentColor = MaterialTheme.colorScheme.onPrimary, containerColor = MaterialTheme.colorScheme.onPrimary),) {
                     Text(
                         modifier = Modifier.testTag("currencyButtonText"),
                         text = currencyCode,
                         textAlign = TextAlign.Center,
                         style =
                             MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                   }
             }
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically) {
-              NavigationButton(
-                  text = FinanceOption.EXPENSES.toString(),
-                  imageId = R.drawable.expenses,
-                  isSelected = currentSelectedOption == FinanceOption.EXPENSES,
-                  onClick = { onSelectOption(FinanceOption.EXPENSES) },
-              )
-              NavigationButton(
-                  text = FinanceOption.CATEGORIES.toString(),
-                  imageId = R.drawable.categories,
-                  isSelected = currentSelectedOption == FinanceOption.CATEGORIES,
-                  onClick = { onSelectOption(FinanceOption.CATEGORIES) })
-              NavigationButton(
-                  text = FinanceOption.DEBTS.toString(),
-                  imageId = R.drawable.balance,
-                  isSelected = currentSelectedOption == FinanceOption.DEBTS,
-                  onClick = { onSelectOption(FinanceOption.DEBTS) })
+            Box(modifier = Modifier.weight(1f)){
+                NavigationButton(
+                    text = FinanceOption.EXPENSES.toString(),
+                    imageId = R.drawable.expenses,
+                    isSelected = currentSelectedOption == FinanceOption.EXPENSES,
+                    onClick = { onSelectOption(FinanceOption.EXPENSES) },
+                )
+            }
+            Box(modifier = Modifier.weight(1f)){
+                NavigationButton(
+                    text = FinanceOption.CATEGORIES.toString(),
+                    imageId = R.drawable.categories,
+                    isSelected = currentSelectedOption == FinanceOption.CATEGORIES,
+                    onClick = { onSelectOption(FinanceOption.CATEGORIES) })
+            }
+            Box(modifier = Modifier.weight(1f)){
+                NavigationButton(
+                text = FinanceOption.DEBTS.toString(),
+                imageId = R.drawable.balance,
+                isSelected = currentSelectedOption == FinanceOption.DEBTS,
+                onClick = { onSelectOption(FinanceOption.DEBTS) })}
+
             }
       }
 }
@@ -137,9 +151,12 @@ fun FinanceTopBar(
  */
 @Composable
 fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: () -> Unit) {
-
   Column(
-      modifier = Modifier.clickable(onClick = onClick).testTag(text + "Button"),
+      modifier = Modifier
+          .clickable(onClick = onClick)
+          .padding(top = 12.dp)
+          .testTag(text + "Button")
+          .fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally) {
         val colorSelection =
             if (isSelected) MaterialTheme.colorScheme.primary
@@ -147,7 +164,9 @@ fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: (
         Image(
             painterResource(id = imageId),
             contentDescription = text,
-            modifier = Modifier.size(20.dp),
+            modifier = Modifier
+                .padding(bottom = 8.dp)
+                .size(20.dp),
             colorFilter = ColorFilter.tint(colorSelection))
         Text(
             text = text,
@@ -159,10 +178,12 @@ fun NavigationButton(text: String, imageId: Int, isSelected: Boolean, onClick: (
         Box(
             contentAlignment = Alignment.Center,
             modifier =
-                Modifier.width(100.dp)
-                    .height(4.dp)
-                    .background(
-                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
+            Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .background(
+                    if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+                ),
         ) {}
       }
 }
