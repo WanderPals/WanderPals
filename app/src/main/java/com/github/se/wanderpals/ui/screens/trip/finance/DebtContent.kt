@@ -163,7 +163,10 @@ fun DebtContent(currencySymbol: String, viewmodel: FinanceViewModel) {
                     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                       Text(
                           text = "Fix debt",
-                          modifier = Modifier.testTag("myDebt").padding(top = 12.dp, start = 8.dp),
+                          modifier =
+                              Modifier.testTag("myDebt")
+                                  .padding(top = 12.dp, start = 8.dp)
+                                  .fillMaxWidth(),
                       )
 
                       Spacer(modifier = Modifier.height(8.dp))
