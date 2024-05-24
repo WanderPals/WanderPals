@@ -28,7 +28,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -161,7 +160,9 @@ fun ExpenseTopInfo(expense: Expense, currencySymbol: String, onDeleteExpenseClic
                                     SpanStyle(
                                         fontSize = 16.sp,
                                         color =
-                                            if (userIsViewer) Color.LightGray
+                                            if (userIsViewer)
+                                                MaterialTheme.colorScheme.onPrimary.copy(
+                                                    alpha = 0.5f)
                                             else MaterialTheme.colorScheme.onPrimary)),
                     )
                   }
