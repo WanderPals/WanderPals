@@ -72,7 +72,7 @@ fun FinanceTopBar(
                           modifier = Modifier.size(35.dp),
                           imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                           contentDescription = "Back",
-                      )
+                          tint = MaterialTheme.colorScheme.primary)
                     }
                     Text(
                         modifier = Modifier.padding(start = 20.dp),
@@ -99,7 +99,7 @@ fun FinanceTopBar(
                         textAlign = TextAlign.Center,
                         style =
                             MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                     )
                   }
             }
