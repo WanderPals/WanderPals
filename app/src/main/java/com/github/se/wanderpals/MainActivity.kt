@@ -70,7 +70,7 @@ class MainActivity : ComponentActivity() {
     MainViewModel.MainViewModelFactory(application)
   }
 
-  private val viewModelAPI: NotificationAPI by viewModels()
+  // private val viewModelAPI: NotificationAPI by viewModels()
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -278,13 +278,6 @@ class MainActivity : ComponentActivity() {
                             }
                       })
                   NotificationPermission(context = context)
-
-                  Log.d("MainActivity", "User is signed in")
-                  Log.d("token", SessionManager.getNotificationToken())
-                  /*runBlocking {
-                    sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
-                  }*/
-
                 }
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
@@ -303,8 +296,8 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
-                  viewModelAPI.sendNotification(
-                      listOf(SessionManager.getNotificationToken()), "hello2")
+                  NotificationAPI()
+                      .sendNotification(listOf(SessionManager.getNotificationToken()), "hello2")
 
                   val overviewViewModel: OverviewViewModel =
                       viewModel(

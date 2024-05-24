@@ -4,6 +4,7 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
+import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import java.time.LocalDateTime
@@ -14,7 +15,6 @@ import java.util.Locale
 object NotificationsManager {
   private lateinit var tripsRepository: TripsRepository
   private const val MAX_NOTIF_SIZE = 20
-
   /**
    * Initializes the NotificationsManager with the provided TripsRepository instance.
    *
@@ -176,9 +176,7 @@ object NotificationsManager {
   private suspend fun broadcastNotification(tripId: String, message: String) {
     val tokenList = tripsRepository.getTrip(tripId)?.tokenIds
     if (tokenList != null) {
-      for (token in tokenList) {
-        sendMessageToListOfUsers(token, message)
-      }
+      NotificationAPI().sendNotification(tokenList, message)
     }
   }
 }

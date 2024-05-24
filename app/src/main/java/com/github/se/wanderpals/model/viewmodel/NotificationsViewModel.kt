@@ -9,7 +9,6 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.TripNotification
 import com.github.se.wanderpals.model.repository.TripsRepository
-import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -121,9 +120,8 @@ open class NotificationsViewModel(val tripsRepository: TripsRepository, val trip
         Log.d("NotificationAnnouncement", "List of tokens: ${listOfTokens.tokenIds}")
       }
       if (listOfTokens != null) {
-        for (token in listOfTokens.tokenIds) {
-          sendMessageToListOfUsers(token, announcement.title)
-        }
+
+        NotificationAPI().sendNotification(listOfTokens.tokenIds, announcement.title)
       }
     }
   }
