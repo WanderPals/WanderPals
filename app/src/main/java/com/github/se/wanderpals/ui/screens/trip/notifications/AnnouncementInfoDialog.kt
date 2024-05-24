@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.notifications
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -89,7 +90,7 @@ fun AnnouncementInfoDialog(
             Modifier.fillMaxSize()
                 .padding(top = 100.dp, bottom = 100.dp)
                 .testTag("announcementDialog"),
-        color = MaterialTheme.colorScheme.background,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp)) {
           Column(
               modifier = Modifier.fillMaxSize().padding(16.dp),
@@ -100,7 +101,8 @@ fun AnnouncementInfoDialog(
                     text = announcement.title,
                     style = TextStyle(fontSize = 22.sp),
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth().testTag("announcementTitle"))
+                    modifier = Modifier.fillMaxWidth().testTag("announcementTitle"),
+                    color = MaterialTheme.colorScheme.primary)
                 // Date
                 Text(
                     text =
@@ -108,19 +110,21 @@ fun AnnouncementInfoDialog(
                             DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy, HH:mm")),
                     style = TextStyle(fontSize = 16.sp),
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth().testTag("announcementDate"))
+                    modifier = Modifier.fillMaxWidth().testTag("announcementDate"),
+                    color = MaterialTheme.colorScheme.tertiary)
                 // Sender
                 Text(
                     text = "by ${announcement.userName}",
                     style = TextStyle(fontSize = 16.sp),
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth().testTag("announcementSender"))
+                    modifier = Modifier.fillMaxWidth().testTag("announcementSender"),
+                    color = MaterialTheme.colorScheme.tertiary)
                 // Description
                 OutlinedTextField(
                     value = announcement.description,
                     onValueChange = {},
                     modifier =
-                        Modifier.fillMaxWidth().weight(1f).testTag("announcementDescription"),
+                        Modifier.fillMaxWidth().weight(1f).testTag("announcementDescription").background(MaterialTheme.colorScheme.surfaceVariant),
                     readOnly = true)
                 Box(
                     modifier =
@@ -135,10 +139,9 @@ fun AnnouncementInfoDialog(
                             onClick = { showDeleteDialog = true },
                             modifier =
                                 Modifier.fillMaxSize()
-                                    .padding(horizontal = 10.dp, vertical = 10.dp)
                                     .testTag("deleteAnnouncementButton"),
                             colors =
-                                ButtonDefaults.buttonColors(containerColor = Color(0xFFDEE1F9))) {
+                                ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
                               Row(
                                   horizontalArrangement =
                                       Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
