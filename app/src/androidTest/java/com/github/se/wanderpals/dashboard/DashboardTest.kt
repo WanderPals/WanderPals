@@ -782,4 +782,62 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
     composeTestRule.onNodeWithTag("deleteTripButton", useUnmergedTree = true).assertDoesNotExist()
   }
+
+  @Test
+  fun menuNavigationWorks() = run {
+    val viewModel = DashboardViewModelTest(emptyList())
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("AdminButtonTest", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.ADMIN_PAGE) }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("backToOverviewButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.OVERVIEW) }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("financeButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.FINANCE) }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("agendaButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.AGENDA) }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("suggestionButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.SUGGESTION) }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("documentButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.DOCUMENT) }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("notificationButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.NOTIFICATION) }
+
+    composeTestRule.onNodeWithTag("menuButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("mapButton", useUnmergedTree = true).performClick()
+    composeTestRule.onNodeWithTag("menuNav", useUnmergedTree = true).assertIsNotDisplayed()
+
+    verify { mockNavActions.navigateTo(Route.MAP) }
+    confirmVerified(mockNavActions)
+  }
 }

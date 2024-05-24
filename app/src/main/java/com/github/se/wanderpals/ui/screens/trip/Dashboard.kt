@@ -1,34 +1,36 @@
 package com.github.se.wanderpals.ui.screens.trip
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,15 +43,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -59,6 +61,7 @@ import com.github.se.wanderpals.ui.screens.dashboard.DashboardDocumentWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardFinanceWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardStopWidget
 import com.github.se.wanderpals.ui.screens.dashboard.DashboardSuggestionWidget
+import com.github.se.wanderpals.ui.screens.overview.shareTripCodeIntent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -107,7 +110,7 @@ fun Dashboard(
       }
     } else {
       Scaffold(
-          topBar = { TopDashboardBar(scope, drawerState, tripTitle) },
+          topBar = { TopDashboardBar(scope, drawerState, tripTitle, tripId) },
       ) { contentPadding ->
         Surface(
             modifier =
@@ -205,84 +208,160 @@ fun Menu(
     navActions: NavigationActions,
     dashboardViewModel: DashboardViewModel
 ) {
-  ModalDrawerSheet(
-      drawerShape = MaterialTheme.shapes.large,
-      modifier =
-          Modifier.testTag("menuNav").requiredWidth(200.dp).requiredHeight(250.dp).padding(8.dp),
-  ) {
-    ElevatedButton(
-        modifier = Modifier.testTag("backToOverview"),
-        content = {
-          Row {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            Text("Back to overview")
-          }
-        },
-        onClick = {
-          scope.launch {
-            SessionManager.setListOfTokensTrip(emptyList())
-            drawerState.close()
-            navActions.navigateTo(Route.OVERVIEW)
-          }
-        })
-    Spacer(modifier = Modifier.padding(2.dp))
-    ElevatedButton(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("AdminButtonTest"),
-        content = {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painterResource(id = R.drawable.logo_nsa),
-                contentDescription = "NSA",
-                modifier = Modifier.clip(CircleShape).size(30.dp))
-            Text(text = "Admin", modifier = Modifier.padding(horizontal = 20.dp))
-          }
-        },
-        onClick = {
-          scope.launch {
-            drawerState.close()
-            navActions.navigateTo(Route.ADMIN_PAGE)
-          }
-        })
-    Spacer(modifier = Modifier.padding(2.dp))
-    ElevatedButton(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("FinanceButtonTest"),
-        content = {
-          Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painterResource(id = R.drawable.finance_logo),
-                contentDescription = "financeLogo",
-                modifier = Modifier.clip(CircleShape).size(25.dp))
-            Text(text = "Finance", modifier = Modifier.padding(horizontal = 20.dp))
-          }
-        },
-        onClick = {
-          scope.launch {
-            drawerState.close()
-            navActions.navigateTo(Route.FINANCE)
-          }
-        })
+  val colors =
+      NavigationDrawerItemDefaults.colors(
+          selectedContainerColor = MaterialTheme.colorScheme.surface,
+          unselectedContainerColor = MaterialTheme.colorScheme.primaryContainer)
+  val textColor = MaterialTheme.colorScheme.primary
 
-    if (SessionManager.getCurrentUser()!!.role == Role.OWNER &&
-        SessionManager.getIsNetworkAvailable()) {
-      ElevatedButton(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 2.dp).testTag("deleteTripButton"),
-          content = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+  ModalDrawerSheet(
+      drawerContentColor = textColor,
+      drawerContainerColor = MaterialTheme.colorScheme.primaryContainer,
+      modifier = Modifier.width(IntrinsicSize.Max).testTag("menuNav")) {
+        Text(
+            "Navigation Menu",
+            modifier = Modifier.padding(16.dp),
+            style = TextStyle(fontWeight = FontWeight.Bold))
+        HorizontalDivider(color = textColor)
+        NavigationDrawerItem(
+            label = { Text(text = "Back to Overview", color = textColor) },
+            icon = {
               Icon(
-                  Icons.Default.Delete,
-                  contentDescription = "Delete",
-                  modifier = Modifier.clip(CircleShape).size(25.dp))
-              Text(text = "Delete Trip", modifier = Modifier.padding(start = 20.dp))
-            }
-          },
-          onClick = {
-            scope.launch {
-              drawerState.close()
-              dashboardViewModel.deleteTrip()
-            }
-          })
-    }
-  }
+                  imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                  contentDescription = "Back to Overview",
+                  tint = textColor)
+            },
+            selected = false,
+            onClick = {
+              scope.launch {
+                SessionManager.setListOfTokensTrip(emptyList())
+                drawerState.close()
+                navActions.navigateTo(Route.OVERVIEW)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("backToOverviewButton"))
+        NavigationDrawerItem(
+            label = { Text(text = "Admin Panel", color = textColor) },
+            icon = {
+              Icon(
+                  imageVector = Icons.Default.AccountCircle,
+                  contentDescription = "Admin Panel",
+                  tint = textColor)
+            },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.ADMIN_PAGE)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("AdminButtonTest"))
+        HorizontalDivider(color = textColor)
+        NavigationDrawerItem(
+            label = { Text(text = "Suggestions", color = textColor) },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.SUGGESTION)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("suggestionButton"))
+        NavigationDrawerItem(
+            label = { Text(text = "Agenda", color = textColor) },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.AGENDA)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("agendaButton"))
+        NavigationDrawerItem(
+            label = { Text(text = "Dashboard", color = textColor) },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.DASHBOARD)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("dashboardButton"))
+        NavigationDrawerItem(
+            label = { Text(text = "Map", color = textColor) },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.MAP)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("mapButton"))
+        NavigationDrawerItem(
+            label = { Text(text = "Notifications", color = textColor) },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.NOTIFICATION)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("notificationButton"))
+        NavigationDrawerItem(
+            label = { Text(text = "Finance", color = textColor) },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.FINANCE)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("financeButton"))
+        NavigationDrawerItem(
+            label = { Text(text = "Documents", color = textColor) },
+            selected = false,
+            onClick = {
+              scope.launch {
+                drawerState.close()
+                navActions.navigateTo(Route.DOCUMENT)
+              }
+            },
+            shape = RectangleShape,
+            colors = colors,
+            modifier = Modifier.testTag("documentButton"))
+        if (SessionManager.getCurrentUser()!!.role == Role.OWNER &&
+            SessionManager.getIsNetworkAvailable()) {
+          HorizontalDivider(color = textColor)
+          NavigationDrawerItem(
+              label = { Text(text = "Delete Trip", color = textColor) },
+              selected = false,
+              onClick = {
+                scope.launch {
+                  drawerState.close()
+                  dashboardViewModel.deleteTrip()
+                }
+              },
+              shape = RectangleShape,
+              colors = colors,
+              modifier = Modifier.testTag("deleteTripButton"))
+        }
+      }
 }
 
 /**
@@ -295,7 +374,13 @@ fun Menu(
  * Contains a menu button to open the drawer.
  */
 @Composable
-fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: String) {
+fun TopDashboardBar(
+    scope: CoroutineScope,
+    drawerState: DrawerState,
+    tripTitle: String,
+    tripId: String
+) {
+  val context = LocalContext.current
   Column(
       modifier =
           Modifier.background(MaterialTheme.colorScheme.primary)
@@ -332,7 +417,18 @@ fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: 
                   overflow =
                       TextOverflow.Ellipsis // This makes the text to be ellipsized if it overflows
                   )
+              IconButton(
+                  onClick = { scope.launch { context.shareTripCodeIntent(tripId) } },
+                  modifier = Modifier.testTag("shareButton").padding(horizontal = 16.dp),
+              ) {
+                Icon(
+                    Icons.Default.Share,
+                    contentDescription = "Menu",
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.onPrimary)
+              }
             }
+
         Spacer(modifier = Modifier.height(8.dp))
       }
 }

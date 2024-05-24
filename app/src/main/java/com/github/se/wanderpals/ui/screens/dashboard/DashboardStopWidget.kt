@@ -138,11 +138,11 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
                       } else {
                         Column {
                           StopWidgetItem(stop = sortedStops[0])
-                          HorizontalDivider(
-                              color = MaterialTheme.colorScheme.surfaceVariant,
-                              thickness = 1.dp,
-                              modifier = Modifier.padding(horizontal = 8.dp))
                           if (sortedStops.size > 1) {
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 8.dp))
                             StopWidgetItem(stop = sortedStops[1])
                           } else {
                             Box(modifier = Modifier.fillMaxSize())
