@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Expense
@@ -21,9 +20,12 @@ import com.github.se.wanderpals.service.SessionManager
 /**
  * Composable function for displaying the bottom bar in the Finance screen. Provides information
  * about total expenses for the user and total expenses for the trip.
+ *
+ * @param expenses The list of [Expense] objects representing all the expenses related to the trip.
+ * @param currencySymbol Symbol of the currency.
  */
 @Composable
-fun FinanceBottomBar(expenses: List<Expense>) {
+fun FinanceBottomBar(expenses: List<Expense>, currencySymbol: String) {
   Row(
       modifier =
           Modifier.fillMaxWidth()
@@ -38,15 +40,14 @@ fun FinanceBottomBar(expenses: List<Expense>) {
             modifier = Modifier.padding(start = 18.dp)) {
               Text(
                   text = "My total expenses",
-                  color = Color.White,
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.Start))
               Text(
                   text =
-                      expenses
+                      "${expenses
                           .filter { it.userId == SessionManager.getCurrentUser()?.userId }
-                          .sumOf { it.amount }
-                          .toString(),
-                  color = Color.White,
+                          .sumOf { it.amount }} $currencySymbol",
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.Start),
               )
             }
@@ -56,11 +57,11 @@ fun FinanceBottomBar(expenses: List<Expense>) {
             modifier = Modifier.padding(end = 18.dp)) {
               Text(
                   text = "Total trip expenses",
-                  color = Color.White,
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.End))
               Text(
-                  text = expenses.sumOf { it.amount }.toString(),
-                  color = Color.White,
+                  text = "${expenses.sumOf { it.amount }} $currencySymbol",
+                  color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.End))
             }
       }

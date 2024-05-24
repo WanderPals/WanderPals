@@ -22,6 +22,9 @@ import java.time.format.DateTimeFormatter
  * @property users List of participant user IDs.
  * @property suggestions List of IDs for suggested activities or stops.
  * @property announcements List of IDs for trip announcements.
+ * @property expenses List of expenses Ids of the trip.
+ * @property documentsURL List of Documents
+ * @property currencyCode The currency code used in the trip.
  */
 data class FirestoreTrip(
     val tripId: String = "",
@@ -37,7 +40,8 @@ data class FirestoreTrip(
     val suggestions: List<String> = emptyList(),
     val announcements: List<String> = emptyList(),
     val expenses: List<String> = emptyList(),
-    val documentsURL: List<Documents> = emptyList()
+    val documentsURL: List<Documents> = emptyList(),
+    val currencyCode: String = "CHF"
 ) {
   companion object {
     /**
@@ -62,7 +66,8 @@ data class FirestoreTrip(
           suggestions = trip.suggestions,
           announcements = trip.announcements,
           expenses = trip.expenses,
-          documentsURL = trip.documentsURL)
+          documentsURL = trip.documentsURL,
+          currencyCode = trip.currencyCode)
     }
   }
 
@@ -87,6 +92,7 @@ data class FirestoreTrip(
         suggestions = suggestions,
         announcements = announcements,
         expenses = expenses,
-        documentsURL = documentsURL)
+        documentsURL = documentsURL,
+        currencyCode = currencyCode)
   }
 }

@@ -123,14 +123,17 @@ fun OverviewContent(
         // LazyColumn to display the list of trips
         val lazyColumn =
             @Composable {
-              LazyColumn(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxSize()) {
-                items(filteredTripsByTitle) { trip ->
-                  OverviewTrip(
-                      trip = trip,
-                      navigationActions = navigationActions,
-                      overviewViewModel = overviewViewModel)
-                }
-              }
+              LazyColumn(
+                  Modifier.padding(top = 10.dp, bottom = 20.dp)
+                      .fillMaxSize()
+                      .testTag("overviewLazyColumn")) {
+                    items(filteredTripsByTitle) { trip ->
+                      OverviewTrip(
+                          trip = trip,
+                          navigationActions = navigationActions,
+                          overviewViewModel = overviewViewModel)
+                    }
+                  }
             }
         PullToRefreshLazyColumn(
             inputLazyColumn = lazyColumn, onRefresh = { overviewViewModel.getAllTrips() })

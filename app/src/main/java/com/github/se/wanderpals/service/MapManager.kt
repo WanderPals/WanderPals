@@ -284,6 +284,7 @@ class MapManager(private val context: Context) {
    * @return The response of the fetch place request.
    */
   fun fetchPlace(placeId: String): Task<FetchPlaceResponse> {
+    Log.d("MapActivity", "Fetching place with ID: $placeId")
     val request = FetchPlaceRequest.newInstance(placeId, placeFields)
     return placesClient.fetchPlace(request)
   }

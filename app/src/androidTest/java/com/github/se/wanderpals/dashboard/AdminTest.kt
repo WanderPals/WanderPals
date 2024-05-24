@@ -3,6 +3,7 @@ package com.github.se.wanderpals.dashboard
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -217,6 +218,23 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
   }
 
   @Test
+  fun confirmRoleChangeButtonIsDisabledOffline() = run {
+    SessionManager.setIsNetworkAvailable(false)
+    val user1 = FakeAdminViewModel().listOfUsers.value[0]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user1.userId, user1.name, user1.email, user1.role, profilePhoto = user1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("editRoleButton" + user1.userId).performClick()
+    composeTestRule.waitForIdle()
+    composeTestRule
+        .onNodeWithTag("confirmRoleChangeButton", useUnmergedTree = true)
+        .assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
+  }
+
+  @Test
   fun checkUserProfilePictures() = run {
     val user1 = FakeAdminViewModel().listOfUsers.value[0]
     val user2 = FakeAdminViewModel().listOfUsers.value[1]
@@ -304,5 +322,101 @@ class AdminTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSuppo
           .assertTextContains(currUser.nickname)
           .assertIsDisplayed()
     }
+  }
+
+  @Test
+  fun userNameEnabledOnline() = run {
+    val user1 = FakeAdminViewModel().listOfUsers.value[0]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user1.userId, user1.name, user1.email, user1.role, profilePhoto = user1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("userName").assertIsEnabled()
+  }
+
+  @Test
+  fun userNameNotEnabledOffline() = run {
+    SessionManager.setIsNetworkAvailable(false)
+    val user1 = FakeAdminViewModel().listOfUsers.value[0]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user1.userId, user1.name, user1.email, user1.role, profilePhoto = user1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("userName").assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
+  }
+
+  @Test
+  fun iconAdminScreenEnabledOnline() = run {
+    val user1 = FakeAdminViewModel().listOfUsers.value[0]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user1.userId, user1.name, user1.email, user1.role, profilePhoto = user1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("IconAdminScreen").assertIsEnabled()
+  }
+
+  @Test
+  fun iconAdminScreeNotEnabledOffline() = run {
+    SessionManager.setIsNetworkAvailable(false)
+    val user1 = FakeAdminViewModel().listOfUsers.value[0]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user1.userId, user1.name, user1.email, user1.role, profilePhoto = user1.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("IconAdminScreen").assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
+  }
+
+  @Test
+  fun promoteUserButtonEnabledOnline() = run {
+    val user2 = FakeAdminViewModel().listOfUsers.value[1]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user2.userId, user2.name, user2.email, user2.role, profilePhoto = user2.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("promoteUserButton" + "3").assertIsEnabled()
+  }
+
+  @Test
+  fun promoteUserButtonNotEnabledOffline() = run {
+    SessionManager.setIsNetworkAvailable(false)
+    val user2 = FakeAdminViewModel().listOfUsers.value[1]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user2.userId, user2.name, user2.email, user2.role, profilePhoto = user2.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("promoteUserButton" + "3").assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
+  }
+
+  @Test
+  fun deleteUserButtonEnabledOnline() = run {
+    val user2 = FakeAdminViewModel().listOfUsers.value[1]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user2.userId, user2.name, user2.email, user2.role, profilePhoto = user2.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("deleteUserButton" + "3").assertIsEnabled()
+  }
+
+  @Test
+  fun deleteUserButtonNotEnabledOffline() = run {
+    SessionManager.setIsNetworkAvailable(false)
+    val user2 = FakeAdminViewModel().listOfUsers.value[1]
+    composeTestRule.setContent {
+      SessionManager.setUserSession(
+          user2.userId, user2.name, user2.email, user2.role, profilePhoto = user2.profilePictureURL)
+      Admin(adminViewModel = FakeAdminViewModel(), storageReference = null)
+    }
+    composeTestRule.onNodeWithTag("deleteUserButton" + "3").assertIsNotEnabled()
+    SessionManager.setIsNetworkAvailable(true)
   }
 }

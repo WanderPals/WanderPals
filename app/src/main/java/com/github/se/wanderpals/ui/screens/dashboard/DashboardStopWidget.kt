@@ -72,88 +72,85 @@ fun DashboardStopWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {})
             modifier = Modifier.height(IntrinsicSize.Max).fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween) {
               // List of stop
-              Column(
-                  modifier =
-                      Modifier.padding(start = 8.dp, top = 8.dp, end = 4.dp, bottom = 8.dp)
-                          .fillMaxWidth()) {
-                    // Top part of the texts
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()) {
-                          Row(
-                              verticalAlignment = Alignment.CenterVertically,
-                              horizontalArrangement = Arrangement.Start,
-                              modifier =
-                                  Modifier.clip(RoundedCornerShape(4.dp))
-                                      .background(MaterialTheme.colorScheme.primaryContainer)
-                                      .padding(horizontal = 8.dp, vertical = 4.dp)) {
-                                Icon(
-                                    Icons.Default.LocationOn,
-                                    contentDescription = "Stop Icon",
-                                    modifier = Modifier.size(16.dp).testTag("stopIcon"),
-                                    tint = MaterialTheme.colorScheme.onPrimaryContainer)
-                                Text(
-                                    text = "Upcoming Stops",
-                                    modifier = Modifier.testTag("stopTitle"),
-                                    style =
-                                        TextStyle(
-                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                            fontWeight = FontWeight.Bold))
-                              }
+              Column(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+                // Top part of the texts
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()) {
+                      Row(
+                          verticalAlignment = Alignment.CenterVertically,
+                          horizontalArrangement = Arrangement.Start,
+                          modifier =
+                              Modifier.clip(RoundedCornerShape(4.dp))
+                                  .background(MaterialTheme.colorScheme.primaryContainer)
+                                  .padding(horizontal = 8.dp, vertical = 4.dp)) {
+                            Icon(
+                                Icons.Default.LocationOn,
+                                contentDescription = "Stop Icon",
+                                modifier = Modifier.size(16.dp).testTag("stopIcon"),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer)
+                            Text(
+                                text = "Upcoming Stops",
+                                modifier = Modifier.testTag("stopTitle"),
+                                style =
+                                    TextStyle(
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        fontWeight = FontWeight.Bold))
+                          }
 
-                          Spacer(modifier = Modifier.padding(4.dp))
+                      Spacer(modifier = Modifier.padding(4.dp))
 
-                          Text(
-                              text =
-                                  "Total: ${sortedStops.size} stop" +
-                                      if (sortedStops.size > 1) "s" else "",
-                              modifier =
-                                  Modifier.testTag("totalStops")
-                                      .clip(RoundedCornerShape(4.dp))
-                                      .background(MaterialTheme.colorScheme.surface)
-                                      .padding(horizontal = 8.dp, vertical = 4.dp),
-                              style =
-                                  TextStyle(
-                                      color = MaterialTheme.colorScheme.primary,
-                                      fontWeight = FontWeight.Bold))
-                        }
+                      Text(
+                          text =
+                              "Total: ${sortedStops.size} stop" +
+                                  if (sortedStops.size > 1) "s" else "",
+                          modifier =
+                              Modifier.testTag("totalStops")
+                                  .clip(RoundedCornerShape(4.dp))
+                                  .background(MaterialTheme.colorScheme.surface)
+                                  .padding(horizontal = 8.dp, vertical = 4.dp),
+                          style =
+                              TextStyle(
+                                  color = MaterialTheme.colorScheme.primary,
+                                  fontWeight = FontWeight.Bold))
+                    }
 
-                    Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.padding(4.dp))
 
-                    // Upcoming stops
-                    Box(
-                        modifier =
-                            Modifier.clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.surface)
-                                .fillMaxWidth()) {
-                          if (sortedStops.isEmpty()) {
-                            Box(
-                                contentAlignment = Alignment.Center,
-                                modifier =
-                                    Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
-                                  Text(
-                                      text = "No stops yet.",
-                                      modifier = Modifier.testTag("noStops"),
-                                      style = TextStyle(color = MaterialTheme.colorScheme.primary),
-                                  )
-                                }
-                          } else {
-                            Column {
-                              StopWidgetItem(stop = sortedStops[0])
-                              HorizontalDivider(
-                                  color = MaterialTheme.colorScheme.surfaceVariant,
-                                  thickness = 1.dp,
-                                  modifier = Modifier.padding(horizontal = 8.dp))
-                              if (sortedStops.size > 1) {
-                                StopWidgetItem(stop = sortedStops[1])
-                              } else {
-                                Box(modifier = Modifier.fillMaxSize())
-                              }
+                // Upcoming stops
+                Box(
+                    modifier =
+                        Modifier.clip(RoundedCornerShape(4.dp))
+                            .background(MaterialTheme.colorScheme.surface)
+                            .fillMaxWidth()) {
+                      if (sortedStops.isEmpty()) {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier =
+                                Modifier.padding(top = 16.dp, bottom = 40.dp).fillMaxSize()) {
+                              Text(
+                                  text = "No stops yet.",
+                                  modifier = Modifier.testTag("noStops"),
+                                  style = TextStyle(color = MaterialTheme.colorScheme.primary),
+                              )
                             }
+                      } else {
+                        Column {
+                          StopWidgetItem(stop = sortedStops[0])
+                          HorizontalDivider(
+                              color = MaterialTheme.colorScheme.surfaceVariant,
+                              thickness = 1.dp,
+                              modifier = Modifier.padding(horizontal = 8.dp))
+                          if (sortedStops.size > 1) {
+                            StopWidgetItem(stop = sortedStops[1])
+                          } else {
+                            Box(modifier = Modifier.fillMaxSize())
                           }
                         }
-                  }
+                      }
+                    }
+              }
             }
       }
 }

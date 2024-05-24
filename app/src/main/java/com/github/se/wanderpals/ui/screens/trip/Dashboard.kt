@@ -298,7 +298,7 @@ fun Menu(
 fun TopDashboardBar(scope: CoroutineScope, drawerState: DrawerState, tripTitle: String) {
   Column(
       modifier =
-          Modifier.background(MaterialTheme.colorScheme.surfaceTint)
+          Modifier.background(MaterialTheme.colorScheme.primary)
               .padding(top = 8.dp, start = 8.dp, end = 8.dp)
               .testTag("dashboardTopBar")) {
         Row(

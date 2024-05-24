@@ -38,15 +38,17 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
  * others. The number of transaction and the total amount for each category is also displayed as
  * items below the pie-chart.
  *
- * @param innerPadding Padding values for the inner content
- * @param expenseList List of expenses
- * @param onRefresh Callback function for handling refresh action
+ * @param innerPadding Padding values for the inner content.
+ * @param expenseList List of expenses.
+ * @param onRefresh Callback function for handling refresh action.
+ * @param currencySymbol Symbol of the currency.
  */
 @Composable
 fun CategoryContent(
     innerPadding: PaddingValues,
     expenseList: List<Expense>,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    currencySymbol: String
 ) {
 
   /*Grouping expenses by category and calculating total number of transactions
@@ -83,7 +85,8 @@ fun CategoryContent(
                         FinancePieChart(
                             expenses = expenseList,
                             radiusOuter = 80.dp,
-                            totalValueDisplayIsEnabled = true)
+                            totalValueDisplayIsEnabled = true,
+                            currencySymbol = currencySymbol)
 
                         Spacer(modifier = Modifier.height(20.dp))
                         Row(
@@ -114,12 +117,14 @@ fun CategoryContent(
                 CategoryInfoItem(
                     category = category,
                     nbTransaction = categoryInfo.first,
-                    totalCategoryAmount = categoryInfo.second)
+                    totalCategoryAmount = categoryInfo.second,
+                    currencySymbol = currencySymbol)
               }
             }
       }
   PullToRefreshLazyColumn(inputLazyColumn = lazyColumn, onRefresh = onRefresh)
 }
+
 /**
  * Composable function to display a row containing a colored box representing the category and the
  * name of the category.
@@ -147,9 +152,15 @@ fun PieChartCategoryText(category: Category) {
  * @param category The category for which the information is displayed.
  * @param nbTransaction The number of transactions in the category.
  * @param totalCategoryAmount The total amount spent in the category.
+ * @param currencySymbol Symbol of the currency.
  */
 @Composable
-fun CategoryInfoItem(category: Category, nbTransaction: Int, totalCategoryAmount: Double) {
+fun CategoryInfoItem(
+    category: Category,
+    nbTransaction: Int,
+    totalCategoryAmount: Double,
+    currencySymbol: String
+) {
 
   Surface(
       modifier = Modifier.fillMaxWidth().height(60.dp).testTag(category.nameToDisplay + "InfoItem"),
@@ -194,7 +205,7 @@ fun CategoryInfoItem(category: Category, nbTransaction: Int, totalCategoryAmount
           Text(
               modifier =
                   Modifier.padding(end = 15.dp).testTag(category.nameToDisplay + "TotalAmount"),
-              text = "%.2f CHF".format(totalCategoryAmount),
+              text = "%.2f $currencySymbol".format(totalCategoryAmount),
               style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
               color = MaterialTheme.colorScheme.primary,
               textAlign = TextAlign.End,

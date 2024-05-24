@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.trip.map
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
@@ -37,6 +39,7 @@ import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
@@ -46,8 +49,10 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
 import com.github.se.wanderpals.model.data.Suggestion
+import com.github.se.wanderpals.model.data.setPlaceData
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
 import com.github.se.wanderpals.service.MapManager
+import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -87,7 +92,7 @@ fun Map(
   // get the list of stops from the view model
   val stopList by mapViewModel.stops.collectAsState()
   // get the list of suggestions from the view model
-  val suggestionList by mapViewModel.suggestions.collectAsState()
+  val suggestionList by mapViewModel.suggestionsStop.collectAsState()
   // get the list of users positions from the view model
   val usersPositions by mapViewModel.usersPositions.collectAsState()
   // get the list of user names from the view model
@@ -135,7 +140,7 @@ fun Map(
   // Bottom Sheet Variables
 
   // place data of the searched location
-  var placeData by remember { mutableStateOf(PlaceData()) }
+  var placeData by remember { mutableStateOf(GeoCords()) }
   // bottom sheet state
   val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
   // bottom sheet state expanded
@@ -233,7 +238,7 @@ fun Map(
 
             mapManager.fetchPlace(clickedPlace).addOnSuccessListener { response ->
               val place = response.place
-              placeData.setPlaceData(place, clickedPlace, place.latLng!!)
+              placeData = setPlaceData(place, clickedPlace, place.latLng!!)
               finalLocation = place.latLng!!
               mapViewModel.savePlaceDataState(placeData)
             }
@@ -316,7 +321,7 @@ fun Map(
           listOfTempPlaceData.forEach { place ->
             Marker(
                 // Add a marker to the map
-                state = MarkerState(position = place.placeCoordinates),
+                state = MarkerState(position = place.getPlaceCoordinates()),
                 title = "Click to Create Suggestions",
                 onInfoWindowClick = {
                   bottomSheetExpanded = false
@@ -327,16 +332,13 @@ fun Map(
                               stop =
                                   Stop(
                                       stopId = place.placeId,
-                                      geoCords =
-                                          GeoCords(
-                                              place.placeCoordinates.latitude,
-                                              place.placeCoordinates.longitude),
+                                      geoCords = place,
                                       address = place.placeAddress)))
                   oldNavActions.navigateTo(Route.CREATE_SUGGESTION)
                 },
                 onClick = {
                   bottomSheetExpanded = false
-                  finalLocation = place.placeCoordinates
+                  finalLocation = place.getPlaceCoordinates()
                   placeData = place
                   bottomSheetExpanded = true
                   false
@@ -349,8 +351,16 @@ fun Map(
             Marker( // Add a marker to the map
                 state = MarkerState(position = latLng),
                 title = stop.title,
-                snippet = stop.description,
+                snippet = "Long Click to set a meeting",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE),
+                onInfoWindowLongClick = {
+                  if (SessionManager.getIsNetworkAvailable()) {
+                    Toast.makeText(context, "Meeting Notification Sent", Toast.LENGTH_SHORT).show()
+                    mapViewModel.sendMeetingNotification(stop)
+                  } else {
+                    Toast.makeText(context, "No Internet Connection", Toast.LENGTH_SHORT).show()
+                  }
+                },
                 onClick = {
                   bottomSheetExpanded = false
                   finalLocation = latLng
@@ -358,10 +368,18 @@ fun Map(
                   // check if stop.stopId contains a "," and if it does, split it and get the first
                   if (stop.stopId.last() != ',' && stop.stopId.contains(',')) {
                     val placeId = stop.stopId.split(",")[1]
-                    mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
-                      val place = response.place
-                      placeData.setPlaceData(place, placeId, place.latLng!!)
+                    if (stop.geoCords.placeId != "") {
+                      Log.d("Map", "Already has placeId: ${stop.geoCords.placeId}")
+                      placeData = stop.geoCords
                       bottomSheetExpanded = true
+                    } else {
+                      Log.d("Map", "Fetching placeId: $placeId")
+                      mapManager.fetchPlace(placeId).addOnSuccessListener { response ->
+                        val place = response.place
+                        placeData = setPlaceData(place, placeId, place.latLng!!)
+                        mapViewModel.updateStop(stop.copy(geoCords = placeData))
+                        bottomSheetExpanded = true
+                      }
                     }
                   }
                   false
@@ -379,11 +397,18 @@ fun Map(
                 onClick = {
                   bottomSheetExpanded = false
                   finalLocation = latLng
-
-                  mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
-                    val place = response.place
-                    placeData.setPlaceData(place, stop.stopId, place.latLng!!)
+                  if (stop.geoCords.placeId != "") {
+                    Log.d("Map", "Already has placeId: ${stop.geoCords.placeId}")
+                    placeData = stop.geoCords
                     bottomSheetExpanded = true
+                  } else {
+                    Log.d("Map", "Fetching placeId: ${stop.stopId}")
+                    mapManager.fetchPlace(stop.stopId).addOnSuccessListener { response ->
+                      val place = response.place
+                      placeData = setPlaceData(place, stop.stopId, place.latLng!!)
+                      mapViewModel.updateSuggestion(stop.copy(geoCords = placeData))
+                      bottomSheetExpanded = true
+                    }
                   }
                   false
                 })
@@ -435,8 +460,10 @@ fun Map(
                             if (!isTracking) R.drawable.tracking_enabled
                             else R.drawable.tracking_disabled),
                     contentDescription = "Tracking",
-                    modifier = Modifier.size(24.dp))
-              }
+                    modifier = Modifier.size(24.dp),
+                    colorFilter =
+                        ColorFilter.tint(MaterialTheme.colorScheme.onSecondary)) // Tint the image
+          }
 
           Button(
               onClick = {

@@ -9,9 +9,9 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.MapViewModel
+import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
-import com.github.se.wanderpals.ui.screens.trip.map.PlaceData
 import com.google.android.gms.maps.model.LatLng
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -46,6 +46,29 @@ class MapViewModelTest {
   private lateinit var mockTripsRepository: TripsRepository
   private val testDispatcher = StandardTestDispatcher()
 
+  private val suggestion =
+      Suggestion(
+          "suggestion1",
+          "user1",
+          "Alice",
+          "Check this out!",
+          LocalDate.now(),
+          LocalTime.now(),
+          Stop(
+              "stop1",
+              "Statue of Liberty",
+              "Liberty Island",
+              LocalDate.now(),
+              LocalTime.MIDNIGHT,
+              120,
+              25.0,
+              "Must see",
+              GeoCords(40.689247, -74.044502),
+              "https://liberty.com",
+              "https://liberty.img"),
+          emptyList(),
+          emptyList())
+
   @OptIn(ExperimentalCoroutinesApi::class)
   @Before
   fun setup() {
@@ -56,14 +79,19 @@ class MapViewModelTest {
 
     every { SharedPreferencesManager.clearAll() } just Runs
     every { SharedPreferencesManager.savePlaceData(any()) } returns
-        listOf(PlaceData(placeId = "someplaceId")).toMutableList()
+        listOf(GeoCords(placeId = "someplaceId")).toMutableList()
     every { SharedPreferencesManager.deletePlaceData(any()) } returns
-        listOf<PlaceData>().toMutableList()
+        listOf<GeoCords>().toMutableList()
 
     SessionManager.setUserSession(userId = "user1")
     // Mock the TripsRepository to be used in the ViewModel
     mockTripsRepository = mockk(relaxed = true)
     setupMockResponses()
+
+    // Mock NotificationsManager and its interactions
+    NotificationsManager.initNotificationsManager(mockTripsRepository)
+    mockkObject(NotificationsManager)
+    coEvery { NotificationsManager.addMeetingStopNotification(any(), any()) } returns Unit
 
     // Create the ViewModel using a factory with the mocked repository
     val factory = MapViewModel.MapViewModelFactory(mockTripsRepository, "tripId")
@@ -86,29 +114,7 @@ class MapViewModelTest {
                 GeoCords(40.785091, -73.968285),
                 "https://example.com",
                 "https://image.url"))
-    coEvery { mockTripsRepository.getAllSuggestionsFromTrip("tripId") } returns
-        listOf(
-            Suggestion(
-                "suggestion1",
-                "user1",
-                "Alice",
-                "Check this out!",
-                LocalDate.now(),
-                LocalTime.now(),
-                Stop(
-                    "stop1",
-                    "Statue of Liberty",
-                    "Liberty Island",
-                    LocalDate.now(),
-                    LocalTime.MIDNIGHT,
-                    120,
-                    25.0,
-                    "Must see",
-                    GeoCords(40.689247, -74.044502),
-                    "https://liberty.com",
-                    "https://liberty.img"),
-                emptyList(),
-                emptyList()))
+    coEvery { mockTripsRepository.getAllSuggestionsFromTrip("tripId") } returns listOf(suggestion)
     coEvery { mockTripsRepository.getAllUsersFromTrip("tripId") } returns
         listOf(
             User(
@@ -124,6 +130,10 @@ class MapViewModelTest {
     coEvery { mockTripsRepository.getUserFromTrip(any(), any()) } returns User(name = "user")
 
     coEvery { mockTripsRepository.updateUserInTrip(any(), any()) } returns true
+
+    coEvery { mockTripsRepository.updateStopInTrip(any(), any()) } returns true
+
+    coEvery { mockTripsRepository.updateSuggestionInTrip(any(), any()) } returns true
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -156,8 +166,8 @@ class MapViewModelTest {
         viewModel.refreshData()
 
         advanceUntilIdle()
-        assertEquals(1, viewModel.suggestions.value.size)
-        assertEquals("Statue of Liberty", viewModel.suggestions.value[0].title)
+        assertEquals(1, viewModel.suggestionsStop.value.size)
+        assertEquals("Statue of Liberty", viewModel.suggestionsStop.value[0].title)
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -177,12 +187,12 @@ class MapViewModelTest {
     viewModel.clearAllSharedPreferences()
 
     verify { SharedPreferencesManager.clearAll() }
-    assertEquals(emptyList<PlaceData>(), viewModel.listOfTempPlaceData.value)
+    assertEquals(emptyList<GeoCords>(), viewModel.listOfTempPlaceData.value)
   }
 
   @Test
   fun `savePlaceDataState saves place data and updates LiveData`() = runBlockingTest {
-    val placeData = PlaceData("someplaceId")
+    val placeData = GeoCords(placeId = "someplaceId")
 
     viewModel.savePlaceDataState(placeData)
 
@@ -192,13 +202,68 @@ class MapViewModelTest {
 
   @Test
   fun `deletePlaceDataState deletes place data and updates LiveData`() = runBlockingTest {
-    val placeData = PlaceData("Some place")
+    val placeData = GeoCords(placeId = "Some place")
 
     viewModel.deletePlaceDataState(placeData)
 
     verify { SharedPreferencesManager.deletePlaceData(placeData) }
-    assertEquals(emptyList<PlaceData>(), viewModel.listOfTempPlaceData.value)
+    assertEquals(emptyList<GeoCords>(), viewModel.listOfTempPlaceData.value)
   }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updating stop in trip updates repository and LiveData`() =
+      runBlockingTest(testDispatcher) {
+        val stop =
+            Stop(
+                "stop1",
+                "Central Park",
+                "123 Park Ave",
+                LocalDate.now(),
+                LocalTime.NOON,
+                60,
+                0.0,
+                "Nice place",
+                GeoCords(40.785091, -73.968285),
+                "https://example.com",
+                "https://image.url")
+
+        viewModel.updateStop(stop)
+
+        advanceUntilIdle()
+        coVerify { mockTripsRepository.updateStopInTrip("tripId", stop) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updating suggestion in trip updates repository and LiveData`() =
+      runBlockingTest(testDispatcher) {
+        viewModel.getAllSuggestions()
+        viewModel.updateSuggestion(suggestion.stop)
+
+        advanceUntilIdle()
+        coVerify { mockTripsRepository.updateSuggestionInTrip("tripId", suggestion) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `setting a meet sends a notification`() =
+      runBlockingTest(testDispatcher) {
+        viewModel.sendMeetingNotification(suggestion.stop)
+        advanceUntilIdle()
+        coVerify { NotificationsManager.addMeetingStopNotification("tripId", suggestion.stop) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updating suggestion doesn't work if stop isn't in any suggestion`() =
+      runBlockingTest(testDispatcher) {
+        val suggestion = suggestion.copy(suggestionId = "suggestion2")
+        viewModel.updateSuggestion(suggestion.stop)
+
+        advanceUntilIdle()
+        coVerify(exactly = 0) { mockTripsRepository.updateSuggestionInTrip("tripId", suggestion) }
+      }
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @After

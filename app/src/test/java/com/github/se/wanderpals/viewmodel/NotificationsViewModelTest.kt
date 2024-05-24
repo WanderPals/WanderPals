@@ -79,6 +79,7 @@ class NotificationsViewModelTest {
             Announcement(
                 "Ann2", "Update", "Here's an update", "Admin", "tripId", LocalDateTime.now())
         viewModel.addAnnouncement(newAnnouncement)
+        advanceUntilIdle()
 
         // Check that correct mocked method was called
         coVerify { mockTripsRepository.addAnnouncementToTrip("tripId", newAnnouncement) }
