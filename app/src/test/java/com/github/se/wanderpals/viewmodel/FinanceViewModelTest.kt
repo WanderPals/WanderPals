@@ -15,9 +15,11 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.spyk
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
@@ -32,6 +34,9 @@ class FinanceViewModelTest {
   private lateinit var mockTripsRepository: TripsRepository
   private val testDispatcher = StandardTestDispatcher()
   private val tripId = "tripId"
+
+
+
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Before
@@ -53,12 +58,17 @@ class FinanceViewModelTest {
     coEvery { mockTripsRepository.getAllExpensesFromTrip(tripId) } returns
         listOf(
             Expense(
-                "", "Lunch", 0.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now()))
+                "", "Lunch", 10.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now()))
     coEvery { mockTripsRepository.getAllUsersFromTrip(tripId) } returns
         listOf(User(userId = "1", name = "Alice"))
     coEvery { mockTripsRepository.addExpenseToTrip(tripId, any()) } returns "true"
     coEvery { mockTripsRepository.getTrip(any()) } returns
         Trip("-1", "", LocalDate.now(), LocalDate.now(), 0.0, "")
+    coEvery { mockTripsRepository.getAllExpensesFromTrip(any()) } returns  listOf(
+      Expense(
+        "", "Lunch", 10.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now()))
+
+
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -93,7 +103,7 @@ class FinanceViewModelTest {
       runBlockingTest(testDispatcher) {
         val expense =
             Expense(
-                "", "Lunch", 0.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now())
+                "", "Lunch", 10.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now())
         viewModel.addExpense(tripId, expense)
 
         advanceUntilIdle()
@@ -101,4 +111,36 @@ class FinanceViewModelTest {
         coVerify { mockTripsRepository.addExpenseToTrip(tripId, expense) }
         assert(viewModel.expenseStateList.value.contains(expense))
       }
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updateCurrency updates trip currency and expenses correctly`() = runBlockingTest(testDispatcher) {
+    // Arrange
+    val newCurrency = "EUR"
+    val exchangeRate = 0.85
+
+    // Mocking the _exchangeRate LiveData
+    val exchangeRateLiveData = MutableStateFlow<Double?>(exchangeRate)
+    viewModel.exchangeRate.value= exchangeRateLiveData.value
+
+    val viewModelSpy = spyk(viewModel, recordPrivateCalls = true)
+    viewModelSpy
+    coEvery { viewModelSpy["updateExchangeRate"]("CHF",newCurrency) } coAnswers {}
+
+    // Act
+    viewModelSpy.updateCurrency(newCurrency)
+
+    advanceUntilIdle()
+
+
+    coVerify { mockTripsRepository.getTrip(tripId) }
+    coVerify { mockTripsRepository.getAllExpensesFromTrip(tripId) }
+
+    coVerify {
+      mockTripsRepository.updateExpenseInTrip(
+        tripId,
+        match { it.amount == 10.0 * exchangeRate }
+      )
+    }
+    coVerify {(mockTripsRepository.updateTrip(any()))}
+  }
 }

@@ -57,7 +57,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
   open val tripCurrency = _tripCurrency.asStateFlow()
 
-  private val _exchangeRate = MutableStateFlow<Double?>(null)
+  val exchangeRate = MutableStateFlow<Double?>(null)
 
 
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
@@ -119,10 +119,10 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     viewModelScope.launch {
       val currentTrip = tripsRepository.getTrip(tripId)!!
       updateExchangeRate(currentTrip.currencyCode,newCurrencyCode)
-      if(_exchangeRate.value != null){
+      if(exchangeRate.value != null){
         val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
         expenses.forEach{
-          tripsRepository.updateExpenseInTrip(tripId,it.copy(amount = it.amount * _exchangeRate.value!!))
+          tripsRepository.updateExpenseInTrip(tripId,it.copy(amount = it.amount * exchangeRate.value!!))
         }
         tripsRepository.updateTrip(currentTrip.copy(currencyCode = newCurrencyCode))
         updateStateLists()
@@ -154,18 +154,18 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
         if (response.isSuccessful) {
           val responseBody = response.body()?.string()
-          val exchangeRate = responseBody?.let {
+          val exchangeRateResponse = responseBody?.let {
             JSONObject(it).getJSONArray("response").getJSONObject(0)
               .getString("average_bid").toDouble()
           }
-          _exchangeRate.value = exchangeRate
+          exchangeRate.value = exchangeRateResponse
           Log.d("UpdateExchangeRate", "Exchange rate updated successfully: $exchangeRate")
         } else {
-          _exchangeRate.value = null
+          exchangeRate.value = null
           Log.e("UpdateExchangeRate", "Unsuccessful response. HTTP code: ${response.code()}")
         }
       } catch (e: IOException) {
-        _exchangeRate.value = null
+        exchangeRate.value = null
         Log.e("UpdateExchangeRate", "Failed to update exchange rate. Exception: ${e.message}")
       }
     }
