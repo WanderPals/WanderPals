@@ -137,7 +137,7 @@ class FinanceViewModelTest {
         viewModel.exchangeRate.value = exchangeRateLiveData.value
 
         val viewModelSpy = spyk(viewModel, recordPrivateCalls = true)
-        coEvery { viewModelSpy["updateExchangeRate"]("CHF", newCurrency) } coAnswers {}
+        coEvery { viewModelSpy["setExchangeRate"]("CHF", newCurrency) } coAnswers {}
 
         // Act
         viewModelSpy.updateCurrency(newCurrency)
