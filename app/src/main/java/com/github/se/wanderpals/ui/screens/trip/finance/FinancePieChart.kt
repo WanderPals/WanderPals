@@ -71,7 +71,7 @@ fun FinancePieChart(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = "$totalExpense $currencySymbol",
+                    text = "%.2f %s".format(totalExpense, currencySymbol),
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.primary,
                 )

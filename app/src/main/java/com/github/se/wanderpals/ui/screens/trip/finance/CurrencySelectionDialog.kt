@@ -105,6 +105,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                             if (newCurrency != null) {
                               financeViewModel.updateCurrency(newCurrency.currencyCode)
                               financeViewModel.setShowCurrencyDialogState(false)
+
                               isError = false
                             } else {
                               isError = true

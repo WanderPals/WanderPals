@@ -207,6 +207,8 @@ dependencies {
     // Google Places
     implementation(libs.places)
 
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
     debugImplementation("androidx.compose.ui:ui-tooling:1.6.7")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
 

@@ -26,6 +26,8 @@ import com.github.se.wanderpals.service.SessionManager
  */
 @Composable
 fun FinanceBottomBar(expenses: List<Expense>, currencySymbol: String) {
+  val totalAmount =
+      expenses.filter { it.userId == SessionManager.getCurrentUser()?.userId }.sumOf { it.amount }
   Row(
       modifier =
           Modifier.fillMaxWidth()
@@ -43,10 +45,7 @@ fun FinanceBottomBar(expenses: List<Expense>, currencySymbol: String) {
                   color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.Start))
               Text(
-                  text =
-                      "${expenses
-                          .filter { it.userId == SessionManager.getCurrentUser()?.userId }
-                          .sumOf { it.amount }} $currencySymbol",
+                  text = "%.2f %s".format(totalAmount, currencySymbol),
                   color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.Start),
               )
@@ -60,7 +59,7 @@ fun FinanceBottomBar(expenses: List<Expense>, currencySymbol: String) {
                   color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.End))
               Text(
-                  text = "${expenses.sumOf { it.amount }} $currencySymbol",
+                  text = "%.2f %s".format(expenses.sumOf { it.amount }, currencySymbol),
                   color = MaterialTheme.colorScheme.onPrimary,
                   modifier = Modifier.align(Alignment.End))
             }
