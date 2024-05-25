@@ -117,7 +117,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   open fun updateCurrency(newCurrencyCode: String) {
     viewModelScope.launch {
       val currentTrip = tripsRepository.getTrip(tripId)!!
-      updateExchangeRate(currentTrip.currencyCode, newCurrencyCode)
+      setExchangeRate(currentTrip.currencyCode, newCurrencyCode)
       if (exchangeRate.value != null) {
         val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
         expenses.forEach {
@@ -131,7 +131,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   }
 
   /**
-   * Updates the exchange rate between two currencies.
+   * Set the exchange rate between two currencies in the finance view model.
    *
    * This method fetches the exchange rate from a remote API by performing an http request and
    * updates the _exchangeRate state variable with the retrieved value.
@@ -139,7 +139,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
    * @param fromCurrency The original currency code.
    * @param toCurrency The target currency code.
    */
-  private suspend fun updateExchangeRate(fromCurrency: String, toCurrency: String) {
+  private suspend fun setExchangeRate(fromCurrency: String, toCurrency: String) {
     withContext(Dispatchers.IO) {
       try {
         val client = OkHttpClient()

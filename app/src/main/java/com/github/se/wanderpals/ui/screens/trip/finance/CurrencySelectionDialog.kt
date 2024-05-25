@@ -103,8 +103,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                                       it.currencyCode.equals(searchedCurrency, ignoreCase = true)
                                 }
                             if (newCurrency != null) {
-                              val newCurrencyCode = newCurrency.currencyCode
-                              financeViewModel.updateCurrency(newCurrencyCode)
+                              financeViewModel.updateCurrency(newCurrency.currencyCode)
                               financeViewModel.setShowCurrencyDialogState(false)
 
                               isError = false
