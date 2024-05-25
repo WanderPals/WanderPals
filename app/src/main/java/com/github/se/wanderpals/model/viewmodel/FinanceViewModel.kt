@@ -109,26 +109,36 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   /**
    * Updates the currency code of the current trip.
    *
-   * This method retrieves the current trip from the repository, updates it with the new currency
-   * code, and refreshes the related state lists.
+   * This method retrieves the current trip from the repository, updates the exchange rate,
+   * converts all expenses to the new currency, updates the trip with the new currency code,
+   * and refreshes the related state lists.
    *
-   * @param currencyCode The new currency code to be used for the trip.
+   * @param newCurrencyCode The new currency code to be used for the trip.
    */
-  open fun updateCurrency(currencyCode: String) {
+  open fun updateCurrency(newCurrencyCode: String) {
     viewModelScope.launch {
       val currentTrip = tripsRepository.getTrip(tripId)!!
-      updateExchangeRate(currentTrip.currencyCode,currencyCode)
+      updateExchangeRate(currentTrip.currencyCode,newCurrencyCode)
       if(_exchangeRate.value != null){
         val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
         expenses.forEach{
           tripsRepository.updateExpenseInTrip(tripId,it.copy(amount = it.amount * _exchangeRate.value!!))
         }
-        tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))
+        tripsRepository.updateTrip(currentTrip.copy(currencyCode = newCurrencyCode))
         updateStateLists()
       }
     }
   }
 
+  /**
+   * Updates the exchange rate between two currencies.
+   *
+   * This method fetches the exchange rate from a remote API by performing an http request
+   * and updates the _exchangeRate state variable with the retrieved value.
+   *
+   * @param fromCurrency The original currency code.
+   * @param toCurrency The target currency code.
+   */
   private suspend fun updateExchangeRate(fromCurrency: String, toCurrency: String) {
     withContext(Dispatchers.IO) {
       try {
@@ -141,6 +151,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
           .build()
 
         val response: Response = client.newCall(request).execute()
+
         if (response.isSuccessful) {
           val responseBody = response.body()?.string()
           val exchangeRate = responseBody?.let {
@@ -151,14 +162,25 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
           Log.d("UpdateExchangeRate", "Exchange rate updated successfully: $exchangeRate")
         } else {
           _exchangeRate.value = null
-          Log.d("UpdateExchangeRate", "Unsuccessful response. HTTP code: ${response.code()}")
+          Log.e("UpdateExchangeRate", "Unsuccessful response. HTTP code: ${response.code()}")
         }
       } catch (e: IOException) {
         _exchangeRate.value = null
-        Log.d("UpdateExchangeRate", "Failed to update exchange rate. Exception: ${e.message}")
+        Log.e("UpdateExchangeRate", "Failed to update exchange rate. Exception: ${e.message}")
       }
     }
   }
+
+  /**
+   * Builds the URL for fetching the exchange rate between two currencies.
+   *
+   * This method constructs the URL for the exchange rate API based on the provided currency codes
+   * and the current date.
+   *
+   * @param fromCurrency The original currency code.
+   * @param toCurrency The target currency code.
+   * @return The URL for the exchange rate API.
+   */
   private fun buildExchangeURL(fromCurrency: String,toCurrency: String): String {
 
     val currentDate = LocalDate.now()
