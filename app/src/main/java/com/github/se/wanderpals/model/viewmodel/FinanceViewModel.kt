@@ -1,9 +1,9 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import okhttp3.Dispatcher
+import okhttp3.HttpUrl
 import org.json.JSONObject
 import java.io.IOException
 import java.time.LocalDate
@@ -117,63 +117,69 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   open fun updateCurrency(currencyCode: String) {
     viewModelScope.launch {
       val currentTrip = tripsRepository.getTrip(tripId)!!
-      tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))
-      updateStateLists()
-    }
-  }
-
-  private suspend fun updateExchangeRate(fromCurrency: String, toCurrency: String){
-    withContext(Dispatchers.IO){
-      val client = OkHttpClient()
-
-
-      val currentDate = LocalDate.now()
-      val startDate = currentDate.minusDays(1).toString() // Yesterday's date
-      val endDate = currentDate.toString() // Today's date
-
-      val url = "https://fxds-public-exchange-rates-api.oanda.com/cc-api/currencies?base=$fromCurrency&quote=$toCurrency&data_type=general_currency_pair&start_date=$startDate&end_date=$endDate"
-      val request = Request.Builder()
-        .url(url)
-        .build()
-
-      try {
-          val response: Response = client.newCall(request).execute()
-          if (response.isSuccessful) {
-            val responseBody = response.body()?.string()
-            if(responseBody != null){
-              val jsonObject = JSONObject(responseBody)
-              val responseArray = jsonObject.getJSONArray("response")
-              val exchangeRate = responseArray.getJSONObject(0).getString("average_bid").toDouble()
-              _exchangeRate.value = exchangeRate
-            } else {
-              _exchangeRate.value = null
-            }
-          } else {
-            _exchangeRate.value = null
-          }
-      } catch (e: IOException) {
-          e.printStackTrace()
-      }
-
-
-    }
-
-  }
-
-  open fun convertCurrency(fromCurrency: String, toCurrency: String): Boolean{
-    var success = false
-    viewModelScope.launch {
-      updateExchangeRate(fromCurrency,toCurrency)
+      updateExchangeRate(currentTrip.currencyCode,currencyCode)
       if(_exchangeRate.value != null){
         val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
         expenses.forEach{
           tripsRepository.updateExpenseInTrip(tripId,it.copy(amount = it.amount * _exchangeRate.value!!))
         }
-        success = true
+        tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))
+        updateStateLists()
       }
     }
-    return success
   }
+
+  private suspend fun updateExchangeRate(fromCurrency: String, toCurrency: String) {
+    withContext(Dispatchers.IO) {
+      try {
+        val client = OkHttpClient()
+
+        val url = buildExchangeURL(fromCurrency,toCurrency)
+
+        val request = Request.Builder()
+          .url(url)
+          .build()
+
+        val response: Response = client.newCall(request).execute()
+        if (response.isSuccessful) {
+          val responseBody = response.body()?.string()
+          val exchangeRate = responseBody?.let {
+            JSONObject(it).getJSONArray("response").getJSONObject(0)
+              .getString("average_bid").toDouble()
+          }
+          _exchangeRate.value = exchangeRate
+          Log.d("UpdateExchangeRate", "Exchange rate updated successfully: $exchangeRate")
+        } else {
+          _exchangeRate.value = null
+          Log.d("UpdateExchangeRate", "Unsuccessful response. HTTP code: ${response.code()}")
+        }
+      } catch (e: IOException) {
+        _exchangeRate.value = null
+        Log.d("UpdateExchangeRate", "Failed to update exchange rate. Exception: ${e.message}")
+      }
+    }
+  }
+  private fun buildExchangeURL(fromCurrency: String,toCurrency: String): String {
+
+    val currentDate = LocalDate.now()
+    val startDate = currentDate.minusDays(1).toString() // Yesterday's date
+    val endDate = currentDate.toString() // Today's date
+
+    return HttpUrl.Builder()
+      .scheme("https")
+      .host("fxds-public-exchange-rates-api.oanda.com")
+      .addPathSegment("cc-api")
+      .addPathSegment("currencies")
+      .addQueryParameter("base", fromCurrency)
+      .addQueryParameter("quote", toCurrency)
+      .addQueryParameter("data_type", "general_currency_pair")
+      .addQueryParameter("start_date", startDate)
+      .addQueryParameter("end_date", endDate)
+      .build()
+      .toString()
+
+  }
+
 
   /** Setter functions */
   open fun setShowDeleteDialogState(value: Boolean) {
