@@ -31,50 +31,50 @@ data class CalendarUiState(
     val dates: List<Date>,
     val selectedDate: LocalDate? = LocalDate.now() // By default selected day is today
 ) {
+  companion object {
+    val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
+  }
+
+  /**
+   * Enum class representing the status of a stop in the trip.
+   *
+   * @property CURRENT Suggestion was transformed into a stop of the trip, it is a stop of the trip
+   *   of the current day.
+   * @property COMING_SOON Suggestion was transformed into a stop of the trip, is is a stop in the
+   *   following days of the current day of the trip.
+   * @property PAST Suggestion was transformed into a stop of the trip, it is a stop of the trip of
+   *   days before the current day of the trip.
+   * @property NONE Suggestion has not been transformed into a stop of the trip yet, it is still a
+   *   suggestion of the trip.
+   */
+  enum class StopStatus {
+    CURRENT,
+    COMING_SOON,
+    PAST,
+    NONE
+  }
+
+  /**
+   * Data class representing a single date in the calendar. Includes information about the day of
+   * the month, the corresponding year and month, and whether the date is selected.
+   *
+   * @property dayOfMonth The day of the month as a string.
+   * @property yearMonth The year and month to which this date belongs.
+   * @property year The year as a `Year` object.
+   * @property isSelected Boolean indicating whether this date is currently selected.
+   */
+  data class Date(
+      val dayOfMonth: String,
+      val yearMonth: YearMonth,
+      val year: Year,
+      val isSelected: Boolean,
+      val stopStatus: StopStatus = StopStatus.NONE
+  ) {
     companion object {
-        val Init = CalendarUiState(yearMonth = YearMonth.now(), dates = emptyList())
+      // Represents an empty date, used as a placeholder in the calendar grid
+      val Empty = Date("", YearMonth.now(), Year.now(), false, StopStatus.NONE)
     }
-
-    /**
-     * Enum class representing the status of a stop in the trip.
-     *
-     * @property CURRENT Suggestion was transformed into a stop of the trip, it is a stop of the trip
-     *   of the current day.
-     * @property COMING_SOON Suggestion was transformed into a stop of the trip, is is a stop in the
-     *   following days of the current day of the trip.
-     * @property PAST Suggestion was transformed into a stop of the trip, it is a stop of the trip of
-     *   days before the current day of the trip.
-     * @property NONE Suggestion has not been transformed into a stop of the trip yet, it is still a
-     *   suggestion of the trip.
-     */
-    enum class StopStatus {
-        CURRENT,
-        COMING_SOON,
-        PAST,
-        NONE
-    }
-
-    /**
-     * Data class representing a single date in the calendar. Includes information about the day of
-     * the month, the corresponding year and month, and whether the date is selected.
-     *
-     * @property dayOfMonth The day of the month as a string.
-     * @property yearMonth The year and month to which this date belongs.
-     * @property year The year as a `Year` object.
-     * @property isSelected Boolean indicating whether this date is currently selected.
-     */
-    data class Date(
-        val dayOfMonth: String,
-        val yearMonth: YearMonth,
-        val year: Year,
-        val isSelected: Boolean,
-        val stopStatus: StopStatus = StopStatus.NONE
-    ) {
-        companion object {
-            // Represents an empty date, used as a placeholder in the calendar grid
-            val Empty = Date("", YearMonth.now(), Year.now(), false, StopStatus.NONE)
-        }
-    }
+  }
 }
 
 /**
@@ -83,31 +83,31 @@ data class CalendarUiState(
  */
 class CalendarDataSource {
 
-    /**
-     * Generates a list of `CalendarUiState.Date` objects for a given year and month. This list
-     * includes dates from the specified month, marking the selected date if provided.
-     *
-     * @param yearMonth The year and month for which to generate the date list.
-     * @param selectedDate An optional `LocalDate` representing the currently selected date.
-     * @param stopsInfo A map of `LocalDate` to `CalendarUiState.StopStatus` representing the status
-     *   of stops.
-     * @return A list of `CalendarUiState.Date` objects representing the dates of the specified month.
-     */
-    fun getDates(
-        yearMonth: YearMonth,
-        selectedDate: LocalDate?,
-        stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>
-    ): List<CalendarUiState.Date> {
-        return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
-            val isSelected = date == selectedDate && date.monthValue == yearMonth.monthValue
-            CalendarUiState.Date(
-                dayOfMonth = if (date.monthValue == yearMonth.monthValue) "${date.dayOfMonth}" else "",
-                yearMonth = yearMonth,
-                year = Year.of(date.year),
-                isSelected = isSelected,
-                stopStatus = stopsInfo[date] ?: CalendarUiState.StopStatus.NONE)
-        }
+  /**
+   * Generates a list of `CalendarUiState.Date` objects for a given year and month. This list
+   * includes dates from the specified month, marking the selected date if provided.
+   *
+   * @param yearMonth The year and month for which to generate the date list.
+   * @param selectedDate An optional `LocalDate` representing the currently selected date.
+   * @param stopsInfo A map of `LocalDate` to `CalendarUiState.StopStatus` representing the status
+   *   of stops.
+   * @return A list of `CalendarUiState.Date` objects representing the dates of the specified month.
+   */
+  fun getDates(
+      yearMonth: YearMonth,
+      selectedDate: LocalDate?,
+      stopsInfo: Map<LocalDate, CalendarUiState.StopStatus>
+  ): List<CalendarUiState.Date> {
+    return yearMonth.getDayOfMonthStartingFromMonday().map { date ->
+      val isSelected = date == selectedDate && date.monthValue == yearMonth.monthValue
+      CalendarUiState.Date(
+          dayOfMonth = if (date.monthValue == yearMonth.monthValue) "${date.dayOfMonth}" else "",
+          yearMonth = yearMonth,
+          year = Year.of(date.year),
+          isSelected = isSelected,
+          stopStatus = stopsInfo[date] ?: CalendarUiState.StopStatus.NONE)
     }
+  }
 }
 
 /**
@@ -130,13 +130,13 @@ fun getDaysOfWeekLabels(): Array<String> =
  *   Monday, to be used in the calendar grid.
  */
 fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
-    val firstDayOfMonth = LocalDate.of(year, month, 1)
-    val firstMondayOfMonth = firstDayOfMonth.with(DayOfWeek.MONDAY)
-    val firstDayOfNextMonth = firstDayOfMonth.plusMonths(1)
+  val firstDayOfMonth = LocalDate.of(year, month, 1)
+  val firstMondayOfMonth = firstDayOfMonth.with(DayOfWeek.MONDAY)
+  val firstDayOfNextMonth = firstDayOfMonth.plusMonths(1)
 
-    return generateSequence(firstMondayOfMonth) { it.plusDays(1) }
-        .takeWhile { it.isBefore(firstDayOfNextMonth) }
-        .toList()
+  return generateSequence(firstMondayOfMonth) { it.plusDays(1) }
+      .takeWhile { it.isBefore(firstDayOfNextMonth) }
+      .toList()
 }
 
 /**
@@ -148,7 +148,7 @@ fun YearMonth.getDayOfMonthStartingFromMonday(): List<LocalDate> {
  *   2024").
  */
 fun YearMonth.getDisplayName(): String {
-    return "${month.getDisplayName(TextStyle.FULL, Locale.getDefault())} $year"
+  return "${month.getDisplayName(TextStyle.FULL, Locale.getDefault())} $year"
 }
 
 /**
@@ -158,28 +158,28 @@ fun YearMonth.getDisplayName(): String {
  */
 @Composable
 fun DisplayDate(date: LocalDate?, color: Color) {
-    // Define a formatter
-    val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(Locale.getDefault())
+  // Define a formatter
+  val formatter = DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy").withLocale(Locale.getDefault())
 
-    // Format the selected date using the formatter
-    val formattedDate =
-        date?.format(formatter)?.let { it ->
-            it.split(", ").joinToString(", ") { part ->
-                part.split(" ").joinToString(" ") { word ->
-                    word.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-                    }
-                }
+  // Format the selected date using the formatter
+  val formattedDate =
+      date?.format(formatter)?.let { it ->
+        it.split(", ").joinToString(", ") { part ->
+          part.split(" ").joinToString(" ") { word ->
+            word.replaceFirstChar {
+              if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
             }
-        } ?: "No date selected"
+          }
+        }
+      } ?: "No date selected"
 
-    // Display the formatted date
-    Text(
-        text = formattedDate,
-        style =
-        androidx.compose.ui.text.TextStyle(
-            color = color, fontSize = 16.sp, fontWeight = FontWeight.Bold),
-        color = color,
-        textAlign = TextAlign.Center,
-        modifier = Modifier.padding(8.dp).testTag("displayDateText"))
+  // Display the formatted date
+  Text(
+      text = formattedDate,
+      style =
+          androidx.compose.ui.text.TextStyle(
+              color = color, fontSize = 16.sp, fontWeight = FontWeight.Bold),
+      color = color,
+      textAlign = TextAlign.Center,
+      modifier = Modifier.padding(8.dp).testTag("displayDateText"))
 }
