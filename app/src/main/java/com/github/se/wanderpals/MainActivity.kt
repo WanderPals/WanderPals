@@ -29,7 +29,6 @@ import androidx.navigation.compose.rememberNavController
 import com.github.se.wanderpals.model.viewmodel.AdminViewModel
 import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.model.viewmodel.MainViewModel
-import com.github.se.wanderpals.model.viewmodel.NotificationAPI
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.LocationService
 import com.github.se.wanderpals.service.MapManager
@@ -312,9 +311,6 @@ class MainActivity : ComponentActivity() {
                   Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
-                  NotificationAPI()
-                      .sendNotification(listOf(SessionManager.getNotificationToken()), "hello2")
-
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
                           factory =
@@ -324,9 +320,6 @@ class MainActivity : ComponentActivity() {
                   Log.d("CREATE_TRIP", "Create Trip")
 
                   CreateTrip(overviewViewModel, navigationActions)
-                  // create notification to send to the list of tokens
-                  // iterate on the list of tokens and send the notification
-
                 }
 
                 composable(Route.CREATE_SUGGESTION) {

@@ -16,6 +16,17 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
+/**
+ * ViewModel responsible for managing notifications. Provides functionality to send notifications to
+ * users.
+ *
+ * @constructor Creates a NotificationAPI.
+ * @property state The state of the notification.
+ * @property client The OkHttpClient.
+ * @property interceptor The HttpLoggingInterceptor.
+ * @property clientBuilder The OkHttpClient.Builder.
+ * @property api The NotificationInterface.
+ */
 open class NotificationAPI : ViewModel() {
   var state by mutableStateOf(true)
 
