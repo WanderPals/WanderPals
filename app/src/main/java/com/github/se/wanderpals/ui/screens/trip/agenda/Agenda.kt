@@ -61,6 +61,8 @@ private const val MAX_ROWS_CALENDAR = 6
  *
  * @param agendaViewModel The ViewModel that holds and manages UI-related data for the Agenda
  *   screen. It defaults to a ViewModel instance provided by the `viewModel()` function.
+ *   @param tripId The unique identifier of the trip for which the agenda is being displayed.
+ *   @param tripsRepository The repository for accessing trips data.
  */
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: TripsRepository) {
@@ -125,6 +127,7 @@ fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: Tr
  * @param onNextMonthButtonClicked A lambda function to be called when the user requests to navigate
  *   to the next month.
  * @param onDateClickListener A lambda function to be called when the user selects a date.
+ * @param trip The trip for which the agenda is being displayed.
  */
 @Composable
 fun CalendarWidget(
@@ -155,6 +158,8 @@ fun CalendarWidget(
  * Composable function that displays the daily activities for a selected date.
  *
  * @param agendaViewModel The view model for managing the agenda of a trip.
+ * @param isExpanded A boolean value indicating whether the daily activities are expanded.
+ * @param onToggle A lambda function to be invoked when the daily activities are expanded or collapsed.
  */
 @Composable
 fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -> Unit) {
@@ -255,6 +260,7 @@ fun DayItem(day: String, modifier: Modifier = Modifier) {
  *
  * @param dates A list of `CalendarUiState.Date` objects to be displayed as date items.
  * @param onDateClickListener A lambda function to be called when a date item is clicked.
+ * @param trip The trip for which the agenda is being displayed.
  */
 @Composable
 fun Content(
@@ -272,9 +278,9 @@ fun Content(
                     val isWithinTrip = isWithinTripRange(item, trip.startDate, trip.endDate)
 
                     ContentItem(
-//                        date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f), isWithinTrip = isWithinTrip)
-                        date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f), isWithinTrip = isWithinTrip, isStartDate = item.dayOfMonth == trip.startDate.dayOfMonth.toString() && item.yearMonth == YearMonth.from(trip.startDate), isEndDate = item.dayOfMonth == trip.endDate.dayOfMonth.toString() && item.yearMonth == YearMonth.from(trip.endDate))
-
+                        date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f), isWithinTrip = isWithinTrip,
+                        isStartDate = item.dayOfMonth == trip.startDate.dayOfMonth.toString() && item.yearMonth == YearMonth.from(trip.startDate), isEndDate = item.dayOfMonth == trip.endDate.dayOfMonth.toString() && item.yearMonth == YearMonth.from(trip.endDate),
+                        isStartOfLine = index % DAYS_IN_A_WEEK == 0, isEndOfLine = index % DAYS_IN_A_WEEK == DAYS_IN_A_WEEK - 1)
                     index++
                 }
             }
@@ -289,6 +295,11 @@ fun Content(
  * @param date The `CalendarUiState.Date` object representing the date to be displayed.
  * @param onClickListener A lambda function to be called when this date item is clicked.
  * @param modifier A `Modifier` to be applied to this Composable for styling and layout purposes.
+ * @param isWithinTrip A boolean value indicating whether the date is within the trip range.
+ * @param isStartDate A boolean value indicating whether the date is the start date of the trip.
+ * @param isEndDate A boolean value indicating whether the date is the end date of the trip.
+ * @param isStartOfLine A boolean value indicating whether this date item is at the start of a row of the calendar.
+ * @param isEndOfLine A boolean value indicating whether this date item is at the end of a row of the calendar.
  */
 @Composable
 fun ContentItem(
@@ -297,7 +308,9 @@ fun ContentItem(
     modifier: Modifier = Modifier,
     isWithinTrip: Boolean,
     isStartDate: Boolean,
-    isEndDate: Boolean
+    isEndDate: Boolean,
+    isStartOfLine: Boolean,
+    isEndOfLine: Boolean
 ) {
     // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
     val isEmptyDate = date.dayOfMonth.isEmpty()
@@ -313,14 +326,14 @@ fun ContentItem(
         }
 
     val backgroundShape = when {
-        isStartDate -> RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp)
-        isEndDate -> RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp)
+        isStartDate || isStartOfLine -> RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp)
+        isEndDate || isEndOfLine -> RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp)
         else -> RoundedCornerShape(0.dp)
     }
     val tripBackgroundModifier = Modifier
         .clip(backgroundShape)
         .background(
-            if (isWithinTrip) Color(0xFFE0F7FA) // Light blue background for trip range
+            if (isWithinTrip) MaterialTheme.colorScheme.tertiaryContainer // background for trip range
             else Color.Transparent
         )
 
@@ -332,9 +345,9 @@ fun ContentItem(
     val finalModifier = modifier
         .aspectRatio(1f)
         .background(Color.Transparent)
-        .then(tripBackgroundModifier)
+        .then(tripBackgroundModifier) // first apply the trip background modifier
         .clickable(enabled = !isEmptyDate) { onClickListener(date) }
-        .then(dateBackgroundModifier)
+        .then(dateBackgroundModifier) // then apply the date background modifier
         .padding(10.dp)
         .semantics {
             contentDescription =
@@ -368,6 +381,12 @@ fun ContentItem(
     }
 }
 
+/**
+ * the function to determine if the date is within the trip range.
+ * @param date The date to be checked.
+ * @param startDate The start date of the trip.
+ * @param endDate The end date of the trip.
+ */
 fun isWithinTripRange(date: CalendarUiState.Date, startDate: LocalDate, endDate: LocalDate): Boolean {
     if (date.dayOfMonth.isEmpty()) return false
     val currentDate = LocalDate.of(date.year.value, date.yearMonth.month, date.dayOfMonth.toInt())
