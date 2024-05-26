@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -42,6 +43,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.navigationActions
@@ -62,50 +64,52 @@ private const val MAX_ROWS_CALENDAR = 6
  */
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: TripsRepository) {
-  val uiState by agendaViewModel.uiState.collectAsState()
+    val uiState by agendaViewModel.uiState.collectAsState()
+    val trip by agendaViewModel.trip.collectAsState()
 
-  var isDrawerExpanded by remember { mutableStateOf(false) }
+    var isDrawerExpanded by remember { mutableStateOf(false) }
 
-  Scaffold(
-      topBar = {
-        Column(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
-          Banner(
-              agendaViewModel,
-              isDrawerExpanded,
-              onToggle = { isDrawerExpanded = !isDrawerExpanded })
-          AnimatedVisibility(
-              visible = isDrawerExpanded,
-              modifier =
-                  Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxWidth()) {
-                CalendarWidget(
-                    days = getDaysOfWeekLabels(),
-                    yearMonth = uiState.yearMonth,
-                    dates = uiState.dates,
-                    onPreviousMonthButtonClicked = { prevMonth ->
-                      agendaViewModel.toPreviousMonth(prevMonth)
-                    },
-                    onNextMonthButtonClicked = { nextMonth ->
-                      agendaViewModel.toNextMonth(nextMonth)
-                    },
-                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
-              }
-          Spacer(modifier = Modifier.padding(1.dp))
+    Scaffold(
+        topBar = {
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.primary)) {
+                Banner(
+                    agendaViewModel,
+                    isDrawerExpanded,
+                    onToggle = { isDrawerExpanded = !isDrawerExpanded })
+                AnimatedVisibility(
+                    visible = isDrawerExpanded,
+                    modifier =
+                    Modifier.background(color = MaterialTheme.colorScheme.surface).fillMaxWidth()) {
+                    CalendarWidget(
+                        days = getDaysOfWeekLabels(),
+                        yearMonth = uiState.yearMonth,
+                        dates = uiState.dates,
+                        onPreviousMonthButtonClicked = { prevMonth ->
+                            agendaViewModel.toPreviousMonth(prevMonth)
+                        },
+                        onNextMonthButtonClicked = { nextMonth ->
+                            agendaViewModel.toNextMonth(nextMonth)
+                        },
+                        onDateClickListener = { date -> agendaViewModel.onDateSelected(date) },
+                        trip = trip)
+                }
+                Spacer(modifier = Modifier.padding(1.dp))
+            }
+        },
+        modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
+    ) { paddingValues ->
+        Column(modifier = Modifier.padding(paddingValues)) {
+            if (isDrawerExpanded) {
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.secondary)
+            }
+            // Daily agenda implementation
+            DailyActivities(
+                agendaViewModel = agendaViewModel, tripId = tripId, tripsRepository = tripsRepository)
         }
-      },
-      modifier = Modifier.fillMaxSize().testTag("agendaScreen"),
-  ) { paddingValues ->
-    Column(modifier = Modifier.padding(paddingValues)) {
-      if (isDrawerExpanded) {
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.secondary)
-      }
-      // Daily agenda implementation
-      DailyActivities(
-          agendaViewModel = agendaViewModel, tripId = tripId, tripsRepository = tripsRepository)
     }
-  }
 }
 
 /**
@@ -129,21 +133,22 @@ fun CalendarWidget(
     dates: List<CalendarUiState.Date>,
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
-    onDateClickListener: (CalendarUiState.Date) -> Unit
+    onDateClickListener: (CalendarUiState.Date) -> Unit,
+    trip:Trip
 ) {
-  Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
-    Row {
-      repeat(days.size) {
-        val item = days[it]
-        DayItem(item, modifier = Modifier.weight(1f))
-      }
+    Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
+        Row {
+            repeat(days.size) {
+                val item = days[it]
+                DayItem(item, modifier = Modifier.weight(1f))
+            }
+        }
+        Header(
+            yearMonth = yearMonth,
+            onPreviousMonthButtonClicked = onPreviousMonthButtonClicked,
+            onNextMonthButtonClicked = onNextMonthButtonClicked)
+        Content(dates = dates, onDateClickListener = onDateClickListener, trip = trip)
     }
-    Header(
-        yearMonth = yearMonth,
-        onPreviousMonthButtonClicked = onPreviousMonthButtonClicked,
-        onNextMonthButtonClicked = onNextMonthButtonClicked)
-    Content(dates = dates, onDateClickListener = onDateClickListener)
-  }
 }
 
 /**
@@ -153,42 +158,42 @@ fun CalendarWidget(
  */
 @Composable
 fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -> Unit) {
-  val uiState by agendaViewModel.uiState.collectAsState()
-  val selectedDate = uiState.selectedDate ?: LocalDate.now()
+    val uiState by agendaViewModel.uiState.collectAsState()
+    val selectedDate = uiState.selectedDate ?: LocalDate.now()
 
-  Box(
-      modifier =
-          Modifier.fillMaxWidth()
-              .clickable { onToggle() }
-              .padding(8.dp)
-              .background(MaterialTheme.colorScheme.primary)
-              .testTag("Banner")) {
+    Box(
+        modifier =
+        Modifier.fillMaxWidth()
+            .clickable { onToggle() }
+            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.primary)
+            .testTag("Banner")) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-          DisplayDate(date = selectedDate, color = MaterialTheme.colorScheme.onPrimary)
-          // Optional: Add an icon to indicate the expand/collapse action
-          Icon(
-              imageVector =
-                  if (isExpanded) Icons.Default.KeyboardArrowUp
-                  else Icons.Default.KeyboardArrowDown,
-              contentDescription = "Toggle",
-              tint = MaterialTheme.colorScheme.onPrimary)
-          Spacer(modifier = Modifier.weight(1f))
-          // Add an icon to tap that opens the full list of all stops for the trip
-          IconButton(
-              onClick = {
-                // Navigate to the stops list screen
-                navigationActions.navigateTo(Route.STOPS_LIST)
-              },
-              modifier = Modifier.testTag("AllStopsButton"),
-              content = {
-                Icon(
-                    painter = painterResource(id = R.drawable.stops_list_icon),
-                    contentDescription = "Open Stops",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                )
-              })
+            DisplayDate(date = selectedDate, color = MaterialTheme.colorScheme.onPrimary)
+            // Optional: Add an icon to indicate the expand/collapse action
+            Icon(
+                imageVector =
+                if (isExpanded) Icons.Default.KeyboardArrowUp
+                else Icons.Default.KeyboardArrowDown,
+                contentDescription = "Toggle",
+                tint = MaterialTheme.colorScheme.onPrimary)
+            Spacer(modifier = Modifier.weight(1f))
+            // Add an icon to tap that opens the full list of all stops for the trip
+            IconButton(
+                onClick = {
+                    // Navigate to the stops list screen
+                    navigationActions.navigateTo(Route.STOPS_LIST)
+                },
+                modifier = Modifier.testTag("AllStopsButton"),
+                content = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.stops_list_icon),
+                        contentDescription = "Open Stops",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                    )
+                })
         }
-      }
+    }
 }
 
 /**
@@ -207,23 +212,23 @@ fun Header(
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
 ) {
-  Row {
-    IconButton(onClick = { onPreviousMonthButtonClicked.invoke(yearMonth.minusMonths(1)) }) {
-      Icon(
-          imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-          contentDescription = stringResource(id = R.string.back))
+    Row {
+        IconButton(onClick = { onPreviousMonthButtonClicked.invoke(yearMonth.minusMonths(1)) }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                contentDescription = stringResource(id = R.string.back))
+        }
+        Text(
+            text = yearMonth.getDisplayName(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f).align(Alignment.CenterVertically))
+        IconButton(onClick = { onNextMonthButtonClicked.invoke(yearMonth.plusMonths(1)) }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = stringResource(id = R.string.next))
+        }
     }
-    Text(
-        text = yearMonth.getDisplayName(),
-        textAlign = TextAlign.Center,
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier.weight(1f).align(Alignment.CenterVertically))
-    IconButton(onClick = { onNextMonthButtonClicked.invoke(yearMonth.plusMonths(1)) }) {
-      Icon(
-          imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-          contentDescription = stringResource(id = R.string.next))
-    }
-  }
 }
 
 /**
@@ -235,13 +240,13 @@ fun Header(
  */
 @Composable
 fun DayItem(day: String, modifier: Modifier = Modifier) {
-  Box(modifier = modifier) {
-    Text(
-        text = day,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.align(Alignment.Center).padding(10.dp))
-  }
+    Box(modifier = modifier) {
+        Text(
+            text = day,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.align(Alignment.Center).padding(10.dp))
+    }
 }
 
 /**
@@ -255,21 +260,26 @@ fun DayItem(day: String, modifier: Modifier = Modifier) {
 fun Content(
     dates: List<CalendarUiState.Date>,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
+    trip: Trip
 ) {
-  Column {
-    var index = 0
-    repeat(MAX_ROWS_CALENDAR) {
-      if (index >= dates.size) return@repeat
-      Row {
-        repeat(DAYS_IN_A_WEEK) {
-          val item = if (index < dates.size) dates[index] else CalendarUiState.Date.Empty
-          ContentItem(
-              date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f))
-          index++
+    Column {
+        var index = 0
+        repeat(MAX_ROWS_CALENDAR) {
+            if (index >= dates.size) return@repeat
+            Row {
+                repeat(DAYS_IN_A_WEEK) {
+                    val item = if (index < dates.size) dates[index] else CalendarUiState.Date.Empty
+                    val isWithinTrip = isWithinTripRange(item, trip.startDate, trip.endDate)
+
+                    ContentItem(
+//                        date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f), isWithinTrip = isWithinTrip)
+                        date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f), isWithinTrip = isWithinTrip, isStartDate = item.dayOfMonth == trip.startDate.dayOfMonth.toString() && item.yearMonth == YearMonth.from(trip.startDate), isEndDate = item.dayOfMonth == trip.endDate.dayOfMonth.toString() && item.yearMonth == YearMonth.from(trip.endDate))
+
+                    index++
+                }
+            }
         }
-      }
     }
-  }
 }
 
 /**
@@ -284,63 +294,82 @@ fun Content(
 fun ContentItem(
     date: CalendarUiState.Date,
     onClickListener: (CalendarUiState.Date) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isWithinTrip: Boolean,
+    isStartDate: Boolean,
+    isEndDate: Boolean
 ) {
-  // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
-  val isEmptyDate = date.dayOfMonth.isEmpty()
+    // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
+    val isEmptyDate = date.dayOfMonth.isEmpty()
 
-  // Set the marker color based on the stop status
-  val markerColor =
-      when (date.stopStatus) {
-        CalendarUiState.StopStatus.CURRENT -> MaterialTheme.colorScheme.tertiary // Stop added
-        CalendarUiState.StopStatus.COMING_SOON ->
-            MaterialTheme.colorScheme.inversePrimary // Coming soon
-        CalendarUiState.StopStatus.PAST -> MaterialTheme.colorScheme.outlineVariant // Past stop
-        else -> Color.Transparent // No stop
-      }
+    // Set the marker color based on the stop status
+    val markerColor =
+        when (date.stopStatus) {
+            CalendarUiState.StopStatus.CURRENT -> MaterialTheme.colorScheme.tertiary // Stop added
+            CalendarUiState.StopStatus.COMING_SOON ->
+                MaterialTheme.colorScheme.inversePrimary // Coming soon
+            CalendarUiState.StopStatus.PAST -> MaterialTheme.colorScheme.outlineVariant // Past stop
+            else -> Color.Transparent // No stop
+        }
 
-  val baseModifier =
-      modifier
-          .aspectRatio(1f)
-          .clip(CircleShape)
-          .background(
-              if (!isEmptyDate && date.isSelected) MaterialTheme.colorScheme.secondaryContainer
-              else Color.Transparent)
-          .semantics {
-            contentDescription =
-                if (!isEmptyDate)
-                    "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
-                else "Empty Date Cell"
-          }
-
-  // Apply clickable only if the date is not empty.
-  val finalModifier =
-      (if (!isEmptyDate) {
-        baseModifier.clickable { onClickListener(date) }.padding(10.dp)
-      } else baseModifier)
-
-  Box(modifier = finalModifier) {
-    if (!isEmptyDate) {
-      Text(
-          text = date.dayOfMonth,
-          style = MaterialTheme.typography.bodyMedium,
-          modifier = Modifier.align(Alignment.TopCenter))
-      // Displaying the status dot below the date
-      if (date.stopStatus !=
-          CalendarUiState.StopStatus
-              .NONE) { // I use "not equal to the NONE status" here, because we might have more
-        // statuses in the future
-        Box(
-            modifier =
-                Modifier.align(
-                        Alignment.BottomCenter) // Center the dot at the bottom of the date cell
-                    .size(8.dp) // Size of the dot
-                    .clip(CircleShape) // Make it circular
-                    .background(markerColor) // Set the appropriate color
-                    .padding(bottom = 4.dp) // Add some padding to the bottom
-                    .testTag("MarkerADDED") // Add test tag here
-            )
-      }
+    val backgroundShape = when {
+        isStartDate -> RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp)
+        isEndDate -> RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp)
+        else -> RoundedCornerShape(0.dp)
     }
-  }
+    val tripBackgroundModifier = Modifier
+        .clip(backgroundShape)
+        .background(
+            if (isWithinTrip) Color(0xFFE0F7FA) // Light blue background for trip range
+            else Color.Transparent
+        )
+
+    val dateBackgroundModifier = if (!isEmptyDate && date.isSelected) {
+        Modifier.clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer)
+    } else Modifier
+
+    // Apply clickable only if the date is not empty.
+    val finalModifier = modifier
+        .aspectRatio(1f)
+        .background(Color.Transparent)
+        .then(tripBackgroundModifier)
+        .clickable(enabled = !isEmptyDate) { onClickListener(date) }
+        .then(dateBackgroundModifier)
+        .padding(10.dp)
+        .semantics {
+            contentDescription =
+                if (!isEmptyDate) "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
+                else "Empty Date Cell"
+        }
+
+    Box(modifier = finalModifier) {
+        if (!isEmptyDate) {
+            Text(
+                text = date.dayOfMonth,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.align(Alignment.TopCenter))
+            // Displaying the status dot below the date
+            if (date.stopStatus !=
+                CalendarUiState.StopStatus
+                    .NONE) { // I use "not equal to the NONE status" here, because we might have more
+                // statuses in the future
+                Box(
+                    modifier =
+                    Modifier.align(
+                        Alignment.BottomCenter) // Center the dot at the bottom of the date cell
+                        .size(8.dp) // Size of the dot
+                        .clip(CircleShape) // Make it circular
+                        .background(markerColor) // Set the appropriate color
+                        .padding(bottom = 4.dp) // Add some padding to the bottom
+                        .testTag("MarkerADDED") // Add test tag here
+                )
+            }
+        }
+    }
+}
+
+fun isWithinTripRange(date: CalendarUiState.Date, startDate: LocalDate, endDate: LocalDate): Boolean {
+    if (date.dayOfMonth.isEmpty()) return false
+    val currentDate = LocalDate.of(date.year.value, date.yearMonth.month, date.dayOfMonth.toInt())
+    return currentDate.isAfter(startDate.minusDays(1)) && currentDate.isBefore(endDate.plusDays(1))
 }

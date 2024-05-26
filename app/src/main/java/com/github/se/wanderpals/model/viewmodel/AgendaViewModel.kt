@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarDataSource
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
@@ -22,8 +23,8 @@ import kotlinx.coroutines.launch
  * @property tripId The identifier of the trip for which the agenda is being managed.
  */
 open class AgendaViewModel(
-    private val tripId: String,
-    private val tripsRepository: TripsRepository?
+  private val tripId: String,
+  private val tripsRepository: TripsRepository?
 ) : ViewModel() {
 
   /** Lazily initialized data source for calendar data. */
@@ -44,6 +45,8 @@ open class AgendaViewModel(
   open var selectedDate: LocalDate? = LocalDate.now()
 
   open val _stopsInfo = MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>>(emptyMap())
+  private val _trip = MutableStateFlow(Trip(tripId, "", LocalDate.now(), LocalDate.now(), 0.0, ""))
+  val trip: StateFlow<Trip> = _trip.asStateFlow()
 
   /**
    * Initializes the UI state of the agenda by fetching the dates for the current month and updating
@@ -53,17 +56,24 @@ open class AgendaViewModel(
     viewModelScope.launch { // after the data is loaded,
       // the stops info is loaded and the UI state is updated with the dates for the current month,
       // in a synchronous manner.
+      loadTripData()
+
       loadStopsInfo() // Load stops info when ViewModel initializes
 
       _uiState.update { currentState ->
         currentState.copy(
-            dates =
-                dataSource.getDates(
-                    currentState.yearMonth, LocalDate.now(), stopsInfo = _stopsInfo.value))
+          dates =
+          dataSource.getDates(
+            currentState.yearMonth, LocalDate.now(), stopsInfo = _stopsInfo.value))
       }
     }
   }
 
+  private suspend fun loadTripData() {
+    tripsRepository?.getTrip(tripId)?.let { trip ->
+      _trip.value = trip
+    }
+  }
   /** Loads the stops information for the trip, marking all existing stops as ADDED. */
   suspend fun loadStopsInfo() { // a suspend function is asynchronous and can be called from
     // a coroutine
@@ -80,15 +90,15 @@ open class AgendaViewModel(
       //              keySelector = { it.date }, valueTransform = { CalendarUiState.StopStatus.ADDED
       // })
       val statusMap =
-          stops.associate { stop ->
-            val status =
-                when {
-                  stop.date.isBefore(today) -> CalendarUiState.StopStatus.PAST
-                  stop.date.isAfter(today) -> CalendarUiState.StopStatus.COMING_SOON
-                  else -> CalendarUiState.StopStatus.CURRENT
-                }
-            stop.date to status
-          }
+        stops.associate { stop ->
+          val status =
+            when {
+              stop.date.isBefore(today) -> CalendarUiState.StopStatus.PAST
+              stop.date.isAfter(today) -> CalendarUiState.StopStatus.COMING_SOON
+              else -> CalendarUiState.StopStatus.CURRENT
+            }
+          stop.date to status
+        }
       _stopsInfo.value = statusMap
     }
   }
@@ -101,10 +111,10 @@ open class AgendaViewModel(
   fun onDateSelected(selectedDate: CalendarUiState.Date) {
     viewModelScope.launch {
       val selectedLocalDate =
-          LocalDate.of(
-              selectedDate.year.value,
-              selectedDate.yearMonth.month,
-              selectedDate.dayOfMonth.toInt())
+        LocalDate.of(
+          selectedDate.year.value,
+          selectedDate.yearMonth.month,
+          selectedDate.dayOfMonth.toInt())
 
       // Determine if the newly selected date is different from the current state's selected date.
       val isSameAsCurrentSelected = this@AgendaViewModel.selectedDate == selectedLocalDate
@@ -116,15 +126,15 @@ open class AgendaViewModel(
       // Now, update the UI state to reflect this change.
       _uiState.update { currentState ->
         val updatedDates =
-            currentState.dates.map { date ->
-              if (date.dayOfMonth == selectedDate.dayOfMonth) {
-                // Toggle the selection status of the date
-                selectedDate.copy(isSelected = !selectedDate.isSelected)
-              } else {
-                // If it's not the selected date, ensure it's not marked as selected
-                if (date.isSelected) date.copy(isSelected = false) else date
-              }
+          currentState.dates.map { date ->
+            if (date.dayOfMonth == selectedDate.dayOfMonth) {
+              // Toggle the selection status of the date
+              selectedDate.copy(isSelected = !selectedDate.isSelected)
+            } else {
+              // If it's not the selected date, ensure it's not marked as selected
+              if (date.isSelected) date.copy(isSelected = false) else date
             }
+          }
         currentState.copy(dates = updatedDates, selectedDate = newSelectedDate)
       }
     }
@@ -139,8 +149,8 @@ open class AgendaViewModel(
     viewModelScope.launch {
       _uiState.update { currentState ->
         currentState.copy(
-            yearMonth = nextMonth,
-            dates = dataSource.getDates(nextMonth, currentState.selectedDate, _stopsInfo.value))
+          yearMonth = nextMonth,
+          dates = dataSource.getDates(nextMonth, currentState.selectedDate, _stopsInfo.value))
       }
     }
   }
@@ -154,8 +164,8 @@ open class AgendaViewModel(
     viewModelScope.launch {
       _uiState.update { currentState ->
         currentState.copy(
-            yearMonth = prevMonth,
-            dates = dataSource.getDates(prevMonth, currentState.selectedDate, _stopsInfo.value))
+          yearMonth = prevMonth,
+          dates = dataSource.getDates(prevMonth, currentState.selectedDate, _stopsInfo.value))
       }
     }
   }
@@ -176,8 +186,8 @@ open class AgendaViewModel(
   }
 
   class AgendaViewModelFactory(
-      private val tripId: String,
-      private val tripsRepository: TripsRepository
+    private val tripId: String,
+    private val tripsRepository: TripsRepository
   ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
