@@ -36,7 +36,6 @@ import com.github.se.wanderpals.service.NetworkHelper
 import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
-import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -58,7 +57,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.runBlocking
 
 const val EMPTY_CODE = ""
 
@@ -76,6 +74,8 @@ class MainActivity : ComponentActivity() {
   private val viewModel: MainViewModel by viewModels {
     MainViewModel.MainViewModelFactory(application)
   }
+
+  // private val viewModelAPI: NotificationAPI by viewModels()
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -293,12 +293,6 @@ class MainActivity : ComponentActivity() {
                             }
                       })
                   NotificationPermission(context = context)
-
-                  Log.d("MainActivity", "User is signed in")
-                  Log.d("token", SessionManager.getNotificationToken())
-                  runBlocking {
-                    sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
-                  }
                 }
                 composable(Route.OVERVIEW) {
                   val overviewViewModel: OverviewViewModel =
@@ -326,9 +320,6 @@ class MainActivity : ComponentActivity() {
                   Log.d("CREATE_TRIP", "Create Trip")
 
                   CreateTrip(overviewViewModel, navigationActions)
-                  // create notification to send to the list of tokens
-                  // iterate on the list of tokens and send the notification
-
                 }
 
                 composable(Route.CREATE_SUGGESTION) {
