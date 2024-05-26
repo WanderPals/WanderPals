@@ -8,7 +8,7 @@ import com.github.se.wanderpals.model.data.Documents
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DocumentPSViewModel
 import com.github.se.wanderpals.screens.DocumentsPSScreen
-import com.github.se.wanderpals.ui.screens.DocumentsPS
+import com.github.se.wanderpals.ui.screens.DocsScreen.DocumentsPS
 import com.google.firebase.storage.StorageReference
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
