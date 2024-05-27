@@ -59,7 +59,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     return ::tripsRepository.isInitialized
   }
 
-  /** Initializes the ShortcutManager for the application. This method must be called immediately */
+  /**
+   * Initializes the ShortcutManager for the application. This method must be called immediately
+   *
+   * @param shortcutManager The ShortcutManager instance to be used by the application.
+   */
   fun initShortcutManager(shortcutManager: ShortcutManager) {
     this.shortcutManager = shortcutManager
   }
@@ -76,20 +80,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
   /**
    * Adds a dynamic shortcut to the application. This shortcut will be visible in the launcher and
-   * can be used to create a new trip.
    *
-   * @see ShortcutManagerCompat
+   * @param route The route to navigate to when the shortcut is clicked.
+   * @param shortLabel The short label for the shortcut.
+   * @param longLabel The long label for the shortcut.
    */
-  fun addDynamicShortcutCreateTrip() {
+  private fun addDynamicShortcut(route: String, shortLabel: String, longLabel: String) {
     val shortcut =
-        ShortcutInfoCompat.Builder(getApplication(), "dynamic_" + Route.CREATE_TRIP)
-            .setShortLabel("Create trip")
-            .setLongLabel("Clicking this will create a new trip.")
+        ShortcutInfoCompat.Builder(getApplication(), "dynamic_$route")
+            .setShortLabel(shortLabel)
+            .setLongLabel(longLabel)
             .setIcon(IconCompat.createWithResource(getApplication(), R.drawable.logo_projet))
             .setIntent(
                 Intent(getApplication(), MainActivity::class.java).apply {
                   action = Intent.ACTION_VIEW
-                  putExtra("shortcut_id", Route.CREATE_TRIP)
+                  putExtra("shortcut_id", route)
                 })
             .build()
     ShortcutManagerCompat.pushDynamicShortcut(getApplication(), shortcut)
@@ -101,19 +106,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
    *
    * @see ShortcutManagerCompat
    */
+  fun addDynamicShortcutCreateTrip() {
+    addDynamicShortcut(Route.CREATE_TRIP, "Create trip", "Clicking this will create a new trip.")
+  }
+
+  /**
+   * Adds a dynamic shortcut to the application. This shortcut will be visible in the launcher and
+   * can be used to create a new trip.
+   *
+   * @see ShortcutManagerCompat
+   */
   fun addDynamicShortcutJoinTrip() {
-    val shortcut =
-        ShortcutInfoCompat.Builder(getApplication(), "dynamic_" + Route.OVERVIEW)
-            .setShortLabel("Join trip")
-            .setLongLabel("Clicking this will join a new trip.")
-            .setIcon(IconCompat.createWithResource(getApplication(), R.drawable.logo_projet))
-            .setIntent(
-                Intent(getApplication(), MainActivity::class.java).apply {
-                  action = Intent.ACTION_VIEW
-                  putExtra("shortcut_id", Route.OVERVIEW)
-                })
-            .build()
-    ShortcutManagerCompat.pushDynamicShortcut(getApplication(), shortcut)
+    addDynamicShortcut(Route.OVERVIEW, "Join trip", "Clicking this will join a new trip.")
   }
 
   /** Removes all dynamic shortcuts from the application. */
@@ -121,6 +125,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ShortcutManagerCompat.removeAllDynamicShortcuts(getApplication())
   }
 
+  /**
+   * Adds a pinned shortcut to the application. This shortcut will be visible in the home screen of
+   * the phone and can be used to open a specific trip.
+   *
+   * @param trip The trip to create a pinned shortcut for.
+   */
   @SuppressLint("ObsoleteSdkInt")
   fun addPinnedShortcutTrip(trip: Trip) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
