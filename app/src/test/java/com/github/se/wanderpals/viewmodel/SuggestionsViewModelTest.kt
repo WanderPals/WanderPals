@@ -596,7 +596,7 @@ class SuggestionsViewModelTest {
         assertTrue(
             remainingTimeFlow.value !=
                 "23:59:59") // the countdown starts at 23:59:59, so it should not be equal to
-                            // 23:59:59
+        // 23:59:59
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)
