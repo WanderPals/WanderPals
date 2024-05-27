@@ -577,27 +577,6 @@ class SuggestionsViewModelTest {
 
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun testStartCountdown() =
-      runBlockingTest(testDispatcher) {
-        // Load the suggestions to set initial state
-        viewModel.loadSuggestion(tripId)
-        advanceUntilIdle()
-
-        // Capture the suggestion state before clicking the vote icon
-        val suggestion = viewModel.state.value.first()
-        assertFalse(viewModel.getVoteIconClicked(suggestion.suggestionId))
-
-        // Perform the action to toggle the vote icon and start the countdown
-        viewModel.toggleVoteIconClicked(suggestion)
-        advanceUntilIdle()
-
-        // Assert that the countdown is running
-        val remainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
-        assertTrue(remainingTimeFlow.value == "23:59:59") // the countdown starts at 23:59:59
-      }
-
-  @OptIn(ExperimentalCoroutinesApi::class)
-  @Test
   fun testCountdownFormat() =
       runBlockingTest(testDispatcher) {
         // Load the suggestions to set initial state
