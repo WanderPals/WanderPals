@@ -49,6 +49,7 @@ fun ShimmerItem(
   }
 }
 
+/** Shimmer effect for loading items. */
 @SuppressLint("UnnecessaryComposedModifier")
 fun Modifier.shimmerEffect(): Modifier = composed {
   var size by remember { mutableStateOf(IntSize.Zero) }

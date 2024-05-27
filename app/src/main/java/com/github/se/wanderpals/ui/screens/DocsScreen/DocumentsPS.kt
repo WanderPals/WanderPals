@@ -47,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,6 +71,7 @@ import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.DocumentPSViewModel
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * This composable function is used to display the documents of a trip. It displays the documents of
@@ -78,7 +80,7 @@ import kotlinx.coroutines.delay
  * @param viewModel the view model of the documents
  * @param storageReference the reference to the storage
  */
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReference?) {
@@ -99,11 +101,12 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
   var documentName by remember { mutableStateOf("") }
   var isUploading by remember { mutableStateOf(false) }
   var isUploaded by remember { mutableStateOf(false) }
-  var notUploaded by remember { mutableStateOf(false) }
   var launch by remember { mutableStateOf(false) }
   var isloading by remember { mutableStateOf(true) }
 
-  LaunchedEffect(key1 = true) {
+  val scope = rememberCoroutineScope()
+
+  scope.launch {
     delay(2000)
     isloading = false
   }

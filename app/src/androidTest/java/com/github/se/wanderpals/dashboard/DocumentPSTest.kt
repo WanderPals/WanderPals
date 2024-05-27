@@ -18,7 +18,9 @@ import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,6 +62,8 @@ class FakeDocumentPSViewModel :
 @RunWith(AndroidJUnit4::class)
 class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSupport()) {
   @get:Rule val composeTestRule = createComposeRule()
+
+  @OptIn(ExperimentalCoroutinesApi::class) private val testScope = TestCoroutineScope()
 
   @get:Rule val mockkRule = MockKRule(this)
 
@@ -111,18 +115,31 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
   // test3: assert Images are displayed
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun testDocumentIsDisplayed() = runTest {
-    val viewModel = FakeDocumentPSViewModel()
-    composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
-    composeTestRule.mainClock.advanceTimeBy(50L)
-    val screen = DocumentsPSScreen(composeTestRule)
-    screen.tabShared.performClick()
-    // screen.document0.performClick()
-    screen.documentImageBox {
-      assertIsDisplayed()
-      assertHasClickAction()
-    }
-  }
+  fun testDocumentIsDisplayed() =
+      testScope.runBlockingTest {
+        val viewModel = FakeDocumentPSViewModel()
+        composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
+        val screen = DocumentsPSScreen(composeTestRule)
+        screen.tabShared.performClick()
+
+        // wait for the animation to finish
+        testScope.testScheduler.apply {
+          advanceTimeBy(1000)
+          runCurrent()
+        }
+
+        screen.shimmerdocument0.assertIsDisplayed()
+        screen.shimmerdocument1.assertIsDisplayed()
+        screen.shimmerdocument2.assertIsDisplayed()
+
+        screen.document0.assertIsDisplayed()
+
+        screen.document0.performClick()
+        screen.documentImageBox {
+          assertIsDisplayed()
+          assertHasClickAction()
+        }
+      }
 
   // test4: assert the document is clicked
   @Test
