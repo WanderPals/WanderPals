@@ -89,7 +89,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                     },
                     colors =
                         TextFieldDefaults.textFieldColors(
-                            containerColor = Color.White, errorContainerColor = Color.White),
+                            containerColor = MaterialTheme.colorScheme.background),
                     isError = isError,
 
                     // Button for validation checking of the selected currency
@@ -105,6 +105,7 @@ fun CurrencySelectionDialog(financeViewModel: FinanceViewModel) {
                             if (newCurrency != null) {
                               financeViewModel.updateCurrency(newCurrency.currencyCode)
                               financeViewModel.setShowCurrencyDialogState(false)
+
                               isError = false
                             } else {
                               isError = true

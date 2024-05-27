@@ -66,6 +66,51 @@ open class AdminViewModel(
     if (user != null) {
       modifyUser(user.copy(name = name))
     }
+
+    viewModelScope.launch {
+      // Get all the suggestions, and update the name of the user in the suggestions
+      val suggestions = tripsRepository.getAllSuggestionsFromTrip(tripId)
+      suggestions.forEach { suggestion ->
+        var updatedSuggestion = suggestion
+
+        // Update the name in the suggestion if the userId matches
+        if (suggestion.userId == currentUser.value?.userId) {
+          updatedSuggestion = updatedSuggestion.copy(userName = name)
+        }
+
+        // Update the name in the comments if the userId matches
+        val updatedComments =
+            updatedSuggestion.comments.map { comment ->
+              if (comment.userId == currentUser.value?.userId) {
+                comment.copy(userName = name)
+              } else {
+                comment
+              }
+            }
+
+        // Only update the suggestion if there are changes
+        if (updatedSuggestion != suggestion || updatedComments != suggestion.comments) {
+          tripsRepository.updateSuggestionInTrip(
+              tripId, updatedSuggestion.copy(comments = updatedComments))
+        }
+      }
+
+      // Get all the expenses, and update the name of the user in the expenses
+      val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
+      expenses.forEach { expense ->
+        if (expense.userId == currentUser.value?.userId) {
+          tripsRepository.updateExpenseInTrip(tripId, expense.copy(userName = name))
+        }
+      }
+
+      // Get all the announcements, and update the name of the user in the announcements
+      val announcements = tripsRepository.getAllAnnouncementsFromTrip(tripId)
+      announcements.forEach { announcement ->
+        if (announcement.userId == currentUser.value?.userId) {
+          tripsRepository.updateAnnouncementInTrip(tripId, announcement.copy(userName = name))
+        }
+      }
+    }
   }
 
   // Modify the current user's profil photo

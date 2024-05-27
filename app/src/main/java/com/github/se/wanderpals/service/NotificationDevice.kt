@@ -22,18 +22,6 @@ import androidx.core.content.ContextCompat
 import com.github.se.wanderpals.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-
-const val FCM_ENDPOINT2 = "https://fcm.googleapis.com/fcm/send"
-
-const val TOKEN =
-    "AAAALI85TW0:APA91bHQIiTEFkzRUv6FQMlyL1TxtPBztg6lByt18vDaVLkssIEXkPrQu1WLX5Wc_WmTdYqoOWBITP2yp7ej4gH4LeH_iMZbz9lkQQJ-DVC8w2gRxhW8lp8gAuzCqaY136urySlFw-0p"
 
 /** Class responsible for handling notifications on the device. */
 class NotificationDevice : FirebaseMessagingService() {
@@ -103,42 +91,4 @@ fun NotificationPermission(context: Context) {
     }
   }
   Log.d("Permission", "Permission already granted")
-}
-
-@SuppressLint("SuspiciousIndentation")
-suspend fun sendMessageToListOfUsers(deviceToken: String, message: String) {
-  // Create the notification payload
-  val notificationPayload =
-      mapOf("notification" to mapOf("body" to message, "time" to "Wanderpals"), "to" to deviceToken)
-
-  // log the payload
-  Log.d("FCM", "Payload: $notificationPayload")
-
-  // Convert the payload to JSON
-  val gson = Gson()
-  val jsonPayload = gson.toJson(notificationPayload)
-
-  // Create an OkHttpClient instance
-  val client = OkHttpClient()
-
-  // Create a request body with JSON content type
-  val requestBody = jsonPayload.toRequestBody("application/json; charset=utf-8".toMediaType())
-
-  return withContext(Dispatchers.IO) {
-    // Create a POST request to the FCM endpoint
-    val request =
-        Request.Builder()
-            .url(FCM_ENDPOINT2)
-            .addHeader("Content-Type", "application/json")
-            .addHeader("Authorization", "key=${TOKEN}")
-            .post(requestBody)
-            .build()
-    Log.d("FCM", "Sending message to $deviceToken")
-
-    // Execute the request
-    val response = client.newCall(request).execute()
-
-    // Print the response
-    println(response.body?.string())
-  }
 }

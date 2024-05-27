@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.screens.trip.agenda
+package com.github.se.wanderpals.ui.screens.trip.stops
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -27,9 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.model.data.Stop
-import com.github.se.wanderpals.ui.theme.backgroundLight
-import com.github.se.wanderpals.ui.theme.primaryLight
-import com.github.se.wanderpals.ui.theme.secondaryLight
 import java.time.format.DateTimeFormatter
 
 /**
@@ -51,24 +47,28 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
           Scaffold(
               modifier = Modifier.testTag("activityDialog"),
               containerColor =
-                  MaterialTheme.colorScheme.background, // Set the background color of the Scaffold
+                  MaterialTheme.colorScheme.surface, // Set the background color of the Scaffold
               topBar = {
-                Column(modifier = Modifier.fillMaxWidth().background(secondaryLight)) {
-                  // Title
-                  Text(
-                      text = stop.title,
-                      color = Color.White,
-                      style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
-                      textAlign = TextAlign.Center,
-                      modifier =
-                          Modifier.fillMaxWidth().padding(vertical = 24.dp).testTag("titleText"))
-                }
+                Column(
+                    modifier =
+                        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary)) {
+                      // Title
+                      Text(
+                          text = stop.title,
+                          color = MaterialTheme.colorScheme.onPrimary,
+                          style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold),
+                          textAlign = TextAlign.Center,
+                          modifier =
+                              Modifier.fillMaxWidth()
+                                  .padding(vertical = 24.dp)
+                                  .testTag("titleText"))
+                    }
               },
               content = { padding ->
                 Column(
                     modifier =
                         Modifier.fillMaxSize()
-                            .background(Color.LightGray)
+                            .background(MaterialTheme.colorScheme.background)
                             .padding(padding)
                             .padding(16.dp), // Apply padding to the content
                     verticalArrangement = Arrangement.Center) {
@@ -80,7 +80,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                             text =
                                 stop.date.format(DateTimeFormatter.ofPattern("EEEE, dd/MM/yyyy")),
                             style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
-                            color = primaryLight,
+                            color = MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Start,
                             lineHeight = 20.sp,
                             modifier =
@@ -94,7 +94,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                             text =
                                 "${stop.startTime} - ${stop.startTime.plusMinutes(stop.duration.toLong())}",
                             style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
-                            color = secondaryLight,
+                            color = MaterialTheme.colorScheme.secondary,
                             textAlign = TextAlign.Right,
                             lineHeight = 20.sp,
                             modifier =
@@ -106,7 +106,7 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                       Text(
                           text = stop.address.ifEmpty { "No address provided" },
                           style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight(500)),
-                          color = secondaryLight,
+                          color = MaterialTheme.colorScheme.secondary,
                           textAlign = TextAlign.Start,
                           lineHeight = 20.sp,
                           modifier = Modifier.align(Alignment.Start).testTag("activityAddress"))
@@ -130,12 +130,12 @@ fun StopInfoDialog(stop: Stop, closeDialogueAction: () -> Unit) {
                               TextStyle(
                                   fontSize = 16.sp,
                                   fontWeight = FontWeight(500),
-                                  color = secondaryLight),
+                                  color = MaterialTheme.colorScheme.secondary),
                           readOnly = true,
                           modifier =
                               Modifier.fillMaxWidth()
                                   .height(300.dp)
-                                  .background(backgroundLight)
+                                  .background(MaterialTheme.colorScheme.background)
                                   .testTag("activityDescription"),
                       )
                       Spacer(
