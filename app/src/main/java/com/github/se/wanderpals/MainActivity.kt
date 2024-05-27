@@ -142,6 +142,7 @@ class MainActivity : ComponentActivity() {
         }
       }
 
+  /** Called when the activity is destroyed. */
   override fun onDestroy() {
     super.onDestroy()
     if (isMapManagerInitialized()) {
@@ -149,6 +150,7 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  /** Called when the activity is resumed. */
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
     if (::navigationActions.isInitialized && viewModel.isRepositoryInitialized()) {
@@ -158,6 +160,7 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  /** Called when the activity is created. */
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 

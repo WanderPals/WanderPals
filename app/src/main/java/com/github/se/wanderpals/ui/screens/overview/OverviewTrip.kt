@@ -129,6 +129,8 @@ private enum class SelectedIconButton {
  *
  * @param trip The trip object containing trip details.
  * @param navigationActions The navigation actions used for navigating to detailed trip view.
+ * @param overviewViewModel The view model containing the data and logic for the overview screen.
+ * @param addShortcut A lambda function to add a shortcut to the home screen.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

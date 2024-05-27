@@ -49,6 +49,8 @@ const val EMPTY_CODE = ""
  *
  * @param overviewViewModel The view model containing the data and logic for the overview screen.
  * @param navigationActions The navigation actions used for navigating to different screens.
+ * @param defaultDialogIsOpen A boolean indicating whether the dialog for joining a trip is open.
+ * @param addShortcut A lambda function to add a shortcut to the home screen.
  */
 @Composable
 fun Overview(
