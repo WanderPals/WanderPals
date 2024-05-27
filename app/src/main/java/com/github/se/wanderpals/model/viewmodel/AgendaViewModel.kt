@@ -47,8 +47,9 @@ open class AgendaViewModel(
 
   open val _stopsInfo = MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>>(emptyMap())
 
-  private val _trip = MutableStateFlow(Trip(tripId, "", LocalDate.now(), LocalDate.now(), 0.0, ""))
-  val trip: StateFlow<Trip> = _trip.asStateFlow()
+  protected val _trip =
+      MutableStateFlow(Trip(tripId, "", LocalDate.now(), LocalDate.now(), 0.0, ""))
+  open val trip: StateFlow<Trip> = _trip.asStateFlow()
 
   /**
    * Initializes the UI state of the agenda by fetching the dates for the current month and updating

@@ -349,6 +349,7 @@ fun ContentItem(
               if (isWithinTrip)
                   MaterialTheme.colorScheme.tertiaryContainer // background for trip range
               else Color.Transparent)
+          .testTag("DateBackground_${date.dayOfMonth}") // test tag for trip range background
 
   val dateBackgroundModifier =
       if (!isEmptyDate && date.isSelected) {
@@ -390,8 +391,13 @@ fun ContentItem(
                     .clip(CircleShape) // Make it circular
                     .background(markerColor) // Set the appropriate color
                     .padding(bottom = 4.dp) // Add some padding to the bottom
-                    .testTag("MarkerADDED") // Add test tag here
-            )
+                    .testTag(
+                        when (date.stopStatus) {
+                          CalendarUiState.StopStatus.CURRENT -> "MarkerCURRENT"
+                          CalendarUiState.StopStatus.COMING_SOON -> "MarkerCOMING_SOON"
+                          CalendarUiState.StopStatus.PAST -> "MarkerPAST"
+                          else -> "MarkerNONE"
+                        }))
       }
     }
   }
