@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ShortcutManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -148,8 +149,20 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    if (::navigationActions.isInitialized && viewModel.isRepositoryInitialized()) {
+      viewModel.handleIntent(intent, navigationActions)
+    } else {
+      Log.d("MainActivity", "Can't handle intent")
+    }
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    viewModel.initShortcutManager(getSystemService(ShortcutManager::class.java))
+
     val storage = Firebase.storage
 
     val storageRef = storage.reference
@@ -221,6 +234,9 @@ class MainActivity : ComponentActivity() {
                       rememberMultiNavigationAppState(startDestination = Route.DASHBOARD))
           val currentUser = FirebaseAuth.getInstance().currentUser
           val startDestination = if (currentUser != null) Route.OVERVIEW else Route.SIGN_IN
+          if (navigationActions.mainNavigation.getStartDestination() == ROOT_ROUTE) {
+            navigationActions.mainNavigation.setStartDestination(startDestination)
+          }
           if (currentUser != null) {
             Log.d("MainActivity", "User is already signed in")
             viewModel.initRepository(currentUser.uid)
@@ -237,13 +253,15 @@ class MainActivity : ComponentActivity() {
                 nickname =
                     currentUser.isAnonymous.takeIf { it }?.let { "Anonymous User" }
                         ?: viewModel.getUserName(currentUser.email ?: ""))
+            viewModel.handleIntent(intent, navigationActions)
           }
 
           NavHost(
               navController = navigationActions.mainNavigation.getNavController,
-              startDestination = startDestination,
+              startDestination = navigationActions.mainNavigation.getStartDestination(),
               route = ROOT_ROUTE) {
                 composable(Route.SIGN_IN) {
+                  viewModel.removeAllDynamicShortcuts()
                   SignIn(
                       onClick1 = { launcher.launch(signInClient.signInIntent) },
                       onClick2 = {
@@ -295,6 +313,7 @@ class MainActivity : ComponentActivity() {
                   NotificationPermission(context = context)
                 }
                 composable(Route.OVERVIEW) {
+                  viewModel.addDynamicShortcutCreateTrip()
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
                           factory =
