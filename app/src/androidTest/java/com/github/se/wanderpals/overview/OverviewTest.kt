@@ -3,11 +3,13 @@ package com.github.se.wanderpals.overview
 import android.content.Intent
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTouchInput
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
@@ -26,6 +28,7 @@ import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import io.mockk.Called
 import io.mockk.confirmVerified
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
@@ -122,7 +125,11 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
 
     composeTestRule.setContent {
       navigationActions = mockNavActions
-      Overview(overviewViewModel = overviewViewModelTest, navigationActions = mockNavActions)
+      Overview(
+          overviewViewModel = overviewViewModelTest,
+          navigationActions = mockNavActions,
+          defaultDialogIsOpen = false,
+          addShortcut = { assert(true) })
     }
   }
 
@@ -398,6 +405,15 @@ class OverviewTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSu
         mockNavActions.navigateTo(Route.TRIP)
       }
       confirmVerified(mockNavActions)
+    }
+  }
+
+  @Test
+  fun longPresstripButtonInTripOverViewCallsFunction() = run {
+    ComposeScreen.onComposeScreen<OverviewScreen>(composeTestRule) {
+      buttonTrip1 { assertIsDisplayed() }
+      composeTestRule.onNodeWithTag("buttonTrip1").performTouchInput { longClick() }
+      verify { mockNavActions wasNot Called }
     }
   }
 

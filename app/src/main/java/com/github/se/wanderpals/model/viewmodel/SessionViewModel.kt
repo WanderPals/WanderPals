@@ -6,10 +6,23 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel to manage data for the session of the user. It handles the retrieval of the token list
+ * for the trip and the update of the user role in the trip.
+ *
+ * @param tripsRepository The repository for trips data.
+ */
 class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
 
+  /**
+   * Gets the list of token IDs for the trip and stores them in the SessionManager.
+   *
+   * @param tripId The unique identifier for the trip.
+   */
   fun getTheTokenList(tripId: String) {
     viewModelScope.launch {
       try {
@@ -23,7 +36,14 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
     }
   }
 
-  fun updateUserForCurrentUser(tripId: String) {
+  /**
+   * Updates the user role in the trip for the current user, will also navigate to the overview if
+   * the user is not found in the trip.
+   *
+   * @param tripId The unique identifier for the trip.
+   * @param navigationActions The navigation actions to be performed after the user role is updated.
+   */
+  fun updateUserForCurrentUser(tripId: String, navigationActions: NavigationActions) {
     val userId = SessionManager.getCurrentUser()?.userId
     if (userId != null) {
       viewModelScope.launch {
@@ -31,6 +51,7 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
           val user = tripsRepository.getUserFromTrip(tripId, userId)
           if (user == null) {
             Log.d("SessionViewModel", "Failed to find user with userId $userId , in trip $tripId")
+            navigationActions.navigateTo(Route.OVERVIEW)
           } else {
             SessionManager.setRole(user.role)
             SessionManager.setName(user.name)
@@ -45,6 +66,10 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
     }
   }
 
+  /**
+   * Factory for creating instances of the SessionViewModel. Ensures the ViewModel is constructed
+   * with the necessary application context.
+   */
   class SessionViewModelFactory(private val tripsRepository: TripsRepository) :
       ViewModelProvider.Factory {
 
