@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.SessionManager
+import com.github.se.wanderpals.ui.navigation.NavigationActions
+import com.github.se.wanderpals.ui.navigation.Route
 import kotlinx.coroutines.launch
 
 class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel() {
@@ -23,7 +25,7 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
     }
   }
 
-  fun updateUserForCurrentUser(tripId: String) {
+  fun updateUserForCurrentUser(tripId: String, navigationActions: NavigationActions) {
     val userId = SessionManager.getCurrentUser()?.userId
     if (userId != null) {
       viewModelScope.launch {
@@ -31,6 +33,7 @@ class SessionViewModel(private val tripsRepository: TripsRepository) : ViewModel
           val user = tripsRepository.getUserFromTrip(tripId, userId)
           if (user == null) {
             Log.d("SessionViewModel", "Failed to find user with userId $userId , in trip $tripId")
+            navigationActions.navigateTo(Route.OVERVIEW)
           } else {
             SessionManager.setRole(user.role)
             SessionManager.setName(user.name)
