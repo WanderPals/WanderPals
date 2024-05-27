@@ -55,7 +55,7 @@ class AgendaViewModelTest {
     coEvery { mockTripsRepository.getTrip("tripId") } returns mockTrip
 
     // Call the method to test
-    viewModel.loadTripData() // Assuming this method is public or internal for testing
+    viewModel.loadTripData()
     advanceUntilIdle() // Wait for all coroutines to complete
 
     // Check the resulting state
