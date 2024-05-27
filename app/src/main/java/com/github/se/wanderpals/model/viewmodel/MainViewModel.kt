@@ -1,8 +1,14 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
+import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
@@ -12,6 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.github.se.wanderpals.MainActivity
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
@@ -114,6 +121,37 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ShortcutManagerCompat.removeAllDynamicShortcuts(getApplication())
   }
 
+  @SuppressLint("ObsoleteSdkInt")
+  fun addPinnedShortcutTrip(trip: Trip) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return
+    }
+
+    if (shortcutManager.isRequestPinShortcutSupported) {
+      val shortcut =
+          ShortcutInfo.Builder(getApplication(), "pinned_$trip.tripId")
+              .setShortLabel(trip.title)
+              .setLongLabel("Open ${trip.title}")
+              .setIcon(Icon.createWithResource(getApplication(), R.drawable.logo_projet))
+              .setIntent(
+                  Intent(getApplication(), MainActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    putExtras(
+                        Bundle().apply {
+                          putString("shortcut_id", Route.TRIP)
+                          putString("trip_id", trip.tripId)
+                        })
+                  })
+              .build()
+
+      val callbackIntent = shortcutManager.createShortcutResultIntent(shortcut)
+      val successPendingIntent =
+          PendingIntent.getBroadcast(
+              getApplication(), 0, callbackIntent, PendingIntent.FLAG_IMMUTABLE)
+      shortcutManager.requestPinShortcut(shortcut, successPendingIntent.intentSender)
+    }
+  }
+
   /**
    * Handles an intent received by the application. This method is called when the application is
    * launched from a shortcut.
@@ -126,11 +164,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     intent?.let {
       when (intent.getStringExtra("shortcut_id")) {
         Route.CREATE_TRIP -> {
+          overviewJoinTripDialogIsOpen = false
           navigationActions.mainNavigation.setStartDestination(Route.CREATE_TRIP)
         }
         Route.OVERVIEW -> {
           overviewJoinTripDialogIsOpen = true
           navigationActions.mainNavigation.setStartDestination(Route.OVERVIEW)
+        }
+        Route.TRIP -> {
+          overviewJoinTripDialogIsOpen = false
+          val tripId = intent.getStringExtra("trip_id")
+          navigationActions.mainNavigation.setStartDestination(Route.TRIP)
+          navigationActions.setVariablesTrip(tripId!!)
         }
         else -> {
           Log.d("MainActivity", "No shortcut id found")

@@ -324,12 +324,12 @@ class MainActivity : ComponentActivity() {
                   Overview(
                       overviewViewModel = overviewViewModel,
                       navigationActions = navigationActions,
-                      viewModel.getOverviewJoinTripDialogIsOpen())
+                      defaultDialogIsOpen = viewModel.getOverviewJoinTripDialogIsOpen(),
+                      addShortcut = { trip -> viewModel.addPinnedShortcutTrip(trip) })
                 }
                 composable(Route.TRIP) {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
                   val tripId = navigationActions.variables.currentTrip
-                  navigationActions.tripNavigation.setNavController(rememberNavController())
                   Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
