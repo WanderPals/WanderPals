@@ -46,7 +46,8 @@ fun OverviewContent(
     navigationActions: NavigationActions,
     tripsList: List<Trip>,
     searchText: String,
-    overviewViewModel: OverviewViewModel
+    overviewViewModel: OverviewViewModel,
+    addShortcut: (Trip) -> Unit
 ) {
   // Filter trips by title based on search text
   val filteredTripsByTitle =
@@ -131,7 +132,8 @@ fun OverviewContent(
                       OverviewTrip(
                           trip = trip,
                           navigationActions = navigationActions,
-                          overviewViewModel = overviewViewModel)
+                          overviewViewModel = overviewViewModel,
+                          addShortcut = addShortcut)
                     }
                   }
             }

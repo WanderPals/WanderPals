@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.isMapManagerInitialized
 import com.github.se.wanderpals.mapManager
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -53,7 +54,8 @@ const val EMPTY_CODE = ""
 fun Overview(
     overviewViewModel: OverviewViewModel,
     navigationActions: NavigationActions,
-    defaultDialogIsOpen: Boolean = false
+    defaultDialogIsOpen: Boolean = false,
+    addShortcut: (Trip) -> Unit = { _ -> }
 ) {
   LaunchedEffect(
       Unit) { // This ensures getAllTrips is called once per composition, not on every recomposition
@@ -109,7 +111,8 @@ fun Overview(
               navigationActions = navigationActions,
               tripsList = tripsList,
               searchText = searchText,
-              overviewViewModel = overviewViewModel)
+              overviewViewModel = overviewViewModel,
+              addShortcut = addShortcut)
         }
   }
 }

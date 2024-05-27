@@ -6,8 +6,9 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -129,11 +130,13 @@ private enum class SelectedIconButton {
  * @param trip The trip object containing trip details.
  * @param navigationActions The navigation actions used for navigating to detailed trip view.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OverviewTrip(
     trip: Trip,
     navigationActions: NavigationActions,
-    overviewViewModel: OverviewViewModel
+    overviewViewModel: OverviewViewModel,
+    addShortcut: (Trip) -> Unit
 ) {
 
   // Date pattern for formatting start and end dates
@@ -192,16 +195,19 @@ fun OverviewTrip(
       modifier =
           Modifier.fillMaxSize()
               .padding(start = 32.dp, end = 32.dp, bottom = 32.dp)
-              .clickable {
-                if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } != null) {
-                  dialogIsOpen = false
-                  SessionManager.setTripName(trip.title)
-                  navigationActions.setVariablesTrip(trip.tripId)
-                  navigationActions.navigateTo(Route.TRIP)
-                } else {
-                  dialogIsOpen = true
-                }
-              }
+              .combinedClickable(
+                  onClick = {
+                    if (trip.users.find { it == SessionManager.getCurrentUser()!!.userId } !=
+                        null) {
+                      dialogIsOpen = false
+                      SessionManager.setTripName(trip.title)
+                      navigationActions.setVariablesTrip(trip.tripId)
+                      navigationActions.navigateTo(Route.TRIP)
+                    } else {
+                      dialogIsOpen = true
+                    }
+                  },
+                  onLongClick = { addShortcut(trip) })
               .width(360.dp)
               .height(130.dp)
               .testTag("buttonTrip" + trip.tripId),
