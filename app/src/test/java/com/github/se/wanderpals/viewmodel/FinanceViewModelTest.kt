@@ -19,7 +19,9 @@ import io.mockk.spyk
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
@@ -152,5 +154,33 @@ class FinanceViewModelTest {
               tripId, match { it.amount == 10.0 * exchangeRate })
         }
         coVerify { (mockTripsRepository.updateTrip(any())) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `addExpense is not called twice when invoked multiple times rapidly`() =
+      runBlockingTest(testDispatcher) {
+        // Arrange
+        val expense =
+            Expense(
+                "", "Lunch", 10.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now())
+
+        // Mock the addExpenseToTrip method to simulate a delay
+        coEvery { mockTripsRepository.addExpenseToTrip(tripId, any()) } coAnswers
+            {
+              delay(500)
+              "true"
+            }
+
+        // Act
+        launch { viewModel.addExpense(tripId, expense) }
+        launch { viewModel.addExpense(tripId, expense) }
+
+        // Advance the dispatcher to let coroutines finish
+        advanceUntilIdle()
+
+        // Assert
+        // Verify that addExpenseToTrip is called only once
+        coVerify(exactly = 1) { mockTripsRepository.addExpenseToTrip(tripId, expense) }
       }
 }

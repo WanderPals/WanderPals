@@ -76,6 +76,16 @@ fun CreateExpense(
     onDone: () -> Unit = {}
 ) {
 
+  val createExpenseFinished by viewModel.createExpenseFinished.collectAsState()
+  // Effect to react to the createAnnouncementFinished state change
+  LaunchedEffect(createExpenseFinished) {
+    if (createExpenseFinished) {
+      onDone()
+      navActions.goBack()
+      viewModel.setCreateExpenseFinished(false) // Reset the flag after handling it
+    }
+  }
+
   LaunchedEffect(key1 = Unit) { viewModel.loadMembers(tripId) }
 
   var expandedMenu1 by remember { mutableStateOf(false) }
@@ -365,8 +375,6 @@ fun CreateExpense(
                                             names = selectedUsers.map { it.name })
                                     errorText = ""
                                     viewModel.addExpense(tripId, expense)
-                                    onDone()
-                                    navActions.goBack()
                                   }
                                 },
                                 modifier =

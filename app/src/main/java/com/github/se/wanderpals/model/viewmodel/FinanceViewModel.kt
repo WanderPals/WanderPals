@@ -57,6 +57,14 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
   open val tripCurrency = _tripCurrency.asStateFlow()
 
+  // signal that the Expense was added successfully
+  private val _createExpenseFinished = MutableStateFlow(false)
+  open val createExpenseFinished: StateFlow<Boolean> = _createExpenseFinished.asStateFlow()
+
+  // don't add an Expense twice
+  private val _isAddingExpense = MutableStateFlow(false)
+  open val isAddingExpense: StateFlow<Boolean> = _isAddingExpense.asStateFlow()
+
   val exchangeRate = MutableStateFlow<Double?>(null)
 
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
@@ -83,12 +91,29 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
    * @param expense The Expense object to add.
    */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
+
     viewModelScope.launch {
-      val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
-      NotificationsManager.addExpenseNotification(tripId, newExpense)
-      updateStateLists()
+      if (!isAddingExpense.value && !createExpenseFinished.value) {
+        _isAddingExpense.value = true
+        tripsRepository.addExpenseToTrip(tripId, expense)
+        val expenseList = tripsRepository.getAllExpensesFromTrip(tripId)
+        if (expenseList.isEmpty()) {
+          // error
+          Log.e("FinanceViewModel", "Error reading expense after addition (should not happen)")
+        } else {
+          val newExpense = expenseList.last()
+          NotificationsManager.addExpenseNotification(tripId, newExpense)
+        }
+        updateStateLists()
+        _isAddingExpense.value = false
+        _createExpenseFinished.value = true
+      }
     }
+  }
+
+  /** Resets the CreateExpenseFinished flag */
+  fun setCreateExpenseFinished(value: Boolean) {
+    _createExpenseFinished.value = value
   }
 
   /**
