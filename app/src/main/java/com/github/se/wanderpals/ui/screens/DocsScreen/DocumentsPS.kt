@@ -2,8 +2,8 @@ package com.github.se.wanderpals.ui.screens.DocsScreen
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -99,7 +99,14 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
   var documentName by remember { mutableStateOf("") }
   var isUploading by remember { mutableStateOf(false) }
   var isUploaded by remember { mutableStateOf(false) }
+  var notUploaded by remember { mutableStateOf(false) }
   var launch by remember { mutableStateOf(false) }
+  var isloading by remember { mutableStateOf(true) }
+
+  LaunchedEffect(key1 = true) {
+    delay(2000)
+    isloading = false
+  }
 
   LaunchedEffect(key1 = launch) {
     if (launch) {
@@ -109,7 +116,6 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
       delay(2000)
       isUploading = false
       delay(1000)
-      isUploaded = false
       launch = false
     }
   }
@@ -124,7 +130,10 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
   val singlePhotoPickerLauncher =
       rememberLauncherForActivityResult(
           contract = ActivityResultContracts.PickVisualMedia(),
-          onResult = { uri -> selectedImagesLocal = uri })
+          onResult = { uri ->
+            selectedImagesLocal = uri
+            launch = true
+          })
 
   Scaffold(
       modifier = Modifier.fillMaxSize().testTag("documentsScreen"),
@@ -158,34 +167,50 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
         if (state == 1) {
           LazyColumn(modifier = Modifier.padding(it)) {
             items(documentslistURL.size) {
-              Text(
-                  documentslistURL[it].documentsName,
+              ShimmerItem(
+                  isLoading = isloading,
+                  content = {
+                    Text(
+                        documentslistURL[it].documentsName,
+                        modifier =
+                            Modifier.padding(20.dp)
+                                .clickable(
+                                    onClick = {
+                                      isDisplayed = true
+                                      selectedDocument = documentslistURL[it].documentsURL
+                                    })
+                                .testTag("document$it"))
+                  },
                   modifier =
-                      Modifier.padding(20.dp)
-                          .clickable(
-                              onClick = {
-                                isDisplayed = true
-                                selectedDocument = documentslistURL[it].documentsURL
-                              })
-                          .testTag("document$it"))
-              Log.d("Docs", "Document $it")
+                      Modifier.padding(start = 20.dp)
+                          .width(200.dp)
+                          .height(50.dp)
+                          .testTag("shimmerdocument$it"))
             }
           }
         } else {
 
           LazyColumn(modifier = Modifier.padding(it)) {
             items(documentslistUserURL.size) {
-              Text(
-                  documentslistUserURL[it].documentsName,
+              ShimmerItem(
+                  isLoading = isloading,
+                  content = {
+                    Text(
+                        documentslistUserURL[it].documentsName,
+                        modifier =
+                            Modifier.padding(20.dp)
+                                .clickable(
+                                    onClick = {
+                                      isDisplayed = true
+                                      selectedDocument = documentslistUserURL[it].documentsURL
+                                    })
+                                .testTag("documentUser$it"))
+                  },
                   modifier =
-                      Modifier.padding(20.dp)
-                          .clickable(
-                              onClick = {
-                                isDisplayed = true
-                                selectedDocument = documentslistUserURL[it].documentsURL
-                              })
-                          .testTag("documentUser$it"))
-              Log.d("Docs", "Document $it")
+                      Modifier.padding(start = 20.dp)
+                          .width(200.dp)
+                          .height(50.dp)
+                          .testTag("shimmerdocumentUser$it"))
             }
           }
         }
@@ -266,7 +291,7 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center) {
                           AnimatedVisibility(
-                              visible = !isUploading,
+                              visible = !isUploading && !isUploaded,
                               enter =
                                   fadeIn(animationSpec = tween(durationMillis = 400)) +
                                       slideInHorizontally(
@@ -302,7 +327,10 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                           modifier =
                                               Modifier.padding(start = 60.dp)
                                                   .size(width = 100.dp, height = 50.dp),
-                                          onClick = { launch = true },
+                                          onClick = {
+                                            singlePhotoPickerLauncher.launch(
+                                                PickVisualMediaRequest())
+                                          },
                                           colors =
                                               ButtonDefaults.buttonColors(
                                                   containerColor = Color(0xFF3bafda)),
@@ -351,18 +379,21 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                           animationSpec = tween(durationMillis = 400)) {
                                             -it
                                           }) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier =
-                                        Modifier.fillMaxSize()
-                                            .background(Color(0xFF2d334c))
-                                            .padding(8.dp)) {
-                                      Icon(
-                                          painter = painterResource(id = R.drawable.check),
-                                          contentDescription = "Check",
-                                          tint = Color.White,
-                                          modifier = Modifier.size(16.dp))
-                                      Text("Completed", color = Color.White)
+                                Box(
+                                    modifier = Modifier.fillMaxSize().background(Color(0xFF2d334c)),
+                                    contentAlignment = Alignment.Center) {
+                                      Row(
+                                          verticalAlignment = Alignment.CenterVertically,
+                                          horizontalArrangement = Arrangement.Center,
+                                          modifier = Modifier.fillMaxSize().padding(8.dp)) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.check),
+                                                contentDescription = "Check",
+                                                tint = Color.White,
+                                                modifier = Modifier.size(16.dp))
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text("Completed", color = Color.White)
+                                          }
                                     }
                               }
                         }
@@ -373,6 +404,7 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                   modifier = Modifier.padding(top = 10.dp),
                   horizontalArrangement = Arrangement.SpaceEvenly) {
                     FloatingActionButton(
+                        containerColor = Color(0xFF2d334c),
                         onClick = {
                           if (selectedImagesLocal != Uri.EMPTY && documentName != "") {
                             viewModel.addDocument(
@@ -392,6 +424,7 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                 .testTag("acceptButton")) {
                           Text(
                               text = "Accept",
+                              color = Color.White,
                               style =
                                   TextStyle(
                                       fontSize = 16.sp,
@@ -403,6 +436,7 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                     Spacer(modifier = Modifier.width(50.dp))
                     // cancel button
                     FloatingActionButton(
+                        containerColor = Color(0xFF2d334c),
                         onClick = {
                           selectedImagesLocal = Uri.EMPTY
                           displayedTheBoxSelector = false
@@ -413,6 +447,7 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                 .testTag("cancelButton")) {
                           Text(
                               text = "Cancel",
+                              color = Color.White,
                               style =
                                   TextStyle(
                                       fontSize = 16.sp,

@@ -16,7 +16,9 @@ import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
 import io.mockk.junit4.MockKRule
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -104,18 +106,21 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     }
   }
 
+  // test 2: assert schimmer is displayed
+
   // test3: assert Images are displayed
+  @OptIn(ExperimentalCoroutinesApi::class)
   @Test
-  fun testDocumentIsDisplayed() = run {
+  fun testDocumentIsDisplayed() = runTest {
     val viewModel = FakeDocumentPSViewModel()
     composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
-    ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
-      tabShared { performClick() }
-      document0 { performClick() }
-      documentImageBox {
-        assertIsDisplayed()
-        assertHasClickAction()
-      }
+    composeTestRule.mainClock.advanceTimeBy(50L)
+    val screen = DocumentsPSScreen(composeTestRule)
+    screen.tabShared.performClick()
+    // screen.document0.performClick()
+    screen.documentImageBox {
+      assertIsDisplayed()
+      assertHasClickAction()
     }
   }
 
