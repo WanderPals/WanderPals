@@ -76,64 +76,74 @@ fun CreateExpense(
     onDone: () -> Unit = {}
 ) {
 
-  LaunchedEffect(key1 = Unit) { viewModel.loadMembers(tripId) }
+    val createExpenseFinished by viewModel.createExpenseFinished.collectAsState()
+    // Effect to react to the createAnnouncementFinished state change
+    LaunchedEffect(createExpenseFinished) {
+        if (createExpenseFinished) {
+            onDone()
+            navActions.goBack()
+            viewModel.setCreateExpenseFinished(false) // Reset the flag after handling it
+        }
+    }
 
-  var expandedMenu1 by remember { mutableStateOf(false) }
-  var expandedMenu2 by remember { mutableStateOf(false) }
-  var selectedMenu1: User? by remember { mutableStateOf(null) }
-  var selectedMenu2 by remember { mutableStateOf("") }
-  var expenseTitle by remember { mutableStateOf("") }
-  var expenseAmount by remember { mutableStateOf("") }
-  var expenseDate by remember { mutableStateOf("") }
-  var showDatePicker: Boolean by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit) { viewModel.loadMembers(tripId) }
 
-  var errorText by remember { mutableStateOf("") }
+    var expandedMenu1 by remember { mutableStateOf(false) }
+    var expandedMenu2 by remember { mutableStateOf(false) }
+    var selectedMenu1: User? by remember { mutableStateOf(null) }
+    var selectedMenu2 by remember { mutableStateOf("") }
+    var expenseTitle by remember { mutableStateOf("") }
+    var expenseAmount by remember { mutableStateOf("") }
+    var expenseDate by remember { mutableStateOf("") }
+    var showDatePicker: Boolean by remember { mutableStateOf(false) }
 
-  val users by viewModel.users.collectAsState()
+    var errorText by remember { mutableStateOf("") }
 
-  var checkboxes = remember { mutableStateListOf<Boolean>() }
+    val users by viewModel.users.collectAsState()
 
-  if (checkboxes.size != users.size) {
-    checkboxes = users.map { false }.toMutableStateList()
-  }
+    var checkboxes = remember { mutableStateListOf<Boolean>() }
 
-  WanderPalsTheme {
-    Scaffold(
-        topBar = {
-          TopAppBar(
-              title = {
-                Text(
-                    text = "Add an expense",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.testTag("createExpenseTitle"),
-                    color = MaterialTheme.colorScheme.onPrimary)
-              },
-              navigationIcon = {
-                IconButton(
-                    onClick = { navActions.goBack() }, modifier = Modifier.testTag("BackButton")) {
-                      Icon(
-                          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                          contentDescription = "Go back",
-                          tint = MaterialTheme.colorScheme.onPrimary,
-                      )
-                    }
-              },
-              colors =
-                  TopAppBarDefaults.topAppBarColors(
-                      containerColor = MaterialTheme.colorScheme.primary,
-                  ),
-          )
-        }) { paddingValues ->
-          Box(
-              modifier =
-                  Modifier.padding(paddingValues)
-                      .fillMaxSize()
-                      .background(MaterialTheme.colorScheme.background)) {
+    if (checkboxes.size != users.size) {
+        checkboxes = users.map { false }.toMutableStateList()
+    }
+
+    WanderPalsTheme {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "Add an expense",
+                            style = MaterialTheme.typography.titleLarge,
+                            modifier = Modifier.testTag("createExpenseTitle"),
+                            color = MaterialTheme.colorScheme.onPrimary)
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { navActions.goBack() }, modifier = Modifier.testTag("BackButton")) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Go back",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                    },
+                    colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                    ),
+                )
+            }) { paddingValues ->
+            Box(
+                modifier =
+                Modifier.padding(paddingValues)
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background)) {
                 Box(modifier = Modifier.verticalScroll(rememberScrollState(), true)) {
-                  Column(
-                      modifier =
-                          Modifier.testTag("createExpenseContent")
-                              .background(MaterialTheme.colorScheme.background)) {
+                    Column(
+                        modifier =
+                        Modifier.testTag("createExpenseContent")
+                            .background(MaterialTheme.colorScheme.background)) {
                         HorizontalDivider(color = MaterialTheme.colorScheme.outline)
 
                         Spacer(modifier = Modifier.padding(4.dp))
@@ -145,14 +155,14 @@ fun CreateExpense(
                             label = { Text("Expense title") },
                             placeholder = { Text("Give a name to your expense") },
                             modifier =
-                                Modifier.testTag("expenseTitle")
-                                    .padding(horizontal = 24.dp, vertical = 8.dp)
-                                    .fillMaxWidth(),
+                            Modifier.testTag("expenseTitle")
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
+                                .fillMaxWidth(),
                             singleLine = true,
                             suffix = {
-                              Text(
-                                  text = "${expenseTitle.length}/50",
-                                  style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    text = "${expenseTitle.length}/50",
+                                    style = MaterialTheme.typography.bodyMedium)
                             },
                             isError = errorText.isNotEmpty(),
                         )
@@ -163,14 +173,14 @@ fun CreateExpense(
                             label = { Text("Amount") },
                             placeholder = { Text("") },
                             modifier =
-                                Modifier.testTag("Budget")
-                                    .padding(horizontal = 24.dp, vertical = 8.dp)
-                                    .fillMaxWidth(),
+                            Modifier.testTag("Budget")
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
+                                .fillMaxWidth(),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             suffix = {
-                              Text(
-                                  text = "CHF | ${expenseAmount.length}/20",
-                                  style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    text = "CHF | ${expenseAmount.length}/20",
+                                    style = MaterialTheme.typography.bodyMedium)
                             },
                             singleLine = true, // add the currency
                             isError = errorText.isNotEmpty())
@@ -182,171 +192,171 @@ fun CreateExpense(
                             label = { Text("Date") },
                             placeholder = { Text(" -- / -- / ---- ") },
                             modifier =
-                                Modifier.testTag("expenseDate")
-                                    .padding(horizontal = 24.dp, vertical = 8.dp)
-                                    .fillMaxWidth()
-                                    .clickable { showDatePicker = true },
+                            Modifier.testTag("expenseDate")
+                                .padding(horizontal = 24.dp, vertical = 8.dp)
+                                .fillMaxWidth()
+                                .clickable { showDatePicker = true },
                             singleLine = true,
                             interactionSource = DateInteractionSource { showDatePicker = true },
                             isError = errorText.isNotEmpty())
 
                         if (showDatePicker) {
-                          MyDatePickerDialog(
-                              onDateSelected = { expenseDate = it },
-                              onDismiss = { showDatePicker = false })
+                            MyDatePickerDialog(
+                                onDateSelected = { expenseDate = it },
+                                onDismiss = { showDatePicker = false })
                         }
                         // Dropdown menu for the user who paid
                         ExposedDropdownMenuBox(
                             expanded = expandedMenu1,
                             onExpandedChange = { expandedMenu1 = !expandedMenu1 },
                             modifier =
-                                Modifier.testTag("dropdownMenuPaid")
-                                    .padding(24.dp, 8.dp)
-                                    .fillMaxWidth()) {
-                              // Text field for the user who paid
-                              OutlinedTextField(
-                                  value = selectedMenu1?.name ?: "",
-                                  onValueChange = {},
-                                  label = { Text("Paid by") },
-                                  modifier = Modifier.testTag("paidBy").fillMaxWidth().menuAnchor(),
-                                  readOnly = true,
-                                  isError = errorText.isNotEmpty())
-                              // Dropdown menu for the user who paid
-                              ExposedDropdownMenu(
-                                  expanded = expandedMenu1,
-                                  onDismissRequest = { expandedMenu1 = false },
-                              ) {
+                            Modifier.testTag("dropdownMenuPaid")
+                                .padding(24.dp, 8.dp)
+                                .fillMaxWidth()) {
+                            // Text field for the user who paid
+                            OutlinedTextField(
+                                value = selectedMenu1?.name ?: "",
+                                onValueChange = {},
+                                label = { Text("Paid by") },
+                                modifier = Modifier.testTag("paidBy").fillMaxWidth().menuAnchor(),
+                                readOnly = true,
+                                isError = errorText.isNotEmpty())
+                            // Dropdown menu for the user who paid
+                            ExposedDropdownMenu(
+                                expanded = expandedMenu1,
+                                onDismissRequest = { expandedMenu1 = false },
+                            ) {
                                 users.forEach { item ->
-                                  // Dropdown menu item for each user
-                                  DropdownMenuItem(
-                                      text = { Text(text = item.name) },
-                                      onClick = {
-                                        selectedMenu1 = item
-                                        expandedMenu1 = false
-                                      },
-                                      modifier =
-                                          Modifier.padding(horizontal = 24.dp)
-                                              .fillMaxWidth()
-                                              .testTag(item.userId))
+                                    // Dropdown menu item for each user
+                                    DropdownMenuItem(
+                                        text = { Text(text = item.name) },
+                                        onClick = {
+                                            selectedMenu1 = item
+                                            expandedMenu1 = false
+                                        },
+                                        modifier =
+                                        Modifier.padding(horizontal = 24.dp)
+                                            .fillMaxWidth()
+                                            .testTag(item.userId))
                                 }
-                              }
                             }
+                        }
                         // Category dropdown
                         ExposedDropdownMenuBox(
                             expanded = expandedMenu2,
                             onExpandedChange = { expandedMenu2 = !expandedMenu2 },
                             modifier =
-                                Modifier.testTag("dropdownMenuCategory")
-                                    .padding(24.dp, top = 8.dp, bottom = 16.dp, end = 24.dp)
-                                    .fillMaxWidth()) {
-                              // Text field for the category
-                              OutlinedTextField(
-                                  value = selectedMenu2,
-                                  onValueChange = {},
-                                  label = { Text("Category") },
-                                  modifier =
-                                      Modifier.fillMaxWidth().menuAnchor().testTag("category"),
-                                  readOnly = true,
-                                  isError = errorText.isNotEmpty())
-                              // Dropdown menu for the category
-                              ExposedDropdownMenu(
-                                  expanded = expandedMenu2,
-                                  onDismissRequest = { expandedMenu2 = false },
-                              ) {
+                            Modifier.testTag("dropdownMenuCategory")
+                                .padding(24.dp, top = 8.dp, bottom = 16.dp, end = 24.dp)
+                                .fillMaxWidth()) {
+                            // Text field for the category
+                            OutlinedTextField(
+                                value = selectedMenu2,
+                                onValueChange = {},
+                                label = { Text("Category") },
+                                modifier =
+                                Modifier.fillMaxWidth().menuAnchor().testTag("category"),
+                                readOnly = true,
+                                isError = errorText.isNotEmpty())
+                            // Dropdown menu for the category
+                            ExposedDropdownMenu(
+                                expanded = expandedMenu2,
+                                onDismissRequest = { expandedMenu2 = false },
+                            ) {
                                 Category.values().forEach { item ->
-                                  // Dropdown menu item for each category
-                                  DropdownMenuItem(
-                                      text = { Text(text = item.name) },
-                                      onClick = {
-                                        selectedMenu2 = item.name
-                                        expandedMenu2 = false
-                                      },
-                                      modifier =
-                                          Modifier.padding(horizontal = 24.dp)
-                                              .fillMaxWidth()
-                                              .testTag(item.name))
+                                    // Dropdown menu item for each category
+                                    DropdownMenuItem(
+                                        text = { Text(text = item.name) },
+                                        onClick = {
+                                            selectedMenu2 = item.name
+                                            expandedMenu2 = false
+                                        },
+                                        modifier =
+                                        Modifier.padding(horizontal = 24.dp)
+                                            .fillMaxWidth()
+                                            .testTag(item.name))
                                 }
-                              }
                             }
+                        }
 
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(16.dp, bottom = 16.dp)) {
-                              Checkbox(
-                                  checked = checkboxes.all { it },
-                                  onCheckedChange = {
+                            Checkbox(
+                                checked = checkboxes.all { it },
+                                onCheckedChange = {
                                     if (checkboxes.all { it }) checkboxes.replaceAll { false }
                                     else checkboxes.replaceAll { true }
-                                  },
-                                  modifier = Modifier.testTag("checkboxAll"))
-                              Text(
-                                  text = "FOR WHOM",
-                                  color = MaterialTheme.colorScheme.onSurface,
-                                  style = MaterialTheme.typography.labelMedium,
-                              )
-                            }
+                                },
+                                modifier = Modifier.testTag("checkboxAll"))
+                            Text(
+                                text = "FOR WHOM",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        }
                         // List of checkboxes and username to select participants
                         Surface(
                             modifier = Modifier.fillMaxWidth(),
                             color = MaterialTheme.colorScheme.background) {
-                              LazyColumn(modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                            LazyColumn(modifier = Modifier.fillMaxWidth().height(200.dp)) {
                                 if (users.isEmpty()) {
-                                  item {
-                                    // edge case: no users found
-                                    Text(
-                                        text = "No users found, this should not happen.",
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                        modifier = Modifier.padding(16.dp).testTag("noUsersFound"))
-                                  }
+                                    item {
+                                        // edge case: no users found
+                                        Text(
+                                            text = "No users found, this should not happen.",
+                                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                            modifier = Modifier.padding(16.dp).testTag("noUsersFound"))
+                                    }
                                 } else {
-                                  items(users.size) { index ->
-                                    // Simple row with a checkbox and the username
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier =
+                                    items(users.size) { index ->
+                                        // Simple row with a checkbox and the username
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier =
                                             Modifier.background(
-                                                    if (checkboxes[index])
-                                                        MaterialTheme.colorScheme.primaryContainer
-                                                    else MaterialTheme.colorScheme.background)
+                                                if (checkboxes[index])
+                                                    MaterialTheme.colorScheme.primaryContainer
+                                                else MaterialTheme.colorScheme.background)
                                                 .fillMaxWidth()
                                                 .padding(16.dp, 8.dp)
                                                 .testTag("userRow$index")) {
-                                          Checkbox(
-                                              checked = checkboxes[index],
-                                              onCheckedChange = {
-                                                checkboxes[index] = !checkboxes[index]
-                                              },
-                                              modifier = Modifier.testTag("checkbox$index"))
-                                          Text(
-                                              text = users[index].name,
-                                              color = MaterialTheme.colorScheme.onPrimaryContainer)
+                                            Checkbox(
+                                                checked = checkboxes[index],
+                                                onCheckedChange = {
+                                                    checkboxes[index] = !checkboxes[index]
+                                                },
+                                                modifier = Modifier.testTag("checkbox$index"))
+                                            Text(
+                                                text = users[index].name,
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer)
                                         }
-                                  }
+                                    }
                                 }
-                              }
                             }
-                      }
+                        }
+                    }
                 }
                 // Save button
                 Box(
                     contentAlignment = Alignment.BottomCenter,
                     modifier = Modifier.padding().fillMaxSize()) {
-                      Column(
-                          modifier = Modifier.fillMaxWidth(),
-                          horizontalAlignment = Alignment.CenterHorizontally) {
-                            ExtendedFloatingActionButton(
-                                onClick = {
-                                  // Check if all fields are filled and at least one participant is
-                                  // selected before saving
-                                  if (selectedMenu1 == null ||
-                                      selectedMenu2.isEmpty() ||
-                                      expenseTitle.isEmpty() ||
-                                      expenseAmount.toDoubleOrNull() == null ||
-                                      expenseDate.isEmpty() ||
-                                      checkboxes.all { !it }) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        ExtendedFloatingActionButton(
+                            onClick = {
+                                // Check if all fields are filled and at least one participant is
+                                // selected before saving
+                                if (selectedMenu1 == null ||
+                                    selectedMenu2.isEmpty() ||
+                                    expenseTitle.isEmpty() ||
+                                    expenseAmount.toDoubleOrNull() == null ||
+                                    expenseDate.isEmpty() ||
+                                    checkboxes.all { !it }) {
                                     errorText =
                                         "Please fill in all fields and select at least one participant."
-                                  } else {
+                                } else {
                                     val selectedUsers =
                                         users.filterIndexed { index, _ -> checkboxes[index] }
                                     val expense =
@@ -355,9 +365,9 @@ fun CreateExpense(
                                             title = expenseTitle,
                                             amount = expenseAmount.toDouble(),
                                             localDate =
-                                                LocalDate.parse(
-                                                    expenseDate,
-                                                    DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                                            LocalDate.parse(
+                                                expenseDate,
+                                                DateTimeFormatter.ofPattern("dd/MM/yyyy")),
                                             category = Category.valueOf(selectedMenu2),
                                             userName = selectedMenu1!!.name,
                                             userId = selectedMenu1!!.userId,
@@ -365,32 +375,30 @@ fun CreateExpense(
                                             names = selectedUsers.map { it.name })
                                     errorText = ""
                                     viewModel.addExpense(tripId, expense)
-                                    onDone()
-                                    navActions.goBack()
-                                  }
-                                },
-                                modifier =
-                                    Modifier.fillMaxWidth(0.5f)
-                                        .padding(
-                                            bottom = if (errorText.isNotEmpty()) 4.dp else 10.dp)
-                                        .testTag("saveButton"),
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                elevation = FloatingActionButtonDefaults.elevation(2.dp, 1.dp)) {
-                                  Text(
-                                      text = "Save",
-                                      color = MaterialTheme.colorScheme.onSecondaryContainer)
                                 }
-                            // Error text
-                            if (errorText.isNotEmpty()) {
-                              Text(
-                                  text = errorText,
-                                  color = MaterialTheme.colorScheme.error,
-                                  style = MaterialTheme.typography.bodyMedium,
-                                  modifier = Modifier.padding(bottom = 10.dp).testTag("errorText"))
-                            }
-                          }
+                            },
+                            modifier =
+                            Modifier.fillMaxWidth(0.5f)
+                                .padding(
+                                    bottom = if (errorText.isNotEmpty()) 4.dp else 10.dp)
+                                .testTag("saveButton"),
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            elevation = FloatingActionButtonDefaults.elevation(2.dp, 1.dp)) {
+                            Text(
+                                text = "Save",
+                                color = MaterialTheme.colorScheme.onSecondaryContainer)
+                        }
+                        // Error text
+                        if (errorText.isNotEmpty()) {
+                            Text(
+                                text = errorText,
+                                color = MaterialTheme.colorScheme.error,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(bottom = 10.dp).testTag("errorText"))
+                        }
                     }
-              }
+                }
+            }
         }
-  }
+    }
 }

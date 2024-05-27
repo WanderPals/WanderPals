@@ -34,7 +34,7 @@ import org.json.JSONObject
  * @param tripId The ID of the trip this ViewModel is associated with.
  */
 open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: String) :
-    ViewModel() {
+  ViewModel() {
 
   private val _users = MutableStateFlow(emptyList<User>())
   open val users: StateFlow<List<User>> = _users.asStateFlow()
@@ -56,6 +56,15 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
   open val tripCurrency = _tripCurrency.asStateFlow()
+
+  // signal that the Expense was added successfully
+  private val _createExpenseFinished = MutableStateFlow(false)
+  open val createExpenseFinished: StateFlow<Boolean> =
+    _createExpenseFinished.asStateFlow()
+
+  // don't add an Expense twice
+  private val _isAddingExpense = MutableStateFlow(false)
+  open val isAddingExpense: StateFlow<Boolean> = _isAddingExpense.asStateFlow()
 
   val exchangeRate = MutableStateFlow<Double?>(null)
 
@@ -83,12 +92,29 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
    * @param expense The Expense object to add.
    */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
+
     viewModelScope.launch {
-      val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
-      NotificationsManager.addExpenseNotification(tripId, newExpense)
-      updateStateLists()
+      if (!isAddingExpense.value && !createExpenseFinished.value) {
+        _isAddingExpense.value = true
+        tripsRepository.addExpenseToTrip(tripId, expense)
+        val expenseList = tripsRepository.getAllExpensesFromTrip(tripId)
+        if(expenseList.isEmpty()){
+          //error
+          Log.e("FinanceViewModel","Error reading expense after addition (should not happen)")
+        }else{
+          val newExpense = expenseList.last()
+          NotificationsManager.addExpenseNotification(tripId, newExpense)
+        }
+        updateStateLists()
+        _isAddingExpense.value = false
+        _createExpenseFinished.value = true
+      }
     }
+  }
+
+  /** Resets the CreateExpenseFinished flag */
+  fun setCreateExpenseFinished(value: Boolean) {
+    _createExpenseFinished.value = value
   }
 
   /**
@@ -122,7 +148,7 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
         val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
         expenses.forEach {
           tripsRepository.updateExpenseInTrip(
-              tripId, it.copy(amount = it.amount * exchangeRate.value!!))
+            tripId, it.copy(amount = it.amount * exchangeRate.value!!))
         }
         tripsRepository.updateTrip(currentTrip.copy(currencyCode = newCurrencyCode))
         updateStateLists()
@@ -153,13 +179,13 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
         if (response.isSuccessful) {
           val responseBody = response.body()?.string()
           val exchangeRateResponse =
-              responseBody?.let {
-                JSONObject(it)
-                    .getJSONArray("response")
-                    .getJSONObject(0)
-                    .getString("average_bid")
-                    .toDouble()
-              }
+            responseBody?.let {
+              JSONObject(it)
+                .getJSONArray("response")
+                .getJSONObject(0)
+                .getString("average_bid")
+                .toDouble()
+            }
           exchangeRate.value = exchangeRateResponse
           Log.d("UpdateExchangeRate", "Exchange rate updated successfully: $exchangeRate")
         } else {
@@ -190,17 +216,17 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     val endDate = currentDate.toString() // Today's date
 
     return HttpUrl.Builder()
-        .scheme("https")
-        .host("fxds-public-exchange-rates-api.oanda.com")
-        .addPathSegment("cc-api")
-        .addPathSegment("currencies")
-        .addQueryParameter("base", fromCurrency)
-        .addQueryParameter("quote", toCurrency)
-        .addQueryParameter("data_type", "general_currency_pair")
-        .addQueryParameter("start_date", startDate)
-        .addQueryParameter("end_date", endDate)
-        .build()
-        .toString()
+      .scheme("https")
+      .host("fxds-public-exchange-rates-api.oanda.com")
+      .addPathSegment("cc-api")
+      .addPathSegment("currencies")
+      .addQueryParameter("base", fromCurrency)
+      .addQueryParameter("quote", toCurrency)
+      .addQueryParameter("data_type", "general_currency_pair")
+      .addQueryParameter("start_date", startDate)
+      .addQueryParameter("end_date", endDate)
+      .build()
+      .toString()
   }
 
   /** Setter functions */
@@ -217,8 +243,8 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   }
 
   class FinanceViewModelFactory(
-      private val tripsRepository: TripsRepository,
-      private val tripId: String
+    private val tripsRepository: TripsRepository,
+    private val tripId: String
   ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(FinanceViewModel::class.java)) {
