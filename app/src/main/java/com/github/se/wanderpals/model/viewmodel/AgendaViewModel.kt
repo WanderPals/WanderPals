@@ -72,7 +72,7 @@ open class AgendaViewModel(
   }
 
   /** Loads the trip data from the repository and updates the UI state with the trip information. */
-  private suspend fun loadTripData() {
+  suspend fun loadTripData() {
     tripsRepository?.getTrip(tripId)?.let { trip -> _trip.value = trip }
   }
   /** Loads the stops information for the trip, marking all existing stops as ADDED. */
