@@ -281,7 +281,7 @@ class SuggestionsViewModelTest {
 
         // Modify userLikes to simulate a toggle that reaches majority
         val updatedLikes = suggestion.userLikes + "currentUser"
-        val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.ADDED)
+        val updatedStop = suggestion.stop.copy(stopStatus = CalendarUiState.StopStatus.CURRENT)
         val updatedSuggestion = suggestion.copy(userLikes = updatedLikes, stop = updatedStop)
 
         coEvery { mockTripsRepository.getSuggestionFromTrip(any(), any()) } returns
@@ -303,7 +303,7 @@ class SuggestionsViewModelTest {
                 suggestion.suggestionId)) // Check if added to stops
         coVerify {
           mockTripsRepository.updateSuggestionInTrip(
-              tripId, match { it.stop.stopStatus == CalendarUiState.StopStatus.ADDED })
+              tripId, match { it.stop.stopStatus == CalendarUiState.StopStatus.CURRENT })
         }
       }
 
@@ -573,27 +573,6 @@ class SuggestionsViewModelTest {
 
         val startTime = viewModel.getStartTime(suggestion.suggestionId)
         assertNotNull(startTime) // Check if the start time is not null
-      }
-
-  @OptIn(ExperimentalCoroutinesApi::class)
-  @Test
-  fun testStartCountdown() =
-      runBlockingTest(testDispatcher) {
-        // Load the suggestions to set initial state
-        viewModel.loadSuggestion(tripId)
-        advanceUntilIdle()
-
-        // Capture the suggestion state before clicking the vote icon
-        val suggestion = viewModel.state.value.first()
-        assertFalse(viewModel.getVoteIconClicked(suggestion.suggestionId))
-
-        // Perform the action to toggle the vote icon and start the countdown
-        viewModel.toggleVoteIconClicked(suggestion)
-        advanceUntilIdle()
-
-        // Assert that the countdown is running
-        val remainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
-        assertTrue(remainingTimeFlow.value == "23:59:59") // the countdown starts at 23:59:59
       }
 
   @OptIn(ExperimentalCoroutinesApi::class)

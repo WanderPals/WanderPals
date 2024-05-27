@@ -60,7 +60,7 @@ class SuggestionHistoryFeedContentTest {
             title = "First Stop",
             description = "Description for first stop",
             geoCords = GeoCords(37.7749, -122.4194),
-            stopStatus = CalendarUiState.StopStatus.ADDED)
+            stopStatus = CalendarUiState.StopStatus.CURRENT)
 
     val stop2 =
         Stop(
@@ -68,7 +68,7 @@ class SuggestionHistoryFeedContentTest {
             title = "Second Stop",
             description = "Description for second stop",
             geoCords = GeoCords(40.7128, -74.0060),
-            stopStatus = CalendarUiState.StopStatus.ADDED)
+            stopStatus = CalendarUiState.StopStatus.CURRENT)
 
     suggestionList =
         listOf(
@@ -154,7 +154,7 @@ class SuggestionHistoryFeedContentTest {
             date = LocalDate.of(2024, 4, 16),
             startTime = LocalTime.of(12, 0),
             duration = 60,
-            stopStatus = CalendarUiState.StopStatus.ADDED)
+            stopStatus = CalendarUiState.StopStatus.CURRENT)
 
     val suggestion =
         Suggestion(
