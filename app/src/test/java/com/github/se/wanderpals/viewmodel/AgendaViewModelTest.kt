@@ -120,7 +120,7 @@ class AgendaViewModelTest {
    * is updated correctly to different statuses.
    */
   @Test
-  fun `loadStopsInfo updates stopsInfo state with different statuses`() = runTest {
+  fun `loadStopsInfo updates stopsInfo state with different statuses`() = runBlockingTest {
     // Prepare mock response
     val today = LocalDate.now()
     val mockStops =
