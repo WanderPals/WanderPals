@@ -29,6 +29,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
   private lateinit var tripsRepository: TripsRepository
   private lateinit var shortcutManager: ShortcutManager
+  private var overviewJoinTripDialogIsOpen = false
 
   /**
    * Initializes the TripsRepository with a specific user ID. This method must be called immediately
@@ -87,6 +88,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     ShortcutManagerCompat.pushDynamicShortcut(getApplication(), shortcut)
   }
 
+  /**
+   * Adds a dynamic shortcut to the application. This shortcut will be visible in the launcher and
+   * can be used to create a new trip.
+   *
+   * @see ShortcutManagerCompat
+   */
+  fun addDynamicShortcutJoinTrip() {
+    val shortcut =
+        ShortcutInfoCompat.Builder(getApplication(), "dynamic_" + Route.OVERVIEW)
+            .setShortLabel("Join trip")
+            .setLongLabel("Clicking this will join a new trip.")
+            .setIcon(IconCompat.createWithResource(getApplication(), R.drawable.logo_projet))
+            .setIntent(
+                Intent(getApplication(), MainActivity::class.java).apply {
+                  action = Intent.ACTION_VIEW
+                  putExtra("shortcut_id", Route.OVERVIEW)
+                })
+            .build()
+    ShortcutManagerCompat.pushDynamicShortcut(getApplication(), shortcut)
+  }
+
   /** Removes all dynamic shortcuts from the application. */
   fun removeAllDynamicShortcuts() {
     ShortcutManagerCompat.removeAllDynamicShortcuts(getApplication())
@@ -105,6 +127,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
       when (intent.getStringExtra("shortcut_id")) {
         Route.CREATE_TRIP -> {
           navigationActions.mainNavigation.setStartDestination(Route.CREATE_TRIP)
+        }
+        Route.OVERVIEW -> {
+          overviewJoinTripDialogIsOpen = true
+          navigationActions.mainNavigation.setStartDestination(Route.OVERVIEW)
         }
         else -> {
           Log.d("MainActivity", "No shortcut id found")
@@ -143,6 +169,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
   fun setUserToken(token: String) {
     runBlocking { tripsRepository }
+  }
+
+  /** OverviewJoinTripDialogIsOpen getter */
+  fun getOverviewJoinTripDialogIsOpen(): Boolean {
+    return overviewJoinTripDialogIsOpen
   }
 
   /**

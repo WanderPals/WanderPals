@@ -314,6 +314,7 @@ class MainActivity : ComponentActivity() {
                 }
                 composable(Route.OVERVIEW) {
                   viewModel.addDynamicShortcutCreateTrip()
+                  viewModel.addDynamicShortcutJoinTrip()
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
                           factory =
@@ -321,7 +322,9 @@ class MainActivity : ComponentActivity() {
                                   viewModel.getTripsRepository()),
                           key = "Overview")
                   Overview(
-                      overviewViewModel = overviewViewModel, navigationActions = navigationActions)
+                      overviewViewModel = overviewViewModel,
+                      navigationActions = navigationActions,
+                      viewModel.getOverviewJoinTripDialogIsOpen())
                 }
                 composable(Route.TRIP) {
                   navigationActions.tripNavigation.setNavController(rememberNavController())

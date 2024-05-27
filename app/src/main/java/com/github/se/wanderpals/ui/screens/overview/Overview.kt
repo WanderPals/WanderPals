@@ -50,7 +50,11 @@ const val EMPTY_CODE = ""
  * @param navigationActions The navigation actions used for navigating to different screens.
  */
 @Composable
-fun Overview(overviewViewModel: OverviewViewModel, navigationActions: NavigationActions) {
+fun Overview(
+    overviewViewModel: OverviewViewModel,
+    navigationActions: NavigationActions,
+    defaultDialogIsOpen: Boolean = false
+) {
   LaunchedEffect(
       Unit) { // This ensures getAllTrips is called once per composition, not on every recomposition
         overviewViewModel.getAllTrips()
@@ -65,7 +69,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
   // State for managing search text
   var searchText by remember { mutableStateOf("") }
 
-  var dialogIsOpen by remember { mutableStateOf(false) }
+  var dialogIsOpen by remember { mutableStateOf(defaultDialogIsOpen) }
 
   // Display loading indicator waiting for database to fetch the trips of the user
   if (isLoading) {
