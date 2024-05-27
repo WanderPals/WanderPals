@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.overview.OverviewViewModelTest
 import com.github.se.wanderpals.screens.CreateTripoScreen
@@ -29,9 +30,10 @@ import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
 import io.github.kakaocup.compose.node.element.ComposeScreen
+import io.mockk.coEvery
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit4.MockKRule
-import kotlinx.coroutines.Dispatchers
+import io.mockk.mockkClass
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -50,6 +52,9 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
 
   @RelaxedMockK lateinit var mockNavController2: NavHostController
 
+  @RelaxedMockK
+  var tripsRepository: TripsRepository = mockkClass(TripsRepository::class, relaxed = true)
+
   @Before
   fun testSetup() {
 
@@ -58,6 +63,8 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
     val context = ApplicationProvider.getApplicationContext<Context>()
     val mapManager = MapManager(context)
     mapManager.initClients()
+
+    coEvery { tripsRepository.getUserFromTrip(any(), any()) } returns User("user1")
 
     composeTestRule.setContent {
       mockNavController = rememberNavController()
@@ -83,11 +90,7 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         }
         composable(Route.TRIP) {
           BackHandler(true) {}
-          Trip(
-              mockNavActions,
-              mockNavActions.variables.currentTrip,
-              TripsRepository("-1", Dispatchers.IO),
-              mapManager)
+          Trip(mockNavActions, mockNavActions.variables.currentTrip, tripsRepository, mapManager)
         }
       }
     }
@@ -133,12 +136,16 @@ class EndToEndTestMilestone1 : TestCase(kaspressoBuilder = Kaspresso.Builder.wit
         noTripFoundOnSearchText { assertIsNotDisplayed() }
         composeTestRule.onNodeWithText("new").performTextClearance()
       }
-      overviewScreen { buttonTrip2 { performClick() } }
+      overviewScreen {
+        buttonTrip2 { assertIsDisplayed() }
+        buttonTrip2 { performClick() }
 
-      tripScreen { this.tripScreen { assertIsDisplayed() } }
-      tripScreen {
-        suggestionItem { performClick() }
-        tripScreen.suggestionScreen { assertIsDisplayed() }
+        composeTestRule.waitForIdle()
+
+        tripScreen {
+          suggestionItem { performClick() }
+          tripScreen.suggestionScreen { assertIsDisplayed() }
+        }
       }
     }
   }
