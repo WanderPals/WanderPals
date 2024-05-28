@@ -124,7 +124,10 @@ fun AnnouncementInfoDialog(
                     value = announcement.description,
                     onValueChange = {},
                     modifier =
-                        Modifier.fillMaxWidth().weight(1f).testTag("announcementDescription").background(MaterialTheme.colorScheme.surfaceVariant),
+                        Modifier.fillMaxWidth()
+                            .weight(1f)
+                            .testTag("announcementDescription")
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
                     readOnly = true)
                 Box(
                     modifier =
@@ -137,11 +140,10 @@ fun AnnouncementInfoDialog(
                         // Delete announcement button
                         Button(
                             onClick = { showDeleteDialog = true },
-                            modifier =
-                                Modifier.fillMaxSize()
-                                    .testTag("deleteAnnouncementButton"),
+                            modifier = Modifier.fillMaxSize().testTag("deleteAnnouncementButton"),
                             colors =
-                                ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                                ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer)) {
                               Row(
                                   horizontalArrangement =
                                       Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),

@@ -1,6 +1,8 @@
 package com.github.se.wanderpals.notifications
 
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Announcement
 import com.github.se.wanderpals.model.data.Role
@@ -313,6 +315,13 @@ class NotificationsTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComp
       deleteAnnouncementDialog { assertIsDisplayed() }
       confirmDeleteAnnouncementButton { performClick() }
       noItemsText { assertIsDisplayed() }
+    }
+  }
+
+  @Test
+  fun notificationTitleDisplays() = run {
+    ComposeScreen.onComposeScreen<NotificationScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("notificationTitle").assertIsDisplayed()
     }
   }
 }
