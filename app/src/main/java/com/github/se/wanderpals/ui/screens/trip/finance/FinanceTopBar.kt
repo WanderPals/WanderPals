@@ -118,7 +118,7 @@ fun FinanceTopBar(
             Box(modifier = Modifier.weight(1f)){
                 NavigationButton(
                     text = FinanceOption.EXPENSES.toString(),
-                    imageId = R.drawable.expenses,
+                    imageId = R.drawable.expenses_vector,
                     isSelected = currentSelectedOption == FinanceOption.EXPENSES,
                     onClick = { onSelectOption(FinanceOption.EXPENSES) },
                 )
@@ -126,14 +126,14 @@ fun FinanceTopBar(
             Box(modifier = Modifier.weight(1f)){
                 NavigationButton(
                     text = FinanceOption.CATEGORIES.toString(),
-                    imageId = R.drawable.categories,
+                    imageId = R.drawable.categories_vector,
                     isSelected = currentSelectedOption == FinanceOption.CATEGORIES,
                     onClick = { onSelectOption(FinanceOption.CATEGORIES) })
             }
             Box(modifier = Modifier.weight(1f)){
                 NavigationButton(
                 text = FinanceOption.DEBTS.toString(),
-                imageId = R.drawable.balance,
+                imageId = R.drawable.balance_vector,
                 isSelected = currentSelectedOption == FinanceOption.DEBTS,
                 onClick = { onSelectOption(FinanceOption.DEBTS) })}
 

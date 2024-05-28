@@ -249,7 +249,7 @@ fun Menu(
         content = {
           Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
-                painterResource(id = R.drawable.finance_logo),
+                painterResource(id = R.drawable.finance_logo_image),
                 contentDescription = "financeLogo",
                 modifier = Modifier.clip(CircleShape).size(25.dp))
             Text(text = "Finance", modifier = Modifier.padding(horizontal = 20.dp))
