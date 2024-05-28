@@ -252,6 +252,7 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
     composeTestRule.onNodeWithTag("suggestionTitle", useUnmergedTree = true).assertIsDisplayed()
     // Check that the suggestion widget is displayed
     composeTestRule.onNodeWithTag("noSuggestions", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("shareIcon", useUnmergedTree = true).assertIsDisplayed()
   }
 
   @Test

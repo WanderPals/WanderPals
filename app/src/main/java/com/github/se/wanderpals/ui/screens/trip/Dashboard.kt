@@ -424,7 +424,7 @@ fun TopDashboardBar(
                 Icon(
                     Icons.Default.Share,
                     contentDescription = "Menu",
-                    modifier = Modifier.size(40.dp),
+                    modifier = Modifier.size(32.dp).testTag("shareIcon"),
                     tint = MaterialTheme.colorScheme.onPrimary)
               }
             }
