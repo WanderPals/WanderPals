@@ -74,7 +74,7 @@ fun Trip(
       viewModel(
           factory = SessionViewModel.SessionViewModelFactory(tripsRepository), key = "Session")
   LaunchedEffect(key1 = tripId) {
-    sessionViewModel.updateUserForCurrentUser(tripId)
+    sessionViewModel.updateUserForCurrentUser(tripId, oldNavActions)
     sessionViewModel.getTheTokenList(tripId)
   }
 

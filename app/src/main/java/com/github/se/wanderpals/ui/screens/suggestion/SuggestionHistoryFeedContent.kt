@@ -52,7 +52,7 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
   // Filter suggestions that have been added as stops
   val addedSuggestions =
       suggestions
-          .filter { it.stop.stopStatus == CalendarUiState.StopStatus.ADDED }
+          .filter { it.stop.stopStatus == CalendarUiState.StopStatus.CURRENT }
           .asReversed() // Reverse the list to show the most recent suggestions history item first
 
   val tripId =
@@ -133,7 +133,7 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
                 @Composable {
                   LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
                     itemsIndexed(addedSuggestions) { index, suggestion ->
-                      if (suggestion.stop.stopStatus == CalendarUiState.StopStatus.ADDED) {
+                      if (suggestion.stop.stopStatus == CalendarUiState.StopStatus.CURRENT) {
                         // Add space between suggestionHistoryItems:
                         Spacer(modifier = Modifier.height(16.dp))
 

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.github.se.wanderpals.isMapManagerInitialized
 import com.github.se.wanderpals.mapManager
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.viewmodel.OverviewViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
@@ -48,9 +49,16 @@ const val EMPTY_CODE = ""
  *
  * @param overviewViewModel The view model containing the data and logic for the overview screen.
  * @param navigationActions The navigation actions used for navigating to different screens.
+ * @param defaultDialogIsOpen A boolean indicating whether the dialog for joining a trip is open.
+ * @param addShortcut A lambda function to add a shortcut to the home screen.
  */
 @Composable
-fun Overview(overviewViewModel: OverviewViewModel, navigationActions: NavigationActions) {
+fun Overview(
+    overviewViewModel: OverviewViewModel,
+    navigationActions: NavigationActions,
+    defaultDialogIsOpen: Boolean = false,
+    addShortcut: (Trip) -> Unit = { _ -> }
+) {
   LaunchedEffect(
       Unit) { // This ensures getAllTrips is called once per composition, not on every recomposition
         overviewViewModel.getAllTrips()
@@ -65,7 +73,7 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
   // State for managing search text
   var searchText by remember { mutableStateOf("") }
 
-  var dialogIsOpen by remember { mutableStateOf(false) }
+  var dialogIsOpen by remember { mutableStateOf(defaultDialogIsOpen) }
 
   // Display loading indicator waiting for database to fetch the trips of the user
   if (isLoading) {
@@ -105,7 +113,8 @@ fun Overview(overviewViewModel: OverviewViewModel, navigationActions: Navigation
               navigationActions = navigationActions,
               tripsList = tripsList,
               searchText = searchText,
-              overviewViewModel = overviewViewModel)
+              overviewViewModel = overviewViewModel,
+              addShortcut = addShortcut)
         }
   }
 }

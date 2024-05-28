@@ -12,7 +12,6 @@ import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SessionUser
-import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -126,15 +125,10 @@ open class OverviewViewModel(private val tripsRepository: TripsRepository) : Vie
               newTrip.tokenIds + SessionManager.getNotificationToken()
             }
 
-        // add the token to the token list of the trip
-        // tripsRepository.updateTrip(newTrip.copy(tokenIds = newListOfTokens))
-
-        // send a notification to all the users of the trip
-        for (userToken in newListOfTokens) {
-          sendMessageToListOfUsers(
-              userToken,
-              "${SessionManager.getCurrentUser()?.name} has been added to ${newTrip.title}")
-        }
+        NotificationAPI()
+            .sendNotification(
+                newListOfTokens,
+                "${SessionManager.getCurrentUser()?.name} has been added to ${newTrip.title}")
 
         newState.add(newTrip)
         _state.value = newState.toList()

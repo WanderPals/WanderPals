@@ -75,9 +75,15 @@ class MapManager(private val context: Context) {
 
   /** Function to initialize the Places API and the FusedLocationProviderClient. */
   fun initClients() {
-    Places.initialize(context, BuildConfig.MAPS_API_KEY)
-    placesClient = Places.createClient(context)
-    fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    if (!Places.isInitialized()) {
+      Places.initialize(context, BuildConfig.MAPS_API_KEY)
+    }
+    if (!::placesClient.isInitialized) {
+      placesClient = Places.createClient(context)
+    }
+    if (!::fusedLocationClient.isInitialized) {
+      fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+    }
   }
 
   /**

@@ -135,18 +135,18 @@ fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit
                       } else {
                         Column {
                           SuggestionWidgetItem(suggestion = sortedSuggestion[0])
-                          HorizontalDivider(
-                              color = MaterialTheme.colorScheme.surfaceVariant,
-                              thickness = 1.dp,
-                              modifier = Modifier.padding(horizontal = 8.dp))
                           if (sortedSuggestion.size > 1) {
-                            SuggestionWidgetItem(suggestion = sortedSuggestion[1])
                             HorizontalDivider(
                                 color = MaterialTheme.colorScheme.surfaceVariant,
                                 thickness = 1.dp,
                                 modifier = Modifier.padding(horizontal = 8.dp))
+                            SuggestionWidgetItem(suggestion = sortedSuggestion[1])
                           }
                           if (sortedSuggestion.size > 2) {
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.surfaceVariant,
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 8.dp))
                             SuggestionWidgetItem(suggestion = sortedSuggestion[2])
                           } else {
                             Box(modifier = Modifier.fillMaxSize())

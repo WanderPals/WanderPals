@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.github.se.wanderpals.model.data.Category
 import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
@@ -57,6 +58,20 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _tripCurrency = MutableStateFlow<Currency>(Currency.getInstance("CHF"))
   open val tripCurrency = _tripCurrency.asStateFlow()
 
+  private val _settleDebtData = MutableStateFlow(Pair(User(), 0.0))
+  open val settleDebtData = _settleDebtData.asStateFlow()
+
+  private val _showSettleDebtDialog = MutableStateFlow(false)
+  open val showSettleDebtDialog = _showSettleDebtDialog.asStateFlow()
+
+  // signal that the Expense was added successfully
+  private val _createExpenseFinished = MutableStateFlow(false)
+  open val createExpenseFinished: StateFlow<Boolean> = _createExpenseFinished.asStateFlow()
+
+  // don't add an Expense twice
+  private val _isAddingExpense = MutableStateFlow(false)
+  open val isAddingExpense: StateFlow<Boolean> = _isAddingExpense.asStateFlow()
+
   val exchangeRate = MutableStateFlow<Double?>(null)
 
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
@@ -83,12 +98,29 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
    * @param expense The Expense object to add.
    */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
+
     viewModelScope.launch {
-      val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
-      NotificationsManager.addExpenseNotification(tripId, newExpense)
-      updateStateLists()
+      if (!isAddingExpense.value && !createExpenseFinished.value) {
+        _isAddingExpense.value = true
+        tripsRepository.addExpenseToTrip(tripId, expense)
+        val expenseList = tripsRepository.getAllExpensesFromTrip(tripId)
+        if (expenseList.isEmpty()) {
+          // error
+          Log.e("FinanceViewModel", "Error reading expense after addition (should not happen)")
+        } else {
+          val newExpense = expenseList.last()
+          NotificationsManager.addExpenseNotification(tripId, newExpense)
+        }
+        updateStateLists()
+        _isAddingExpense.value = false
+        _createExpenseFinished.value = true
+      }
     }
+  }
+
+  /** Resets the CreateExpenseFinished flag */
+  fun setCreateExpenseFinished(value: Boolean) {
+    _createExpenseFinished.value = value
   }
 
   /**
@@ -214,6 +246,44 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
 
   open fun setShowCurrencyDialogState(value: Boolean) {
     _showCurrencyDialog.value = value
+  }
+
+  /** Sets the state of the dialog for settling a debt. */
+  open fun setShowSettleDebtDialogState(value: Boolean) {
+    _showSettleDebtDialog.value = value
+  }
+
+  /** Sets the data for settling a debt. */
+  open fun setSettleDebt(receiver: User, amount: Double) {
+    _settleDebtData.value = Pair(receiver, amount)
+  }
+
+  /**
+   * Settles a debt between two users.
+   *
+   * This method creates a new expense to settle a debt between two users. The expense is added to
+   * the trip and the dialog for settling a debt is closed.
+   *
+   * @param userId The ID of the user to whom the debt is settled.
+   * @param userName The name of the user to whom the debt is settled.
+   */
+  open fun settleDebt(userId: String, userName: String) {
+    _isLoading.value = true
+    val (sender, amount) = _settleDebtData.value
+    val expense =
+        Expense(
+            expenseId = "",
+            title = "Debt settlement : ${sender.name} -> " + userName,
+            amount = amount,
+            category = Category.OTHER,
+            userId = sender.userId,
+            userName = sender.name,
+            participantsIds = listOf(userId),
+            names = listOf(userName),
+            localDate = LocalDate.now())
+    addExpense(tripId, expense)
+    setShowSettleDebtDialogState(false)
+    _isLoading.value = false
   }
 
   class FinanceViewModelFactory(

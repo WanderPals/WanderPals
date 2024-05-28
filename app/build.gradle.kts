@@ -132,16 +132,15 @@ fun DependencyHandlerScope.globalTestImplementation(dep: Any) {
     testImplementation(dep)
 }
 
+
 dependencies {
     implementation(libs.test.core.ktx)
-
-    implementation(libs.retrofit)
-    implementation(libs.converter.moshi)
 
     implementation(libs.firebase.messaging.ktx)
 
 
     implementation(libs.firebase.storage.ktx)
+    //implementation(libs.compose.preview.renderer)
 
     val composeBom = platform(libs.compose.bom)
 
@@ -158,6 +157,24 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(platform(libs.compose.bom))
+
+    // ---------------     Ktor     -------------
+    val ktor_version = "2.3.0"
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.logging)
+    implementation(libs.ktor.client.content.negotiation)
+    //implementation (libs.ktor.gson)
+    implementation(libs.retrofit)
+    implementation(libs.okhttp)
+    implementation(libs.converter.moshi)
+    implementation(libs.okio)
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
+
+
 
     // ------------- Jetpack Compose ------------------
     implementation(composeBom)
