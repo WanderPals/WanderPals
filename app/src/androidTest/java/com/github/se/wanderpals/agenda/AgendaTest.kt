@@ -10,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda
@@ -97,6 +98,24 @@ class FakeAgendaViewModel(
                     it.copy(stopStatus = status)
                   } else it
                 })
+  }
+
+  /**
+   * Simulates loading trip data into the ViewModel.
+   *
+   * @param startDate The start date of the trip.
+   * @param endDate The end date of the trip.
+   */
+  fun loadTripData(startDate: LocalDate, endDate: LocalDate) {
+    val testTrip =
+        Trip(
+            tripId = "testTripId",
+            title = "Test Trip",
+            startDate = startDate,
+            endDate = endDate,
+            totalBudget = 1000.0,
+            description = "Test Trip Description")
+    _trip.value = testTrip
   }
 }
 
@@ -253,13 +272,23 @@ class AgendaTest {
 
   /** Test to verify that the marker with "ADDED" stop status exists and is displayed. */
   @Test
-  fun calendarDateWithAddedStatusShowsMarker() {
+  fun calendarDateWithCurrentStatusShowsMarker() {
     val testYearMonth = YearMonth.of(2024, 5)
     val testDate = LocalDate.of(2024, 5, 5)
     val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
 
+    // Create a Trip object to pass as the trip parameter
+    val testTrip =
+        Trip(
+            tripId = "testTripId",
+            title = "Test Trip",
+            startDate = LocalDate.of(2024, 5, 1),
+            endDate = LocalDate.of(2024, 5, 31),
+            totalBudget = 1000.0,
+            description = "Test Trip Description")
+
     // Simulate adding a stop with ADDED status on May 5, 2024
-    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.ADDED)
+    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.CURRENT)
 
     // Set up the environment for the test
     composeTestRule.setContent {
@@ -273,26 +302,123 @@ class AgendaTest {
                       testYearMonth.withMonth(5),
                       year = Year.of(2024),
                       isSelected = false,
-                      stopStatus = CalendarUiState.StopStatus.ADDED)),
+                      stopStatus = CalendarUiState.StopStatus.CURRENT)),
           onPreviousMonthButtonClicked = {},
           onNextMonthButtonClicked = {},
           onDateClickListener = {},
-      )
+          trip = testTrip)
     }
 
-    // Find the marker and assert it's displayed on the screen because the stop status is "ADDED"
-    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).assertExists()
-    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).assertIsDisplayed()
+    // Find the marker and assert it's displayed on the screen because the stop status is "CURRENT"
+    composeTestRule.onNodeWithTag("MarkerCURRENT", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("MarkerCURRENT", useUnmergedTree = true).assertIsDisplayed()
   }
 
-  /**
-   * Test to verify that the marker with "ADDED" stop status does not exist and is not displayed.
-   */
+  /** Test to verify that the marker with "COMING_SOON" stop status exists and is displayed. */
   @Test
-  fun calendarDateWithNoAddedStatusShowsNoMarker() {
+  fun calendarDateWithComingSoonStatusShowsMarker() {
     val testYearMonth = YearMonth.of(2024, 5)
-    val testDate = LocalDate.of(2024, 5, 6)
+    val testDate = LocalDate.of(2024, 5, 21)
     val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
+
+    // Create a Trip object to pass as the trip parameter
+    val testTrip =
+        Trip(
+            tripId = "testTripId",
+            title = "Test Trip",
+            startDate = LocalDate.of(2024, 5, 1),
+            endDate = LocalDate.of(2024, 5, 31),
+            totalBudget = 1000.0,
+            description = "Test Trip Description")
+
+    // Simulate adding a stop with COMING_SOON status on May 21, 2024
+    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.COMING_SOON)
+
+    // Set up the environment for the test
+    composeTestRule.setContent {
+      CalendarWidget(
+          days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+          yearMonth = testYearMonth,
+          dates =
+              listOf(
+                  CalendarUiState.Date(
+                      "21",
+                      testYearMonth.withMonth(5),
+                      year = Year.of(2024),
+                      isSelected = false,
+                      stopStatus = CalendarUiState.StopStatus.COMING_SOON)),
+          onPreviousMonthButtonClicked = {},
+          onNextMonthButtonClicked = {},
+          onDateClickListener = {},
+          trip = testTrip)
+    }
+
+    // Find the marker and assert it's displayed on the screen because the stop status is
+    // "COMING_SOON"
+    composeTestRule.onNodeWithTag("MarkerCOMING_SOON", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("MarkerCOMING_SOON", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  /** Test to verify that the marker with "PAST" stop status exists and is displayed. */
+  @Test
+  fun calendarDateWithPastStatusShowsMarker() {
+    val testYearMonth = YearMonth.of(2024, 5)
+    val testDate = LocalDate.of(2024, 5, 19)
+    val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
+
+    // Create a Trip object to pass as the trip parameter
+    val testTrip =
+        Trip(
+            tripId = "testTripId",
+            title = "Test Trip",
+            startDate = LocalDate.of(2024, 5, 1),
+            endDate = LocalDate.of(2024, 5, 31),
+            totalBudget = 1000.0,
+            description = "Test Trip Description")
+
+    // Simulate adding a stop with PAST status on May 19, 2024
+    fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.PAST)
+
+    // Set up the environment for the test
+    composeTestRule.setContent {
+      CalendarWidget(
+          days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+          yearMonth = testYearMonth,
+          dates =
+              listOf(
+                  CalendarUiState.Date(
+                      "19",
+                      testYearMonth.withMonth(5),
+                      year = Year.of(2024),
+                      isSelected = false,
+                      stopStatus = CalendarUiState.StopStatus.PAST)),
+          onPreviousMonthButtonClicked = {},
+          onNextMonthButtonClicked = {},
+          onDateClickListener = {},
+          trip = testTrip)
+    }
+
+    // Find the marker and assert it's displayed on the screen because the stop status is "PAST"
+    composeTestRule.onNodeWithTag("MarkerPAST", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("MarkerPAST", useUnmergedTree = true).assertIsDisplayed()
+  }
+
+  /** Test to verify that the marker with "NONE" stop status does not exist and is not displayed. */
+  @Test
+  fun calendarDateWithNoStopStatusShowsNoMarker() {
+    val testYearMonth = YearMonth.of(2024, 5)
+    val testDate = LocalDate.of(2024, 5, 22)
+    val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
+
+    // Create a Trip object to pass as the trip parameter
+    val testTrip =
+        Trip(
+            tripId = "testTripId",
+            title = "Test Trip",
+            startDate = LocalDate.of(2024, 5, 1),
+            endDate = LocalDate.of(2024, 5, 31),
+            totalBudget = 1000.0,
+            description = "Test Trip Description")
 
     // Ensure the status is NONE for the test date
     fakeViewModel.simulateStopStatusChange(testDate, CalendarUiState.StopStatus.NONE)
@@ -305,18 +431,60 @@ class AgendaTest {
           dates =
               listOf(
                   CalendarUiState.Date(
-                      "6",
+                      "22",
                       testYearMonth.withMonth(5),
                       year = Year.of(2024),
                       isSelected = false,
                       stopStatus = CalendarUiState.StopStatus.NONE)),
           onPreviousMonthButtonClicked = {},
           onNextMonthButtonClicked = {},
-          onDateClickListener = {})
+          onDateClickListener = {},
+          trip = testTrip)
     }
 
-    // Assert that the marker with "ADDED" status is not displayed because the stop status is "NONE"
-    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).assertDoesNotExist()
-    composeTestRule.onNodeWithTag("MarkerADDED", useUnmergedTree = true).isNotDisplayed()
+    // Assert that the marker with "NONE" status is not displayed because the stop status is "NONE"
+    composeTestRule.onNodeWithTag("MarkerNONE", useUnmergedTree = true).assertDoesNotExist()
+    composeTestRule.onNodeWithTag("MarkerNONE", useUnmergedTree = true).isNotDisplayed()
+  }
+
+  /** Test to verify that the continuous background for the trip range is displayed correctly. */
+  @Test
+  fun calendarTripRangeBackgroundIsDisplayed() {
+    val testYearMonth = YearMonth.of(2024, 5)
+    val tripStartDate = LocalDate.of(2024, 5, 15)
+    val tripEndDate = LocalDate.of(2024, 5, 24)
+    val fakeViewModel = FakeAgendaViewModel(testYearMonth, emptyList())
+
+    // Simulate the trip data
+    fakeViewModel.loadTripData(tripStartDate, tripEndDate)
+
+    // Set up the environment for the test
+    composeTestRule.setContent {
+      CalendarWidget(
+          days = arrayOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
+          yearMonth = testYearMonth,
+          dates =
+              (1..31).map {
+                CalendarUiState.Date(
+                    it.toString(),
+                    testYearMonth,
+                    Year.of(2024),
+                    isSelected = false,
+                    stopStatus = CalendarUiState.StopStatus.NONE)
+              },
+          onPreviousMonthButtonClicked = {},
+          onNextMonthButtonClicked = {},
+          onDateClickListener = {},
+          trip = fakeViewModel.trip.value,
+      )
+    }
+
+    // Assert that the continuous background for the trip range is displayed correctly
+    (15..24).forEach {
+      composeTestRule
+          .onNodeWithTag("DateBackground_$it", useUnmergedTree = true)
+          .assertExists()
+          .assertIsDisplayed()
+    }
   }
 }

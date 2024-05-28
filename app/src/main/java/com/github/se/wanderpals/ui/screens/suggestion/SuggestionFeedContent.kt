@@ -37,7 +37,6 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
-import com.github.se.wanderpals.ui.theme.scrimLight
 
 /**
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
@@ -138,7 +137,7 @@ fun SuggestionFeedContent(
                     fontSize = 18.sp,
                     fontWeight = FontWeight(500),
                     textAlign = TextAlign.Center,
-                    color = scrimLight),
+                    color = MaterialTheme.colorScheme.onSurface),
         )
         IconButton(
             enabled = SessionManager.getIsNetworkAvailable(),

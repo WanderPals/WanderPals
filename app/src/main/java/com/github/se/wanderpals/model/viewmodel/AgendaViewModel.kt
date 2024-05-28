@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarDataSource
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
  * calendar view.
  *
  * @property tripId The identifier of the trip for which the agenda is being managed.
+ * @property tripsRepository The repository for accessing trip data.
  */
 open class AgendaViewModel(
     private val tripId: String,
@@ -45,6 +47,10 @@ open class AgendaViewModel(
 
   open val _stopsInfo = MutableStateFlow<Map<LocalDate, CalendarUiState.StopStatus>>(emptyMap())
 
+  protected val _trip =
+      MutableStateFlow(Trip(tripId, "", LocalDate.now(), LocalDate.now(), 0.0, ""))
+  open val trip: StateFlow<Trip> = _trip.asStateFlow()
+
   /**
    * Initializes the UI state of the agenda by fetching the dates for the current month and updating
    * the UI state accordingly.
@@ -53,6 +59,7 @@ open class AgendaViewModel(
     viewModelScope.launch { // after the data is loaded,
       // the stops info is loaded and the UI state is updated with the dates for the current month,
       // in a synchronous manner.
+      loadTripData() // Load trip data when ViewModel initializes
       loadStopsInfo() // Load stops info when ViewModel initializes
 
       _uiState.update { currentState ->
@@ -64,19 +71,31 @@ open class AgendaViewModel(
     }
   }
 
+  /** Loads the trip data from the repository and updates the UI state with the trip information. */
+  suspend fun loadTripData() {
+    tripsRepository?.getTrip(tripId)?.let { trip -> _trip.value = trip }
+  }
   /** Loads the stops information for the trip, marking all existing stops as ADDED. */
   suspend fun loadStopsInfo() { // a suspend function is asynchronous and can be called from
     // a coroutine
     // Fetch all stops related to a specific trip from the repository
     val stops = tripsRepository?.getAllStopsFromTrip(tripId) ?: listOf()
 
+    val today = LocalDate.now()
+
     // Create a map with the date of each stop and mark it as ADDED
     // Continue if the list is not empty
     if (stops.isNotEmpty()) {
       val statusMap =
-          stops.associateBy(
-              keySelector = { it.date }, valueTransform = { CalendarUiState.StopStatus.ADDED })
-
+          stops.associate { stop ->
+            val status =
+                when {
+                  stop.date.isBefore(today) -> CalendarUiState.StopStatus.PAST
+                  stop.date.isAfter(today) -> CalendarUiState.StopStatus.COMING_SOON
+                  else -> CalendarUiState.StopStatus.CURRENT
+                }
+            stop.date to status
+          }
       _stopsInfo.value = statusMap
     }
   }

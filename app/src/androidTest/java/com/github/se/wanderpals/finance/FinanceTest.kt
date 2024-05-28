@@ -119,13 +119,17 @@ class FinanceViewModelTest :
     }
   }
 
+  override fun addExpense(tripId: String, expense: Expense) {
+    _expenseStateList.value += expense
+  }
+
   override fun deleteExpense(expense: Expense) {
     _expenseStateList.value = _expenseStateList.value.filter { it.expenseId != expense.expenseId }
     setShowDeleteDialogState(false)
   }
 
   // Override the updateCurrencyFunction to avoid call from the tripsRepository in tests
-  override fun updateCurrency(currencyCode: String) {}
+  override fun updateCurrency(newCurrencyCode: String) {}
 }
 
 @RunWith(AndroidJUnit4::class)
@@ -212,6 +216,19 @@ class FinanceTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeSup
       financeFloatingActionButton { assertIsNotDisplayed() }
     }
     SessionManager.setIsNetworkAvailable(true)
+  }
+
+  @Test
+  fun SettlingDebtWorksCorrectly() = run {
+    setUpFinanceTest()
+    ComposeScreen.onComposeScreen<FinanceScreen>(composeTestRule) {
+      composeTestRule.onNodeWithTag("DebtsButton").performClick()
+      composeTestRule.onNodeWithTag("debtsContent").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("debtItemBob").performClick()
+      composeTestRule.onNodeWithTag("settleDebtDialog").assertIsDisplayed()
+      composeTestRule.onNodeWithTag("confirmSettleDebtButton").performClick()
+      composeTestRule.onNodeWithTag("debtItemBob").assertIsNotDisplayed()
+    }
   }
 
   @Test

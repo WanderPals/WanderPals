@@ -2,6 +2,7 @@ package com.github.se.wanderpals.viewmodel
 
 import com.github.se.wanderpals.model.data.GeoCords
 import com.github.se.wanderpals.model.data.Stop
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
@@ -36,8 +37,35 @@ class AgendaViewModelTest {
   }
 
   /**
+   * Test the loadTripData method of the AgendaViewModel class to ensure that the trip state is
+   * updated correctly.
+   */
+  @Test
+  fun `loadTripData updates trip state correctly`() = runBlockingTest {
+    // Prepare mock trip data
+    val mockTrip =
+        Trip(
+            tripId = "tripId",
+            title = "Test Trip",
+            startDate = LocalDate.of(2024, 5, 15),
+            endDate = LocalDate.of(2024, 5, 24),
+            totalBudget = 1000.0,
+            description = "Test Trip Description")
+
+    coEvery { mockTripsRepository.getTrip("tripId") } returns mockTrip
+
+    // Call the method to test
+    viewModel.loadTripData()
+    advanceUntilIdle() // Wait for all coroutines to complete
+
+    // Check the resulting state
+    assertEquals(mockTrip, viewModel.trip.value)
+  }
+
+  /**
    * Test the loadStopsInfo method of the AgendaViewModel class to ensure that the stopsInfo state
-   * is updated correctly. The method should fetch the stops for the trip and update the stopsInfo.
+   * is updated correctly to PAST. The method should fetch the stops for the trip and update the
+   * stopsInfo.
    */
   @Test
   fun `loadStopsInfo updates stopsInfo state`() = runBlockingTest {
@@ -83,8 +111,69 @@ class AgendaViewModelTest {
 
     // Check the resulting state
     assertEquals(2, viewModel._stopsInfo.value.size)
-    assertEquals(CalendarUiState.StopStatus.ADDED, viewModel._stopsInfo.value[mockStops[0].date])
-    assertEquals(CalendarUiState.StopStatus.ADDED, viewModel._stopsInfo.value[mockStops[1].date])
+    assertEquals(CalendarUiState.StopStatus.PAST, viewModel._stopsInfo.value[mockStops[0].date])
+    assertEquals(CalendarUiState.StopStatus.PAST, viewModel._stopsInfo.value[mockStops[1].date])
+  }
+
+  /**
+   * Test the loadStopsInfo method of the AgendaViewModel class to ensure that the stopsInfo state
+   * is updated correctly to different statuses.
+   */
+  @Test
+  fun `loadStopsInfo updates stopsInfo state with different statuses`() = runBlockingTest {
+    // Prepare mock response
+    val today = LocalDate.now()
+    val mockStops =
+        listOf(
+            Stop(
+                stopId = "stop1",
+                title = "Location1",
+                address = "Address1",
+                date = today,
+                startTime = LocalTime.of(10, 0),
+                duration = 120,
+                budget = 50.0,
+                description = "Description of Location1",
+                geoCords = GeoCords(40.712776, -74.005974),
+                website = "http://location1.com",
+                imageUrl = "http://example.com/location1.jpg"),
+            Stop(
+                stopId = "stop2",
+                title = "Location2",
+                address = "Address2",
+                date = today.plusDays(1),
+                startTime = LocalTime.of(15, 30),
+                duration = 90,
+                budget = 75.0,
+                description = "Description of Location2",
+                geoCords = GeoCords(34.052235, -118.243683),
+                website = "http://location2.com",
+                imageUrl = "http://example.com/location2.jpg"),
+            Stop(
+                stopId = "stop3",
+                title = "Location3",
+                address = "Address3",
+                date = today.minusDays(1),
+                startTime = LocalTime.of(9, 0),
+                duration = 60,
+                budget = 30.0,
+                description = "Description of Location3",
+                geoCords = GeoCords(51.507351, -0.127758),
+                website = "http://location3.com",
+                imageUrl = "http://example.com/location3.jpg"))
+
+    coEvery { mockTripsRepository.getAllStopsFromTrip(any()) } returns mockStops
+
+    // Call the method to test
+    viewModel.loadStopsInfo() // Assuming this method is public or internal for testing
+    advanceUntilIdle() // Wait for all coroutines to complete
+
+    // Check the resulting state
+    assertEquals(3, viewModel._stopsInfo.value.size)
+    assertEquals(CalendarUiState.StopStatus.CURRENT, viewModel._stopsInfo.value[mockStops[0].date])
+    assertEquals(
+        CalendarUiState.StopStatus.COMING_SOON, viewModel._stopsInfo.value[mockStops[1].date])
+    assertEquals(CalendarUiState.StopStatus.PAST, viewModel._stopsInfo.value[mockStops[2].date])
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)

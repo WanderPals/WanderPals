@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -42,6 +43,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
+import com.github.se.wanderpals.model.data.Trip
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.AgendaViewModel
 import com.github.se.wanderpals.navigationActions
@@ -59,10 +61,13 @@ private const val MAX_ROWS_CALENDAR = 6
  *
  * @param agendaViewModel The ViewModel that holds and manages UI-related data for the Agenda
  *   screen. It defaults to a ViewModel instance provided by the `viewModel()` function.
+ *     @param tripId The unique identifier of the trip for which the agenda is being displayed.
+ *     @param tripsRepository The repository for accessing trips data.
  */
 @Composable
 fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: TripsRepository) {
   val uiState by agendaViewModel.uiState.collectAsState()
+  val trip by agendaViewModel.trip.collectAsState()
 
   var isDrawerExpanded by remember { mutableStateOf(false) }
 
@@ -87,7 +92,8 @@ fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: Tr
                     onNextMonthButtonClicked = { nextMonth ->
                       agendaViewModel.toNextMonth(nextMonth)
                     },
-                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) })
+                    onDateClickListener = { date -> agendaViewModel.onDateSelected(date) },
+                    trip = trip)
               }
           Spacer(modifier = Modifier.padding(1.dp))
         }
@@ -121,6 +127,7 @@ fun Agenda(agendaViewModel: AgendaViewModel, tripId: String, tripsRepository: Tr
  * @param onNextMonthButtonClicked A lambda function to be called when the user requests to navigate
  *   to the next month.
  * @param onDateClickListener A lambda function to be called when the user selects a date.
+ * @param trip The trip for which the agenda is being displayed.
  */
 @Composable
 fun CalendarWidget(
@@ -129,7 +136,8 @@ fun CalendarWidget(
     dates: List<CalendarUiState.Date>,
     onPreviousMonthButtonClicked: (YearMonth) -> Unit,
     onNextMonthButtonClicked: (YearMonth) -> Unit,
-    onDateClickListener: (CalendarUiState.Date) -> Unit
+    onDateClickListener: (CalendarUiState.Date) -> Unit,
+    trip: Trip
 ) {
   Column(modifier = Modifier.padding(16.dp).background(MaterialTheme.colorScheme.surface)) {
     Row {
@@ -142,7 +150,7 @@ fun CalendarWidget(
         yearMonth = yearMonth,
         onPreviousMonthButtonClicked = onPreviousMonthButtonClicked,
         onNextMonthButtonClicked = onNextMonthButtonClicked)
-    Content(dates = dates, onDateClickListener = onDateClickListener)
+    Content(dates = dates, onDateClickListener = onDateClickListener, trip = trip)
   }
 }
 
@@ -150,6 +158,9 @@ fun CalendarWidget(
  * Composable function that displays the daily activities for a selected date.
  *
  * @param agendaViewModel The view model for managing the agenda of a trip.
+ * @param isExpanded A boolean value indicating whether the daily activities are expanded.
+ * @param onToggle A lambda function to be invoked when the daily activities are expanded or
+ *   collapsed.
  */
 @Composable
 fun Banner(agendaViewModel: AgendaViewModel, isExpanded: Boolean, onToggle: () -> Unit) {
@@ -250,11 +261,13 @@ fun DayItem(day: String, modifier: Modifier = Modifier) {
  *
  * @param dates A list of `CalendarUiState.Date` objects to be displayed as date items.
  * @param onDateClickListener A lambda function to be called when a date item is clicked.
+ * @param trip The trip for which the agenda is being displayed.
  */
 @Composable
 fun Content(
     dates: List<CalendarUiState.Date>,
     onDateClickListener: (CalendarUiState.Date) -> Unit,
+    trip: Trip
 ) {
   Column {
     var index = 0
@@ -263,8 +276,21 @@ fun Content(
       Row {
         repeat(DAYS_IN_A_WEEK) {
           val item = if (index < dates.size) dates[index] else CalendarUiState.Date.Empty
+          val isWithinTrip = isWithinTripRange(item, trip.startDate, trip.endDate)
+
           ContentItem(
-              date = item, onClickListener = onDateClickListener, modifier = Modifier.weight(1f))
+              date = item,
+              onClickListener = onDateClickListener,
+              modifier = Modifier.weight(1f),
+              isWithinTrip = isWithinTrip,
+              isStartDate =
+                  item.dayOfMonth == trip.startDate.dayOfMonth.toString() &&
+                      item.yearMonth == YearMonth.from(trip.startDate),
+              isEndDate =
+                  item.dayOfMonth == trip.endDate.dayOfMonth.toString() &&
+                      item.yearMonth == YearMonth.from(trip.endDate),
+              isStartOfLine = index % DAYS_IN_A_WEEK == 0,
+              isEndOfLine = index % DAYS_IN_A_WEEK == DAYS_IN_A_WEEK - 1)
           index++
         }
       }
@@ -279,12 +305,24 @@ fun Content(
  * @param date The `CalendarUiState.Date` object representing the date to be displayed.
  * @param onClickListener A lambda function to be called when this date item is clicked.
  * @param modifier A `Modifier` to be applied to this Composable for styling and layout purposes.
+ * @param isWithinTrip A boolean value indicating whether the date is within the trip range.
+ * @param isStartDate A boolean value indicating whether the date is the start date of the trip.
+ * @param isEndDate A boolean value indicating whether the date is the end date of the trip.
+ * @param isStartOfLine A boolean value indicating whether this date item is at the start of a row
+ *   of the calendar.
+ * @param isEndOfLine A boolean value indicating whether this date item is at the end of a row of
+ *   the calendar.
  */
 @Composable
 fun ContentItem(
     date: CalendarUiState.Date,
     onClickListener: (CalendarUiState.Date) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isWithinTrip: Boolean,
+    isStartDate: Boolean,
+    isEndDate: Boolean,
+    isStartOfLine: Boolean,
+    isEndOfLine: Boolean
 ) {
   // Assuming dayOfMonth is an empty string for empty dates, or add a specific check if possible.
   val isEmptyDate = date.dayOfMonth.isEmpty()
@@ -292,29 +330,47 @@ fun ContentItem(
   // Set the marker color based on the stop status
   val markerColor =
       when (date.stopStatus) {
-        CalendarUiState.StopStatus.ADDED -> MaterialTheme.colorScheme.tertiary // Stop added
+        CalendarUiState.StopStatus.CURRENT -> MaterialTheme.colorScheme.tertiary // Stop added
+        CalendarUiState.StopStatus.COMING_SOON ->
+            MaterialTheme.colorScheme.inversePrimary // Coming soon
+        CalendarUiState.StopStatus.PAST -> MaterialTheme.colorScheme.outlineVariant // Past stop
         else -> Color.Transparent // No stop
       }
 
-  val baseModifier =
+  val backgroundShape =
+      when {
+        isStartDate || isStartOfLine -> RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp)
+        isEndDate || isEndOfLine -> RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp)
+        else -> RoundedCornerShape(0.dp)
+      }
+  val tripBackgroundModifier =
+      Modifier.clip(backgroundShape)
+          .background(
+              if (isWithinTrip)
+                  MaterialTheme.colorScheme.tertiaryContainer // background for trip range
+              else Color.Transparent)
+          .testTag("DateBackground_${date.dayOfMonth}") // test tag for trip range background
+
+  val dateBackgroundModifier =
+      if (!isEmptyDate && date.isSelected) {
+        Modifier.clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer)
+      } else Modifier
+
+  // Apply clickable only if the date is not empty.
+  val finalModifier =
       modifier
           .aspectRatio(1f)
-          .clip(CircleShape)
-          .background(
-              if (!isEmptyDate && date.isSelected) MaterialTheme.colorScheme.secondaryContainer
-              else Color.Transparent)
+          .background(Color.Transparent)
+          .then(tripBackgroundModifier) // first apply the trip background modifier
+          .clickable(enabled = !isEmptyDate) { onClickListener(date) }
+          .then(dateBackgroundModifier) // then apply the date background modifier
+          .padding(10.dp)
           .semantics {
             contentDescription =
                 if (!isEmptyDate)
                     "Date ${date.dayOfMonth}, ${if (date.isSelected) "Selected" else "Not Selected"}"
                 else "Empty Date Cell"
           }
-
-  // Apply clickable only if the date is not empty.
-  val finalModifier =
-      (if (!isEmptyDate) {
-        baseModifier.clickable { onClickListener(date) }.padding(10.dp)
-      } else baseModifier)
 
   Box(modifier = finalModifier) {
     if (!isEmptyDate) {
@@ -335,9 +391,31 @@ fun ContentItem(
                     .clip(CircleShape) // Make it circular
                     .background(markerColor) // Set the appropriate color
                     .padding(bottom = 4.dp) // Add some padding to the bottom
-                    .testTag("MarkerADDED") // Add test tag here
-            )
+                    .testTag(
+                        when (date.stopStatus) {
+                          CalendarUiState.StopStatus.CURRENT -> "MarkerCURRENT"
+                          CalendarUiState.StopStatus.COMING_SOON -> "MarkerCOMING_SOON"
+                          CalendarUiState.StopStatus.PAST -> "MarkerPAST"
+                          else -> "MarkerNONE"
+                        }))
       }
     }
   }
+}
+
+/**
+ * the function to determine if the date is within the trip range.
+ *
+ * @param date The date to be checked.
+ * @param startDate The start date of the trip.
+ * @param endDate The end date of the trip.
+ */
+fun isWithinTripRange(
+    date: CalendarUiState.Date,
+    startDate: LocalDate,
+    endDate: LocalDate
+): Boolean {
+  if (date.dayOfMonth.isEmpty()) return false
+  val currentDate = LocalDate.of(date.year.value, date.yearMonth.month, date.dayOfMonth.toInt())
+  return currentDate.isAfter(startDate.minusDays(1)) && currentDate.isBefore(endDate.plusDays(1))
 }

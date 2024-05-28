@@ -10,7 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertFalse
@@ -49,7 +49,7 @@ class StopItemViewModelTest {
 
   @Test
   fun `deleteStop updates isDeleted state to true`() =
-      runTest(testDispatcher) {
+      runBlockingTest(testDispatcher) {
         // Call the deleteStop method
         viewModel.deleteStop(stopId)
 

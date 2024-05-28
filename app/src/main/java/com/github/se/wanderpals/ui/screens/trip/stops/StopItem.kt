@@ -48,8 +48,6 @@ import com.github.se.wanderpals.model.viewmodel.StopItemViewModel
 import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.trip.agenda.StopInfoDialog
-import com.github.se.wanderpals.ui.theme.outlineVariantLight
 
 /**
  * Composable function that displays a stop item in the list of stops for a trip.
@@ -241,7 +239,7 @@ fun StopItem(stop: Stop, tripId: String, tripsRepository: TripsRepository, onDel
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(), // Customize this width as needed
             thickness = 1.dp,
-            color = outlineVariantLight)
+            color = MaterialTheme.colorScheme.outlineVariant)
       }
   if (isStopPressed) { // Display the stop information dialog
     StopInfoDialog(stop = stop, closeDialogueAction = { isStopPressed = false })

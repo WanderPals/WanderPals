@@ -175,7 +175,7 @@ fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (E
                     horizontalAlignment = Alignment.End) {
                       // Expense amount
                       Text(
-                          text = ("%.2f $currencySymbol" + "").format(expense.amount),
+                          text = ("%.2f $currencySymbol").format(expense.amount),
                           style =
                               TextStyle(
                                   fontSize = 14.sp, color = MaterialTheme.colorScheme.secondary))

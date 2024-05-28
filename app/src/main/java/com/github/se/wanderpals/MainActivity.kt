@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ShortcutManager
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -36,7 +37,6 @@ import com.github.se.wanderpals.service.NetworkHelper
 import com.github.se.wanderpals.service.NotificationPermission
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.service.SharedPreferencesManager
-import com.github.se.wanderpals.service.sendMessageToListOfUsers
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.Route.ROOT_ROUTE
@@ -58,7 +58,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.runBlocking
 
 const val EMPTY_CODE = ""
 
@@ -76,6 +75,8 @@ class MainActivity : ComponentActivity() {
   private val viewModel: MainViewModel by viewModels {
     MainViewModel.MainViewModelFactory(application)
   }
+
+  // private val viewModelAPI: NotificationAPI by viewModels()
 
   private val launcher =
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -141,6 +142,7 @@ class MainActivity : ComponentActivity() {
         }
       }
 
+  /** Called when the activity is destroyed. */
   override fun onDestroy() {
     super.onDestroy()
     if (isMapManagerInitialized()) {
@@ -148,8 +150,22 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  /** Called when the activity is resumed. */
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    if (::navigationActions.isInitialized && viewModel.isRepositoryInitialized()) {
+      viewModel.handleIntent(intent, navigationActions)
+    } else {
+      Log.d("MainActivity", "Can't handle intent")
+    }
+  }
+
+  /** Called when the activity is created. */
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    viewModel.initShortcutManager(getSystemService(ShortcutManager::class.java))
+
     val storage = Firebase.storage
 
     val storageRef = storage.reference
@@ -221,6 +237,9 @@ class MainActivity : ComponentActivity() {
                       rememberMultiNavigationAppState(startDestination = Route.DASHBOARD))
           val currentUser = FirebaseAuth.getInstance().currentUser
           val startDestination = if (currentUser != null) Route.OVERVIEW else Route.SIGN_IN
+          if (navigationActions.mainNavigation.getStartDestination() == ROOT_ROUTE) {
+            navigationActions.mainNavigation.setStartDestination(startDestination)
+          }
           if (currentUser != null) {
             Log.d("MainActivity", "User is already signed in")
             viewModel.initRepository(currentUser.uid)
@@ -237,13 +256,15 @@ class MainActivity : ComponentActivity() {
                 nickname =
                     currentUser.isAnonymous.takeIf { it }?.let { "Anonymous User" }
                         ?: viewModel.getUserName(currentUser.email ?: ""))
+            viewModel.handleIntent(intent, navigationActions)
           }
 
           NavHost(
               navController = navigationActions.mainNavigation.getNavController,
-              startDestination = startDestination,
+              startDestination = navigationActions.mainNavigation.getStartDestination(),
               route = ROOT_ROUTE) {
                 composable(Route.SIGN_IN) {
+                  viewModel.removeAllDynamicShortcuts()
                   SignIn(
                       onClick1 = { launcher.launch(signInClient.signInIntent) },
                       onClick2 = {
@@ -293,14 +314,10 @@ class MainActivity : ComponentActivity() {
                             }
                       })
                   NotificationPermission(context = context)
-
-                  Log.d("MainActivity", "User is signed in")
-                  Log.d("token", SessionManager.getNotificationToken())
-                  runBlocking {
-                    sendMessageToListOfUsers(SessionManager.getNotificationToken(), "Hello")
-                  }
                 }
                 composable(Route.OVERVIEW) {
+                  viewModel.addDynamicShortcutCreateTrip()
+                  viewModel.addDynamicShortcutJoinTrip()
                   val overviewViewModel: OverviewViewModel =
                       viewModel(
                           factory =
@@ -308,12 +325,14 @@ class MainActivity : ComponentActivity() {
                                   viewModel.getTripsRepository()),
                           key = "Overview")
                   Overview(
-                      overviewViewModel = overviewViewModel, navigationActions = navigationActions)
+                      overviewViewModel = overviewViewModel,
+                      navigationActions = navigationActions,
+                      defaultDialogIsOpen = viewModel.getOverviewJoinTripDialogIsOpen(),
+                      addShortcut = { trip -> viewModel.addPinnedShortcutTrip(trip) })
                 }
                 composable(Route.TRIP) {
                   navigationActions.tripNavigation.setNavController(rememberNavController())
                   val tripId = navigationActions.variables.currentTrip
-                  navigationActions.tripNavigation.setNavController(rememberNavController())
                   Trip(navigationActions, tripId, viewModel.getTripsRepository(), mapManager)
                 }
                 composable(Route.CREATE_TRIP) {
@@ -326,9 +345,6 @@ class MainActivity : ComponentActivity() {
                   Log.d("CREATE_TRIP", "Create Trip")
 
                   CreateTrip(overviewViewModel, navigationActions)
-                  // create notification to send to the list of tokens
-                  // iterate on the list of tokens and send the notification
-
                 }
 
                 composable(Route.CREATE_SUGGESTION) {
