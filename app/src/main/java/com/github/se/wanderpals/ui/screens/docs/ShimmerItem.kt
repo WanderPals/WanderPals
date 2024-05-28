@@ -1,4 +1,4 @@
-package com.github.se.wanderpals.ui.screens.DocsScreen
+package com.github.se.wanderpals.ui.screens.docs
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.RepeatMode
@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
@@ -42,7 +42,7 @@ fun ShimmerItem(
 ) {
   if (isLoading) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
-      Box(modifier = Modifier.fillMaxWidth().height(20.dp).shimmerEffect())
+      Box(modifier = Modifier.fillMaxWidth().height(20.dp).shimmerEffect().testTag("shimmerBox"))
     }
   } else {
     content()

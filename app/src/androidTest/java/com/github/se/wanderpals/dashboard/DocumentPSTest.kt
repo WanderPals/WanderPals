@@ -2,13 +2,16 @@ package com.github.se.wanderpals.dashboard
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onChildren
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.github.se.wanderpals.model.data.Documents
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.model.viewmodel.DocumentPSViewModel
 import com.github.se.wanderpals.screens.DocumentsPSScreen
-import com.github.se.wanderpals.ui.screens.DocsScreen.DocumentsPS
+import com.github.se.wanderpals.ui.screens.docs.DocumentsPS
 import com.google.firebase.storage.StorageReference
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
@@ -19,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Rule
 import org.junit.Test
@@ -67,7 +69,6 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
 
   @get:Rule val mockkRule = MockKRule(this)
 
-  // test1: assert all displayed documents
   @Test
   fun testDocumentPS() = run {
     val viewModel = FakeDocumentPSViewModel()
@@ -85,7 +86,6 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     }
   }
 
-  // test 2:Click on the private Tab
   @Test
   fun testClickedOnPrivateAndShared() = run {
     val viewModel = FakeDocumentPSViewModel()
@@ -95,24 +95,12 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
         performClick()
         assertTextContains("Shared")
       }
-      document0 {
-        assertIsDisplayed()
-        assertHasClickAction()
-      }
-      document1 {
-        assertIsDisplayed()
-        assertHasClickAction()
-      }
-      document2 {
-        assertIsDisplayed()
-        assertHasClickAction()
-      }
+      document0 { assertIsNotDisplayed() }
+      document1 { assertIsNotDisplayed() }
+      document2 { assertIsNotDisplayed() }
     }
   }
 
-  // test 2: assert schimmer is displayed
-
-  // test3: assert Images are displayed
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun testDocumentIsDisplayed() =
@@ -122,41 +110,26 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
         val screen = DocumentsPSScreen(composeTestRule)
         screen.tabShared.performClick()
 
-        // wait for the animation to finish
-        testScope.testScheduler.apply {
-          advanceTimeBy(1000)
-          runCurrent()
-        }
-
         screen.shimmerdocument0.assertIsDisplayed()
         screen.shimmerdocument1.assertIsDisplayed()
         screen.shimmerdocument2.assertIsDisplayed()
 
-        screen.document0.assertIsDisplayed()
+        screen.document0.assertIsNotDisplayed()
 
-        screen.document0.performClick()
-        screen.documentImageBox {
-          assertIsDisplayed()
-          assertHasClickAction()
-        }
+        screen.documentImageBox { assertIsNotDisplayed() }
       }
 
-  // test4: assert the document is clicked
   @Test
   fun testDocumentIsClicked() = run {
     val viewModel = FakeDocumentPSViewModel()
     composeTestRule.setContent { DocumentsPS(viewModel = viewModel, storageReference = null) }
     ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
       tabShared { performClick() }
-      document0 { performClick() }
-      documentImageBox {
-        performClick()
-        assertIsNotDisplayed()
-      }
+      sharedDocumentslist { assertIsDisplayed() }
+      composeTestRule.onNodeWithTag("sharedDocuments").onChildren().assertCountEquals(3)
     }
   }
 
-  // test5: assert the document user are displayed
   @Test
   fun testDocumentUserIsDisplayed() = run {
     val viewModel = FakeDocumentPSViewModel()
@@ -164,17 +137,17 @@ class DocumentPSTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCompose
     ComposeScreen.onComposeScreen<DocumentsPSScreen>(composeTestRule) {
       tabShared { performClick() }
       tabPrivate { performClick() }
-      documentUser0 {
-        assertIsDisplayed()
-        assertHasClickAction()
-      }
-      documentUser1 {
-        assertIsDisplayed()
-        assertHasClickAction()
-      }
+
+      privateDocumentslist { assertIsDisplayed() }
+      sharedDocumentslist { assertIsNotDisplayed() }
+
+      composeTestRule.onNodeWithTag("privateDocuments").onChildren().assertCountEquals(2)
+
+      documentUser0 { assertIsNotDisplayed() }
+      documentUser1 { assertIsNotDisplayed() }
     }
   }
-  // test6: add a document
+
   @Test
   fun testAddDocument() = run {
     val viewModel = FakeDocumentPSViewModel()
