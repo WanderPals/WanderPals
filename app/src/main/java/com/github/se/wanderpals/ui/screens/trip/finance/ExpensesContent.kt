@@ -90,12 +90,12 @@ fun ExpensesContent(
               modifier =
                   Modifier.padding(innerPadding).fillMaxHeight().testTag("expensesContent")) {
                 items(expenseList) { expense ->
-                    if (expenseList.indexOf(expense) != 0) {
-                        HorizontalDivider(
-                            color = MaterialTheme.colorScheme.inversePrimary,
-                            thickness = 2.dp,
-                            modifier = Modifier.fillMaxWidth())
-                    }
+                  if (expenseList.indexOf(expense) != 0) {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.inversePrimary,
+                        thickness = 2.dp,
+                        modifier = Modifier.fillMaxWidth())
+                  }
                   ExpenseItem(expense = expense, currencySymbol = currencySymbol) {
                     onExpenseItemClick(it)
                   }
@@ -120,7 +120,8 @@ fun ExpenseItem(expense: Expense, currencySymbol: String, onExpenseItemClick: (E
         shape = RectangleShape,
         colors =
             ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer, disabledContainerColor = Color.Transparent),
+                containerColor = MaterialTheme.colorScheme.surface,
+                disabledContainerColor = Color.Transparent),
         enabled = true,
         modifier = Modifier.testTag("expenseItem${expense.expenseId}")) {
           Row(
