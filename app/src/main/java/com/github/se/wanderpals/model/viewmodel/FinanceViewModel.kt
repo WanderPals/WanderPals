@@ -130,14 +130,25 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
     _showCurrencyDialog.value = value
   }
 
+  /** Sets the state of the dialog for settling a debt. */
   open fun setShowSettleDebtDialogState(value: Boolean) {
     _showSettleDebtDialog.value = value
   }
 
+  /** Sets the data for settling a debt. */
   open fun setSettleDebt(receiver: User, amount: Double) {
     _settleDebtData.value = Pair(receiver, amount)
   }
 
+  /**
+   * Settles a debt between two users.
+   *
+   * This method creates a new expense to settle a debt between two users. The expense is added to
+   * the trip and the dialog for settling a debt is closed.
+   *
+   * @param userId The ID of the user to whom the debt is settled.
+   * @param userName The name of the user to whom the debt is settled.
+   */
   open fun settleDebt(userId: String, userName: String) {
     _isLoading.value = true
     val (sender, amount) = _settleDebtData.value

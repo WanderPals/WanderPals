@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.viewmodel.FinanceViewModel
 import com.github.se.wanderpals.service.SessionManager
+import java.util.Locale
 
 /**
  * Composable function for displaying the list of debts of the trip. It displays the following
@@ -92,7 +93,8 @@ fun DebtContent(currencySymbol: String, viewmodel: FinanceViewModel) {
                 Text(
                     when (SessionManager.getIsNetworkAvailable()) {
                       true ->
-                          "Do you want to settle the debt with ${settleDebtData.first.name} for ${String.format("%.02f %s", settleDebtData.second, currencySymbol)}?"
+                          "Do you want to settle the debt with ${settleDebtData.first.name} for ${String.format(
+                              Locale.getDefault(), "%.02f %s", settleDebtData.second, currencySymbol)}?"
                       false -> "You can't settle this debt because you are offline"
                     })
               },
@@ -109,7 +111,7 @@ fun DebtContent(currencySymbol: String, viewmodel: FinanceViewModel) {
                       }
                     },
                     modifier = Modifier.testTag("confirmSettleDebtButton")) {
-                      Text("Confirm", color = Color.Red)
+                      Text("Confirm", color = MaterialTheme.colorScheme.error)
                     }
               },
               dismissButton = {
