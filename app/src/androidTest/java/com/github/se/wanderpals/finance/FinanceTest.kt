@@ -129,7 +129,7 @@ class FinanceViewModelTest :
   }
 
   // Override the updateCurrencyFunction to avoid call from the tripsRepository in tests
-  override fun updateCurrency(currencyCode: String) {}
+  override fun updateCurrency(newCurrencyCode: String) {}
 }
 
 @RunWith(AndroidJUnit4::class)

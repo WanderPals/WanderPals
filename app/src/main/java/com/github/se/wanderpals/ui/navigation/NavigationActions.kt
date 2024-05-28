@@ -65,6 +65,15 @@ class MultiNavigationAppState(
     return startDestination!!
   }
 
+  /**
+   * Set the start destination.
+   *
+   * @param destination The destination to set.
+   */
+  fun setStartDestination(destination: String) {
+    startDestination = destination
+  }
+
   /** Print the back stack. */
   @SuppressLint("RestrictedApi")
   fun printBackStack() {

@@ -39,6 +39,8 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
  * @param navigationActions The navigation actions used for navigating to detailed trip view.
  * @param tripsList The list of trips to be displayed.
  * @param searchText The text used for filtering trips by title.
+ * @param overviewViewModel The view model containing the data and logic for the overview screen.
+ * @param addShortcut A lambda function to add a shortcut to the home screen.
  */
 @Composable
 fun OverviewContent(
@@ -46,7 +48,8 @@ fun OverviewContent(
     navigationActions: NavigationActions,
     tripsList: List<Trip>,
     searchText: String,
-    overviewViewModel: OverviewViewModel
+    overviewViewModel: OverviewViewModel,
+    addShortcut: (Trip) -> Unit
 ) {
   // Filter trips by title based on search text
   val filteredTripsByTitle =
@@ -123,14 +126,18 @@ fun OverviewContent(
         // LazyColumn to display the list of trips
         val lazyColumn =
             @Composable {
-              LazyColumn(Modifier.padding(top = 10.dp, bottom = 20.dp).fillMaxSize()) {
-                items(filteredTripsByTitle) { trip ->
-                  OverviewTrip(
-                      trip = trip,
-                      navigationActions = navigationActions,
-                      overviewViewModel = overviewViewModel)
-                }
-              }
+              LazyColumn(
+                  Modifier.padding(top = 10.dp, bottom = 20.dp)
+                      .fillMaxSize()
+                      .testTag("overviewLazyColumn")) {
+                    items(filteredTripsByTitle) { trip ->
+                      OverviewTrip(
+                          trip = trip,
+                          navigationActions = navigationActions,
+                          overviewViewModel = overviewViewModel,
+                          addShortcut = addShortcut)
+                    }
+                  }
             }
         PullToRefreshLazyColumn(
             inputLazyColumn = lazyColumn, onRefresh = { overviewViewModel.getAllTrips() })

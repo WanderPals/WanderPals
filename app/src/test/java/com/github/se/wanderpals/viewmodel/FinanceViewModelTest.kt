@@ -15,9 +15,13 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.spyk
 import java.time.LocalDate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
@@ -53,12 +57,32 @@ class FinanceViewModelTest {
     coEvery { mockTripsRepository.getAllExpensesFromTrip(tripId) } returns
         listOf(
             Expense(
-                "", "Lunch", 0.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now()))
+                "",
+                "Lunch",
+                10.0,
+                Category.FOOD,
+                "",
+                "",
+                emptyList(),
+                emptyList(),
+                LocalDate.now()))
     coEvery { mockTripsRepository.getAllUsersFromTrip(tripId) } returns
         listOf(User(userId = "1", name = "Alice"))
     coEvery { mockTripsRepository.addExpenseToTrip(tripId, any()) } returns "true"
     coEvery { mockTripsRepository.getTrip(any()) } returns
         Trip("-1", "", LocalDate.now(), LocalDate.now(), 0.0, "")
+    coEvery { mockTripsRepository.getAllExpensesFromTrip(any()) } returns
+        listOf(
+            Expense(
+                "",
+                "Lunch",
+                10.0,
+                Category.FOOD,
+                "",
+                "",
+                emptyList(),
+                emptyList(),
+                LocalDate.now()))
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
@@ -93,12 +117,70 @@ class FinanceViewModelTest {
       runBlockingTest(testDispatcher) {
         val expense =
             Expense(
-                "", "Lunch", 0.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now())
+                "", "Lunch", 10.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now())
         viewModel.addExpense(tripId, expense)
 
         advanceUntilIdle()
 
         coVerify { mockTripsRepository.addExpenseToTrip(tripId, expense) }
         assert(viewModel.expenseStateList.value.contains(expense))
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `updateCurrency updates trip currency and expenses correctly`() =
+      runBlockingTest(testDispatcher) {
+        // Arrange
+        val newCurrency = "EUR"
+        val exchangeRate = 0.85
+
+        // Mocking the _exchangeRate LiveData
+        val exchangeRateLiveData = MutableStateFlow<Double?>(exchangeRate)
+        viewModel.exchangeRate.value = exchangeRateLiveData.value
+
+        val viewModelSpy = spyk(viewModel, recordPrivateCalls = true)
+        coEvery { viewModelSpy["setExchangeRate"]("CHF", newCurrency) } coAnswers {}
+
+        // Act
+        viewModelSpy.updateCurrency(newCurrency)
+
+        advanceUntilIdle()
+
+        coVerify { mockTripsRepository.getTrip(tripId) }
+        coVerify { mockTripsRepository.getAllExpensesFromTrip(tripId) }
+
+        coVerify {
+          mockTripsRepository.updateExpenseInTrip(
+              tripId, match { it.amount == 10.0 * exchangeRate })
+        }
+        coVerify { (mockTripsRepository.updateTrip(any())) }
+      }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  @Test
+  fun `addExpense is not called twice when invoked multiple times rapidly`() =
+      runBlockingTest(testDispatcher) {
+        // Arrange
+        val expense =
+            Expense(
+                "", "Lunch", 10.0, Category.FOOD, "", "", emptyList(), emptyList(), LocalDate.now())
+
+        // Mock the addExpenseToTrip method to simulate a delay
+        coEvery { mockTripsRepository.addExpenseToTrip(tripId, any()) } coAnswers
+            {
+              delay(500)
+              "true"
+            }
+
+        // Act
+        launch { viewModel.addExpense(tripId, expense) }
+        launch { viewModel.addExpense(tripId, expense) }
+
+        // Advance the dispatcher to let coroutines finish
+        advanceUntilIdle()
+
+        // Assert
+        // Verify that addExpenseToTrip is called only once
+        coVerify(exactly = 1) { mockTripsRepository.addExpenseToTrip(tripId, expense) }
       }
 }

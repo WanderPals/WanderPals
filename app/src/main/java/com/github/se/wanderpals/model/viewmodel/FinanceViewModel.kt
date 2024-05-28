@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.model.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,13 +9,21 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.data.User
 import com.github.se.wanderpals.model.repository.TripsRepository
 import com.github.se.wanderpals.service.NotificationsManager
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.Response
+import java.io.IOException
 import java.time.LocalDate
 import java.util.Currency
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import okhttp3.HttpUrl
+import org.json.JSONObject
 
 /**
  * ViewModel for managing the financial data of a trip.
@@ -55,6 +64,16 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   private val _showSettleDebtDialog = MutableStateFlow(false)
   open val showSettleDebtDialog = _showSettleDebtDialog.asStateFlow()
 
+  // signal that the Expense was added successfully
+  private val _createExpenseFinished = MutableStateFlow(false)
+  open val createExpenseFinished: StateFlow<Boolean> = _createExpenseFinished.asStateFlow()
+
+  // don't add an Expense twice
+  private val _isAddingExpense = MutableStateFlow(false)
+  open val isAddingExpense: StateFlow<Boolean> = _isAddingExpense.asStateFlow()
+
+  val exchangeRate = MutableStateFlow<Double?>(null)
+
   /** Fetches all expenses from the trip and updates the state flow accordingly. */
   open fun updateStateLists() {
     viewModelScope.launch {
@@ -79,12 +98,29 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
    * @param expense The Expense object to add.
    */
   open fun addExpense(tripId: String, expense: Expense) {
-    runBlocking { tripsRepository.addExpenseToTrip(tripId, expense) }
+
     viewModelScope.launch {
-      val newExpense = tripsRepository.getAllExpensesFromTrip(tripId).last()
-      NotificationsManager.addExpenseNotification(tripId, newExpense)
-      updateStateLists()
+      if (!isAddingExpense.value && !createExpenseFinished.value) {
+        _isAddingExpense.value = true
+        tripsRepository.addExpenseToTrip(tripId, expense)
+        val expenseList = tripsRepository.getAllExpensesFromTrip(tripId)
+        if (expenseList.isEmpty()) {
+          // error
+          Log.e("FinanceViewModel", "Error reading expense after addition (should not happen)")
+        } else {
+          val newExpense = expenseList.last()
+          NotificationsManager.addExpenseNotification(tripId, newExpense)
+        }
+        updateStateLists()
+        _isAddingExpense.value = false
+        _createExpenseFinished.value = true
+      }
     }
+  }
+
+  /** Resets the CreateExpenseFinished flag */
+  fun setCreateExpenseFinished(value: Boolean) {
+    _createExpenseFinished.value = value
   }
 
   /**
@@ -104,17 +140,99 @@ open class FinanceViewModel(val tripsRepository: TripsRepository, val tripId: St
   /**
    * Updates the currency code of the current trip.
    *
-   * This method retrieves the current trip from the repository, updates it with the new currency
-   * code, and refreshes the related state lists.
+   * This method retrieves the current trip from the repository, updates the exchange rate, converts
+   * all expenses to the new currency, updates the trip with the new currency code, and refreshes
+   * the related state lists.
    *
-   * @param currencyCode The new currency code to be used for the trip.
+   * @param newCurrencyCode The new currency code to be used for the trip.
    */
-  open fun updateCurrency(currencyCode: String) {
+  open fun updateCurrency(newCurrencyCode: String) {
     viewModelScope.launch {
       val currentTrip = tripsRepository.getTrip(tripId)!!
-      tripsRepository.updateTrip(currentTrip.copy(currencyCode = currencyCode))
-      updateStateLists()
+      setExchangeRate(currentTrip.currencyCode, newCurrencyCode)
+      if (exchangeRate.value != null) {
+        val expenses = tripsRepository.getAllExpensesFromTrip(tripId)
+        expenses.forEach {
+          tripsRepository.updateExpenseInTrip(
+              tripId, it.copy(amount = it.amount * exchangeRate.value!!))
+        }
+        tripsRepository.updateTrip(currentTrip.copy(currencyCode = newCurrencyCode))
+        updateStateLists()
+      }
     }
+  }
+
+  /**
+   * Set the exchange rate between two currencies in the finance view model.
+   *
+   * This method fetches the exchange rate from a remote API by performing an http request and
+   * updates the _exchangeRate state variable with the retrieved value.
+   *
+   * @param fromCurrency The original currency code.
+   * @param toCurrency The target currency code.
+   */
+  private suspend fun setExchangeRate(fromCurrency: String, toCurrency: String) {
+    withContext(Dispatchers.IO) {
+      try {
+        val client = OkHttpClient()
+
+        val url = buildExchangeURL(fromCurrency, toCurrency)
+
+        val request = Request.Builder().url(url).build()
+
+        val response: Response = client.newCall(request).execute()
+
+        if (response.isSuccessful) {
+          val responseBody = response.body()?.string()
+          val exchangeRateResponse =
+              responseBody?.let {
+                JSONObject(it)
+                    .getJSONArray("response")
+                    .getJSONObject(0)
+                    .getString("average_bid")
+                    .toDouble()
+              }
+          exchangeRate.value = exchangeRateResponse
+          Log.d("UpdateExchangeRate", "Exchange rate updated successfully: $exchangeRate")
+        } else {
+          exchangeRate.value = null
+          Log.e("UpdateExchangeRate", "Unsuccessful response. HTTP code: ${response.code()}")
+        }
+      } catch (e: IOException) {
+        exchangeRate.value = null
+        Log.e("UpdateExchangeRate", "Failed to update exchange rate. Exception: ${e.message}")
+      }
+    }
+  }
+
+  /**
+   * Builds the URL for fetching the exchange rate between two currencies.
+   *
+   * This method constructs the URL for the exchange rate API based on the provided currency codes
+   * and the current date.
+   *
+   * @param fromCurrency The original currency code.
+   * @param toCurrency The target currency code.
+   * @return The URL for the exchange rate API.
+   */
+  private fun buildExchangeURL(fromCurrency: String, toCurrency: String): String {
+
+    val currentDate = LocalDate.now()
+    val startDate = currentDate.minusDays(1).toString() // Yesterday's date
+    val endDate = currentDate.toString() // Today's date
+
+    return HttpUrl.Builder()
+        .scheme("https")
+        .host("fxds-public-exchange-rates-api.oanda.com")
+        .addPathSegment("cc-api")
+        .addPathSegment("currencies")
+        .addQueryParameter("base", fromCurrency)
+        .addQueryParameter("quote", toCurrency)
+        .addQueryParameter("data_type", "general_currency_pair")
+        .addQueryParameter("start_date", startDate)
+        .addQueryParameter("end_date", endDate)
+        .build()
+        .toString()
   }
 
   /** Setter functions */

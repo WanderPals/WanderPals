@@ -14,7 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -66,7 +66,7 @@ class StopsListViewModelTest {
   @OptIn(ExperimentalCoroutinesApi::class)
   @Test
   fun `loadStops fetches stops successfully and updates state`() =
-      runTest(testDispatcher) {
+      runBlockingTest(testDispatcher) {
         viewModel.loadStops()
 
         // Wait for all coroutines started during the test to complete

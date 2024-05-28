@@ -36,13 +36,21 @@ data class CalendarUiState(
   }
 
   /**
-   * Enum class representing the status of the stop addition.
+   * Enum class representing the status of a stop in the trip.
    *
-   * @property ADDED Suggestion was added to the trip, it is a stop of the trip now.
-   * @property NONE Suggestion has not been added, it is still a suggestion of the trip.
+   * @property CURRENT Suggestion was transformed into a stop of the trip, it is a stop of the trip
+   *   of the current day.
+   * @property COMING_SOON Suggestion was transformed into a stop of the trip, is is a stop in the
+   *   following days of the current day of the trip.
+   * @property PAST Suggestion was transformed into a stop of the trip, it is a stop of the trip of
+   *   days before the current day of the trip.
+   * @property NONE Suggestion has not been transformed into a stop of the trip yet, it is still a
+   *   suggestion of the trip.
    */
   enum class StopStatus {
-    ADDED,
+    CURRENT,
+    COMING_SOON,
+    PAST,
     NONE
   }
 
