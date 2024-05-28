@@ -165,16 +165,12 @@ dependencies {
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
-    //implementation (libs.ktor.gson)
     implementation(libs.retrofit)
     implementation(libs.okhttp)
     implementation(libs.converter.moshi)
     implementation(libs.okio)
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
-
-
-
+    implementation (libs.converter.gson)
+    implementation (libs.logging.interceptor)
 
     // ------------- Jetpack Compose ------------------
     implementation(composeBom)

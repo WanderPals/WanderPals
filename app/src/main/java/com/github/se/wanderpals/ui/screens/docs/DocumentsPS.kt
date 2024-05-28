@@ -422,9 +422,9 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                     context,
                                     storageReference,
                                     state)
+                                selectedImagesLocal = Uri.EMPTY
+                                displayedTheBoxSelector = false
                               }
-                              selectedImagesLocal = Uri.EMPTY
-                              displayedTheBoxSelector = false
                             },
                             modifier =
                                 Modifier.padding(top = 10.dp)
