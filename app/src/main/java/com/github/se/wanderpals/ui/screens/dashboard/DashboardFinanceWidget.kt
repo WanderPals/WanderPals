@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.dashboard
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -107,7 +108,7 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
                       Text(
                           text =
-                              "Total: ${String.format(Locale.US,"%.02f", expenses.sumOf { it.amount })} " +
+                              "Total: ${formatExpense(expenses.sumOf { it.amount })} " +
                                   currencyCode,
                           modifier =
                               Modifier.testTag("totalAmount")
@@ -204,7 +205,7 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
         }
 
         Text(
-            text = "${String.format(Locale.US,"%.02f", expense.amount)} $currencyCode",
+            text = "${formatExpense(expense.amount)} $currencyCode",
             style =
                 TextStyle(
                     fontWeight = FontWeight.Bold,
@@ -214,27 +215,30 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
       }
 }
 
-private fun formatExpense(totalexpense: Double): String{
-    //parse the totalexpense
-    val expenseToString = totalexpense.toString().toCharArray()
-    val conversionToDigitNumber = expenseToString.size.div(3)
+private fun formatExpense(totalexpense: Double): String {
+  var formattedString = String.format(Locale.US, "%.02f", totalexpense).reversed()
 
+  val numString = formattedString.substring(3)
+  val numberOfDigits = numString.length / 3
+  if (numberOfDigits > 1) {
+    val formattedReversedString = numString.chunked(3).joinToString(".")
 
+    // take only the digits after the last point and the two digits before the point
+    val expenseToString = formattedReversedString.substringAfterLast(".").substringBeforeLast(".")
 
-    val numString = totalexpense.toString().substring(2)
-    val reversedString = numString.reversed()
-    val formattedReversedString = reversedString.chunked(3).joinToString(".")
-    val stringWithPoints = formattedReversedString.reversed()
-
-    val formattedString: String =
-        when (conversionToDigitNumber) {
-            0 -> totalexpense.toString()
-            1 -> totalexpense.toString()
-            2 -> (expenseToString.first() + "," + expenseToString.copyOfRange(1,3) + "M")
-            3 -> (expenseToString.first() + "," + expenseToString.copyOfRange(1,3) + "B")
-            4 -> (expenseToString.first() + "," + expenseToString.copyOfRange(1,3) + "T")
-            else -> { "cannot be displayed"}
+    formattedString =
+        when (numberOfDigits) {
+          2 -> (expenseToString.reversed() + "M")
+          3 -> (expenseToString.reversed() + "B")
+          4 -> (expenseToString.reversed() + "T")
+          else -> {
+            "Error"
+          }
         }
+  } else {
+    formattedString = formattedString.reversed()
+    Log.d("formattedString", formattedString)
+  }
 
-return stringWithPoints
+  return formattedString
 }
