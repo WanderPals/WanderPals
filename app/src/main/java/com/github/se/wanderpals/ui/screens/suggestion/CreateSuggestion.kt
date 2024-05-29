@@ -390,11 +390,11 @@ fun CreateSuggestion(
                         else "Edit Suggestion",
                         style =
                         TextStyle(
-                            fontSize = 20.sp,
-                            lineHeight = 20.sp,
-                            fontWeight = FontWeight(500),
-                            textAlign = TextAlign.Center,
-                            letterSpacing = 0.1.sp,
+//                            fontSize = 20.sp,
+//                            lineHeight = 20.sp,
+//                            fontWeight = FontWeight(500),
+//                            textAlign = TextAlign.Center,
+//                            letterSpacing = 0.1.sp,
                             color = MaterialTheme.colorScheme.onSecondaryContainer,
                         ))
                 }
