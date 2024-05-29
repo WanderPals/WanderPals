@@ -3,6 +3,7 @@ package com.github.se.wanderpals.ui.screens.suggestion
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +38,7 @@ fun CreateOrEditSuggestionTopBar(
             modifier =
             Modifier
                 .background(MaterialTheme.colorScheme.surfaceTint)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(vertical = 8.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -51,8 +52,7 @@ fun CreateOrEditSuggestionTopBar(
                     modifier = Modifier.testTag("goBackButton")
                 ) {
                     Icon(
-                        modifier = Modifier.size(35.dp),
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
@@ -61,12 +61,7 @@ fun CreateOrEditSuggestionTopBar(
                     text =
                     if (suggestion.suggestionId.isEmpty()) "Create a new suggestion"
                     else "Edit the suggestion",
-                modifier = Modifier.padding(start = 20.dp),
-                    textAlign = TextAlign.Center,
-                    style =
-                    MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimary)
             }
         }
