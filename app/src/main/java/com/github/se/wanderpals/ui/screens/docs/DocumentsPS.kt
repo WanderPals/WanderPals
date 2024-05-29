@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -153,19 +154,41 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
 
       // make a topBar to switch between shared and personal documents
       // make a list of documents
-      topBar = {
-        SecondaryTabRow(selectedTabIndex = state) {
-          titles.forEachIndexed { index, title ->
-            Tab(
-                modifier = Modifier.height(70.dp).testTag("tab$title"),
-                text = { Text(title) },
-                selected = state == index,
-                onClick = { state = index },
-                selectedContentColor = MaterialTheme.colorScheme.primary,
-                unselectedContentColor = Color.Gray)
-          }
-        }
-      },
+      topBar =
+          @Composable {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                  Row(
+                      modifier =
+                          Modifier.background(MaterialTheme.colorScheme.surfaceTint)
+                              .padding(horizontal = 16.dp, vertical = 8.dp)
+                              .fillMaxWidth(),
+                      horizontalArrangement = Arrangement.SpaceBetween,
+                      verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp, top = 12.dp).height(35.dp),
+                            text = "Documents",
+                            textAlign = TextAlign.Center,
+                            style =
+                                MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold, fontSize = 24.sp),
+                            color = MaterialTheme.colorScheme.onPrimary)
+                      }
+
+                  SecondaryTabRow(selectedTabIndex = state) {
+                    titles.forEachIndexed { index, title ->
+                      Tab(
+                          modifier = Modifier.height(70.dp).testTag("tab$title"),
+                          text = { Text(title) },
+                          selected = state == index,
+                          onClick = { state = index },
+                          selectedContentColor = MaterialTheme.colorScheme.primary,
+                          unselectedContentColor = Color.Gray)
+                    }
+                  }
+                }
+          },
 
       // add an add button to add a document on the right bottom
 
