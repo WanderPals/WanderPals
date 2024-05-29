@@ -34,7 +34,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.substring
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
@@ -215,6 +214,14 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
       }
 }
 
+/**
+ * Function to format the total expense amount to a more readable format. The function takes the
+ * total expense amount as a Double and returns a formatted String. The function formats the amount
+ * to a maximum of 2 decimal places and adds a suffix of M, B, or T based on the number of digits in
+ * the amount.
+ *
+ * @param totalexpense The total expense amount as a Double.
+ */
 private fun formatExpense(totalexpense: Double): String {
   var formattedString = String.format(Locale.US, "%.02f", totalexpense).reversed()
 
