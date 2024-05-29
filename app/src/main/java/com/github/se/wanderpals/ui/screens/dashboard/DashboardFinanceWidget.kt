@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.substring
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Expense
@@ -211,4 +212,29 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
                     fontSize = 15.sp),
             modifier = Modifier.padding(8.dp).testTag("expenseAmount" + expense.expenseId))
       }
+}
+
+private fun formatExpense(totalexpense: Double): String{
+    //parse the totalexpense
+    val expenseToString = totalexpense.toString().toCharArray()
+    val conversionToDigitNumber = expenseToString.size.div(3)
+
+
+
+    val numString = totalexpense.toString().substring(2)
+    val reversedString = numString.reversed()
+    val formattedReversedString = reversedString.chunked(3).joinToString(".")
+    val stringWithPoints = formattedReversedString.reversed()
+
+    val formattedString: String =
+        when (conversionToDigitNumber) {
+            0 -> totalexpense.toString()
+            1 -> totalexpense.toString()
+            2 -> (expenseToString.first() + "," + expenseToString.copyOfRange(1,3) + "M")
+            3 -> (expenseToString.first() + "," + expenseToString.copyOfRange(1,3) + "B")
+            4 -> (expenseToString.first() + "," + expenseToString.copyOfRange(1,3) + "T")
+            else -> { "cannot be displayed"}
+        }
+
+return stringWithPoints
 }
