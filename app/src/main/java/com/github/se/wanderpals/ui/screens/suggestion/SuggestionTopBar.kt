@@ -54,16 +54,7 @@ fun SuggestionTopBar(
         modifier = Modifier.testTag("suggestionTopBar"),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally)
-//    Column(
-//        modifier =
-//        Modifier.background(MaterialTheme.colorScheme.primary)
-//            .padding(top = 8.dp, start = 8.dp, end = 8.dp)
-//            .testTag("suggestionTopBar"))
     {
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically // This aligns all children vertically centered in the Row
-//        )
         Row(
             modifier =
             Modifier
@@ -76,29 +67,19 @@ fun SuggestionTopBar(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center) {
-//                IconButton(
-//                    modifier = Modifier.testTag("suggestionBackButton"),
-////                        .padding(horizontal = 8.dp),
-//                    onClick = { navigationActions.navigateTo(Route.DASHBOARD) },
-//                ) {
-//                    Icon(
-//                        modifier = Modifier.size(35.dp), //todo: check size
-//                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-//                        contentDescription = "Back",
-//                        tint = MaterialTheme.colorScheme.onPrimary,
-//                    )
-//                }
                 // Title for the list of suggestions in the top bar
                 Text(
                     text = "Suggestions",
-                    modifier = Modifier.padding(8.dp).testTag("suggestionTitle"),
+                    modifier = Modifier.padding(start=20.dp, top=12.dp)
+                        .height(35.dp)
+                        .testTag("suggestionTitle"),
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                 )
             }
 
-            Spacer(modifier = Modifier.width(112.dp))
+            Spacer(modifier = Modifier.width(160.dp))
 
             IconButton(
                 onClick = { onHistoryClick() },
