@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -70,6 +69,8 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.viewmodel.DocumentPSViewModel
+import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
+import com.github.se.wanderpals.ui.theme.primaryLight
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -140,7 +141,10 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
           contract = ActivityResultContracts.PickVisualMedia(),
           onResult = { uri ->
             selectedImagesLocal = uri
-            launch = true
+            if (selectedImagesLocal != null) {
+              launch = true
+              Log.d("Image", selectedImagesLocal.toString())
+            }
           })
 
   Scaffold(
@@ -331,9 +335,6 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                                 singlePhotoPickerLauncher.launch(
                                                     PickVisualMediaRequest())
                                               },
-                                              colors =
-                                                  ButtonDefaults.buttonColors(
-                                                      containerColor = Color(0xFF3bafda)),
                                               shape = RoundedCornerShape(10.dp)) {
                                                 Column(
                                                     modifier = Modifier.fillMaxSize(),
@@ -360,8 +361,7 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                                 it
                                               }) {
                                     Box(
-                                        modifier =
-                                            Modifier.fillMaxSize().background(Color(0xFF3bafda)),
+                                        modifier = Modifier.fillMaxSize().background(primaryLight),
                                         contentAlignment = Alignment.Center,
                                     ) {
                                       Text(text = "Uploading...", color = Color.White)
@@ -383,7 +383,8 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                               }) {
                                     Box(
                                         modifier =
-                                            Modifier.fillMaxSize().background(Color(0xFF2d334c)),
+                                            Modifier.fillMaxSize()
+                                                .background(onPrimaryContainerLight),
                                         contentAlignment = Alignment.Center) {
                                           Row(
                                               verticalAlignment = Alignment.CenterVertically,
@@ -410,11 +411,10 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                       modifier = Modifier.padding(top = 10.dp),
                       horizontalArrangement = Arrangement.SpaceEvenly) {
                         FloatingActionButton(
-                            containerColor = Color(0xFF2d334c),
                             onClick = {
                               Log.d("name", documentName)
-                              error = checkInfoForAcceptance(documentName, selectedImagesLocal!!)
-                              if (error.isBlank()) {
+                              error = checkInfoForAcceptance(documentName, selectedImagesLocal)
+                              if (error.isBlank() && !isUploaded && !isUploading) {
                                 viewModel.addDocument(
                                     documentName,
                                     selectedImagesLocal!!,
@@ -432,7 +432,6 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                     .testTag("acceptButton")) {
                               Text(
                                   text = "Accept",
-                                  color = Color.White,
                                   style =
                                       TextStyle(
                                           fontSize = 16.sp,
@@ -444,12 +443,12 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                         Spacer(modifier = Modifier.width(50.dp))
                         // cancel button
                         FloatingActionButton(
-                            containerColor = Color(0xFF2d334c),
                             onClick = {
                               selectedImagesLocal = Uri.EMPTY
                               launch = false
                               error = ""
                               documentName = ""
+                              isloading = false
                               isUploaded = false
                               displayedTheBoxSelector = false
                             },
@@ -459,7 +458,6 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                     .testTag("cancelButton")) {
                               Text(
                                   text = "Cancel",
-                                  color = Color.White,
                                   style =
                                       TextStyle(
                                           fontSize = 16.sp,
@@ -475,11 +473,12 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
   }
 }
 
-private fun checkInfoForAcceptance(documentName: String, selectedImagesLocal: Uri): String {
+private fun checkInfoForAcceptance(documentName: String, selectedImagesLocal: Uri?): String {
   val errorList = mutableListOf<String>()
 
   if (documentName == "") errorList.add("Forget to named the document")
-  if (selectedImagesLocal == Uri.EMPTY) errorList.add("Need an Image")
+  if (selectedImagesLocal == Uri.EMPTY || selectedImagesLocal == null)
+      errorList.add("Need an Image")
 
   val error =
       when {
