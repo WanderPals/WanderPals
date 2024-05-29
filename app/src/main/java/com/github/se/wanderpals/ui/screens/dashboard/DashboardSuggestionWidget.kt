@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -48,7 +49,10 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun DashboardSuggestionWidget(viewModel: DashboardViewModel, onClick: () -> Unit = {}) {
   val suggestionList by viewModel.state.collectAsState()
-  val sortedSuggestion = suggestionList.sortedByDescending { it.createdAt }
+  val sortedSuggestion =
+      suggestionList
+          .filter { it.stop.stopStatus == CalendarUiState.StopStatus.NONE }
+          .sortedByDescending { it.createdAt }
 
   ElevatedCard(
       modifier =
