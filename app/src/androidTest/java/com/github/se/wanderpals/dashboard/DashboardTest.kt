@@ -19,6 +19,7 @@ import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.trip.Dashboard
+import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -129,6 +130,78 @@ private val suggestion4: Suggestion =
                 geoCords = GeoCords(0.0, 0.0),
                 website = "https://example.com",
                 imageUrl = ""),
+        text = "This is a suggestion for a stop.",
+        userId = "1")
+
+private val suggestion5: Suggestion =
+    Suggestion(
+        suggestionId = "5",
+        userName = "User",
+        createdAt = LocalDate.now(),
+        createdAtTime = LocalTime.now(),
+        stop =
+            Stop(
+                stopId = "5",
+                title = "Stop Title",
+                address = "123 Street",
+                date = LocalDate.now(),
+                startTime = LocalTime.now(),
+                duration = 60,
+                budget = 100.0,
+                description =
+                    "This is a description of the stop. It should be brief and informative.",
+                geoCords = GeoCords(0.0, 0.0),
+                website = "https://example.com",
+                imageUrl = "",
+                stopStatus = CalendarUiState.StopStatus.CURRENT),
+        text = "This is a suggestion for a stop.",
+        userId = "1")
+
+private val suggestion6: Suggestion =
+    Suggestion(
+        suggestionId = "5",
+        userName = "User",
+        createdAt = LocalDate.now(),
+        createdAtTime = LocalTime.now(),
+        stop =
+            Stop(
+                stopId = "5",
+                title = "Stop Title",
+                address = "123 Street",
+                date = LocalDate.now(),
+                startTime = LocalTime.now(),
+                duration = 60,
+                budget = 100.0,
+                description =
+                    "This is a description of the stop. It should be brief and informative.",
+                geoCords = GeoCords(0.0, 0.0),
+                website = "https://example.com",
+                imageUrl = "",
+                stopStatus = CalendarUiState.StopStatus.PAST),
+        text = "This is a suggestion for a stop.",
+        userId = "1")
+
+private val suggestion7: Suggestion =
+    Suggestion(
+        suggestionId = "5",
+        userName = "User",
+        createdAt = LocalDate.now(),
+        createdAtTime = LocalTime.now(),
+        stop =
+            Stop(
+                stopId = "5",
+                title = "Stop Title",
+                address = "123 Street",
+                date = LocalDate.now(),
+                startTime = LocalTime.now(),
+                duration = 60,
+                budget = 100.0,
+                description =
+                    "This is a description of the stop. It should be brief and informative.",
+                geoCords = GeoCords(0.0, 0.0),
+                website = "https://example.com",
+                imageUrl = "",
+                stopStatus = CalendarUiState.StopStatus.COMING_SOON),
         text = "This is a suggestion for a stop.",
         userId = "1")
 
@@ -840,5 +913,33 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
 
     verify { mockNavActions.navigateTo(Route.MAP) }
     confirmVerified(mockNavActions)
+  }
+
+  @Test
+  fun testDontDisplayDeletedSuggestion() {
+    val viewModel =
+        DashboardViewModelTest(listOf(suggestion5, suggestion6, suggestion7, suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    // Check that the suggestion widget doesn't display "No suggestions yet."
+    composeTestRule.onNodeWithTag("noSuggestions", useUnmergedTree = true).assertDoesNotExist()
+
+    // Check that the first suggestion doesn't exist
+    composeTestRule.onNodeWithTag("suggestionItem5", useUnmergedTree = true).assertDoesNotExist()
+
+    // Check that the second suggestion doesn't exist
+    composeTestRule.onNodeWithTag("suggestionItem6", useUnmergedTree = true).assertDoesNotExist()
+
+    // Check that the third suggestion doesn't exist
+    composeTestRule.onNodeWithTag("suggestionItem7", useUnmergedTree = true).assertDoesNotExist()
+
+    // Check that the fourth suggestion exist and is displayed
+    composeTestRule
+        .onNodeWithTag("suggestionItem1", useUnmergedTree = true)
+        .assertExists()
+        .assertIsDisplayed()
   }
 }
