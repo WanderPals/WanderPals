@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -131,7 +130,6 @@ fun Finance(financeViewModel: FinanceViewModel, navigationActions: NavigationAct
           }
           FinanceOption.DEBTS -> {
             Box(modifier = Modifier.padding(innerPadding).testTag("debtsContent")) {
-              HorizontalDivider()
               Spacer(modifier = Modifier.height(10.dp))
               DebtContent(currencySymbol = tripCurrency.symbol, viewmodel = financeViewModel)
             }
