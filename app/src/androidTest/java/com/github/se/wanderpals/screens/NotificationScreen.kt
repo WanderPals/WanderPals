@@ -10,9 +10,9 @@ class NotificationScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
         semanticsProvider = semanticsProvider,
         viewBuilderAction = { hasTestTag("notificationScreen") }) {
 
-  val notificationButton: KNode = onNode { hasTestTag("NotificationsButton") }
+  val notificationButton: KNode = onNode { hasTestTag("notificationTab") }
 
-  val announcementButton: KNode = onNode { hasTestTag("AnnouncementsButton") }
+  val announcementButton: KNode = onNode { hasTestTag("announcementsTab") }
 
   val createAnnouncementButton: KNode = onNode { hasTestTag("createAnnouncementButton") }
 

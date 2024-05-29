@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.ui.screens.trip.notifications
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,11 +18,14 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -256,6 +258,7 @@ fun Notification(
  * @param isNotificationSelected The currently selected notification screen.
  * @param onSelectOption Callback function for selecting a notification screen.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationTopBar(
     isNotificationSelected: Boolean,
@@ -277,31 +280,30 @@ fun NotificationTopBar(
                       Modifier.padding(start = 20.dp, top = 12.dp)
                           .height(35.dp)
                           .testTag("notificationTitle"),
-                  text = "Notifications",
+                  text = "Feed",
                   textAlign = TextAlign.Center,
                   style =
                       MaterialTheme.typography.bodyLarge.copy(
                           fontWeight = FontWeight.Bold, fontSize = 24.sp),
                   color = MaterialTheme.colorScheme.onPrimary)
             }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically) {
-              Box(modifier = Modifier.weight(1f)) {
-                NavigationButton(
-                    text = "Notifications",
-                    isSelected = isNotificationSelected,
-                    onClick = { onSelectOption(true) },
-                )
-              }
-              Box(modifier = Modifier.weight(1f)) {
-                NavigationButton(
-                    text = "Announcements",
-                    isSelected = !isNotificationSelected,
-                    onClick = { onSelectOption(false) })
-              }
-            }
+        SecondaryTabRow(selectedTabIndex = if (isNotificationSelected) 0 else 1) {
+          Tab(
+              modifier = Modifier.height(70.dp).testTag("notificationTab"),
+              text = { NotificationTabText("Notifications") },
+              selected = isNotificationSelected,
+              onClick = { onSelectOption(true) },
+              selectedContentColor = MaterialTheme.colorScheme.primary,
+              unselectedContentColor = Color.Gray)
+
+          Tab(
+              modifier = Modifier.height(70.dp).testTag("announcementsTab"),
+              text = { NotificationTabText("Announcements") },
+              selected = !isNotificationSelected,
+              onClick = { onSelectOption(false) },
+              selectedContentColor = MaterialTheme.colorScheme.primary,
+              unselectedContentColor = Color.Gray)
+        }
       }
 }
 
@@ -309,36 +311,12 @@ fun NotificationTopBar(
  * Composable function for displaying a navigation button.
  *
  * @param text The text to display on the button.
- * @param isSelected Whether the button is currently selected.
- * @param onClick Callback function for when the button is clicked.
  */
 @Composable
-fun NavigationButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-
-  Column(
-      modifier =
-          Modifier.clickable(onClick = onClick)
-              .padding(top = 12.dp)
-              .testTag(text + "Button")
-              .fillMaxWidth(),
-      horizontalAlignment = Alignment.CenterHorizontally) {
-        val colorSelection =
-            if (isSelected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurface
-        Text(
-            text = text,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleMedium,
-            color = colorSelection,
-            modifier = Modifier.padding(top = 8.dp, bottom = 12.dp))
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier =
-                Modifier.fillMaxWidth()
-                    .height(4.dp)
-                    .background(
-                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent),
-        ) {}
-      }
+fun NotificationTabText(text: String) {
+  Text(
+      text = text,
+      textAlign = TextAlign.Center,
+      style = MaterialTheme.typography.titleMedium,
+      modifier = Modifier.padding(top = 8.dp, bottom = 12.dp))
 }
