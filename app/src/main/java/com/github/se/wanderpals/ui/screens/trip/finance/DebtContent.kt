@@ -134,83 +134,95 @@ fun DebtContent(currencySymbol: String, viewmodel: FinanceViewModel) {
           LazyColumn(modifier = Modifier.fillMaxWidth().testTag("debtColumn")) {
             item {
               ElevatedCard(
-                  modifier = Modifier.fillMaxWidth().padding(8.dp),
+                  modifier = Modifier.fillMaxWidth().padding(16.dp),
                   elevation = CardDefaults.cardElevation(4.dp)) {
-                    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                      Text(
-                          text = "Balance Info",
-                          modifier =
-                              Modifier.testTag("balanceInfo").padding(top = 12.dp, start = 8.dp),
-                      )
+                    Column(
+                        modifier =
+                            Modifier.background(MaterialTheme.colorScheme.secondaryContainer)) {
+                          Text(
+                              text = "Balance Info",
+                              modifier =
+                                  Modifier.testTag("balanceInfo")
+                                      .padding(top = 12.dp, start = 12.dp),
+                              color = MaterialTheme.colorScheme.primary,
+                          )
 
-                      Spacer(modifier = Modifier.height(8.dp))
+                          Spacer(modifier = Modifier.height(8.dp))
 
-                      Column {
-                        for (key in users) {
-                          DebtInfo(
-                              amount =
-                                  debt[key.userId]!!.values.sumOf { it } -
-                                      debt[key.userId]!![key.userId]!!,
-                              user = key.name,
-                              currencySymbol = currencySymbol)
+                          Column {
+                            for (key in users) {
+                              DebtInfo(
+                                  amount =
+                                      debt[key.userId]!!.values.sumOf { it } -
+                                          debt[key.userId]!![key.userId]!!,
+                                  user = key.name,
+                                  currencySymbol = currencySymbol)
+                            }
+                          }
                         }
-                      }
-                    }
                   }
             }
             item {
               ElevatedCard(
-                  modifier = Modifier.fillMaxWidth().padding(8.dp),
+                  modifier = Modifier.fillMaxWidth().padding(16.dp),
                   elevation = CardDefaults.cardElevation(4.dp)) {
-                    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                      Text(
-                          text = "Fix debt",
-                          modifier =
-                              Modifier.testTag("myDebt")
-                                  .padding(top = 12.dp, start = 8.dp)
-                                  .fillMaxWidth(),
-                      )
-
-                      Spacer(modifier = Modifier.height(8.dp))
-
-                      Column {
-                        users
-                            .filter { it.userId != SessionManager.getCurrentUser()!!.userId }
-                            .forEach { key ->
-                              if (debt[SessionManager.getCurrentUser()!!.userId]!![key.userId]!! !=
-                                  0.0) {
-                                val amount =
-                                    debt[SessionManager.getCurrentUser()!!.userId]!![key.userId]!!
-                                DebtItem(
-                                    amount = amount,
-                                    user = SessionManager.getCurrentUser()!!.name,
-                                    user2 = key.name,
-                                    isClickable = amount > 0 && !settling,
-                                    onClick = {
-                                      viewmodel.setShowSettleDebtDialogState(true)
-                                      viewmodel.setSettleDebt(
-                                          key,
-                                          debt[SessionManager.getCurrentUser()!!.userId]!![
-                                              key.userId]!!)
-                                    },
-                                    currencySymbol = currencySymbol)
-                                HorizontalDivider()
-                              }
-                            }
-                        if (users
-                            .filter { it.userId != SessionManager.getCurrentUser()!!.userId }
-                            .all {
-                              debt[SessionManager.getCurrentUser()!!.userId]!![it.userId]!! == 0.0
-                            }) {
+                    Column(
+                        modifier =
+                            Modifier.background(MaterialTheme.colorScheme.secondaryContainer)) {
                           Text(
-                              text = "No debt to settle",
+                              text = "Fix debt",
                               modifier =
-                                  Modifier.padding(32.dp).testTag("noDebtToSettle").fillMaxWidth(),
-                              color = MaterialTheme.colorScheme.tertiary,
-                              textAlign = TextAlign.Center)
+                                  Modifier.testTag("myDebt")
+                                      .padding(top = 12.dp, start = 8.dp)
+                                      .fillMaxWidth(),
+                              color = MaterialTheme.colorScheme.primary,
+                          )
+
+                          Spacer(modifier = Modifier.height(8.dp))
+
+                          Column {
+                            users
+                                .filter { it.userId != SessionManager.getCurrentUser()!!.userId }
+                                .forEach { key ->
+                                  if (debt[SessionManager.getCurrentUser()!!.userId]!![
+                                      key.userId]!! != 0.0) {
+                                    val amount =
+                                        debt[SessionManager.getCurrentUser()!!.userId]!![
+                                            key.userId]!!
+                                    DebtItem(
+                                        amount = amount,
+                                        user = SessionManager.getCurrentUser()!!.name,
+                                        user2 = key.name,
+                                        isClickable = amount > 0 && !settling,
+                                        onClick = {
+                                          viewmodel.setShowSettleDebtDialogState(true)
+                                          viewmodel.setSettleDebt(
+                                              key,
+                                              debt[SessionManager.getCurrentUser()!!.userId]!![
+                                                  key.userId]!!)
+                                        },
+                                        currencySymbol = currencySymbol)
+                                    HorizontalDivider()
+                                  }
+                                }
+                            if (users
+                                .filter { it.userId != SessionManager.getCurrentUser()!!.userId }
+                                .all {
+                                  debt[SessionManager.getCurrentUser()!!.userId]!![it.userId]!! ==
+                                      0.0
+                                }) {
+                              Text(
+                                  text = "No debt to settle",
+                                  modifier =
+                                      Modifier.background(MaterialTheme.colorScheme.surface)
+                                          .padding(32.dp)
+                                          .testTag("noDebtToSettle")
+                                          .fillMaxWidth(),
+                                  color = MaterialTheme.colorScheme.tertiary,
+                                  textAlign = TextAlign.Center)
+                            }
+                          }
                         }
-                      }
-                    }
                   }
             }
           }
@@ -249,7 +261,7 @@ fun DebtItem(
       horizontalArrangement = Arrangement.SpaceBetween,
       modifier =
           Modifier.fillMaxWidth()
-              .background(Color.Transparent)
+              .background(MaterialTheme.colorScheme.surface)
               .clickable(enabled = isClickable) { onClick() }
               .padding(horizontal = 8.dp, vertical = 4.dp)
               .testTag("debtItem$user2")
@@ -258,12 +270,15 @@ fun DebtItem(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier.padding(8.dp).fillMaxSize().weight(4f)) {
               Column {
-                Text(text = user2, modifier = Modifier.padding(2.dp).testTag("nameStart$user2"))
+                Text(
+                    text = user2,
+                    modifier = Modifier.padding(2.dp).testTag("nameStart$user2"),
+                    color = MaterialTheme.colorScheme.tertiary)
                 if (amount > 0) {
                   Text(
                       text = money,
                       modifier = Modifier.padding(2.dp).testTag("moneyStart$user2"),
-                      color = MaterialTheme.colorScheme.tertiary)
+                      color = MaterialTheme.colorScheme.secondary)
                 }
               }
             }
@@ -292,13 +307,14 @@ fun DebtItem(
                 Text(
                     text = user,
                     modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("nameEnd$user$user2"),
+                    color = MaterialTheme.colorScheme.tertiary,
                     textAlign = TextAlign.End)
 
                 Text(
                     text = if (amount < 0) money else "click to settle debt",
                     modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("moneyEnd$user2"),
                     textAlign = TextAlign.End,
-                    color = MaterialTheme.colorScheme.tertiary)
+                    color = MaterialTheme.colorScheme.secondary)
               }
             }
       }
@@ -320,18 +336,19 @@ fun DebtInfo(amount: Double, user: String, currencySymbol: String) {
       horizontalArrangement = Arrangement.SpaceBetween,
       modifier =
           Modifier.fillMaxWidth()
-              // red color for negative amount, green color for positive amount, transparent for 0,
-              // pale color
-              .background(
-                  if (amount <= 0) if (amount == 0.0) Color.Transparent else Color(0x80f7a8a8)
-                  else Color(0x80a8f7a8))
+              .background(MaterialTheme.colorScheme.surface)
               .padding(horizontal = 8.dp, vertical = 4.dp)
               .testTag("debt$user")
               .height(IntrinsicSize.Max)) {
         Box(
             contentAlignment = Alignment.CenterStart,
             modifier = Modifier.padding(8.dp).fillMaxSize().weight(4f)) {
-              Column { Text(text = user, modifier = Modifier.padding(2.dp).testTag("start$user")) }
+              Column {
+                Text(
+                    text = user,
+                    modifier = Modifier.padding(2.dp).testTag("start$user"),
+                    color = MaterialTheme.colorScheme.tertiary)
+              }
             }
 
         Box(
@@ -343,7 +360,12 @@ fun DebtInfo(amount: Double, user: String, currencySymbol: String) {
                         if (amount >= 0) "+${String.format("%.02f", amount)} $currencySymbol"
                         else "${String.format("%.02f", amount)} $currencySymbol",
                     modifier = Modifier.padding(2.dp).fillMaxWidth().testTag("end$user"),
-                    textAlign = TextAlign.End)
+                    textAlign = TextAlign.End,
+                    color =
+                        if (amount <= 0)
+                            if (amount == 0.0) MaterialTheme.colorScheme.secondary
+                            else Color(0xFFFA4A4A)
+                        else Color(0xFF00923C))
               }
             }
       }
