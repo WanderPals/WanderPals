@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SuggestionTopBar(
+fun SuggestionSearchBar(
     searchSuggestionText: String,
     onSearchSuggestionTextChanged: (String) -> Unit
 ) {

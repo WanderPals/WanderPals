@@ -23,10 +23,15 @@ import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.service.SessionManager
 
+/**
+ * Composable function for displaying the bottom bar in the Suggestion screen. Provides a button to create a suggestion.
+ *
+ * @param onSuggestionClick Callback function for handling suggestion button click.
+
+ */
 @Composable
 fun SuggestionBottomBar(
     onSuggestionClick: () -> Unit = {},
-    onHistoryClick: () -> Unit // Add this parameter for navigation action
 ) {
 
   // Button to create a suggestion
@@ -35,24 +40,6 @@ fun SuggestionBottomBar(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
-          Button(
-              onClick = { onHistoryClick() },
-              modifier =
-                  Modifier.padding(start = 27.dp) // Add padding to the start of the screen
-                      .height(64.dp) // Set the height to 56.dp to make it a square
-                      .testTag("suggestionHistoryButtonExists"),
-              shape = RoundedCornerShape(size = 16.dp),
-              colors =
-                  ButtonDefaults.buttonColors(
-                      containerColor = MaterialTheme.colorScheme.primaryContainer, // Button color
-                      contentColor = MaterialTheme.colorScheme.onPrimaryContainer, // Icon color
-                  )) {
-                Icon(
-                    painter = painterResource(R.drawable.history),
-                    contentDescription = "History",
-                    modifier = Modifier.size(24.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant)
-              }
 
           Button(
               enabled = SessionManager.getIsNetworkAvailable(),

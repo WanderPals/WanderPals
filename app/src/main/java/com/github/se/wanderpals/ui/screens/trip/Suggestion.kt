@@ -21,6 +21,7 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionSearchBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
 
 /**
@@ -30,6 +31,7 @@ import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
  *   screen.
  * @param tripId The ID of the trip.
  * @param suggestionsViewModel The ViewModel for managing suggestions.
+ * @param onSuggestionClick The callback function for handling the suggestion button click.
  */
 @Composable
 fun Suggestion(
@@ -56,22 +58,25 @@ fun Suggestion(
   Scaffold(
       modifier = Modifier.testTag("suggestionFeedScreen"),
       topBar = {
-        // Top bar with search functionality based on the title of the trips
-        SuggestionTopBar(
-            searchSuggestionText = searchSuggestionText,
-            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-              searchSuggestionText = newSearchSuggestionText
-            })
+          SuggestionTopBar (onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) }
+          )
+//        // Top bar with search functionality based on the title of the trips
+//        SuggestionSearchBar(
+//            searchSuggestionText = searchSuggestionText,
+//            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+//              searchSuggestionText = newSearchSuggestionText
+//            })
       },
       bottomBar = {
-        SuggestionBottomBar(
-            onSuggestionClick = onSuggestionClick,
-            onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
+        SuggestionBottomBar(onSuggestionClick = onSuggestionClick)
       }) { innerPadding ->
         if (isLoading) {
           Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
-                modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
+                modifier = Modifier
+                    .size(50.dp)
+                    .align(Alignment.Center)
+                    .testTag("loading"))
           }
         } else {
           SuggestionFeedContent(
