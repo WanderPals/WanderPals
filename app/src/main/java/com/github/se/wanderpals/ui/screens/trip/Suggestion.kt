@@ -1,7 +1,10 @@
 package com.github.se.wanderpals.ui.screens.trip
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -56,17 +59,18 @@ fun Suggestion(
   val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
   Scaffold(
-      modifier = Modifier.testTag("suggestionFeedScreen"),
       topBar = {
+          Column{
           SuggestionTopBar (onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) }
           )
-//        // Top bar with search functionality based on the title of the trips
-//        SuggestionSearchBar(
-//            searchSuggestionText = searchSuggestionText,
-//            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-//              searchSuggestionText = newSearchSuggestionText
-//            })
-      },
+          Spacer(modifier = Modifier.padding(top=4.dp))
+              // Top bar with search functionality based on the title of the trips
+          SuggestionSearchBar(
+            searchSuggestionText = searchSuggestionText,
+            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+              searchSuggestionText = newSearchSuggestionText
+            })
+      }},
       bottomBar = {
         SuggestionBottomBar(onSuggestionClick = onSuggestionClick)
       }) { innerPadding ->

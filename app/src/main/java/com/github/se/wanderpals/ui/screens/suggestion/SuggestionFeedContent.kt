@@ -86,7 +86,7 @@ fun SuggestionFeedContent(
     // Add the filter options UI
     Text(
         text = "Filter by:",
-        modifier = Modifier.padding(start = 27.dp, top = 8.dp, end = 16.dp),
+        modifier = Modifier.padding(start = 27.dp, top = 24.dp, end = 16.dp),
         style =
             TextStyle(
                 fontSize = 16.sp,

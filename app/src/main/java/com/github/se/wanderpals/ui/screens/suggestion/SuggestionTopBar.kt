@@ -48,7 +48,7 @@ import com.github.se.wanderpals.ui.navigation.Route
  */
 @Composable
 fun SuggestionTopBar(
-    onHistoryClick: () -> Unit // Add this parameter for navigation action
+    onHistoryClick: () -> Unit // Callback function for handling history button click
 ) {
     Column(
         modifier = Modifier.testTag("suggestionTopBar"),
@@ -79,7 +79,7 @@ fun SuggestionTopBar(
                 )
             }
 
-            Spacer(modifier = Modifier.width(160.dp))
+            Spacer(modifier = Modifier.width(160.dp)) // Add space between the title and the history button
 
             IconButton(
                 onClick = { onHistoryClick() },

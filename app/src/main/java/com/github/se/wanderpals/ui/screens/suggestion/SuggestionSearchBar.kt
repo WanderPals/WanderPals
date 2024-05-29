@@ -50,7 +50,8 @@ fun SuggestionSearchBar(
     // DockedSearchBar component
     DockedSearchBar(
         modifier =
-            Modifier.align(Alignment.Center).padding(top = 16.dp).testTag("suggestionSearchBar"),
+            Modifier.align(Alignment.Center)
+                .testTag("suggestionSearchBar"),
         query = searchSuggestionText,
         onQueryChange = { newText -> onSearchSuggestionTextChanged(newText) },
         onSearch = {},
