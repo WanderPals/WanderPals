@@ -35,6 +35,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
@@ -159,7 +160,9 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                 modifier = Modifier.height(70.dp).testTag("tab$title"),
                 text = { Text(title) },
                 selected = state == index,
-                onClick = { state = index })
+                onClick = { state = index },
+                selectedContentColor = MaterialTheme.colorScheme.primary,
+                unselectedContentColor = Color.Gray)
           }
         }
       },
