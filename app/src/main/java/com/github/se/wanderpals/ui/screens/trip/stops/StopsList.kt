@@ -26,6 +26,13 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.agenda.DisplayDate
 import java.time.LocalDate
 
+/**
+ * Composable function that displays a list of stops for a specific trip.
+ *
+ * @param stopsListViewModel The ViewModel that provides the stops data.
+ * @param tripId The ID of the trip for which the stops are displayed.
+ * @param tripsRepository The repository that provides the trip data.
+ */
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "WeekBasedYear")
 @Composable
 fun StopsList(
@@ -62,6 +69,7 @@ fun StopsList(
   }
 }
 
+/** Composable function that displays the top app bar for the stops list screen. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StopsListTopAppBar() {
@@ -93,6 +101,17 @@ fun StopsListTopAppBar() {
   )
 }
 
+/**
+ * Composable function that displays the content of the stops list screen.
+ *
+ * @param isLoading Indicates whether the stops data is currently loading.
+ * @param stops The list of stops to display.
+ * @param tripId The ID of the trip for which the stops are displayed.
+ * @param tripsRepository The repository that provides the trip data.
+ * @param onRefreshNeededChange Function to call when a refresh of the stops data is needed.
+ * @param stopsListViewModel The ViewModel that provides the stops data.
+ * @param modifier The modifier to apply to the layout.
+ */
 @Composable
 fun StopsListContent(
     isLoading: Boolean,
@@ -122,6 +141,7 @@ fun StopsListContent(
   }
 }
 
+/** Composable function that displays a loading indicator. */
 @Composable
 fun LoadingIndicator() {
   Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -129,6 +149,14 @@ fun LoadingIndicator() {
   }
 }
 
+/**
+ * Composable function that displays a lazy column of stops.
+ *
+ * @param stops The list of stops to display.
+ * @param tripId The ID of the trip for which the stops are displayed.
+ * @param tripsRepository The repository that provides the trip data.
+ * @param onRefreshNeededChange Function to call when a refresh of the stops data is needed.
+ */
 @Composable
 fun StopsLazyColumn(
     stops: List<Stop>,
@@ -163,6 +191,11 @@ fun StopsLazyColumn(
       inputLazyColumn = stopsLazyColumn, onRefresh = { onRefreshNeededChange(true) })
 }
 
+/**
+ * Composable function that displays a box with a date.
+ *
+ * @param date The date to display.
+ */
 @Composable
 fun DateBox(date: LocalDate) {
   Box(
@@ -177,6 +210,12 @@ fun DateBox(date: LocalDate) {
       }
 }
 
+/**
+ * Composable function that displays a message when there are no stops for a trip.
+ *
+ * @param onRefresh Function to call to refresh the stops data.
+ * @param isNetworkAvailable Indicates whether a network connection is available.
+ */
 @Composable
 fun NoStopsMessage(onRefresh: () -> Unit, isNetworkAvailable: Boolean) {
   Box(modifier = Modifier.fillMaxSize()) {
