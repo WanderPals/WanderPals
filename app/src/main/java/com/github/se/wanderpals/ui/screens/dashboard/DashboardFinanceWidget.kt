@@ -40,6 +40,7 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
 import java.util.Locale
+import kotlin.math.ceil
 
 /**
  * Composable function for displaying the finance widget in the Dashboard screen. The finance widget
@@ -222,12 +223,13 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
  *
  * @param totalexpense The total expense amount as a Double.
  */
+@SuppressLint("SuspiciousIndentation")
 private fun formatExpense(totalexpense: Double): String {
   var formattedString = String.format(Locale.US, "%.02f", totalexpense).reversed()
 
   val numString = formattedString.substring(3)
-  val numberOfDigits = numString.length / 3
-  if (numberOfDigits > 1) {
+  val numberOfDigits = ceil(numString.length.toDouble() / 3.0).toInt()
+  if (numberOfDigits > 2) {
     val formattedReversedString = numString.chunked(3).joinToString(".")
 
     // take only the digits after the last point and the two digits before the point
@@ -235,9 +237,9 @@ private fun formatExpense(totalexpense: Double): String {
 
     formattedString =
         when (numberOfDigits) {
-          2 -> (expenseToString.reversed() + "M")
-          3 -> (expenseToString.reversed() + "B")
-          4 -> (expenseToString.reversed() + "T")
+          3 -> (expenseToString.reversed() + "M")
+          4 -> (expenseToString.reversed() + "B")
+          5 -> (expenseToString.reversed() + "T")
           else -> {
             "Error"
           }
