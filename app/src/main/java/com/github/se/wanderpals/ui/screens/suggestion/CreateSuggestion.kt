@@ -10,15 +10,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,7 +26,6 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +43,6 @@ import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
 import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
 import com.github.se.wanderpals.ui.theme.primaryContainerLight
-import com.github.se.wanderpals.ui.theme.primaryLight
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -57,12 +54,7 @@ import java.time.format.DateTimeFormatter
  *
  * @param tripId the id of the trip
  * @param viewModel a CreateSuggestionViewModel that needs to be initialized beforehand
- * @param desc default value for the description entry (can be empty)
- * @param addr default value for the address entry (can be empty)
- * @param website default value for the website entry (can be empty)
- * @param title default value for the title entry (can be empty)
- * @param budget default value for the budget entry (can be empty)
- * @param geoCords default value for the geoCords entry (can be empty)
+ * @param suggestion the suggestion to be created (default is an empty suggestion)
  * @param onSuccess additional code to execute after the successful creation of the suggestion (can
  *   be empty)
  * @param onFailure code to execute if the creation of the suggestion fails (can be empty)
@@ -111,13 +103,13 @@ fun CreateSuggestion(
         else end.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
   }
 
-  var start_d_err by remember { mutableStateOf(false) }
-  var end_d_err by remember { mutableStateOf(false) }
-  var start_t_err by remember { mutableStateOf(false) }
-  var end_t_err by remember { mutableStateOf(false) }
-  var title_err by remember { mutableStateOf(false) }
-  var budget_err by remember { mutableStateOf(false) }
-  var desc_err by remember { mutableStateOf(false) }
+  var startDErr by remember { mutableStateOf(false) }
+  var endDErr by remember { mutableStateOf(false) }
+  var startTErr by remember { mutableStateOf(false) }
+  var endTErr by remember { mutableStateOf(false) }
+  var titleErr by remember { mutableStateOf(false) }
+  var budgetErr by remember { mutableStateOf(false) }
+  var descErr by remember { mutableStateOf(false) }
 
   var showDatePickerStart by remember { mutableStateOf(false) }
   var showDatePickerEnd by remember { mutableStateOf(false) }
@@ -127,9 +119,400 @@ fun CreateSuggestion(
 
   val dateRegexPattern = """^\d{4}-\d{2}-\d{2}$"""
   val timeRegexPattern = """^\d{2}:\d{2}$"""
-  //  val websiteRegexPattern =
-  // """^(http|https)://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:/[a-zA-Z0-9.-]*)*$"""
 
+    Scaffold(
+        topBar = {
+            CreateOrEditSuggestionTopBar(suggestion = suggestion, onCancel = onCancel)
+        },
+        content = { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                Spacer(Modifier.height(24.dp))
+                OutlinedTextField(
+                    value = suggestionText,
+                    onValueChange = { suggestionText = it },
+                    label = { Text("Suggestion Title*") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp)
+                        .testTag("inputSuggestionTitle"),
+                    isError = titleErr,
+                    singleLine = true
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Suggestion Description*") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp)
+                        .padding(horizontal = 28.dp)
+                        .testTag("inputSuggestionDescription")
+                        .scrollable(rememberScrollState(), Orientation.Vertical),
+                    isError = descErr,
+                    singleLine = false,
+                    placeholder = { Text("Describe the suggestion") }
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                OutlinedTextField(
+                    value = _budget,
+                    onValueChange = { _budget = it },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    label = { Text("Budget") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp)
+                        .testTag("inputSuggestionBudget"),
+                    isError = budgetErr,
+                    singleLine = true,
+                    placeholder = { Text("Budget") }
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp)
+                ) {
+                    OutlinedTextField(
+                        value = startDate,
+                        onValueChange = { startDate = it },
+                        placeholder = { Text("From*") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("inputSuggestionStartDate")
+                            .clickable { showDatePickerStart = true },
+                        isError = startDErr,
+                        singleLine = true,
+                        interactionSource = DateInteractionSource { showDatePickerStart = true }
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    OutlinedTextField(
+                        value = startTime,
+                        onValueChange = { startTime = it },
+                        placeholder = { Text("From time*") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("inputSuggestionStartTime"),
+                        isError = startTErr,
+                        singleLine = true,
+                        interactionSource = DateInteractionSource { showTimePickerStart = true }
+                    )
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp)
+                ) {
+                    OutlinedTextField(
+                        value = endDate,
+                        onValueChange = { endDate = it },
+                        placeholder = { Text("To*") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("inputSuggestionEndDate"),
+                        isError = endDErr,
+                        singleLine = true,
+                        interactionSource = DateInteractionSource { showDatePickerEnd = true }
+                    )
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    OutlinedTextField(
+                        value = endTime,
+                        onValueChange = { endTime = it },
+                        placeholder = { Text("To time*") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("inputSuggestionEndTime"),
+                        isError = endTErr,
+                        singleLine = true,
+                        interactionSource = DateInteractionSource { showTimePickerEnd = true }
+                    )
+                }
+
+                if (showDatePickerStart) {
+                    MyDatePickerDialog(
+                        onDateSelected = {
+                            startDate =
+                                if (isStringInFormat(
+                                        it,
+                                        """^\d{2}/\d{2}/\d{4}$"""
+                                    )
+                                ) convertDateFormat(it)
+                                else "To*"
+                        },
+                        onDismiss = { showDatePickerStart = false })
+                }
+
+                if (showDatePickerEnd) {
+                    MyDatePickerDialog(
+                        onDateSelected = {
+                            endDate =
+                                if (isStringInFormat(
+                                        it,
+                                        """^\d{2}/\d{2}/\d{4}$"""
+                                    )
+                                ) convertDateFormat(it)
+                                else "To*"
+                        },
+                        onDismiss = { showDatePickerEnd = false })
+                }
+
+                if (showTimePickerStart) {
+                    MyTimePickerDialog(
+                        onTimeSelected = { startTime = it },
+                        onDismiss = { showTimePickerStart = false })
+                }
+
+                if (showTimePickerEnd) {
+                    MyTimePickerDialog(
+                        onTimeSelected = { endTime = it },
+                        onDismiss = { showTimePickerEnd = false })
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                if (suggestion.stop.address.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 28.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = address,
+                            onValueChange = { address = it },
+                            label = { Text("Address") },
+                            modifier = Modifier
+                                .weight(6f)
+                                .horizontalScroll(rememberScrollState())
+                                .testTag("inputSuggestionAddress"),
+                            isError = false,
+                            singleLine = true,
+                            placeholder = { Text("Address of the suggestion") },
+                            enabled = false
+                        )
+                    }
+
+                    Spacer(Modifier.height(24.dp))
+                }
+
+                OutlinedTextField(
+                    value = _website,
+                    onValueChange = { _website = it },
+                    label = { Text("Website") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 28.dp)
+                        .testTag("inputSuggestionWebsite")
+                        .horizontalScroll(rememberScrollState()),
+                    singleLine = true,
+                    placeholder = { Text("Website") }
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+            }
+        },
+        floatingActionButton = {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
+            ExtendedFloatingActionButton(
+                onClick = {
+                    // Validate input fields
+                    titleErr = suggestionText.trim().isEmpty()
+                    budgetErr = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
+                    descErr = description.trim().isEmpty()
+                    startDErr = !isStringInFormat(startDate, dateRegexPattern)
+                    startTErr = !isStringInFormat(startTime, timeRegexPattern)
+                    endDErr = !isStringInFormat(endDate, dateRegexPattern)
+                    endTErr = !isStringInFormat(endTime, timeRegexPattern)
+
+                    if (!(titleErr || budgetErr || descErr || startDErr || startTErr || endTErr || endDErr)) {
+                        val startDateObj =
+                            LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
+                        val startTimeObj =
+                            LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME)
+
+                        val endDateObj = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE)
+                        val endTimeObj = LocalTime.parse(endTime, DateTimeFormatter.ISO_LOCAL_TIME)
+
+                        val startDateTime = LocalDateTime.of(startDateObj, startTimeObj)
+                        val endDateTime = LocalDateTime.of(endDateObj, endTimeObj)
+
+                        val duration = Duration.between(startDateTime, endDateTime)
+                        val newSuggestion =
+                            Suggestion(
+                                suggestionId = "",
+                                userId = "",
+                                userName = SessionManager.getCurrentUser()!!.name,
+                                text = "",
+                                createdAt = LocalDate.now(),
+                                createdAtTime = LocalTime.now(),
+                                stop =
+                                Stop(
+                                    stopId = suggestion.stop.stopId,
+                                    title = suggestionText,
+                                    address = address,
+                                    date = startDateObj,
+                                    startTime = startTimeObj,
+                                    duration = duration.toMinutes().toInt(),
+                                    budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
+                                    description = description,
+                                    geoCords = suggestion.stop.geoCords,
+                                    website = _website,
+                                    imageUrl = ""
+                                )
+                            )
+                        if (suggestion.suggestionId.isNotEmpty()) {
+                            if (viewModel.updateSuggestion(
+                                    tripId,
+                                    suggestion.copy(
+                                        stop = newSuggestion.stop.copy(stopId = suggestion.stop.stopId)
+                                    )
+                                )
+                            ) {
+                                onSuccess()
+                            } else {
+                                onFailure()
+                            }
+                        } else {
+                            if (viewModel.addSuggestion(tripId, newSuggestion)) {
+                                onSuccess()
+                            } else {
+                                onFailure()
+                            }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .padding(start = 40.dp)
+                    .testTag("createSuggestionButton"),
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                elevation = FloatingActionButtonDefaults.elevation(2.dp, 1.dp)
+            ) {
+                Text(
+                    text = if (suggestion.suggestionId.isEmpty()) "Create Suggestion" else "Edit Suggestion",
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                )
+            }
+        }
+        }
+    )
+}
+//                Button(
+//                    enabled = SessionManager.getIsNetworkAvailable(),
+//                    modifier = Modifier
+//                        .padding(0.5.dp)
+//                        .width(300.dp)
+//                        .height(60.dp)
+//                        .testTag("createSuggestionButton"),
+//                    colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight),
+//                    shape = RoundedCornerShape(size = 100.dp),
+//                    onClick = {
+//                        titleErr = suggestionText.trim().isEmpty()
+//                        budgetErr = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
+//                        descErr = description.trim().isEmpty()
+//                        startDErr = !isStringInFormat(startDate, dateRegexPattern)
+//                        startTErr = !isStringInFormat(startTime, timeRegexPattern)
+//                        endDErr = !isStringInFormat(endDate, dateRegexPattern)
+//                        endTErr = !isStringInFormat(endTime, timeRegexPattern)
+//
+//                        if (!(titleErr ||
+//                                    budgetErr ||
+//                                    descErr ||
+//                                    startDErr ||
+//                                    startTErr ||
+//                                    endTErr ||
+//                                    endDErr)) {
+//
+//                            val startDateObj = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
+//                            val startTimeObj = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME)
+//
+//                            val endDateObj = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE)
+//                            val endTimeObj = LocalTime.parse(endTime, DateTimeFormatter.ISO_LOCAL_TIME)
+//
+//                            val startDateTime = LocalDateTime.of(startDateObj, startTimeObj)
+//                            val endDateTime = LocalDateTime.of(endDateObj, endTimeObj)
+//
+//                            val duration = Duration.between(startDateTime, endDateTime)
+//                            val newSuggestion =
+//                                Suggestion(
+//                                    suggestionId = "",
+//                                    userId = "",
+//                                    userName = SessionManager.getCurrentUser()!!.name,
+//                                    text = "",
+//                                    createdAt = LocalDate.now(),
+//                                    createdAtTime = LocalTime.now(),
+//                                    stop =
+//                                    Stop(
+//                                        stopId = suggestion.stop.stopId,
+//                                        title = suggestionText,
+//                                        address = address,
+//                                        date = startDateObj,
+//                                        startTime = startTimeObj,
+//                                        duration = duration.toMinutes().toInt(),
+//                                        budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
+//                                        description = description,
+//                                        geoCords = suggestion.stop.geoCords,
+//                                        website = _website,
+//                                        imageUrl = ""))
+//                            if (suggestion.suggestionId.isNotEmpty()) {
+//                                if (viewModel.updateSuggestion(
+//                                        tripId,
+//                                        suggestion.copy(
+//                                            stop = newSuggestion.stop.copy(stopId = suggestion.stop.stopId)))) {
+//                                    onSuccess()
+//                                } else {
+//                                    onFailure()
+//                                }
+//                            } else {
+//                                if (viewModel.addSuggestion(tripId, newSuggestion)) {
+//                                    onSuccess()
+//                                } else {
+//                                    onFailure()
+//                                }
+//                            }
+//                        }
+//                    }) {
+//                    Text(
+//                        text =
+//                        if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
+//                        else "Edit Suggestion",
+//                        style =
+//                        TextStyle(
+//                            fontSize = 20.sp,
+//                            lineHeight = 20.sp,
+//                            fontWeight = FontWeight(500),
+//                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+//                            textAlign = TextAlign.Center,
+//                            letterSpacing = 0.1.sp,
+//                        ))
+//                }
+//            }
+//
+//        }
+//    )
+//}
+
+    /*
   Surface(modifier = Modifier) {
     Column(
         modifier =
@@ -170,7 +553,7 @@ fun CreateSuggestion(
                   Modifier.fillMaxWidth()
                       .padding(start = 28.dp, end = 28.dp)
                       .testTag("inputSuggestionTitle"),
-              isError = title_err,
+              isError = titleErr,
               singleLine = true // i.e. one line
               )
 
@@ -187,7 +570,7 @@ fun CreateSuggestion(
                       .height(150.dp)
                       .padding(start = 28.dp, end = 28.dp)
                       .scrollable(rememberScrollState(), Orientation.Vertical),
-              isError = desc_err,
+              isError = descErr,
               singleLine = false, // can be multiple lines
               placeholder = { Text("Describe the suggestion") })
 
@@ -203,7 +586,7 @@ fun CreateSuggestion(
                   Modifier.fillMaxWidth()
                       .padding(start = 28.dp, end = 28.dp)
                       .testTag("inputSuggestionBudget"),
-              isError = budget_err,
+              isError = budgetErr,
               singleLine = true,
               placeholder = { Text("Budget") })
 
@@ -219,7 +602,7 @@ fun CreateSuggestion(
                     Modifier.testTag("inputSuggestionStartDate").weight(1f).clickable {
                       showDatePickerStart = true
                     },
-                isError = start_d_err,
+                isError = startDErr,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showDatePickerStart = true })
 
@@ -230,7 +613,7 @@ fun CreateSuggestion(
                 onValueChange = { startTime = it },
                 placeholder = { Text("From time*") },
                 modifier = Modifier.weight(1f).testTag("inputSuggestionStartTime"),
-                isError = start_t_err,
+                isError = startTErr,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerStart = true })
           }
@@ -244,7 +627,7 @@ fun CreateSuggestion(
                 onValueChange = { endDate = it },
                 placeholder = { Text("To*") },
                 modifier = Modifier.weight(1f).testTag("inputSuggestionEndDate"),
-                isError = end_d_err,
+                isError = endDErr,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showDatePickerEnd = true })
 
@@ -255,7 +638,7 @@ fun CreateSuggestion(
                 onValueChange = { endTime = it },
                 placeholder = { Text("To time*") },
                 modifier = Modifier.weight(1f).testTag("inputSuggestionEndTime"),
-                isError = end_t_err,
+                isError = endTErr,
                 singleLine = true,
                 interactionSource = DateInteractionSource { showTimePickerEnd = true })
           }
@@ -337,21 +720,21 @@ fun CreateSuggestion(
               colors = ButtonDefaults.buttonColors(containerColor = primaryContainerLight),
               shape = RoundedCornerShape(size = 100.dp),
               onClick = {
-                title_err = suggestionText.trim().isEmpty()
-                budget_err = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
-                desc_err = description.trim().isEmpty()
-                start_d_err = !isStringInFormat(startDate, dateRegexPattern)
-                start_t_err = !isStringInFormat(startTime, timeRegexPattern)
-                end_d_err = !isStringInFormat(endDate, dateRegexPattern)
-                end_t_err = !isStringInFormat(endTime, timeRegexPattern)
+                titleErr = suggestionText.trim().isEmpty()
+                budgetErr = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
+                descErr = description.trim().isEmpty()
+                startDErr = !isStringInFormat(startDate, dateRegexPattern)
+                startTErr = !isStringInFormat(startTime, timeRegexPattern)
+                endDErr = !isStringInFormat(endDate, dateRegexPattern)
+                endTErr = !isStringInFormat(endTime, timeRegexPattern)
 
-                if (!(title_err ||
-                    budget_err ||
-                    desc_err ||
-                    start_d_err ||
-                    start_t_err ||
-                    end_t_err ||
-                    end_d_err)) {
+                if (!(titleErr ||
+                    budgetErr ||
+                    descErr ||
+                    startDErr ||
+                    startTErr ||
+                    endTErr ||
+                    endDErr)) {
 
                   // Parse start date and time
                   val startDateObj = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
@@ -425,7 +808,8 @@ fun CreateSuggestion(
               }
         }
   }
-}
+    */
+
 
 /** needs to be discussed in meeting if shared with rest of project */
 private fun isConvertibleToDouble(input: String): Boolean {
