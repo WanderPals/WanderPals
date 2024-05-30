@@ -124,7 +124,7 @@ fun CreateOrEditSuggestion(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-//                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(8.dp))
                 OutlinedTextField(
                     value = suggestionText,
                     onValueChange = { suggestionText = it },
@@ -137,7 +137,7 @@ fun CreateOrEditSuggestion(
                     singleLine = true
                 )
 
-//                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(4.dp))
 
                 OutlinedTextField(
                     value = description,
@@ -154,7 +154,7 @@ fun CreateOrEditSuggestion(
                     placeholder = { Text("Describe the suggestion") }
                 )
 
-//                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(4.dp))
 
                 OutlinedTextField(
                     value = _budget,
@@ -265,9 +265,8 @@ fun CreateOrEditSuggestion(
                         onTimeSelected = { endTime = it }, onDismiss = { showTimePickerEnd = false })
                 }
 
-//                Spacer(Modifier.height(8.dp))
-
                 if (suggestion.stop.address.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 28.dp)) {
@@ -286,9 +285,9 @@ fun CreateOrEditSuggestion(
                         )
                     }
 
-//                    Spacer(Modifier.height(8.dp))
                 }
 
+                Spacer(Modifier.height(4.dp))
                 OutlinedTextField(
                     value = _website,
                     onValueChange = { _website = it },
@@ -302,7 +301,7 @@ fun CreateOrEditSuggestion(
                     placeholder = { Text("Website") }
                 )
 
-                Spacer(modifier = Modifier.height(248.dp))
+                Spacer(modifier = Modifier.height(224.dp))
 
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                     ExtendedFloatingActionButton(
