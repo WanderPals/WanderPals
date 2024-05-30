@@ -942,4 +942,21 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
         .assertExists()
         .assertIsDisplayed()
   }
+
+    @Test
+    fun documentWidgetDisplaysProperly() = run {
+        val viewModel = DashboardViewModelTest(emptyList())
+        viewModel.setLoading(false)
+        composeTestRule.setContent {
+            Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+        }
+
+        composeTestRule.onNodeWithTag("documentsCard", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("documentsTitle", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("documentsIcon", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("privateDocTitle", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("sharedDocTitle", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("privateDoc", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("sharedDoc", useUnmergedTree = true).assertIsDisplayed()
+    }
 }

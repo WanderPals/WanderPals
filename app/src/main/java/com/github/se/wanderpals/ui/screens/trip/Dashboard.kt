@@ -118,7 +118,7 @@ fun Dashboard(
                     .padding(contentPadding)
                     .fillMaxSize()
                     .testTag("dashboardSuggestions")) {
-              LazyColumn(modifier = Modifier.padding(vertical = 8.dp)) {
+              LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
                 item {
                   Spacer(modifier = Modifier.padding(8.dp))
                   DashboardSuggestionWidget(
