@@ -100,11 +100,11 @@ fun DashboardDocumentWidget(onClick: () -> Unit, viewModel: DashboardViewModel) 
                   Text(
                       text = "Last private document:",
                       style = titleStyle,
-                      modifier = Modifier.testTag("privateDocTitle")
-                  )
+                      modifier = Modifier.testTag("privateDocTitle"))
                   Spacer(modifier = Modifier.height(4.dp))
                   DocumentTextBox(
-                      text = lastAddedPrivateDocument.ifEmpty { "No private documents." }, "privateDoc")
+                      text = lastAddedPrivateDocument.ifEmpty { "No private documents." },
+                      "privateDoc")
                 }
               }
 
@@ -120,10 +120,10 @@ fun DashboardDocumentWidget(onClick: () -> Unit, viewModel: DashboardViewModel) 
                   Text(
                       text = "Last shared document:",
                       style = titleStyle,
-                        modifier = Modifier.testTag("sharedDocTitle")
-                  )
+                      modifier = Modifier.testTag("sharedDocTitle"))
                   Spacer(modifier = Modifier.height(4.dp))
-                  DocumentTextBox(text = lastAddedTripDocument.ifEmpty { "No shared documents." }, "sharedDoc")
+                  DocumentTextBox(
+                      text = lastAddedTripDocument.ifEmpty { "No shared documents." }, "sharedDoc")
                 }
               }
         }
