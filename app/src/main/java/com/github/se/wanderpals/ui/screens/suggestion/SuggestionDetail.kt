@@ -34,6 +34,7 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -173,14 +174,15 @@ fun SuggestionDetail(
                       tint = MaterialTheme.colorScheme.onSurface,
                       modifier = Modifier.testTag("ScheduleIcon").size(24.dp))
                   Spacer(modifier = Modifier.width(4.dp))
-                  Text(
+                    val suggestionStartTime =
+                        LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+                    val suggestionEndTime = suggestionStartTime.plusMinutes(suggestion.stop.duration.toLong())
+                    Text(
                       // text to display the schedule of the suggestion like "From 09/10/2024 at
                       // 12:00
                       // to 11/10/2024 at 14:00"
-                      text =
-                          suggestion.stop.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-                              " at ${suggestion.stop.startTime} " +
-                              "to ${suggestion.stop.startTime.plusMinutes(suggestion.stop.duration.toLong())}",
+                      text = "From ${suggestionStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}" +
+                              " to ${suggestionEndTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}",
                       style = MaterialTheme.typography.bodyMedium,
                       modifier = Modifier.testTag("ScheduleText"))
                 }
