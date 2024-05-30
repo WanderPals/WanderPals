@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
@@ -44,7 +44,8 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
  * @param suggestionsViewModel The ViewModel for managing suggestions.
  */
 @Composable
-fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
+fun SuggestionHistoryFeedContent(
+    suggestionsViewModel: SuggestionsViewModel) {
 
   // Observe the state of the suggestions list from the ViewModel
   val suggestions = suggestionsViewModel.state.collectAsState().value
@@ -61,26 +62,11 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
   Scaffold(
       topBar = {
         // Title for the list of suggestions
-        Box(
-            modifier =
-                Modifier.fillMaxWidth()
-                    .height(80.dp) // Adjust the height as needed
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(vertical = 16.dp)) {
-              Text(
-                  text = "Suggestion History",
-                  modifier = Modifier.align(Alignment.CenterStart).padding(start = 27.dp),
-                  style =
-                      TextStyle(
-                          fontSize = 20.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = MaterialTheme.colorScheme.onPrimary,
-                          letterSpacing = 0.2.sp),
-                  textAlign = TextAlign.Center)
-            }
+          GoBackSuggestionTopBar(title = "Suggestion History", onBack = { navigationActions.goBack() })
       }) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues).fillMaxWidth()) {
+        Column(modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxWidth()) {
           // Trigger data fetch when selectedDate changes
           LaunchedEffect(tripId) { suggestionsViewModel.loadSuggestion(tripId) }
 
@@ -90,9 +76,10 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
             Box(modifier = Modifier.fillMaxSize()) {
               CircularProgressIndicator(
                   modifier =
-                      Modifier.size(50.dp)
-                          .align(Alignment.Center)
-                          .testTag("suggestionHistoryLoadingSpinner"))
+                  Modifier
+                      .size(50.dp)
+                      .align(Alignment.Center)
+                      .testTag("suggestionHistoryLoadingSpinner"))
             }
           }
 
@@ -101,10 +88,11 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
             Box(modifier = Modifier.fillMaxSize()) {
               Text(
                   modifier =
-                      Modifier.width(260.dp)
-                          .height(55.dp)
-                          .align(Alignment.Center)
-                          .testTag("noSuggestionsHistoryToDisplay"),
+                  Modifier
+                      .width(260.dp)
+                      .height(55.dp)
+                      .align(Alignment.Center)
+                      .testTag("noSuggestionsHistoryToDisplay"),
                   text =
                       when (SessionManager.getIsNetworkAvailable()) {
                         true -> "No stops in the history yet."
@@ -122,7 +110,9 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
               IconButton(
                   enabled = SessionManager.getIsNetworkAvailable(),
                   onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-                  modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
+                  modifier = Modifier
+                      .align(Alignment.Center)
+                      .padding(top = 60.dp),
                   content = {
                     Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History")
                   })

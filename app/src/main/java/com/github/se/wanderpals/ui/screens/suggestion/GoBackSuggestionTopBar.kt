@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -13,24 +12,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.github.se.wanderpals.model.data.Suggestion
 
 /**
- * Composable function for displaying the top bar in the Create Suggestion screen.
+ * Composable function for displaying the top bar in any screen related to suggestions that requires a back button and a title in the top bar.
  *
- * @param suggestion The suggestion object for which the user is creating or editing a new suggestion.
- * @param onCancel Callback function for handling the back button click.
+ * @param title The title of the screen.
+ * @param onBack Callback function for handling the back button click.
  */
 @Composable
-fun CreateOrEditSuggestionTopBar(
-    suggestion: Suggestion,
-    onCancel: () -> Unit) {
+fun GoBackSuggestionTopBar(
+    title: String,
+    onBack: () -> Unit) {
     Column(
-        modifier = Modifier.testTag("createEditSuggestionTopBar"), //todo: create test for this
+        modifier = Modifier.testTag("goBackSuggestionTopBar"), //todo: create test for this
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -48,7 +43,7 @@ fun CreateOrEditSuggestionTopBar(
                 horizontalArrangement = Arrangement.Center
             ) {
                 IconButton(
-                    onClick = { onCancel() },
+                    onClick = { onBack() },
                     modifier = Modifier.testTag("goBackButton")
                 ) {
                     Icon(
@@ -58,9 +53,9 @@ fun CreateOrEditSuggestionTopBar(
                     )
                 }
                 Text(
-                    text =
-                    if (suggestion.suggestionId.isEmpty()) "Create a new suggestion"
-                    else "Edit the suggestion",
+                    text = title,
+//                    if (suggestion.suggestionId.isEmpty()) "Create a new suggestion"
+//                    else "Edit the suggestion",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimary)
             }

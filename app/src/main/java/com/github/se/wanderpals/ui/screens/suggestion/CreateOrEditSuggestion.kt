@@ -113,14 +113,17 @@ fun CreateOrEditSuggestion(
 
     Scaffold(
         topBar = {
-            CreateOrEditSuggestionTopBar(suggestion = suggestion, onCancel = onCancel)
+            GoBackSuggestionTopBar(
+                title = if (suggestion.suggestionId.isEmpty()) "Create a new suggestion"
+                else "Edit the suggestion",
+                onBack = onCancel)
         },
         content = { padding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(vertical = 12.dp)  // Global horizontal padding
+                    .padding(vertical = 12.dp)  // Global vertical padding
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
@@ -310,7 +313,7 @@ fun CreateOrEditSuggestion(
                 )
 
 //                Spacer(modifier = Modifier.height(224.dp))
-                Spacer(modifier = Modifier.height(172.dp))
+                Spacer(modifier = Modifier.height(178.dp))
 
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                     ExtendedFloatingActionButton(

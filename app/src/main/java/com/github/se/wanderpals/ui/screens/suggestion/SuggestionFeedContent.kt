@@ -85,7 +85,7 @@ fun SuggestionFeedContent(
   Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
     // Add the filter options UI
     Text(
-        text = "Filter by:",
+        text = "Sort by:",
         modifier = Modifier.padding(start = 27.dp, top = 24.dp, end = 16.dp),
         style =
             TextStyle(
