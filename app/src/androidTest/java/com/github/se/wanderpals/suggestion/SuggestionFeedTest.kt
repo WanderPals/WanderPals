@@ -12,11 +12,10 @@ import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.screens.SuggestionFeedScreen
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.suggestion.SuggestionBottomBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFilterButton
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFilterOptions
-import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionSearchBar
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -291,8 +290,15 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun suggestionButtonExists_isDisplayed() {
     composeTestRule.setContent {
-      // Place the SuggestionBottomBar composable within the test context
-      SuggestionBottomBar(onSuggestionClick = {}, onHistoryClick = {})
+      // Simulate the Suggestion composable with the provided tripId
+      com.github.se.wanderpals.ui.screens.trip.Suggestion(
+          oldNavActions = mockNavActions,
+          tripId = "dummyTestTripId", // a dummy trip ID
+          suggestionsViewModel = FakeSuggestionsViewModel(),
+          onSuggestionClick = {
+            mockNavActions.setVariablesTrip("dummyTestTripId")
+            mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
+          })
     }
 
     // Now check if the button with the testTag "suggestionButtonExists" is displayed
@@ -334,7 +340,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun suggestionSearchBar_ExistsAndIsDisplayed() {
     composeTestRule.setContent {
-      SuggestionTopBar(searchSuggestionText = "", onSearchSuggestionTextChanged = {})
+      SuggestionSearchBar(searchSuggestionText = "", onSearchSuggestionTextChanged = {})
     }
 
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {
@@ -349,7 +355,7 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
   @Test
   fun clearSuggestionSearchButton_ExistsAndIsDisplayedAndPerformsClick() {
     composeTestRule.setContent {
-      SuggestionTopBar(searchSuggestionText = "test", onSearchSuggestionTextChanged = {})
+      SuggestionSearchBar(searchSuggestionText = "test", onSearchSuggestionTextChanged = {})
     }
 
     onComposeScreen<SuggestionFeedScreen>(composeTestRule) {

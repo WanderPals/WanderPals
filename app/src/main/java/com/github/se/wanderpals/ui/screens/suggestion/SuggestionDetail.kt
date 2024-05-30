@@ -1,5 +1,6 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,13 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Send
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Create
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,14 +24,17 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -102,7 +103,8 @@ fun SuggestionDetail(
                 Spacer(modifier = Modifier.height(8.dp))
                 // Display which user the suggestion was created by and at which time
                 Text(
-                    text = "Suggested by ${suggestion.userName} on ${suggestion.createdAt}",
+                    text =
+                        "Suggested by ${suggestion.userName} on ${suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.testTag("CreatedByText"))
@@ -172,15 +174,20 @@ fun SuggestionDetail(
                       contentDescription = "Schedule",
                       tint = MaterialTheme.colorScheme.onSurface,
                       modifier = Modifier.testTag("ScheduleIcon").size(24.dp))
+
                   Spacer(modifier = Modifier.width(4.dp))
+
+                  val suggestionStartTime =
+                      LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+                  val suggestionEndTime =
+                      suggestionStartTime.plusMinutes(suggestion.stop.duration.toLong())
                   Text(
                       // text to display the schedule of the suggestion like "From 09/10/2024 at
                       // 12:00
                       // to 11/10/2024 at 14:00"
                       text =
-                          suggestion.stop.date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) +
-                              " at ${suggestion.stop.startTime} " +
-                              "to ${suggestion.stop.startTime.plusMinutes(suggestion.stop.duration.toLong())}",
+                          "From ${suggestionStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}" +
+                              " to ${suggestionEndTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}",
                       style = MaterialTheme.typography.bodyMedium,
                       modifier = Modifier.testTag("ScheduleText"))
                 }
@@ -190,30 +197,36 @@ fun SuggestionDetail(
                       "Comments",
                       style = MaterialTheme.typography.titleMedium,
                       modifier = Modifier.testTag("CommentsHeader"))
+
                   Spacer(modifier = Modifier.weight(1f))
-                  // Adding the heart icon for likes
-                  IconButton(
-                      onClick = { viewModel.toggleLikeSuggestion(suggestion) },
-                      modifier = Modifier.testTag("LikeButton")) {
-                        Icon(
-                            imageVector =
-                                if (isLiked) Icons.Filled.Favorite
-                                else Icons.Outlined.FavoriteBorder,
-                            contentDescription = "Like",
-                            tint = if (isLiked) Color.Red else Color.Gray,
-                        )
-                      }
+
+                  // Adding the Up icon for likes/votes
+                  Icon(
+                      painter =
+                          if (isLiked) painterResource(R.drawable.up_filled)
+                          else painterResource(R.drawable.up_outlined),
+                      contentDescription = "Up",
+                      tint = if (isLiked) Color.Red else MaterialTheme.colorScheme.scrim,
+                      modifier =
+                          Modifier.size(25.dp)
+                              .padding(bottom = 1.dp, end = 4.dp)
+                              .clickable { viewModel.toggleLikeSuggestion(suggestion) }
+                              .testTag("upIcon"))
                   Text(
                       text = "$likesCount",
                       style = MaterialTheme.typography.bodyMedium,
                       modifier = Modifier.testTag("LikesCount"))
+
                   // Add a comment icon
-                  IconButton(onClick = {}, modifier = Modifier.testTag("CommentButton")) {
-                    Icon(
-                        imageVector = Icons.Outlined.Email,
-                        contentDescription = "Comment",
-                    )
-                  }
+                  Icon(
+                      painter = painterResource(R.drawable.comment),
+                      contentDescription = "Comment",
+                      tint = MaterialTheme.colorScheme.scrim,
+                      modifier =
+                          Modifier.size(33.dp)
+                              .padding(start = 6.dp, end = 8.dp)
+                              .testTag("CommentButton"))
+
                   // Add a text that shows the number of comments
                   Text(
                       text = suggestion.comments.size.toString(),

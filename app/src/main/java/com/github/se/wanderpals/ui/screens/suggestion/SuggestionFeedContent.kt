@@ -83,24 +83,10 @@ fun SuggestionFeedContent(
       }
 
   Column(modifier = Modifier.fillMaxWidth().padding(innerPadding)) {
-
-    // Title for the list of suggestions
-    Text(
-        text = "Suggestions",
-        modifier = Modifier.padding(start = 27.dp, top = 15.dp),
-        style =
-            TextStyle(
-                fontSize = 20.sp,
-                lineHeight = 24.sp,
-                fontWeight = FontWeight(500),
-                color = MaterialTheme.colorScheme.primary,
-                letterSpacing = 0.2.sp),
-        textAlign = TextAlign.Center)
-
     // Add the filter options UI
     Text(
         text = "Sort by:",
-        modifier = Modifier.padding(start = 27.dp, top = 8.dp, end = 16.dp),
+        modifier = Modifier.padding(start = 27.dp, top = 24.dp, end = 16.dp),
         style =
             TextStyle(
                 fontSize = 16.sp,

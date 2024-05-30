@@ -45,7 +45,7 @@ import com.github.se.wanderpals.ui.screens.Admin
 import com.github.se.wanderpals.ui.screens.CreateTrip
 import com.github.se.wanderpals.ui.screens.SignIn
 import com.github.se.wanderpals.ui.screens.overview.Overview
-import com.github.se.wanderpals.ui.screens.suggestion.CreateSuggestion
+import com.github.se.wanderpals.ui.screens.suggestion.CreateOrEditSuggestion
 import com.github.se.wanderpals.ui.screens.trip.Trip
 import com.github.se.wanderpals.ui.theme.WanderPalsTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -359,7 +359,7 @@ class MainActivity : ComponentActivity() {
                               CreateSuggestionViewModel.CreateSuggestionViewModelFactory(
                                   viewModel.getTripsRepository()),
                           key = "CreateSuggestion")
-                  CreateSuggestion(
+                  CreateOrEditSuggestion(
                       tripId = navigationActions.variables.currentTrip,
                       viewModel = createSuggestionViewModel,
                       suggestion = suggestion,

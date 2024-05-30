@@ -1,6 +1,5 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
+import com.github.se.wanderpals.navigationActions
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
@@ -61,24 +61,8 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
   Scaffold(
       topBar = {
         // Title for the list of suggestions
-        Box(
-            modifier =
-                Modifier.fillMaxWidth()
-                    .height(80.dp) // Adjust the height as needed
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(vertical = 16.dp)) {
-              Text(
-                  text = "Suggestion History",
-                  modifier = Modifier.align(Alignment.CenterStart).padding(start = 27.dp),
-                  style =
-                      TextStyle(
-                          fontSize = 20.sp,
-                          lineHeight = 24.sp,
-                          fontWeight = FontWeight(500),
-                          color = MaterialTheme.colorScheme.onPrimary,
-                          letterSpacing = 0.2.sp),
-                  textAlign = TextAlign.Center)
-            }
+        GoBackSuggestionTopBar(
+            title = "Suggestion History", onBack = { navigationActions.goBack() })
       }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues).fillMaxWidth()) {
           // Trigger data fetch when selectedDate changes

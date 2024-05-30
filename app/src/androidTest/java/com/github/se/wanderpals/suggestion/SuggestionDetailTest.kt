@@ -161,7 +161,7 @@ class SuggestionDetailTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.onNodeWithTag("LikeButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("upIcon").assertIsDisplayed()
     composeTestRule.onNodeWithTag("CommentButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("BackButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("LocationIcon").assertIsDisplayed()
@@ -219,7 +219,7 @@ class SuggestionDetailTest {
 
   // Test that likes are incremented when the like button is clicked
   @Test
-  fun testLikeButtonIncrementsLikes() {
+  fun testUpButtonIncrementsLikes() {
     composeTestRule.setContent {
       SuggestionDetail(
           suggestionId = mockSuggestion.suggestionId,
@@ -229,7 +229,7 @@ class SuggestionDetailTest {
 
     composeTestRule.waitForIdle()
 
-    composeTestRule.onNodeWithTag("LikeButton").performClick()
+    composeTestRule.onNodeWithTag("upIcon").performClick()
 
     composeTestRule.onNodeWithTag("LikesCount").assertTextEquals("2")
   }
