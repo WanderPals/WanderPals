@@ -64,6 +64,7 @@ fun Suggestion(
   val isLoading by suggestionsViewModel.isLoading.collectAsState()
 
   Scaffold(
+      modifier = Modifier.testTag("suggestionFeedScreen"),
       topBar = {
         Column {
           SuggestionTopBar(onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
