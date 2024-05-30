@@ -2,7 +2,6 @@ package com.github.se.wanderpals.ui.screens.suggestion
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -49,9 +48,7 @@ fun SuggestionSearchBar(
   Box(modifier = Modifier.fillMaxWidth()) {
     // DockedSearchBar component
     DockedSearchBar(
-        modifier =
-            Modifier.align(Alignment.Center)
-                .testTag("suggestionSearchBar"),
+        modifier = Modifier.align(Alignment.Center).testTag("suggestionSearchBar"),
         query = searchSuggestionText,
         onQueryChange = { newText -> onSearchSuggestionTextChanged(newText) },
         onSearch = {},

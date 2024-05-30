@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -30,7 +31,6 @@ import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionSearchBar
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
-import androidx.compose.material3.Icon
 
 /**
  * The Suggestion screen.
@@ -65,42 +65,34 @@ fun Suggestion(
 
   Scaffold(
       topBar = {
-          Column{
-          SuggestionTopBar (onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) }
-          )
-          Spacer(modifier = Modifier.padding(top=4.dp))
+        Column {
+          SuggestionTopBar(onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
+          Spacer(modifier = Modifier.padding(top = 4.dp))
           // Top bar with search functionality based on the title of the trips
           SuggestionSearchBar(
-            searchSuggestionText = searchSuggestionText,
-            onSearchSuggestionTextChanged = { newSearchSuggestionText ->
-              searchSuggestionText = newSearchSuggestionText
-            })
-      }},
-
+              searchSuggestionText = searchSuggestionText,
+              onSearchSuggestionTextChanged = { newSearchSuggestionText ->
+                searchSuggestionText = newSearchSuggestionText
+              })
+        }
+      },
       floatingActionButton = {
-          FloatingActionButton(
-              onClick = { onSuggestionClick() },
-              containerColor = MaterialTheme.colorScheme.primary,
-              shape = RoundedCornerShape(50.dp),
-              modifier = Modifier.testTag("suggestionButtonExists")
-          ) {
+        FloatingActionButton(
+            onClick = { onSuggestionClick() },
+            containerColor = MaterialTheme.colorScheme.primary,
+            shape = RoundedCornerShape(50.dp),
+            modifier = Modifier.testTag("suggestionButtonExists")) {
               Icon(
                   imageVector = Icons.Default.Add,
                   contentDescription = "Add Suggestion",
                   modifier = Modifier.size(35.dp),
-                  tint = MaterialTheme.colorScheme.onPrimary
-              )
-          }
-      }
-  )
-  { innerPadding ->
+                  tint = MaterialTheme.colorScheme.onPrimary)
+            }
+      }) { innerPadding ->
         if (isLoading) {
           Box(modifier = Modifier.fillMaxSize()) {
             CircularProgressIndicator(
-                modifier = Modifier
-                    .size(50.dp)
-                    .align(Alignment.Center)
-                    .testTag("loading"))
+                modifier = Modifier.size(50.dp).align(Alignment.Center).testTag("loading"))
           }
         } else {
           SuggestionFeedContent(

@@ -299,7 +299,6 @@ class SuggestionFeedTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withCom
             mockNavActions.setVariablesTrip("dummyTestTripId")
             mockNavActions.navigateTo(Route.CREATE_SUGGESTION)
           })
-
     }
 
     // Now check if the button with the testTag "suggestionButtonExists" is displayed

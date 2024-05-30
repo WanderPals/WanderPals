@@ -3,7 +3,6 @@ package com.github.se.wanderpals.ui.screens.suggestion
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.outlined.MoreVert
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -74,7 +72,7 @@ fun SuggestionItem(
   val startTime = viewModel.getStartTime(suggestion.suggestionId)
   Log.d("SuggestionItem", "isVoteClicked for suggestion ${suggestion.suggestionId}: $isVoteClicked")
 
-    // set the colors of the card
+  // set the colors of the card
   val cardColors =
       CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
@@ -108,18 +106,20 @@ fun SuggestionItem(
     }
   }
 
-    ElevatedCard(
+  ElevatedCard(
       modifier =
           modifier
-              .padding(start = 27.dp, end = 27.dp, top = 12.dp, bottom = 12.dp) // the padding between the screen and the suggestionItem
+              .padding(
+                  start = 27.dp,
+                  end = 27.dp,
+                  top = 12.dp,
+                  bottom = 12.dp) // the padding between the screen and the suggestionItem
               .fillMaxWidth()
               .height(166.dp),
-                  colors = cardColors,
-        shape = RoundedCornerShape(6.dp),
-        elevation = CardDefaults.cardElevation(10.dp),
-        onClick = onClick
-    )
-    {
+      colors = cardColors,
+      shape = RoundedCornerShape(6.dp),
+      elevation = CardDefaults.cardElevation(10.dp),
+      onClick = onClick) {
         Column(
             modifier =
                 Modifier.padding(16.dp)
@@ -259,10 +259,11 @@ fun SuggestionItem(
                       }
 
                       // Remaining time (i.e. countdown)
-                        if (isVoteClicked) { // the remaining time is only displayed if the vote icon is clicked //todo: create test for this
-                            Text(
-                                text = remainingTime.value,
-                                style =
+                      if (isVoteClicked) { // the remaining time is only displayed if the vote icon
+                                           // is clicked //todo: create test for this
+                        Text(
+                            text = remainingTime.value,
+                            style =
                                 TextStyle(
                                     fontSize = 14.sp,
                                     lineHeight = 20.sp,
@@ -270,11 +271,10 @@ fun SuggestionItem(
                                     color = MaterialTheme.colorScheme.primary,
                                     letterSpacing = 0.14.sp,
                                 ),
-                                modifier = Modifier.testTag("countdownRemainingTime"))
+                            modifier = Modifier.testTag("countdownRemainingTime"))
 
-                            Spacer(Modifier.width(8.dp)) // Space between text and icon
-
-                        }
+                        Spacer(Modifier.width(8.dp)) // Space between text and icon
+                      }
                       Icon(
                           painter =
                               if (isLiked) painterResource(R.drawable.up_filled)

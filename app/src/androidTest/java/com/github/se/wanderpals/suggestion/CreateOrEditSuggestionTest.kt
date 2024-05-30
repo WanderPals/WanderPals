@@ -1058,7 +1058,9 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
                     description = "Long description here to ensure scrollable content.",
                     geoCords = GeoCords(0.0, 0.0)))
 
-    composeTestRule.setContent { CreateOrEditSuggestion("tripId", viewModel, suggestion = suggestion) }
+    composeTestRule.setContent {
+      CreateOrEditSuggestion("tripId", viewModel, suggestion = suggestion)
+    }
 
     // Use swipeUp and swipeDown to simulate user scroll actions
     val scrollableNode = composeTestRule.onNodeWithText("Sample Title")
