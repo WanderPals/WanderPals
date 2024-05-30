@@ -14,6 +14,12 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel responsible for managing documents for a specific trip.
+ *
+ * @param tripsRepository The repository used to access trip data.
+ * @param tripId The ID of the trip for which documents are managed.
+ */
 open class DocumentPSViewModel(val tripsRepository: TripsRepository, val tripId: String) :
     ViewModel() {
   open var documentslistURL = MutableStateFlow(emptyList<Documents>())

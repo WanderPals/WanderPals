@@ -22,4 +22,10 @@ class DocumentsPSScreen(semanticsProvider: SemanticsNodeInteractionsProvider) :
   val acceptButton = onNode { hasTestTag("acceptButton") }
   val cancelButton = onNode { hasTestTag("cancelButton") }
   val documentBox = onNode { hasTestTag("documentBox") }
+  val shimmerdocument0 = onNode { hasTestTag("shimmerdocument0") }
+  val shimmerdocument1 = onNode { hasTestTag("shimmerdocument1") }
+  val shimmerdocument2 = onNode { hasTestTag("shimmerdocument2") }
+  val shimmerBox = onNode { hasTestTag("shimmerBox") }
+  val sharedDocumentslist = onNode { hasTestTag("sharedDocuments") }
+  val privateDocumentslist = onNode { hasTestTag("privateDocuments") }
 }
