@@ -38,7 +38,7 @@ import com.github.se.wanderpals.service.MapManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.navigation.TRIP_BOTTOM_BAR
-import com.github.se.wanderpals.ui.screens.DocumentsPS
+import com.github.se.wanderpals.ui.screens.docs.DocumentsPS
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionDetail
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionHistoryFeedContent
 import com.github.se.wanderpals.ui.screens.trip.agenda.Agenda

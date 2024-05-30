@@ -165,16 +165,12 @@ dependencies {
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.logging)
     implementation(libs.ktor.client.content.negotiation)
-    //implementation (libs.ktor.gson)
     implementation(libs.retrofit)
     implementation(libs.okhttp)
     implementation(libs.converter.moshi)
     implementation(libs.okio)
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:4.10.0")
-
-
-
+    implementation (libs.converter.gson)
+    implementation (libs.logging.interceptor)
 
     // ------------- Jetpack Compose ------------------
     implementation(composeBom)
@@ -224,11 +220,10 @@ dependencies {
     // Google Places
     implementation(libs.places)
 
+    implementation(libs.okhttp)
 
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-
-    debugImplementation("androidx.compose.ui:ui-tooling:1.6.7")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.7")
+    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.ui.tooling.preview)
 
     debugImplementation(libs.compose.tooling)
     // UI Tests
@@ -262,6 +257,8 @@ dependencies {
     androidTestImplementation(libs.mockk)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.mockk.agent)
+
+    testImplementation(libs.robolectric.v412)
 
 
 }
