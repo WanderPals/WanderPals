@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -304,13 +303,15 @@ fun SuggestionItem(
                                   8.dp)) // 8.dp is the space between the text and the next icon
 
                       Icon(
-                          imageVector = Icons.Default.MailOutline,
-                          contentDescription = null,
+                          painter = painterResource(R.drawable.comment),
+                          contentDescription = "Comment",
                           tint = MaterialTheme.colorScheme.tertiary,
                           modifier =
-                              Modifier.size(18.dp)
+                              Modifier.size(20.dp)
                                   .padding(
-                                      end = 4.dp) // 4.dp is the space between the icon and the text
+                                      bottom = 2.dp,
+                                      end =
+                                          4.dp) // 4.dp is the space between the texts and the icon
                           )
 
                       Text(

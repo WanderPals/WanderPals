@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.Create
-import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -104,7 +103,8 @@ fun SuggestionDetail(
                 Spacer(modifier = Modifier.height(8.dp))
                 // Display which user the suggestion was created by and at which time
                 Text(
-                    text = "Suggested by ${suggestion.userName} on ${suggestion.createdAt}",
+                    text =
+                        "Suggested by ${suggestion.userName} on ${suggestion.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.testTag("CreatedByText"))
@@ -208,21 +208,25 @@ fun SuggestionDetail(
                       contentDescription = "Up",
                       tint = if (isLiked) Color.Red else MaterialTheme.colorScheme.scrim,
                       modifier =
-                          Modifier.size(29.dp)
-                              .padding(bottom = 1.dp, end = 8.dp)
+                          Modifier.size(25.dp)
+                              .padding(bottom = 1.dp, end = 4.dp)
                               .clickable { viewModel.toggleLikeSuggestion(suggestion) }
                               .testTag("upIcon"))
                   Text(
                       text = "$likesCount",
                       style = MaterialTheme.typography.bodyMedium,
                       modifier = Modifier.testTag("LikesCount"))
+
                   // Add a comment icon
-                  IconButton(onClick = {}, modifier = Modifier.testTag("CommentButton")) {
-                    Icon(
-                        imageVector = Icons.Outlined.Email,
-                        contentDescription = "Comment",
-                    )
-                  }
+                  Icon(
+                      painter = painterResource(R.drawable.comment),
+                      contentDescription = "Comment",
+                      tint = MaterialTheme.colorScheme.scrim,
+                      modifier =
+                          Modifier.size(33.dp)
+                              .padding(start = 6.dp, end = 8.dp)
+                              .testTag("CommentButton"))
+
                   // Add a text that shows the number of comments
                   Text(
                       text = suggestion.comments.size.toString(),
