@@ -258,21 +258,23 @@ fun SuggestionItem(
                                     .testTag("voteIcon"))
                       }
 
-                      // Remaining time
-                      Text(
-                          text = remainingTime.value,
-                          style =
-                              TextStyle(
-                                  fontSize = 14.sp,
-                                  lineHeight = 20.sp,
-                                  fontWeight = FontWeight(500),
-                                  color = MaterialTheme.colorScheme.primary,
-                                  letterSpacing = 0.14.sp,
-                              ),
-                          modifier = Modifier.testTag("countdownRemainingTime"))
+                      // Remaining time (i.e. countdown)
+                        if (isVoteClicked) { // the remaining time is only displayed if the vote icon is clicked
+                            Text(
+                                text = remainingTime.value,
+                                style =
+                                TextStyle(
+                                    fontSize = 14.sp,
+                                    lineHeight = 20.sp,
+                                    fontWeight = FontWeight(500),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    letterSpacing = 0.14.sp,
+                                ),
+                                modifier = Modifier.testTag("countdownRemainingTime"))
 
-                      Spacer(Modifier.width(8.dp)) // Space between text and icon
+                            Spacer(Modifier.width(8.dp)) // Space between text and icon
 
+                        }
                       Icon(
                           painter =
                               if (isLiked) painterResource(R.drawable.up_filled)
