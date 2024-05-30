@@ -1,6 +1,7 @@
 package com.github.se.wanderpals.ui.screens.dashboard
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import com.github.se.wanderpals.model.data.Expense
 import com.github.se.wanderpals.model.viewmodel.DashboardViewModel
 import com.github.se.wanderpals.ui.screens.trip.finance.FinancePieChart
 import java.util.Locale
+import kotlin.math.ceil
 
 /**
  * Composable function for displaying the finance widget in the Dashboard screen. The finance widget
@@ -106,7 +108,7 @@ fun DashboardFinanceWidget(viewModel: DashboardViewModel, onClick: () -> Unit = 
 
                       Text(
                           text =
-                              "Total: ${String.format(Locale.US,"%.02f", expenses.sumOf { it.amount })} " +
+                              "Total: ${formatExpense(expenses.sumOf { it.amount })} " +
                                   currencyCode,
                           modifier =
                               Modifier.testTag("totalAmount")
@@ -203,7 +205,7 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
         }
 
         Text(
-            text = "${String.format(Locale.US,"%.02f", expense.amount)} $currencyCode",
+            text = "${formatExpense(expense.amount)} $currencyCode",
             style =
                 TextStyle(
                     fontWeight = FontWeight.Bold,
@@ -211,4 +213,41 @@ fun ExpenseItem(expense: Expense, currencyCode: String) {
                     fontSize = 15.sp),
             modifier = Modifier.padding(8.dp).testTag("expenseAmount" + expense.expenseId))
       }
+}
+
+/**
+ * Function to format the total expense amount to a more readable format. The function takes the
+ * total expense amount as a Double and returns a formatted String. The function formats the amount
+ * to a maximum of 2 decimal places and adds a suffix of M, B, or T based on the number of digits in
+ * the amount.
+ *
+ * @param totalexpense The total expense amount as a Double.
+ */
+@SuppressLint("SuspiciousIndentation")
+private fun formatExpense(totalexpense: Double): String {
+  var formattedString = String.format(Locale.US, "%.02f", totalexpense).reversed()
+
+  val numString = formattedString.substring(3)
+  val numberOfDigits = ceil(numString.length.toDouble() / 3.0).toInt()
+  if (numberOfDigits > 2) {
+    val formattedReversedString = numString.chunked(3).joinToString(".")
+
+    // take only the digits after the last point and the two digits before the point
+    val expenseToString = formattedReversedString.substringAfterLast(".").substringBeforeLast(".")
+
+    formattedString =
+        when (numberOfDigits) {
+          3 -> (expenseToString.reversed() + "M")
+          4 -> (expenseToString.reversed() + "B")
+          5 -> (expenseToString.reversed() + "T")
+          else -> {
+            "Error"
+          }
+        }
+  } else {
+    formattedString = formattedString.reversed()
+    Log.d("formattedString", formattedString)
+  }
+
+  return formattedString
 }

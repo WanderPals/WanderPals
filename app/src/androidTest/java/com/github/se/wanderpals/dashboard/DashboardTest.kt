@@ -241,6 +241,54 @@ private val expense3 =
         names = listOf("Alice", "Bob", "Charlie"),
         localDate = LocalDate.of(2024, 4, 30))
 
+private val expense4 =
+    Expense(
+        expenseId = "4",
+        title = "Lunch",
+        amount = 1000000.0,
+        category = Category.FOOD,
+        userId = "4",
+        userName = "David",
+        participantsIds = listOf("user001", "user002", "user003"),
+        names = listOf("Alice", "Bob", "Charlie"),
+        localDate = LocalDate.of(2024, 4, 30))
+
+private val expense5 =
+    Expense(
+        expenseId = "5",
+        title = "Dinner",
+        amount = 100000000000.0,
+        category = Category.FOOD,
+        userId = "5",
+        userName = "Eve",
+        participantsIds = listOf("user001", "user002", "user003"),
+        names = listOf("Alice", "Bob", "Charlie"),
+        localDate = LocalDate.of(2024, 4, 30))
+
+private val expense6 =
+    Expense(
+        expenseId = "6",
+        title = "Dinner",
+        amount = 200000000000000.0,
+        category = Category.FOOD,
+        userId = "6",
+        userName = "Frank",
+        participantsIds = listOf("user001", "user002", "user003"),
+        names = listOf("Alice", "Bob", "Charlie"),
+        localDate = LocalDate.of(2024, 4, 30))
+
+private val expense7 =
+    Expense(
+        expenseId = "7",
+        title = "Dinner",
+        amount = 2000000000000000.0,
+        category = Category.FOOD,
+        userId = "7",
+        userName = "George",
+        participantsIds = listOf("user001", "user002", "user003"),
+        names = listOf("Alice", "Bob", "Charlie"),
+        localDate = LocalDate.of(2024, 4, 30))
+
 class DashboardViewModelTest(list: List<Suggestion>) :
     DashboardViewModel(tripId = "", tripsRepository = TripsRepository("", Dispatchers.IO)) {
   private val _isLoading = MutableStateFlow(false)
@@ -611,6 +659,96 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
         .onNodeWithTag("expenseUser3", useUnmergedTree = true)
         .assertIsDisplayed()
         .assertTextContains("Paid by Charlie")
+  }
+
+  @Test
+  fun financeWidgetDisplayAmount1() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setExpenses(listOf(expense4))
+
+    composeTestRule.onNodeWithTag("totalAmount", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertTextContains("Total: 1M CHF")
+  }
+
+  @Test
+  fun financeWidgetDisplayAmount2() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setExpenses(listOf(expense5))
+
+    composeTestRule.onNodeWithTag("totalAmount", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertTextContains("Total: 100B CHF")
+  }
+
+  @Test
+  fun financeWidgetDisplayAmount3() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setExpenses(listOf(expense6))
+
+    composeTestRule.onNodeWithTag("totalAmount", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertTextContains("Total: 200T CHF")
+  }
+
+  @Test
+  fun financeWidgetDisplayAmount4() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setExpenses(listOf(expense7))
+
+    composeTestRule.onNodeWithTag("totalAmount", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertTextContains("Total: Error CHF")
+  }
+
+  @Test
+  fun financeWidgetSumOfExpenses() = run {
+    val viewModel = DashboardViewModelTest(listOf(suggestion1))
+    viewModel.setLoading(false)
+    composeTestRule.setContent {
+      Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
+    }
+
+    viewModel.setExpenses(listOf(expense5, expense6))
+
+    composeTestRule.onNodeWithTag("totalAmount", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule
+        .onNodeWithTag("totalAmount", useUnmergedTree = true)
+        .assertTextContains("Total: 200T CHF")
+
+    composeTestRule
+        .onNodeWithTag("expenseAmount5", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("100B CHF")
+
+    composeTestRule
+        .onNodeWithTag("expenseAmount6", useUnmergedTree = true)
+        .assertIsDisplayed()
+        .assertTextContains("200T CHF")
   }
 
   @Test
