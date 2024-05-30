@@ -7,12 +7,11 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -28,9 +27,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.github.se.wanderpals.model.data.Stop
@@ -39,8 +36,6 @@ import com.github.se.wanderpals.model.viewmodel.CreateSuggestionViewModel
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.screens.DateInteractionSource
 import com.github.se.wanderpals.ui.screens.MyDatePickerDialog
-import com.github.se.wanderpals.ui.theme.onPrimaryContainerLight
-import com.github.se.wanderpals.ui.theme.primaryContainerLight
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -59,7 +54,7 @@ import java.time.format.DateTimeFormatter
  * @param onCancel code to execute if the user cancels the creation of the suggestion (can be empty)
  */
 @Composable
-fun CreateSuggestion(
+fun CreateOrEditSuggestion(
     tripId: String,
     viewModel: CreateSuggestionViewModel,
     suggestion: Suggestion = Suggestion(),
@@ -129,7 +124,7 @@ fun CreateSuggestion(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                Spacer(Modifier.height(24.dp))
+//                Spacer(Modifier.height(24.dp))
                 OutlinedTextField(
                     value = suggestionText,
                     onValueChange = { suggestionText = it },
@@ -142,7 +137,7 @@ fun CreateSuggestion(
                     singleLine = true
                 )
 
-                Spacer(Modifier.height(24.dp))
+//                Spacer(Modifier.height(24.dp))
 
                 OutlinedTextField(
                     value = description,
@@ -159,7 +154,7 @@ fun CreateSuggestion(
                     placeholder = { Text("Describe the suggestion") }
                 )
 
-                Spacer(Modifier.height(24.dp))
+//                Spacer(Modifier.height(24.dp))
 
                 OutlinedTextField(
                     value = _budget,
@@ -175,7 +170,7 @@ fun CreateSuggestion(
                     placeholder = { Text("Budget") }
                 )
 
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(8.dp))
 
                 Row(modifier = Modifier
                     .fillMaxWidth()
@@ -208,7 +203,7 @@ fun CreateSuggestion(
                     )
                 }
 
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(8.dp))
 
                 Row(modifier = Modifier
                     .fillMaxWidth()
@@ -270,7 +265,7 @@ fun CreateSuggestion(
                         onTimeSelected = { endTime = it }, onDismiss = { showTimePickerEnd = false })
                 }
 
-                Spacer(Modifier.height(24.dp))
+//                Spacer(Modifier.height(8.dp))
 
                 if (suggestion.stop.address.isNotEmpty()) {
                     Row(modifier = Modifier
@@ -291,7 +286,7 @@ fun CreateSuggestion(
                         )
                     }
 
-                    Spacer(Modifier.height(24.dp))
+//                    Spacer(Modifier.height(8.dp))
                 }
 
                 OutlinedTextField(
@@ -307,91 +302,94 @@ fun CreateSuggestion(
                     placeholder = { Text("Website") }
                 )
 
-                Spacer(modifier = Modifier.height(124.dp))
+                Spacer(modifier = Modifier.height(248.dp))
 
-                Button(
-                    enabled = SessionManager.getIsNetworkAvailable(),
-                    modifier = Modifier
-                        .padding(0.5.dp)
-                        .width(260.dp)
-                        .height(60.dp)
-                        .testTag("createSuggestionButton"),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-                    shape = RoundedCornerShape(20.dp),
-                    onClick = {
-                        titleErr = suggestionText.trim().isEmpty()
-                        budgetErr = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
-                        descErr = description.trim().isEmpty()
-                        startDErr = !isStringInFormat(startDate, dateRegexPattern)
-                        startTErr = !isStringInFormat(startTime, timeRegexPattern)
-                        endDErr = !isStringInFormat(endDate, dateRegexPattern)
-                        endTErr = !isStringInFormat(endTime, timeRegexPattern)
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
+                    ExtendedFloatingActionButton(
+                        onClick = {
+                            titleErr = suggestionText.trim().isEmpty()
+                            budgetErr = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
+                            descErr = description.trim().isEmpty()
+                            startDErr = !isStringInFormat(startDate, dateRegexPattern)
+                            startTErr = !isStringInFormat(startTime, timeRegexPattern)
+                            endDErr = !isStringInFormat(endDate, dateRegexPattern)
+                            endTErr = !isStringInFormat(endTime, timeRegexPattern)
 
-                        if (!(titleErr ||
-                                    budgetErr ||
-                                    descErr ||
-                                    startDErr ||
-                                    startTErr ||
-                                    endTErr ||
-                                    endDErr)) {
+                            if (!(titleErr ||
+                                        budgetErr ||
+                                        descErr ||
+                                        startDErr ||
+                                        startTErr ||
+                                        endTErr ||
+                                        endDErr)) {
 
-                            val startDateObj = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
-                            val startTimeObj = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME)
+                                val startDateObj = LocalDate.parse(startDate, DateTimeFormatter.ISO_LOCAL_DATE)
+                                val startTimeObj = LocalTime.parse(startTime, DateTimeFormatter.ISO_LOCAL_TIME)
 
-                            val endDateObj = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE)
-                            val endTimeObj = LocalTime.parse(endTime, DateTimeFormatter.ISO_LOCAL_TIME)
+                                val endDateObj = LocalDate.parse(endDate, DateTimeFormatter.ISO_LOCAL_DATE)
+                                val endTimeObj = LocalTime.parse(endTime, DateTimeFormatter.ISO_LOCAL_TIME)
 
-                            val startDateTime = LocalDateTime.of(startDateObj, startTimeObj)
-                            val endDateTime = LocalDateTime.of(endDateObj, endTimeObj)
+                                val startDateTime = LocalDateTime.of(startDateObj, startTimeObj)
+                                val endDateTime = LocalDateTime.of(endDateObj, endTimeObj)
 
-                            val duration = Duration.between(startDateTime, endDateTime)
-                            val newSuggestion =
-                                Suggestion(
-                                    suggestionId = "",
-                                    userId = "",
-                                    userName = SessionManager.getCurrentUser()!!.name,
-                                    text = "",
-                                    createdAt = LocalDate.now(),
-                                    createdAtTime = LocalTime.now(),
-                                    stop =
-                                    Stop(
-                                        stopId = suggestion.stop.stopId,
-                                        title = suggestionText,
-                                        address = address,
-                                        date = startDateObj,
-                                        startTime = startTimeObj,
-                                        duration = duration.toMinutes().toInt(),
-                                        budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
-                                        description = description,
-                                        geoCords = suggestion.stop.geoCords,
-                                        website = _website,
-                                        imageUrl = ""))
-                            if (suggestion.suggestionId.isNotEmpty()) {
-                                if (viewModel.updateSuggestion(
-                                        tripId,
-                                        suggestion.copy(
-                                            stop = newSuggestion.stop.copy(stopId = suggestion.stop.stopId)))) {
-                                    onSuccess()
+                                val duration = Duration.between(startDateTime, endDateTime)
+                                val newSuggestion =
+                                    Suggestion(
+                                        suggestionId = "",
+                                        userId = "",
+                                        userName = SessionManager.getCurrentUser()!!.name,
+                                        text = "",
+                                        createdAt = LocalDate.now(),
+                                        createdAtTime = LocalTime.now(),
+                                        stop =
+                                        Stop(
+                                            stopId = suggestion.stop.stopId,
+                                            title = suggestionText,
+                                            address = address,
+                                            date = startDateObj,
+                                            startTime = startTimeObj,
+                                            duration = duration.toMinutes().toInt(),
+                                            budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
+                                            description = description,
+                                            geoCords = suggestion.stop.geoCords,
+                                            website = _website,
+                                            imageUrl = ""))
+                                if (suggestion.suggestionId.isNotEmpty()) {
+                                    if (viewModel.updateSuggestion(
+                                            tripId,
+                                            suggestion.copy(
+                                                stop = newSuggestion.stop.copy(stopId = suggestion.stop.stopId)))) {
+                                        onSuccess()
+                                    } else {
+                                        onFailure()
+                                    }
                                 } else {
-                                    onFailure()
-                                }
-                            } else {
-                                if (viewModel.addSuggestion(tripId, newSuggestion)) {
-                                    onSuccess()
-                                } else {
-                                    onFailure()
+                                    if (viewModel.addSuggestion(tripId, newSuggestion)) {
+                                        onSuccess()
+                                    } else {
+                                        onFailure()
+                                    }
                                 }
                             }
-                        }
-                    }) {
-                    Text(
-                        text =
-                        if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
-                        else "Edit Suggestion",
-                        style =
-                        TextStyle(
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
-                        ))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .padding(10.dp)
+                            .testTag("createSuggestionButton"),
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        elevation = FloatingActionButtonDefaults.elevation(2.dp, 1.dp) // to have the shadow effect
+                    ) {
+                        Text(
+                            text =
+                            if (suggestion.suggestionId.isEmpty()) "Create Suggestion"
+                            else "Edit Suggestion",
+                            style =
+                            TextStyle(
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@ import com.github.se.wanderpals.screens.CreateSuggestionScreen
 import com.github.se.wanderpals.service.SessionManager
 import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
-import com.github.se.wanderpals.ui.screens.suggestion.CreateSuggestion
+import com.github.se.wanderpals.ui.screens.suggestion.CreateOrEditSuggestion
 import com.kaspersky.components.composesupport.config.withComposeSupport
 import com.kaspersky.kaspresso.kaspresso.Kaspresso
 import com.kaspersky.kaspresso.testcases.api.testcase.TestCase
@@ -103,7 +103,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -126,7 +126,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -231,7 +231,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -314,7 +314,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -414,7 +414,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -514,7 +514,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -614,7 +614,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -714,7 +714,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -814,7 +814,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -914,7 +914,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion(
+        CreateOrEditSuggestion(
             "aaa",
             vm,
             onSuccess = { mockNavActions.navigateTo(Route.SUGGESTION) },
@@ -930,7 +930,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion("aaa", vm, Suggestion(stop = Stop(address = "Example address")))
+        CreateOrEditSuggestion("aaa", vm, Suggestion(stop = Stop(address = "Example address")))
       }
 
       inputAddress {
@@ -945,7 +945,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
   fun createSuggestionWithSuggestion() = run {
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
-      composeTestRule.setContent { CreateSuggestion("aaa", vm, suggestion = testSuggestion) }
+      composeTestRule.setContent { CreateOrEditSuggestion("aaa", vm, suggestion = testSuggestion) }
 
       inputTitle {
         assertIsDisplayed()
@@ -1004,7 +1004,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
     ComposeScreen.onComposeScreen<CreateSuggestionScreen>(composeTestRule) {
       val vm = CreateSuggestionViewModelTest(TripsRepository("testUser123", Dispatchers.IO))
       composeTestRule.setContent {
-        CreateSuggestion("aaa", vm, suggestion = Suggestion(suggestionId = "test"))
+        CreateOrEditSuggestion("aaa", vm, suggestion = Suggestion(suggestionId = "test"))
       }
 
       createButton {
@@ -1058,7 +1058,7 @@ class CreateSuggestionTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withC
                     description = "Long description here to ensure scrollable content.",
                     geoCords = GeoCords(0.0, 0.0)))
 
-    composeTestRule.setContent { CreateSuggestion("tripId", viewModel, suggestion = suggestion) }
+    composeTestRule.setContent { CreateOrEditSuggestion("tripId", viewModel, suggestion = suggestion) }
 
     // Use swipeUp and swipeDown to simulate user scroll actions
     val scrollableNode = composeTestRule.onNodeWithText("Sample Title")
