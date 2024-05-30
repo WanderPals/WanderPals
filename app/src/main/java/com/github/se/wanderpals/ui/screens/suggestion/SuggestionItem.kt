@@ -260,7 +260,7 @@ fun SuggestionItem(
 
                       // Remaining time (i.e. countdown)
                       if (isVoteClicked) { // the remaining time is only displayed if the vote icon
-                                           // is clicked //todo: create test for this
+                        // is clicked //todo: create test for this
                         Text(
                             text = remainingTime.value,
                             style =
