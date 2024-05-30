@@ -173,15 +173,19 @@ fun SuggestionDetail(
                       contentDescription = "Schedule",
                       tint = MaterialTheme.colorScheme.onSurface,
                       modifier = Modifier.testTag("ScheduleIcon").size(24.dp))
+
                   Spacer(modifier = Modifier.width(4.dp))
-                    val suggestionStartTime =
-                        LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
-                    val suggestionEndTime = suggestionStartTime.plusMinutes(suggestion.stop.duration.toLong())
-                    Text(
+
+                  val suggestionStartTime =
+                      LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+                  val suggestionEndTime =
+                      suggestionStartTime.plusMinutes(suggestion.stop.duration.toLong())
+                  Text(
                       // text to display the schedule of the suggestion like "From 09/10/2024 at
                       // 12:00
                       // to 11/10/2024 at 14:00"
-                      text = "From ${suggestionStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}" +
+                      text =
+                          "From ${suggestionStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}" +
                               " to ${suggestionEndTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}",
                       style = MaterialTheme.typography.bodyMedium,
                       modifier = Modifier.testTag("ScheduleText"))
