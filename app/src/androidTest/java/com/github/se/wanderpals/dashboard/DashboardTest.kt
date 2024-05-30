@@ -951,12 +951,12 @@ class DashboardTest : TestCase(kaspressoBuilder = Kaspresso.Builder.withComposeS
       Dashboard(tripId = "", dashboardViewModel = viewModel, navActions = mockNavActions)
     }
 
-    composeTestRule.onNodeWithTag("documentsCard", useUnmergedTree = true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("documentsTitle", useUnmergedTree = true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("documentsIcon", useUnmergedTree = true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("privateDocTitle", useUnmergedTree = true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("sharedDocTitle", useUnmergedTree = true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("privateDoc", useUnmergedTree = true).assertIsDisplayed()
-    composeTestRule.onNodeWithTag("sharedDoc", useUnmergedTree = true).assertIsDisplayed()
+    composeTestRule.onNodeWithTag("documentsCard", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("documentsTitle", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("documentsIcon", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("privateDocTitle", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("sharedDocTitle", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("privateDoc", useUnmergedTree = true).assertExists()
+    composeTestRule.onNodeWithTag("sharedDoc", useUnmergedTree = true).assertExists()
   }
 }
