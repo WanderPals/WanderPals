@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -73,6 +74,7 @@ fun SuggestionItem(
   val startTime = viewModel.getStartTime(suggestion.suggestionId)
   Log.d("SuggestionItem", "isVoteClicked for suggestion ${suggestion.suggestionId}: $isVoteClicked")
 
+    // set the colors of the card
   val cardColors =
       CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
@@ -106,18 +108,18 @@ fun SuggestionItem(
     }
   }
 
-  Card(
+    ElevatedCard(
       modifier =
           modifier
-              .padding(start = 27.dp, end = 27.dp, top = 16.dp, bottom = 16.dp)
+              .padding(start = 27.dp, end = 27.dp, top = 12.dp, bottom = 12.dp) // the padding between the screen and the suggestionItem
               .fillMaxWidth()
-              .height(166.dp)
-              .border(
-                  width = 1.dp,
-                  color = MaterialTheme.colorScheme.surfaceVariant,
-                  shape = RoundedCornerShape(10.dp))
-              .clickable(onClick = onClick),
-      colors = cardColors) {
+              .height(166.dp),
+                  colors = cardColors,
+        shape = RoundedCornerShape(6.dp),
+        elevation = CardDefaults.cardElevation(10.dp),
+        onClick = onClick
+    )
+    {
         Column(
             modifier =
                 Modifier.padding(16.dp)

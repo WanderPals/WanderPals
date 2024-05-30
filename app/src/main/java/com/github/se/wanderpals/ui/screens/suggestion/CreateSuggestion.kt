@@ -120,6 +120,7 @@ fun CreateOrEditSuggestion(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
+                    .padding(vertical = 12.dp)  // Global horizontal padding
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
@@ -137,7 +138,8 @@ fun CreateOrEditSuggestion(
                     singleLine = true
                 )
 
-                Spacer(Modifier.height(4.dp))
+//                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(12.dp))
 
                 OutlinedTextField(
                     value = description,
@@ -154,7 +156,8 @@ fun CreateOrEditSuggestion(
                     placeholder = { Text("Describe the suggestion") }
                 )
 
-                Spacer(Modifier.height(4.dp))
+//                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(12.dp))
 
                 OutlinedTextField(
                     value = _budget,
@@ -170,7 +173,8 @@ fun CreateOrEditSuggestion(
                     placeholder = { Text("Budget") }
                 )
 
-                Spacer(Modifier.height(8.dp))
+//                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
 
                 Row(modifier = Modifier
                     .fillMaxWidth()
@@ -203,7 +207,8 @@ fun CreateOrEditSuggestion(
                     )
                 }
 
-                Spacer(Modifier.height(8.dp))
+//                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
 
                 Row(modifier = Modifier
                     .fillMaxWidth()
@@ -266,7 +271,8 @@ fun CreateOrEditSuggestion(
                 }
 
                 if (suggestion.stop.address.isNotEmpty()) {
-                    Spacer(Modifier.height(4.dp))
+//                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(12.dp))
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 28.dp)) {
@@ -287,7 +293,9 @@ fun CreateOrEditSuggestion(
 
                 }
 
-                Spacer(Modifier.height(4.dp))
+//                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(12.dp))
+
                 OutlinedTextField(
                     value = _website,
                     onValueChange = { _website = it },
@@ -301,7 +309,8 @@ fun CreateOrEditSuggestion(
                     placeholder = { Text("Website") }
                 )
 
-                Spacer(modifier = Modifier.height(224.dp))
+//                Spacer(modifier = Modifier.height(224.dp))
+                Spacer(modifier = Modifier.height(172.dp))
 
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                     ExtendedFloatingActionButton(
