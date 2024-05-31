@@ -440,7 +440,7 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                             onClick = {
                               Log.d("name", documentName)
                               error = checkInfoForAcceptance(documentName, selectedImagesLocal)
-                              if (error.isBlank() && !isUploaded && !isUploading) {
+                              if (error.isBlank() && isUploaded && !isUploading) {
                                 viewModel.addDocument(
                                     documentName,
                                     selectedImagesLocal!!,
@@ -449,6 +449,9 @@ fun DocumentsPS(viewModel: DocumentPSViewModel, storageReference: StorageReferen
                                     storageReference,
                                     state)
                                 selectedImagesLocal = Uri.EMPTY
+                                launch = false
+                                documentName = ""
+                                isUploaded = false
                                 displayedTheBoxSelector = false
                               }
                             },
