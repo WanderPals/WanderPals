@@ -82,35 +82,17 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
 
           // If suggestion list is empty, display a message
           if (addedSuggestions.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize()) {
-              Text(
-                  modifier =
-                      Modifier.width(260.dp)
-                          .height(55.dp)
-                          .align(Alignment.Center)
-                          .testTag("noSuggestionsHistoryToDisplay"),
-                  text =
-                      when (SessionManager.getIsNetworkAvailable()) {
-                        true -> "No stops in the history yet."
-                        false -> "No internet connection"
-                      },
-                  style =
-                      TextStyle(
-                          lineHeight = 20.sp,
-                          letterSpacing = 0.5.sp,
-                          fontSize = 18.sp,
-                          fontWeight = FontWeight(500),
-                          textAlign = TextAlign.Center,
-                          color = MaterialTheme.colorScheme.scrim),
+              EmptyStateMessage(
+                  message =
+                  when (SessionManager.getIsNetworkAvailable()) {
+                      true -> "No stops in the history yet."
+                      false -> "No internet connection"
+                  },
+                  onRefresh = { suggestionsViewModel.loadSuggestion(tripId) },
+                  testTag = "noSuggestionsHistoryToDisplay",
+                    contentDescription = "Refresh suggestion History",
+                  color = MaterialTheme.colorScheme.scrim
               )
-              IconButton(
-                  enabled = SessionManager.getIsNetworkAvailable(),
-                  onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-                  modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
-                  content = {
-                    Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestion History")
-                  })
-            }
           } else {
             // this lazy column has all the suggestions that are added to stops
             val lazyColumn =
@@ -118,7 +100,6 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
                   LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
                     itemsIndexed(addedSuggestions) { index, suggestion ->
                       if (suggestion.stop.stopStatus == CalendarUiState.StopStatus.CURRENT) {
-
                         SuggestionHistoryItem(
                             suggestion = suggestion,
                             modifier = Modifier.testTag("suggestionHistory${index + 1}"),
