@@ -150,7 +150,9 @@ fun SuggestionList(
               navigationActions.setVariablesSuggestion(suggestion)
               navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
             },
-            viewModel = suggestionsViewModel)
+            viewModel = suggestionsViewModel,
+            modifier = Modifier.testTag("suggestion$index")
+        )
       }
     }
   }
