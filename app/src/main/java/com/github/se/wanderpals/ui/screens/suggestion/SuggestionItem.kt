@@ -79,7 +79,9 @@ fun SuggestionItem(
   //    val remainingTime = remember { mutableStateOf("23:59:59") }
   val remainingTime = remember { mutableStateOf(initialRemainingTimeFlow.value) }
 
-  LaunchedEffect(key1 = isVoteClicked) { // Start the countdown only if the vote icon is clicked
+    val isUpVotable = remember { mutableStateOf(true) }
+
+    LaunchedEffect(key1 = isVoteClicked) { // Start the countdown only if the vote icon is clicked
     if (isVoteClicked &&
         startTime != null) { // Start the countdown only if the vote icon is clicked
       val endTime = startTime.plusHours(24)
@@ -91,7 +93,8 @@ fun SuggestionItem(
         duration = java.time.Duration.between(now, endTime)
         if (duration.isNegative) {
           remainingTime.value = "00:00:00"
-          break
+            isUpVotable.value = false // Set up votable to false when the countdown reaches zero
+            break
         }
         val hours = duration.toHours().toString().padStart(2, '0')
         val minutes = (duration.toMinutes() % 60).toString().padStart(2, '0')
@@ -279,11 +282,13 @@ fun SuggestionItem(
                               if (isLiked) painterResource(R.drawable.up_filled)
                               else painterResource(R.drawable.up_outlined),
                           contentDescription = "Up",
-                          tint = if (isLiked) Color.Red else MaterialTheme.colorScheme.tertiary,
+                          tint = (if (isLiked) Color.Red else MaterialTheme.colorScheme.tertiary).copy(
+                              alpha = if (isUpVotable.value) 1f else 0.5f), // Make semi-transparent if not votable
                           modifier =
                               Modifier.size(20.dp)
                                   .padding(bottom = 4.dp, end = 4.dp)
-                                  .clickable { viewModel.toggleLikeSuggestion(suggestion) }
+                                  .clickable(enabled = isUpVotable.value) { // Only clickable if votable
+                                      viewModel.toggleLikeSuggestion(suggestion) }
                                   .testTag("upIcon"))
 
                       Text(
