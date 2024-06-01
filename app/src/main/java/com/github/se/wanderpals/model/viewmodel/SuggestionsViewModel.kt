@@ -240,13 +240,11 @@ open class SuggestionsViewModel(
       if (!getVoteIconClicked(currentSuggestion.suggestionId)) {
         // Store the start time when the vote icon is clicked
         val startTime = LocalDateTime.now()
-//        _voteStartTimeMap[currentSuggestion.suggestionId] = startTime
 
         // Add the suggestion ID to the list of clicked vote icons
         _voteIconClicked.value += currentSuggestion.suggestionId
 
         // Prepare the updated suggestion for backend update
-//        val updatedSuggestion = currentSuggestion.copy(voteIconClicked = true)
         val updatedSuggestion = currentSuggestion.copy(voteIconClicked = true, voteStartTime = startTime)
 
         val wasUpdateSuccessful =
@@ -268,7 +266,6 @@ open class SuggestionsViewModel(
   open fun getStartTime(suggestionId: String): LocalDateTime? {
     val suggestion = _state.value.find { it.suggestionId == suggestionId }
     return suggestion?.voteStartTime
-  //    return _voteStartTimeMap[suggestionId]
   }
 
   /**
