@@ -111,7 +111,8 @@ fun SuggestionItem(
                   top = 12.dp,
                   bottom = 12.dp) // the padding between the screen and the suggestionItem
               .fillMaxWidth()
-              .height(166.dp),
+              .height(166.dp)
+              .testTag("suggestion" + suggestion.suggestionId),
       colors = cardColors,
       shape = RoundedCornerShape(6.dp),
       elevation = CardDefaults.cardElevation(10.dp),

@@ -49,7 +49,6 @@ fun SuggestionBottomSheet(
   val bottomSheetVisible by viewModel.bottomSheetVisible.collectAsState()
   val selectedSuggestion by viewModel.selectedSuggestion.collectAsState()
   val showDeleteDialog by viewModel.showDeleteDialog.collectAsState()
-
   val modalBottomSheetState = rememberModalBottomSheetState()
 
   if (selectedSuggestion != null && bottomSheetVisible) {
@@ -58,106 +57,34 @@ fun SuggestionBottomSheet(
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
         modifier = Modifier.testTag("suggestionBottomSheet")) {
-          // Add a list of options to be displayed in the bottom sheet
-          Column(modifier = Modifier.navigationBarsPadding()) {
-            // Only displays the option if the user is Admin or it is his comment
-            if (SessionManager.canRemove(selectedSuggestion!!.userId)) {
-              Column {
-                // Display the delete suggestion option
-                Box(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable(onClick = { viewModel.showDeleteDialog() })
-                            .padding(16.dp)
-                            .testTag("deleteSuggestionOption"),
-                    contentAlignment = Alignment.CenterStart) {
-                      Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = "Delete",
-                            modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                        Text("Delete suggestion", style = MaterialTheme.typography.bodyLarge)
-                      }
-                    }
 
-                Box(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable(
-                                onClick = {
-                                  onEdit(selectedSuggestion!!)
-                                  viewModel.hideBottomSheet()
-                                })
-                            .padding(16.dp)
-                            .testTag("editSuggestionOption"),
-                    contentAlignment = Alignment.CenterStart) {
-                      Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.Create,
-                            contentDescription = "Edit",
-                            modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                        Text("Edit suggestion", style = MaterialTheme.typography.bodyLarge)
-                      }
-                    }
-
-                // Display the transform suggestion option
-                Box(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable(
-                                enabled = SessionManager.getIsNetworkAvailable(),
-                                onClick = { viewModel.transformToStop(selectedSuggestion!!) })
-                            .padding(16.dp)
-                            .testTag("transformSuggestionOption"),
-                    contentAlignment = Alignment.CenterStart) {
-                      Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.Add,
-                            contentDescription = "TransformToStop",
-                            modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                        Text(
-                            "Transform suggestion to a stop",
-                            style = MaterialTheme.typography.bodyLarge)
-                      }
-                    }
-              }
-            }
-          }
+        BottomSheetOptions(
+            canRemove = SessionManager.canRemove(selectedSuggestion!!.userId),
+            onDelete = { viewModel.showDeleteDialog() },
+            onEdit = {
+                onEdit(selectedSuggestion!!)
+                viewModel.hideBottomSheet()
+            },
+            onTransform = { viewModel.transformToStop(selectedSuggestion!!) },
+            deleteTestTag = "deleteSuggestionOption",
+            editTestTag = "editSuggestionOption",
+            transformTestTag = "transformSuggestionOption"
+        )
         }
   }
   if (showDeleteDialog) {
-    AlertDialog(
-        onDismissRequest = { viewModel.hideDeleteDialog() },
-        title = { Text("Confirm Deletion") },
-        text = {
-          Text(
-              when (SessionManager.getIsNetworkAvailable()) {
-                true -> "Are you sure you want to delete this suggestion?"
-                false -> "You are offline. You can't delete this suggestion."
-              })
-        },
-        confirmButton = {
-          TextButton(
-              onClick = {
-                when (SessionManager.getIsNetworkAvailable()) {
-                  true -> viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
-                  false -> viewModel.hideDeleteDialog()
-                }
-              },
-              modifier = Modifier.testTag("confirmDeleteSuggestionButton")) {
-                Text("Confirm", color = MaterialTheme.colorScheme.error)
+      ConfirmDeleteDialog(
+          onDismissRequest = { viewModel.hideDeleteDialog() },
+          onConfirm = {
+              if (SessionManager.getIsNetworkAvailable()) {
+                  viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
+              } else {
+                  viewModel.hideDeleteDialog()
               }
-        },
-        dismissButton = {
-          TextButton(
-              onClick = { viewModel.hideDeleteDialog() },
-              modifier = Modifier.testTag("cancelDeleteSuggestionButton")) {
-                Text("Cancel")
-              }
-        },
-        modifier = Modifier.testTag("deleteCommentDialog"))
+          },
+          confirmTestTag = "confirmDeleteSuggestionButton",
+          cancelTestTag = "cancelDeleteSuggestionButton",
+            dialogTestTag = "deleteSuggestionDialog"
+      )
   }
 }

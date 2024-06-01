@@ -60,130 +60,73 @@ fun CommentBottomSheet(
         dragHandle = { BottomSheetDefaults.DragHandle() },
         modifier = Modifier.testTag("commentBottomSheet")
     ) {
-        CommentOptions(viewModel, selectedComment!!.userId, selectedComment!!.text, onEdit)
+        BottomSheetOptions(
+            canRemove = SessionManager.canRemove(selectedComment!!.userId),
+            onDelete = { viewModel.showDeleteDialog() },
+            onEdit = {
+                viewModel.editCommentOption()
+                onEdit(selectedComment!!.text)
+            },
+            onTransform = {},
+            deleteTestTag = "deleteCommentOption",
+            editTestTag = "editCommentOption",
+            transformTestTag = "" // Not used in this context
+        )
+//        CommentOptions(viewModel, selectedComment!!.userId, selectedComment!!.text, onEdit)
     }
   }
   if (showDeleteDialog) {
-    ConfirmDeleteDialog(viewModel, suggestion)
+      ConfirmDeleteDialog(
+          onDismissRequest = { viewModel.hideDeleteDialog() },
+          onConfirm = {
+              if (SessionManager.getIsNetworkAvailable()) {
+                  viewModel.confirmDeleteComment(suggestion)
+              } else {
+                  viewModel.hideDeleteDialog()
+              }
+          },
+          confirmTestTag = "confirmDeleteCommentButton",
+          cancelTestTag = "cancelDeleteCommentButton",
+            dialogTestTag = "deleteCommentDialog"
+      )
   }
 }
 
-/**
- * Composable function to display the options for a comment.
- *
- * @param viewModel The view model to handle the interactions with the suggestions.
- * @param commentUserId The user id of the comment.
- * @param commentText The text of the comment.
- * @param onEdit The callback function for editing a comment.
- */
-@Composable
-fun CommentOptions(
-    viewModel: SuggestionsViewModel,
-    commentUserId: String,
-    commentText: String,
-    onEdit: (String) -> Unit
-) {
-    Column(modifier = Modifier.navigationBarsPadding()) {
-        if (SessionManager.canRemove(commentUserId)) {
-            CommentOption(
-                icon = Icons.Outlined.Delete,
-                text = "Delete comment",
-                enabled = true,
-                onClick = { viewModel.showDeleteDialog() },
-                testTag = "deleteCommentOption"
-            )
-            CommentOption(
-                icon = Icons.Outlined.Create,
-                text = "Edit comment",
-                enabled = SessionManager.getIsNetworkAvailable(),
-                onClick = {
-                    viewModel.editCommentOption()
-                    onEdit(commentText)
-                },
-                testTag = "editCommentOption"
-            )
-        }
-    }
-}
+///**
+// * Composable function to display the options for a comment.
+// *
+// * @param viewModel The view model to handle the interactions with the suggestions.
+// * @param commentUserId The user id of the comment.
+// * @param commentText The text of the comment.
+// * @param onEdit The callback function for editing a comment.
+// */
+//@Composable
+//fun CommentOptions(
+//    viewModel: SuggestionsViewModel,
+//    commentUserId: String,
+//    commentText: String,
+//    onEdit: (String) -> Unit
+//) {
+//    Column(modifier = Modifier.navigationBarsPadding()) {
+//        if (SessionManager.canRemove(commentUserId)) {
+//            CommentOption(
+//                icon = Icons.Outlined.Delete,
+//                text = "Delete comment",
+//                enabled = true,
+//                onClick = { viewModel.showDeleteDialog() },
+//                testTag = "deleteCommentOption"
+//            )
+//            CommentOption(
+//                icon = Icons.Outlined.Create,
+//                text = "Edit comment",
+//                enabled = SessionManager.getIsNetworkAvailable(),
+//                onClick = {
+//                    viewModel.editCommentOption()
+//                    onEdit(commentText)
+//                },
+//                testTag = "editCommentOption"
+//            )
+//        }
+//    }
+//}
 
-/**
- * Composable function to display an option for a comment.
- *
- * @param icon The icon for the option.
- * @param text The text for the option.
- * @param enabled Whether the option is enabled.
- * @param onClick The callback function for the option.
- * @param testTag The test tag for the option.
- */
-@Composable
-fun CommentOption(
-    icon: ImageVector,
-    text: String,
-    enabled: Boolean,
-    onClick: () -> Unit,
-    testTag: String
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(16.dp)
-            .testTag(testTag),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp)) // space between icon and text
-            Text(text, style = MaterialTheme.typography.bodyLarge)
-        }
-    }
-}
-
-/**
- * Composable function to display a dialog to confirm the deletion of a comment.
- *
- * @param viewModel The view model to handle the interactions with the suggestions.
- * @param suggestion The suggestion to which the comment belongs.
- */
-@Composable
-fun ConfirmDeleteDialog(
-    viewModel: SuggestionsViewModel,
-    suggestion: Suggestion
-) {
-    AlertDialog(
-        onDismissRequest = { viewModel.hideDeleteDialog() },
-        title = { Text("Confirm Deletion") },
-        text = {
-            Text(
-                when (SessionManager.getIsNetworkAvailable()) {
-                    true -> "Are you sure you want to delete this comment?"
-                    false -> "You are offline. You can't delete this comment."
-                })
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    when (SessionManager.getIsNetworkAvailable()) {
-                        true -> viewModel.confirmDeleteComment(suggestion)
-                        false -> viewModel.hideDeleteDialog()
-                    }
-                },
-                modifier = Modifier.testTag("confirmDeleteCommentButton")
-            ) {
-                Text("Confirm", color = MaterialTheme.colorScheme.error)
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = { viewModel.hideDeleteDialog() },
-                modifier = Modifier.testTag("cancelDeleteCommentButton")) {
-                Text("Cancel")
-            }
-        },
-        modifier = Modifier.testTag("deleteCommentDialog")
-    )
-}
