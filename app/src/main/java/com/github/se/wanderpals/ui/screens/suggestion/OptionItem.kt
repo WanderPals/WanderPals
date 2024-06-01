@@ -35,22 +35,17 @@ fun OptionItem(
     onClick: () -> Unit,
     testTag: String
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(16.dp)
-            .testTag(testTag),
-        contentAlignment = Alignment.CenterStart
-    ) {
+  Box(
+      modifier =
+          Modifier.fillMaxWidth()
+              .clickable(enabled = enabled, onClick = onClick)
+              .padding(16.dp)
+              .testTag(testTag),
+      contentAlignment = Alignment.CenterStart) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = icon,
-                contentDescription = text,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp)) // space between icon and text
-            Text(text, style = MaterialTheme.typography.bodyLarge)
+          Icon(imageVector = icon, contentDescription = text, modifier = Modifier.size(24.dp))
+          Spacer(modifier = Modifier.width(16.dp)) // space between icon and text
+          Text(text, style = MaterialTheme.typography.bodyLarge)
         }
-    }
+      }
 }

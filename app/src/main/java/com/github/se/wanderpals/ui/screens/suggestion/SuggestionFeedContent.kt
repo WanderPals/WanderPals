@@ -93,28 +93,27 @@ fun SuggestionFeedContent(
         suggestionList.none {
           it.stop.stopStatus == CalendarUiState.StopStatus.NONE
         }) { // if there are no suggestions or if all suggestions are added to stops
-        EmptyStateMessage(
-            message = if (SessionManager.getIsNetworkAvailable()) {
+      EmptyStateMessage(
+          message =
+              if (SessionManager.getIsNetworkAvailable()) {
                 "Looks like there is no suggestions yet."
-            } else {
+              } else {
                 "Looks like you are offline. Check your connection."
-            },
-            onRefresh = { suggestionsViewModel.loadSuggestion(tripId) },
-            testTag = "noSuggestionsForUserText",
-            contentDescription = "Refresh suggestions",
-            color = MaterialTheme.colorScheme.onSurface
-        )
+              },
+          onRefresh = { suggestionsViewModel.loadSuggestion(tripId) },
+          testTag = "noSuggestionsForUserText",
+          contentDescription = "Refresh suggestions",
+          color = MaterialTheme.colorScheme.onSurface)
     } else {
       // LazyColumn to display the list of suggestions with sorting and search filtering
       // (Note: can only have one LazyColumn in a composable function)
       PullToRefreshLazyColumn(
           inputLazyColumn = {
-              SuggestionList(
-                  suggestions = displayList,
-                  suggestionsViewModel = suggestionsViewModel,
-                  navigationActions = navigationActions,
-                  testTag = "suggestionFeedContentList"
-              )
+            SuggestionList(
+                suggestions = displayList,
+                suggestionsViewModel = suggestionsViewModel,
+                navigationActions = navigationActions,
+                testTag = "suggestionFeedContentList")
           },
           onRefresh = { suggestionsViewModel.loadSuggestion(tripId) })
     }
@@ -136,25 +135,23 @@ fun SuggestionList(
     modifier: Modifier = Modifier,
     testTag: String
 ) {
-    LazyColumn(modifier = modifier.testTag(testTag)) {
-        itemsIndexed(suggestions) { index, suggestion ->
-            val addedToStops =
-                suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
-            val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-            if (!isSuggestionAddedToStop &&
-                suggestion.stop.stopStatus ==
-                CalendarUiState.StopStatus
-                    .NONE) { // if the suggestion is not added to a stop (stopStatus is
-                // NONE)
-                SuggestionItem(
-                    suggestion = suggestion,
-                    onClick = {
-                        navigationActions.setVariablesSuggestion(suggestion)
-                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
-                    },
-                    viewModel = suggestionsViewModel
-                )
-            }
-        }
+  LazyColumn(modifier = modifier.testTag(testTag)) {
+    itemsIndexed(suggestions) { index, suggestion ->
+      val addedToStops = suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
+      val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
+      if (!isSuggestionAddedToStop &&
+          suggestion.stop.stopStatus ==
+              CalendarUiState.StopStatus
+                  .NONE) { // if the suggestion is not added to a stop (stopStatus is
+        // NONE)
+        SuggestionItem(
+            suggestion = suggestion,
+            onClick = {
+              navigationActions.setVariablesSuggestion(suggestion)
+              navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
+            },
+            viewModel = suggestionsViewModel)
+      }
     }
+  }
 }

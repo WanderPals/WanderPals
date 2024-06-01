@@ -67,7 +67,8 @@ fun Suggestion(
       modifier = Modifier.testTag("suggestionFeedScreen"),
       topBar = {
         Column {
-          SuggestionTopBarWithHistory(onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
+          SuggestionTopBarWithHistory(
+              onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
           Spacer(modifier = Modifier.padding(top = 4.dp))
           // Top bar with search functionality based on the title of the trips
           SuggestionSearchBar(

@@ -1,11 +1,10 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,29 +21,22 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.Role
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import kotlinx.coroutines.delay
 
 /**
@@ -75,24 +67,26 @@ fun SuggestionItem(
   val initialRemainingTimeFlow = viewModel.getRemainingTimeFlow(suggestion.suggestionId)
   val remainingTime = remember { mutableStateOf(initialRemainingTimeFlow.value) }
 
-    // Set up the "Up" button votable value to true by default
-    val isUpVotable = remember { mutableStateOf(true) }
+  // Set up the "Up" button votable value to true by default
+  val isUpVotable = remember { mutableStateOf(true) }
 
-    // set the colors of the card
-    val cardColors =
-        CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+  // set the colors of the card
+  val cardColors =
+      CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
-    LaunchedEffect(key1 = isVoteClicked) { // Start the countdown only if the vote icon is clicked
+  LaunchedEffect(key1 = isVoteClicked) { // Start the countdown only if the vote icon is clicked
     if (isVoteClicked &&
-        startTime != null) { // Start the countdown only if the vote icon is clicked and the start time is not null
+        startTime !=
+            null) { // Start the countdown only if the vote icon is clicked and the start time is
+      // not null
       val endTime = startTime.plusHours(24)
       do {
         val now = LocalDateTime.now()
         val duration = java.time.Duration.between(now, endTime)
         if (duration.isNegative) {
           remainingTime.value = "00:00:00"
-            isUpVotable.value = false // Set up votable to false when the countdown reaches zero
-            break
+          isUpVotable.value = false // Set up votable to false when the countdown reaches zero
+          break
         }
         remainingTime.value = duration.toFormattedString()
         delay(1000)
@@ -125,25 +119,25 @@ fun SuggestionItem(
                         rememberScrollState())) { // Add vertical scrolling for testing purposes on
               // small phones
 
-                // Header
-                SuggestionHeader(suggestion)
-                Spacer(modifier = Modifier.height(8.dp))
+              // Header
+              SuggestionHeader(suggestion)
+              Spacer(modifier = Modifier.height(8.dp))
 
               // Description
-                SuggestionDescription(suggestion)
+              SuggestionDescription(suggestion)
 
               Spacer(modifier = Modifier.height(12.dp))
 
-            //Footer
-            SuggestionFooter(
-                suggestion = suggestion,
-                isLiked = isLiked,
-                likesCount = likesCount,
-                isVoteClicked = isVoteClicked,
-                remainingTime = remainingTime,
-                isUpVotable = isUpVotable,
-                userRole = userRole,
-                viewModel = viewModel)
+              // Footer
+              SuggestionFooter(
+                  suggestion = suggestion,
+                  isLiked = isLiked,
+                  likesCount = likesCount,
+                  isVoteClicked = isVoteClicked,
+                  remainingTime = remainingTime,
+                  isUpVotable = isUpVotable,
+                  userRole = userRole,
+                  viewModel = viewModel)
             }
       }
 }
@@ -171,144 +165,86 @@ fun SuggestionFooter(
     userRole: Role,
     viewModel: SuggestionsViewModel
 ) {
-    // User and Icons
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(
-            text = "Suggested by ${suggestion.userName}",
-            style =
-            TextStyle(
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-                fontWeight = FontWeight(500),
-                color = MaterialTheme.colorScheme.tertiary,
-                letterSpacing = 0.14.sp,
-            ))
+  // User and Icons
+  Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+    ItemText(text = "Suggested by ${suggestion.userName}")
 
-        Spacer(Modifier.weight(1f)) // push the icons to the right
+    Spacer(Modifier.weight(1f)) // push the icons to the right
 
-        Row {
-            if (userRole == Role.OWNER || userRole == Role.ADMIN) {
-                Icon(
-                    painter = painterResource(R.drawable.vote),
-                    contentDescription = "Vote",
-                    tint =
-                    MaterialTheme.colorScheme.tertiary.copy(
-                        alpha =
+    Row {
+      if (userRole == Role.OWNER || userRole == Role.ADMIN) {
+        VoteOrCommentIcon(
+            painterResource = R.drawable.vote,
+            contentDescription = "Vote",
+            tintColor =
+                MaterialTheme.colorScheme.tertiary.copy(
+                    alpha =
                         if (!isVoteClicked) 1f
-                        else
-                            0.5f), // if the icon is not clicked, make it opaque; if
-                    // the
-                    // icon is clicked, make it semi-transparent
-                    modifier =
-                    Modifier.size(20.dp)
-                        .padding(
-                            bottom = 4.dp,
-                            end = 4.dp // end=4.dp is the space between the icon and
-                            // the text
-                        )
-                        .clickable(
-                            enabled =
-                            !isVoteClicked) { // disable the click if the icon is
-                            // already clicked
-                            viewModel.toggleVoteIconClicked(suggestion)
-                        }
-                        .testTag("voteIcon"))
-            }
+                        else 0.5f), // if the icon is not clicked, make it opaque; if
+            // the
+            // icon is clicked, make it semi-transparent
+            isEnabled = !isVoteClicked,
+            onClick = { // disable the click if the icon is already clicked
+              viewModel.toggleVoteIconClicked(suggestion)
+            },
+            testTag = "voteIcon")
+      }
 
-            // Remaining time (i.e. countdown)
-            if (isVoteClicked) { // the remaining time is only displayed if the vote icon
-                // is clicked //todo: create test for this
-                Text(
-                    text = remainingTime.value,
-                    style =
-                    TextStyle(
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp,
-                        fontWeight = FontWeight(500),
-                        color = MaterialTheme.colorScheme.primary,
-                        letterSpacing = 0.14.sp,
-                    ),
-                    modifier = Modifier.testTag("countdownRemainingTime"))
+      // Remaining time (i.e. countdown)
+      if (isVoteClicked) { // the remaining time is only displayed if the vote icon
+        // is clicked //todo: create test for this
 
-                Spacer(Modifier.width(8.dp)) // Space between text and icon
-            }
-            Icon(
-                painter =
-                if (isLiked) painterResource(R.drawable.up_filled)
-                else painterResource(R.drawable.up_outlined),
-                contentDescription = "Up",
-                tint = (if (isLiked) Color.Red else MaterialTheme.colorScheme.tertiary).copy(
-                    alpha = if (isUpVotable.value) 1f else 0.5f), // Make semi-transparent if not votable
-                modifier =
-                Modifier.size(20.dp)
-                    .padding(bottom = 4.dp, end = 4.dp)
-                    .clickable(enabled = isUpVotable.value) { // Only clickable if votable
-                        viewModel.toggleLikeSuggestion(suggestion) }
-                    .testTag("upIcon"))
+        ItemText(text = remainingTime.value, "countdownRemainingTime")
 
-            Text(
-                text = likesCount,
-                style =
-                TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 20.sp,
-                    fontWeight = FontWeight(500),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    letterSpacing = 0.14.sp,
-                ))
+        Spacer(Modifier.width(8.dp)) // Space between text and icon
+      }
+      Icon(
+          painter =
+              if (isLiked) painterResource(R.drawable.up_filled)
+              else painterResource(R.drawable.up_outlined),
+          contentDescription = "Up",
+          tint =
+              (if (isLiked) Color.Red else MaterialTheme.colorScheme.tertiary).copy(
+                  alpha =
+                      if (isUpVotable.value) 1f else 0.5f), // Make semi-transparent if not votable
+          modifier =
+              Modifier.size(20.dp)
+                  .padding(bottom = 4.dp, end = 4.dp)
+                  .clickable(enabled = isUpVotable.value) { // Only clickable if votable
+                    viewModel.toggleLikeSuggestion(suggestion)
+                  }
+                  .testTag("upIcon"))
 
-            Spacer(
-                modifier =
-                Modifier.width(
-                    8.dp)) // 8.dp is the space between the text and the next icon
+      ItemText(text = likesCount)
 
-            Icon(
-                painter = painterResource(R.drawable.comment),
-                contentDescription = "Comment",
-                tint = MaterialTheme.colorScheme.tertiary,
-                modifier =
-                Modifier.size(20.dp)
-                    .padding(
-                        bottom = 2.dp,
-                        end =
-                        4.dp) // 4.dp is the space between the texts and the icon
-            )
+      Spacer(
+          modifier = Modifier.width(8.dp)) // 8.dp is the space between the text and the next icon
 
-            Text(
-                text = "${suggestion.comments.size}",
-                style =
-                TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 20.sp,
-                    fontWeight = FontWeight(500),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    letterSpacing = 0.14.sp,
-                ))
+      VoteOrCommentIcon(
+          painterResource = R.drawable.comment,
+          contentDescription = "Comment",
+          paddingValues = PaddingValues(bottom = 2.dp, end = 4.dp),
+      )
 
-            Spacer(
-                modifier =
-                Modifier.width(
-                    8.dp)) // 8.dp is the space between the text and the next icon
+      ItemText(text = "${suggestion.comments.size}")
 
-            Icon(
-                imageVector = Icons.Outlined.MoreVert,
-                contentDescription = "Options",
-                tint = MaterialTheme.colorScheme.tertiary,
-                modifier =
-                Modifier.size(
-                    18.dp) // Make sure to set the size as you did with other
-                    // icons
-                    .clickable { viewModel.showSuggestionBottomSheet(suggestion) }
-                    .testTag("suggestionOptionIcon" + suggestion.suggestionId)
-                    .graphicsLayer {
-                        rotationZ = 90f // Rotate by 90 degrees
-                    }
-            )
-        }
+      Spacer(
+          modifier = Modifier.width(8.dp)) // 8.dp is the space between the text and the next icon
+
+      Icon(
+          imageVector = Icons.Outlined.MoreVert,
+          contentDescription = "Options",
+          tint = MaterialTheme.colorScheme.tertiary,
+          modifier =
+              Modifier.size(18.dp) // Make sure to set the size as you did with other
+                  // icons
+                  .clickable { viewModel.showSuggestionBottomSheet(suggestion) }
+                  .testTag("suggestionOptionIcon" + suggestion.suggestionId)
+                  .graphicsLayer {
+                    rotationZ = 90f // Rotate by 90 degrees
+                  })
     }
-
+  }
 }
 
 /**
@@ -317,8 +253,8 @@ fun SuggestionFooter(
  * @return The formatted string.
  */
 fun java.time.Duration.toFormattedString(): String {
-    val hours = this.toHours().toString().padStart(2, '0')
-    val minutes = (this.toMinutes() % 60).toString().padStart(2, '0')
-    val seconds = (this.seconds % 60).toString().padStart(2, '0')
-    return "$hours:$minutes:$seconds"
+  val hours = this.toHours().toString().padStart(2, '0')
+  val minutes = (this.toMinutes() % 60).toString().padStart(2, '0')
+  val seconds = (this.seconds % 60).toString().padStart(2, '0')
+  return "$hours:$minutes:$seconds"
 }

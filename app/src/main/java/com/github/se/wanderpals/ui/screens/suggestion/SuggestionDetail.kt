@@ -47,10 +47,7 @@ import java.time.format.DateTimeFormatter
  * @param navActions The navigation actions to navigate back.
  */
 @Composable
-fun SuggestionDetail(
-    viewModel: SuggestionsViewModel,
-    navActions: NavigationActions
-) {
+fun SuggestionDetail(viewModel: SuggestionsViewModel, navActions: NavigationActions) {
 
   val suggestionFromViewModel by viewModel.selectedSuggestion.collectAsState()
   val suggestion = suggestionFromViewModel
@@ -71,14 +68,13 @@ fun SuggestionDetail(
 
     Scaffold(
         topBar = {
-            GoBackSuggestionTopBar(title = suggestion.stop.title, onBack = { navActions.goBack() })
+          GoBackSuggestionTopBar(title = suggestion.stop.title, onBack = { navActions.goBack() })
         }) { paddingValues ->
           Column(
               modifier =
-              Modifier
-                  .padding(paddingValues)
-                  .padding(horizontal = 12.dp)
-                  .verticalScroll(rememberScrollState()),
+                  Modifier.padding(paddingValues)
+                      .padding(horizontal = 12.dp)
+                      .verticalScroll(rememberScrollState()),
               verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 // Display which user the suggestion was created by and at which time
                 Text(
@@ -98,40 +94,44 @@ fun SuggestionDetail(
                     modifier = Modifier.testTag("DescriptionText"))
 
                 // Additional details like address and website
-              // Add a pin icon before the address
-              DetailRow(
-                  icon = Icons.Filled.LocationOn,
-                  contentDescription = "Location",
-                  text = "Address: ${suggestion.stop.address.ifBlank { "No address provided" }}",
-                  color = if (suggestion.stop.address.isNotBlank()) MaterialTheme.colorScheme.onSurface else Color.Gray,
-                  testTag = "AddressText"
-              )
+                // Add a pin icon before the address
+                DetailRow(
+                    icon = Icons.Filled.LocationOn,
+                    contentDescription = "Location",
+                    text = "Address: ${suggestion.stop.address.ifBlank { "No address provided" }}",
+                    color =
+                        if (suggestion.stop.address.isNotBlank())
+                            MaterialTheme.colorScheme.onSurface
+                        else Color.Gray,
+                    testTag = "AddressText")
 
                 // Wrap a row around it and add a web icon like the address
-              DetailRow(
-                  icon = Icons.Filled.Info,
-                  contentDescription = "Website",
-                  text = "Website: ${suggestion.stop.website.ifBlank { "No website provided" }}",
-                  color = if (suggestion.stop.website.isNotBlank()) MaterialTheme.colorScheme.onSurface else Color.Gray,
-                  testTag = "WebsiteText"
-              )
+                DetailRow(
+                    icon = Icons.Filled.Info,
+                    contentDescription = "Website",
+                    text = "Website: ${suggestion.stop.website.ifBlank { "No website provided" }}",
+                    color =
+                        if (suggestion.stop.website.isNotBlank())
+                            MaterialTheme.colorScheme.onSurface
+                        else Color.Gray,
+                    testTag = "WebsiteText")
 
                 // Add row with an icon of an agenda and a text saying from when to when is the
                 // suggestion scheduled
-              val suggestionStartTime =
-                  LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
-              val suggestionEndTime =
-                  suggestionStartTime.plusMinutes(suggestion.stop.duration.toLong())
-              // text to display the schedule of the suggestion like "From 09/10/2024 at
-              // 12:00
-              // to 11/10/2024 at 14:00"
-              DetailRow(
-                  icon = Icons.Filled.DateRange,
-                  contentDescription = "Schedule",
-                  text = "From ${suggestionStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))} to ${suggestionEndTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}",
-                  color = MaterialTheme.colorScheme.onSurface,
-                  testTag = "ScheduleText"
-              )
+                val suggestionStartTime =
+                    LocalDateTime.of(suggestion.stop.date, suggestion.stop.startTime)
+                val suggestionEndTime =
+                    suggestionStartTime.plusMinutes(suggestion.stop.duration.toLong())
+                // text to display the schedule of the suggestion like "From 09/10/2024 at
+                // 12:00
+                // to 11/10/2024 at 14:00"
+                DetailRow(
+                    icon = Icons.Filled.DateRange,
+                    contentDescription = "Schedule",
+                    text =
+                        "From ${suggestionStartTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))} to ${suggestionEndTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'at' HH:mm"))}",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    testTag = "ScheduleText")
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                   Text(
@@ -149,11 +149,10 @@ fun SuggestionDetail(
                       contentDescription = "Up",
                       tint = if (isLiked) Color.Red else MaterialTheme.colorScheme.scrim,
                       modifier =
-                      Modifier
-                          .size(25.dp)
-                          .padding(bottom = 1.dp, end = 4.dp)
-                          .clickable { viewModel.toggleLikeSuggestion(suggestion) }
-                          .testTag("upIcon"))
+                          Modifier.size(25.dp)
+                              .padding(bottom = 1.dp, end = 4.dp)
+                              .clickable { viewModel.toggleLikeSuggestion(suggestion) }
+                              .testTag("upIcon"))
                   Text(
                       text = "$likesCount",
                       style = MaterialTheme.typography.bodyMedium,
@@ -165,10 +164,9 @@ fun SuggestionDetail(
                       contentDescription = "Comment",
                       tint = MaterialTheme.colorScheme.scrim,
                       modifier =
-                      Modifier
-                          .size(33.dp)
-                          .padding(start = 6.dp, end = 8.dp)
-                          .testTag("CommentButton"))
+                          Modifier.size(33.dp)
+                              .padding(start = 6.dp, end = 8.dp)
+                              .testTag("CommentButton"))
 
                   // Add a text that shows the number of comments
                   Text(
@@ -194,12 +192,11 @@ fun SuggestionDetail(
                       if (editingComment) Text("Modify your comment") else Text("Add a comment")
                     },
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                        .testTag("NewCommentInput")
-                        .focusRequester(focusRequester)
-                        .focusable(true), // Ensure it’s still focusable for user interaction
+                        Modifier.fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                            .testTag("NewCommentInput")
+                            .focusRequester(focusRequester)
+                            .focusable(true), // Ensure it’s still focusable for user interaction
                     trailingIcon = {
                       IconButton(
                           onClick = {
@@ -314,22 +311,24 @@ private fun onDone(
  * @param testTag The test tag of the text.
  */
 @Composable
-fun DetailRow(icon: ImageVector, contentDescription: String, text: String, color: Color, testTag: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-            imageVector = icon,
-            contentDescription = contentDescription,
-            tint = color,
-            modifier = Modifier
-                .size(24.dp)
-                .testTag(contentDescription + "Icon")
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = color,
-            modifier = Modifier.testTag(testTag)
-        )
-    }
+fun DetailRow(
+    icon: ImageVector,
+    contentDescription: String,
+    text: String,
+    color: Color,
+    testTag: String
+) {
+  Row(verticalAlignment = Alignment.CenterVertically) {
+    Icon(
+        imageVector = icon,
+        contentDescription = contentDescription,
+        tint = color,
+        modifier = Modifier.size(24.dp).testTag(contentDescription + "Icon"))
+    Spacer(modifier = Modifier.width(4.dp))
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = color,
+        modifier = Modifier.testTag(testTag))
+  }
 }

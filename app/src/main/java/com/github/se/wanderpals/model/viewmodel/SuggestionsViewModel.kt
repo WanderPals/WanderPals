@@ -245,7 +245,8 @@ open class SuggestionsViewModel(
         _voteIconClicked.value += currentSuggestion.suggestionId
 
         // Prepare the updated suggestion for backend update
-        val updatedSuggestion = currentSuggestion.copy(voteIconClicked = true, voteStartTime = startTime)
+        val updatedSuggestion =
+            currentSuggestion.copy(voteIconClicked = true, voteStartTime = startTime)
 
         val wasUpdateSuccessful =
             suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)

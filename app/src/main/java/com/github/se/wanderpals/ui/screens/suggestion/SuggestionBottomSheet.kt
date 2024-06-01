@@ -1,35 +1,14 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.Create
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import com.github.se.wanderpals.service.SessionManager
@@ -57,34 +36,31 @@ fun SuggestionBottomSheet(
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
         modifier = Modifier.testTag("suggestionBottomSheet")) {
-
-        BottomSheetOptions(
-            canRemove = SessionManager.canRemove(selectedSuggestion!!.userId),
-            onDelete = { viewModel.showDeleteDialog() },
-            onEdit = {
+          BottomSheetOptions(
+              canRemove = SessionManager.canRemove(selectedSuggestion!!.userId),
+              onDelete = { viewModel.showDeleteDialog() },
+              onEdit = {
                 onEdit(selectedSuggestion!!)
                 viewModel.hideBottomSheet()
-            },
-            onTransform = { viewModel.transformToStop(selectedSuggestion!!) },
-            deleteTestTag = "deleteSuggestionOption",
-            editTestTag = "editSuggestionOption",
-            transformTestTag = "transformSuggestionOption"
-        )
+              },
+              onTransform = { viewModel.transformToStop(selectedSuggestion!!) },
+              deleteTestTag = "deleteSuggestionOption",
+              editTestTag = "editSuggestionOption",
+              transformTestTag = "transformSuggestionOption")
         }
   }
   if (showDeleteDialog) {
-      ConfirmDeleteDialog(
-          onDismissRequest = { viewModel.hideDeleteDialog() },
-          onConfirm = {
-              if (SessionManager.getIsNetworkAvailable()) {
-                  viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
-              } else {
-                  viewModel.hideDeleteDialog()
-              }
-          },
-          confirmTestTag = "confirmDeleteSuggestionButton",
-          cancelTestTag = "cancelDeleteSuggestionButton",
-            dialogTestTag = "deleteSuggestionDialog"
-      )
+    ConfirmDeleteDialog(
+        onDismissRequest = { viewModel.hideDeleteDialog() },
+        onConfirm = {
+          if (SessionManager.getIsNetworkAvailable()) {
+            viewModel.confirmDeleteSuggestion(selectedSuggestion!!)
+          } else {
+            viewModel.hideDeleteDialog()
+          }
+        },
+        confirmTestTag = "confirmDeleteSuggestionButton",
+        cancelTestTag = "cancelDeleteSuggestionButton",
+        dialogTestTag = "deleteSuggestionDialog")
   }
 }

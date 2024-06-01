@@ -190,8 +190,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -209,8 +208,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -228,8 +226,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -254,8 +251,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -280,8 +276,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -306,10 +301,7 @@ class CommentOptionsBottomSheetTest {
     val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
 
     composeTestRule.setContent {
-      SuggestionDetail(
-          viewModel = viewModel,
-          navActions = mockNavActions
-      )
+      SuggestionDetail(viewModel = viewModel, navActions = mockNavActions)
     }
 
     // Open the bottom sheet
@@ -332,8 +324,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -354,10 +345,7 @@ class CommentOptionsBottomSheetTest {
     val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
 
     composeTestRule.setContent {
-      SuggestionDetail(
-          viewModel = viewModel,
-          navActions = mockNavActions
-      )
+      SuggestionDetail(viewModel = viewModel, navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -381,10 +369,7 @@ class CommentOptionsBottomSheetTest {
     val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
 
     composeTestRule.setContent {
-      SuggestionDetail(
-          viewModel = viewModel,
-          navActions = mockNavActions
-      )
+      SuggestionDetail(viewModel = viewModel, navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -415,8 +400,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -441,8 +425,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -466,8 +449,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -490,8 +472,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -515,8 +496,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -540,8 +520,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -564,8 +543,7 @@ class CommentOptionsBottomSheetTest {
     composeTestRule.setContent {
       SuggestionDetail(
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions
-      )
+          navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon
@@ -582,10 +560,7 @@ class CommentOptionsBottomSheetTest {
     val viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion))
 
     composeTestRule.setContent {
-      SuggestionDetail(
-          viewModel = viewModel,
-          navActions = mockNavActions
-      )
+      SuggestionDetail(viewModel = viewModel, navActions = mockNavActions)
     }
 
     // Click on the comment 3 dot option icon

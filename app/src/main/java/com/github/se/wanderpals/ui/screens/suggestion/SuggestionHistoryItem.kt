@@ -1,10 +1,9 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,23 +16,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.R
 import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /**
  * Composable function that represents a single suggestion item in the suggestion feed.
@@ -55,45 +46,34 @@ fun SuggestionHistoryItem(
 
   ElevatedCard(
       modifier =
-      modifier
-          .padding(
-              start = 27.dp,
-              end = 27.dp,
-              top = 12.dp,
-              bottom = 12.dp
-          ) // the padding between the screen and the suggestionItem
-          .fillMaxWidth()
-          .height(166.dp)
-          .testTag("suggestionHistory"),
+          modifier
+              .padding(
+                  start = 27.dp,
+                  end = 27.dp,
+                  top = 12.dp,
+                  bottom = 12.dp) // the padding between the screen and the suggestionItem
+              .fillMaxWidth()
+              .height(166.dp)
+              .testTag("suggestionHistory"),
       colors = cardColors,
       shape = RoundedCornerShape(6.dp),
       elevation = CardDefaults.cardElevation(10.dp),
   ) {
-    Column(modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth()) {
-        // Header
-        SuggestionHeader(suggestion = suggestion, testTagPrefix = "suggestionHistory")
+    Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+      // Header
+      SuggestionHeader(suggestion = suggestion, testTagPrefix = "suggestionHistory")
       Spacer(modifier = Modifier.height(8.dp))
 
       // Description
-        SuggestionDescription(suggestion, "suggestionHistoryDescription")
+      SuggestionDescription(suggestion, "suggestionHistoryDescription")
 
       Spacer(modifier = Modifier.height(12.dp))
 
       // User and Icons
       Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(
+        ItemText(
             text = "Suggested by ${suggestion.userName}",
-            style =
-                TextStyle(
-                    fontSize = 14.sp,
-                    lineHeight = 20.sp,
-                    fontWeight = FontWeight(500),
-                    color = MaterialTheme.colorScheme.tertiary,
-                    letterSpacing = 0.14.sp,
-                ),
-            modifier = Modifier.testTag("suggestionHistoryUserName" + suggestion.suggestionId))
+            "suggestionHistoryUserName" + suggestion.suggestionId)
 
         Spacer(Modifier.weight(1f)) // push the icons to the right
 
@@ -105,59 +85,28 @@ fun SuggestionHistoryItem(
               contentDescription = "Up",
               tint = if (isLiked) Color.Red else MaterialTheme.colorScheme.tertiary,
               modifier =
-              Modifier
-                  .size(20.dp)
-                  .padding(
-                      bottom = 4.dp,
-                      end = 4.dp
-                  ) // 4.dp is the space between the icon and the text
-                  .testTag(
-                      "staticUpIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"
-                  ))
+                  Modifier.size(20.dp)
+                      .padding(
+                          bottom = 4.dp,
+                          end = 4.dp) // 4.dp is the space between the icon and the text
+                      .testTag(
+                          "staticUpIconSuggestionHistoryFeedScreen_${suggestion.suggestionId}"))
 
-          Text(
-              text = likesCount,
-              style =
-                  TextStyle(
-                      fontSize = 14.sp,
-                      lineHeight = 20.sp,
-                      fontWeight = FontWeight(500),
-                      color = MaterialTheme.colorScheme.tertiary,
-                      letterSpacing = 0.14.sp,
-                  ),
-              modifier = Modifier.testTag("suggestionHistoryUpsNumber" + suggestion.suggestionId))
+          ItemText(text = likesCount, "suggestionHistoryUpsNumber" + suggestion.suggestionId)
 
           Spacer(
               modifier =
                   Modifier.width(8.dp)) // 8.dp is the space between the text and the next icon
 
-          Icon(
-              painter = painterResource(R.drawable.comment),
+          VoteOrCommentIcon(
+              painterResource = R.drawable.comment,
               contentDescription = "Comment",
-              tint = MaterialTheme.colorScheme.tertiary,
-              modifier =
-              Modifier
-                  .size(20.dp)
-                  .padding(
-                      bottom = 2.dp,
-                      end = 4.dp
-                  ) // 4.dp is the space between the texts and the icon
-                  .testTag(
-                      "staticCommentIconSuggestionHistoryFeedScreen" + suggestion.suggestionId
-                  ))
+              paddingValues = PaddingValues(bottom = 2.dp, end = 4.dp),
+              testTag = "staticCommentIconSuggestionHistoryFeedScreen" + suggestion.suggestionId)
 
-          Text(
+          ItemText(
               text = "${suggestion.comments.size}",
-              style =
-                  TextStyle(
-                      fontSize = 14.sp,
-                      lineHeight = 20.sp,
-                      fontWeight = FontWeight(500),
-                      color = MaterialTheme.colorScheme.tertiary,
-                      letterSpacing = 0.14.sp,
-                  ),
-              modifier =
-                  Modifier.testTag("suggestionHistoryCommentsNumber" + suggestion.suggestionId))
+              "suggestionHistoryCommentsNumber" + suggestion.suggestionId)
         }
       }
     }

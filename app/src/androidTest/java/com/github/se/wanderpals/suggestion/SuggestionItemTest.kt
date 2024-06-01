@@ -79,8 +79,7 @@ class SuggestionItemTest {
             suggestion = suggestion,
             onClick = {},
             viewModel = fakeViewModel,
-            userRole = Role.MEMBER
-        )
+            userRole = Role.MEMBER)
       }
     }
 
@@ -101,11 +100,7 @@ class SuggestionItemTest {
     composeTestRule.setContent {
       WanderPalsTheme {
         SuggestionItem(
-            suggestion = suggestion,
-            onClick = {},
-            viewModel = fakeViewModel,
-            userRole = Role.ADMIN
-        )
+            suggestion = suggestion, onClick = {}, viewModel = fakeViewModel, userRole = Role.ADMIN)
       }
     }
 
@@ -133,11 +128,7 @@ class SuggestionItemTest {
     composeTestRule.setContent {
       WanderPalsTheme {
         SuggestionItem(
-            suggestion = suggestion,
-            onClick = {},
-            viewModel = fakeViewModel,
-            userRole = Role.OWNER
-        )
+            suggestion = suggestion, onClick = {}, viewModel = fakeViewModel, userRole = Role.OWNER)
       }
     }
 

@@ -47,7 +47,8 @@ fun GoBackSuggestionTopBar(title: String, onBack: () -> Unit) {
                         }
                     Text(
                         text = title,
-                        modifier = Modifier.testTag("SuggestionTitle"), // todo: create test for this
+                        modifier =
+                            Modifier.testTag("SuggestionTitle"), // todo: create test for this
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onPrimary)
                   }
