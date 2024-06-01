@@ -118,8 +118,6 @@ fun SuggestionHistoryFeedContent(suggestionsViewModel: SuggestionsViewModel) {
                   LazyColumn(modifier = Modifier.testTag("suggestionHistoryFeedContentList")) {
                     itemsIndexed(addedSuggestions) { index, suggestion ->
                       if (suggestion.stop.stopStatus == CalendarUiState.StopStatus.CURRENT) {
-                        // Add space between suggestionHistoryItems:
-                        Spacer(modifier = Modifier.height(16.dp))
 
                         SuggestionHistoryItem(
                             suggestion = suggestion,
