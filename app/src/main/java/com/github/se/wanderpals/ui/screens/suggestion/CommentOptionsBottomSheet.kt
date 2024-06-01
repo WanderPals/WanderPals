@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import com.github.se.wanderpals.model.data.Suggestion
@@ -50,7 +51,6 @@ fun CommentBottomSheet(
   val bottomSheetVisible by viewModel.bottomSheetVisible.collectAsState()
   val selectedComment by viewModel.selectedComment.collectAsState()
   val showDeleteDialog by viewModel.showDeleteDialog.collectAsState()
-
   val modalBottomSheetState = rememberModalBottomSheetState()
 
   if (selectedComment != null && bottomSheetVisible) {
@@ -58,85 +58,132 @@ fun CommentBottomSheet(
         onDismissRequest = { viewModel.hideBottomSheet() },
         sheetState = modalBottomSheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
-        modifier = Modifier.testTag("commentBottomSheet")) {
-          // Add a list of options to be displayed in the bottom sheet
-          Column(modifier = Modifier.navigationBarsPadding()) {
-            // Only displays the option if the user is Admin or it is his comment
-            if (SessionManager.canRemove(selectedComment!!.userId)) {
-              Column {
-                Box(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable(onClick = { viewModel.showDeleteDialog() })
-                            .padding(16.dp)
-                            .testTag("deleteCommentOption"),
-                    contentAlignment = Alignment.CenterStart) {
-                      Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = "Delete",
-                            modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                        Text("Delete comment", style = MaterialTheme.typography.bodyLarge)
-                      }
-                    }
-
-                Box(
-                    modifier =
-                        Modifier.fillMaxWidth()
-                            .clickable(
-                                enabled = SessionManager.getIsNetworkAvailable(),
-                                onClick = {
-                                  viewModel.editCommentOption()
-                                  onEdit(selectedComment!!.text)
-                                })
-                            .padding(16.dp)
-                            .testTag("editCommentOption"),
-                    contentAlignment = Alignment.CenterStart) {
-                      Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Outlined.Create,
-                            contentDescription = "Edit",
-                            modifier = Modifier.size(24.dp))
-                        Spacer(modifier = Modifier.width(16.dp)) // Space between icon and text
-                        Text("Edit comment", style = MaterialTheme.typography.bodyLarge)
-                      }
-                    }
-              }
-            }
-          }
-        }
+        modifier = Modifier.testTag("commentBottomSheet")
+    ) {
+        CommentOptions(viewModel, selectedComment!!.userId, selectedComment!!.text, onEdit)
+    }
   }
   if (showDeleteDialog) {
+    ConfirmDeleteDialog(viewModel, suggestion)
+  }
+}
+
+/**
+ * Composable function to display the options for a comment.
+ *
+ * @param viewModel The view model to handle the interactions with the suggestions.
+ * @param commentUserId The user id of the comment.
+ * @param commentText The text of the comment.
+ * @param onEdit The callback function for editing a comment.
+ */
+@Composable
+fun CommentOptions(
+    viewModel: SuggestionsViewModel,
+    commentUserId: String,
+    commentText: String,
+    onEdit: (String) -> Unit
+) {
+    Column(modifier = Modifier.navigationBarsPadding()) {
+        if (SessionManager.canRemove(commentUserId)) {
+            CommentOption(
+                icon = Icons.Outlined.Delete,
+                text = "Delete comment",
+                enabled = true,
+                onClick = { viewModel.showDeleteDialog() },
+                testTag = "deleteCommentOption"
+            )
+            CommentOption(
+                icon = Icons.Outlined.Create,
+                text = "Edit comment",
+                enabled = SessionManager.getIsNetworkAvailable(),
+                onClick = {
+                    viewModel.editCommentOption()
+                    onEdit(commentText)
+                },
+                testTag = "editCommentOption"
+            )
+        }
+    }
+}
+
+/**
+ * Composable function to display an option for a comment.
+ *
+ * @param icon The icon for the option.
+ * @param text The text for the option.
+ * @param enabled Whether the option is enabled.
+ * @param onClick The callback function for the option.
+ * @param testTag The test tag for the option.
+ */
+@Composable
+fun CommentOption(
+    icon: ImageVector,
+    text: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    testTag: String
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(16.dp)
+            .testTag(testTag),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp)) // space between icon and text
+            Text(text, style = MaterialTheme.typography.bodyLarge)
+        }
+    }
+}
+
+/**
+ * Composable function to display a dialog to confirm the deletion of a comment.
+ *
+ * @param viewModel The view model to handle the interactions with the suggestions.
+ * @param suggestion The suggestion to which the comment belongs.
+ */
+@Composable
+fun ConfirmDeleteDialog(
+    viewModel: SuggestionsViewModel,
+    suggestion: Suggestion
+) {
     AlertDialog(
         onDismissRequest = { viewModel.hideDeleteDialog() },
         title = { Text("Confirm Deletion") },
         text = {
-          Text(
-              when (SessionManager.getIsNetworkAvailable()) {
-                true -> "Are you sure you want to delete this comment?"
-                false -> "You are offline. You can't delete this comment."
-              })
+            Text(
+                when (SessionManager.getIsNetworkAvailable()) {
+                    true -> "Are you sure you want to delete this comment?"
+                    false -> "You are offline. You can't delete this comment."
+                })
         },
         confirmButton = {
-          TextButton(
-              onClick = {
-                when (SessionManager.getIsNetworkAvailable()) {
-                  true -> viewModel.confirmDeleteComment(suggestion)
-                  false -> viewModel.hideDeleteDialog()
-                }
-              },
-              modifier = Modifier.testTag("confirmDeleteCommentButton")) {
+            TextButton(
+                onClick = {
+                    when (SessionManager.getIsNetworkAvailable()) {
+                        true -> viewModel.confirmDeleteComment(suggestion)
+                        false -> viewModel.hideDeleteDialog()
+                    }
+                },
+                modifier = Modifier.testTag("confirmDeleteCommentButton")
+            ) {
                 Text("Confirm", color = MaterialTheme.colorScheme.error)
-              }
+            }
         },
         dismissButton = {
-          TextButton(
-              onClick = { viewModel.hideDeleteDialog() },
-              modifier = Modifier.testTag("cancelDeleteCommentButton")) {
+            TextButton(
+                onClick = { viewModel.hideDeleteDialog() },
+                modifier = Modifier.testTag("cancelDeleteCommentButton")) {
                 Text("Cancel")
-              }
+            }
         },
-        modifier = Modifier.testTag("deleteCommentDialog"))
-  }
+        modifier = Modifier.testTag("deleteCommentDialog")
+    )
 }

@@ -78,9 +78,9 @@ class SuggestionItemTest {
         SuggestionItem(
             suggestion = suggestion,
             onClick = {},
-            tripId = "dummyTripId",
             viewModel = fakeViewModel,
-            userRole = Role.MEMBER)
+            userRole = Role.MEMBER
+        )
       }
     }
 
@@ -103,9 +103,9 @@ class SuggestionItemTest {
         SuggestionItem(
             suggestion = suggestion,
             onClick = {},
-            tripId = "dummyTripId",
             viewModel = fakeViewModel,
-            userRole = Role.ADMIN)
+            userRole = Role.ADMIN
+        )
       }
     }
 
@@ -135,9 +135,9 @@ class SuggestionItemTest {
         SuggestionItem(
             suggestion = suggestion,
             onClick = {},
-            tripId = "dummyTripId",
             viewModel = fakeViewModel,
-            userRole = Role.OWNER)
+            userRole = Role.OWNER
+        )
       }
     }
 

@@ -1,7 +1,6 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,14 +51,16 @@ import kotlinx.coroutines.delay
  * Composable function that represents a single suggestion item in the suggestion feed.
  *
  * @param suggestion The suggestion object to be displayed.
+ * @param onClick The callback function for handling the click event.
+ * @param viewModel The ViewModel for managing suggestions.
  * @param modifier The modifier to be applied to the suggestion item.
+ * @param userRole The role of the user.
  */
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun SuggestionItem(
     suggestion: Suggestion,
     onClick: () -> Unit,
-    tripId: String,
     viewModel: SuggestionsViewModel,
     modifier: Modifier = Modifier,
     userRole: Role = viewModel.getCurrentUserRole(),

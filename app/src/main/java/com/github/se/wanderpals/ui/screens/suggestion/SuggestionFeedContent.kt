@@ -153,8 +153,6 @@ fun SuggestionFeedContent(
                         navigationActions.setVariablesSuggestion(suggestion)
                         navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
                       }, // This lambda is passed to the SuggestionItem composable
-                      modifier = Modifier.testTag("suggestion${index + 1}"),
-                      tripId = tripId,
                       viewModel = suggestionsViewModel)
                 }
               }
