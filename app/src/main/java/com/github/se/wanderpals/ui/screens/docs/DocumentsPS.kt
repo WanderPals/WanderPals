@@ -77,6 +77,8 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+const val ERROR_MESS = "You need to fill the name and upload an image"
+
 /**
  * This composable function is used to display the documents of a trip. It displays the documents of
  * the trip and the documents of the current user.
@@ -84,8 +86,6 @@ import kotlinx.coroutines.launch
  * @param viewModel the view model of the documents
  * @param storageReference the reference to the storage
  */
-const val ERROR_MESS = "You need to fill the name and upload an image"
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
