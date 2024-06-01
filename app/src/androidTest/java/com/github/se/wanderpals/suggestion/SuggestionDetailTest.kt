@@ -135,9 +135,9 @@ class SuggestionDetailTest {
   fun testSuggestionDetailsVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     composeTestRule.waitForIdle()
@@ -154,9 +154,9 @@ class SuggestionDetailTest {
   fun testSuggestionDetailIconsAreVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     composeTestRule.waitForIdle()
@@ -173,9 +173,9 @@ class SuggestionDetailTest {
   fun testSuggestionDetailCommentsAreVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     composeTestRule.waitForIdle()
@@ -193,9 +193,9 @@ class SuggestionDetailTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestionNoComments.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestionNoComments)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     composeTestRule.waitForIdle()
@@ -207,9 +207,9 @@ class SuggestionDetailTest {
   fun testAddCommentButtonIsVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     composeTestRule.waitForIdle()
@@ -222,9 +222,9 @@ class SuggestionDetailTest {
   fun testUpButtonIncrementsLikes() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     composeTestRule.waitForIdle()
@@ -239,9 +239,9 @@ class SuggestionDetailTest {
   fun testAddComment() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     composeTestRule.waitForIdle()

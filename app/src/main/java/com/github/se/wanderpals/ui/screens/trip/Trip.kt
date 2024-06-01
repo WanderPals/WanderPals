@@ -183,9 +183,9 @@ fun Trip(
                       suggestionsViewModel.setSelectedSuggestion(
                           oldNavActions.variables.currentSuggestion)
                       SuggestionDetail(
-                          suggestionId = oldNavActions.variables.suggestionId,
                           viewModel = suggestionsViewModel,
-                          navActions = oldNavActions)
+                          navActions = oldNavActions
+                      )
                     }
                     composable(Route.FINANCE) {
                       oldNavActions.updateCurrentRouteOfTrip(Route.FINANCE)

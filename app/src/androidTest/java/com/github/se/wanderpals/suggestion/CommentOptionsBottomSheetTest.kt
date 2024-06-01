@@ -189,9 +189,9 @@ class CommentOptionsBottomSheetTest {
   fun testCommentOptionsBottomSheetVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -208,9 +208,9 @@ class CommentOptionsBottomSheetTest {
   fun testDeleteCommentOptionVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -227,9 +227,9 @@ class CommentOptionsBottomSheetTest {
   fun testDeleteCommentOptionDeletesComment() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -253,9 +253,9 @@ class CommentOptionsBottomSheetTest {
     SessionManager.setIsNetworkAvailable(false)
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -279,9 +279,9 @@ class CommentOptionsBottomSheetTest {
   fun testDeleteCommentOptionHidesBottomSheet() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -307,9 +307,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = viewModel,
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Open the bottom sheet
@@ -331,9 +331,9 @@ class CommentOptionsBottomSheetTest {
   fun testDeleteDialogVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -355,9 +355,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = viewModel,
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -382,9 +382,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = viewModel,
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -414,9 +414,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -440,9 +440,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -465,9 +465,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -489,9 +489,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -514,9 +514,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -539,9 +539,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -563,9 +563,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = FakeViewModelBottomSheetOptions(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
@@ -583,9 +583,9 @@ class CommentOptionsBottomSheetTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
           viewModel = viewModel,
-          navActions = mockNavActions)
+          navActions = mockNavActions
+      )
     }
 
     // Click on the comment 3 dot option icon
