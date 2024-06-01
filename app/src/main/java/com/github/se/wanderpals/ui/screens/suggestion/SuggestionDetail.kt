@@ -75,32 +75,15 @@ fun SuggestionDetail(
 
     Scaffold(
         topBar = {
-          TopAppBar(
-              title = {
-                Text(text = suggestion.stop.title, modifier = Modifier.testTag("SuggestionTitle"))
-              },
-              navigationIcon = {
-                IconButton(
-                    onClick = { navActions.goBack() }, modifier = Modifier.testTag("BackButton")) {
-                      Icon(
-                          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                          contentDescription = "Go back",
-                      )
-                    }
-              },
-              colors =
-                  TopAppBarDefaults.topAppBarColors(
-                      containerColor = MaterialTheme.colorScheme.primaryContainer,
-                      titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-          )
+            GoBackSuggestionTopBar(title = suggestion.stop.title, onBack = { navActions.goBack() })
         }) { paddingValues ->
           Column(
               modifier =
-                  Modifier.padding(paddingValues)
-                      .padding(horizontal = 12.dp)
-                      .verticalScroll(rememberScrollState()),
+              Modifier
+                  .padding(paddingValues)
+                  .padding(horizontal = 12.dp)
+                  .verticalScroll(rememberScrollState()),
               verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Spacer(modifier = Modifier.height(8.dp))
                 // Display which user the suggestion was created by and at which time
                 Text(
                     text =
@@ -129,9 +112,10 @@ fun SuggestionDetail(
                               MaterialTheme.colorScheme.onSurface
                           else Color.Gray,
                       modifier =
-                          Modifier.testTag("LocationIcon")
-                              // Change the size of the icon
-                              .size(24.dp))
+                      Modifier
+                          .testTag("LocationIcon")
+                          // Change the size of the icon
+                          .size(24.dp))
                   Spacer(modifier = Modifier.width(4.dp))
                   Text(
                       text =
@@ -153,7 +137,9 @@ fun SuggestionDetail(
                           if (suggestion.stop.website.isNotBlank())
                               MaterialTheme.colorScheme.onSurface
                           else Color.Gray,
-                      modifier = Modifier.testTag("WebsiteIcon").size(24.dp))
+                      modifier = Modifier
+                          .testTag("WebsiteIcon")
+                          .size(24.dp))
                   Spacer(modifier = Modifier.width(4.dp))
                   Text(
                       text =
@@ -173,7 +159,9 @@ fun SuggestionDetail(
                       imageVector = Icons.Filled.DateRange,
                       contentDescription = "Schedule",
                       tint = MaterialTheme.colorScheme.onSurface,
-                      modifier = Modifier.testTag("ScheduleIcon").size(24.dp))
+                      modifier = Modifier
+                          .testTag("ScheduleIcon")
+                          .size(24.dp))
 
                   Spacer(modifier = Modifier.width(4.dp))
 
@@ -208,10 +196,11 @@ fun SuggestionDetail(
                       contentDescription = "Up",
                       tint = if (isLiked) Color.Red else MaterialTheme.colorScheme.scrim,
                       modifier =
-                          Modifier.size(25.dp)
-                              .padding(bottom = 1.dp, end = 4.dp)
-                              .clickable { viewModel.toggleLikeSuggestion(suggestion) }
-                              .testTag("upIcon"))
+                      Modifier
+                          .size(25.dp)
+                          .padding(bottom = 1.dp, end = 4.dp)
+                          .clickable { viewModel.toggleLikeSuggestion(suggestion) }
+                          .testTag("upIcon"))
                   Text(
                       text = "$likesCount",
                       style = MaterialTheme.typography.bodyMedium,
@@ -223,9 +212,10 @@ fun SuggestionDetail(
                       contentDescription = "Comment",
                       tint = MaterialTheme.colorScheme.scrim,
                       modifier =
-                          Modifier.size(33.dp)
-                              .padding(start = 6.dp, end = 8.dp)
-                              .testTag("CommentButton"))
+                      Modifier
+                          .size(33.dp)
+                          .padding(start = 6.dp, end = 8.dp)
+                          .testTag("CommentButton"))
 
                   // Add a text that shows the number of comments
                   Text(
@@ -251,11 +241,12 @@ fun SuggestionDetail(
                       if (editingComment) Text("Modify your comment") else Text("Add a comment")
                     },
                     modifier =
-                        Modifier.fillMaxWidth()
-                            .padding(vertical = 2.dp)
-                            .testTag("NewCommentInput")
-                            .focusRequester(focusRequester)
-                            .focusable(true), // Ensure it’s still focusable for user interaction
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp)
+                        .testTag("NewCommentInput")
+                        .focusRequester(focusRequester)
+                        .focusable(true), // Ensure it’s still focusable for user interaction
                     trailingIcon = {
                       IconButton(
                           onClick = {

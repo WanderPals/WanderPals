@@ -47,9 +47,7 @@ fun GoBackSuggestionTopBar(title: String, onBack: () -> Unit) {
                         }
                     Text(
                         text = title,
-                        //                    if (suggestion.suggestionId.isEmpty()) "Create a new
-                        // suggestion"
-                        //                    else "Edit the suggestion",
+                        modifier = Modifier.testTag("SuggestionTitle"),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onPrimary)
                   }
