@@ -163,7 +163,7 @@ class SuggestionDetailTest {
 
     composeTestRule.onNodeWithTag("upIcon").assertIsDisplayed()
     composeTestRule.onNodeWithTag("CommentButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("BackButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("LocationIcon").assertIsDisplayed()
     composeTestRule.onNodeWithTag("WebsiteIcon").assertIsDisplayed()
     composeTestRule.onNodeWithTag("SendButton").assertIsDisplayed()

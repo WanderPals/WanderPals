@@ -38,7 +38,7 @@ fun GoBackSuggestionTopBar(title: String, onBack: () -> Unit) {
                   verticalAlignment = Alignment.CenterVertically,
                   horizontalArrangement = Arrangement.Center) {
                     IconButton(
-                        onClick = { onBack() }, modifier = Modifier.testTag("goBackButton")) { // todo: create test for this
+                        onClick = { onBack() }, modifier = Modifier.testTag("goBackButton")) {
                           Icon(
                               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                               contentDescription = "Back",
