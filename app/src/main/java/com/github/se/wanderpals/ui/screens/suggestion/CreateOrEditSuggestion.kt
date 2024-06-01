@@ -65,9 +65,9 @@ fun CreateOrEditSuggestion(
 
   var description by remember { mutableStateOf(suggestion.stop.description) }
   var address by remember { mutableStateOf(suggestion.stop.address) }
-  var _website by remember { mutableStateOf(suggestion.stop.website) }
+  var website by remember { mutableStateOf(suggestion.stop.website) }
   var suggestionText by remember { mutableStateOf(suggestion.stop.title) }
-  var _budget by remember {
+  var budget by remember {
     mutableStateOf(if (suggestion.stop.budget.isNaN()) "" else suggestion.stop.budget.toString())
   }
   var startDate by remember {
@@ -140,7 +140,6 @@ fun CreateOrEditSuggestion(
                   isError = titleErr,
                   singleLine = true)
 
-              //                Spacer(Modifier.height(4.dp))
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
@@ -161,8 +160,8 @@ fun CreateOrEditSuggestion(
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
-                  value = _budget,
-                  onValueChange = { _budget = it },
+                  value = budget,
+                  onValueChange = { budget = it },
                   keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                   label = { Text("Budget") },
                   modifier =
@@ -280,8 +279,8 @@ fun CreateOrEditSuggestion(
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
-                  value = _website,
-                  onValueChange = { _website = it },
+                  value = website,
+                  onValueChange = { website = it },
                   label = { Text("Website") },
                   modifier =
                       Modifier.fillMaxWidth()
@@ -298,7 +297,7 @@ fun CreateOrEditSuggestion(
                 ExtendedFloatingActionButton(
                     onClick = {
                       titleErr = suggestionText.trim().isEmpty()
-                      budgetErr = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
+                      budgetErr = budget.isNotEmpty() && !isConvertibleToDouble(budget)
                       descErr = description.trim().isEmpty()
                       startDErr = !isStringInFormat(startDate, dateRegexPattern)
                       startTErr = !isStringInFormat(startTime, timeRegexPattern)
@@ -341,10 +340,10 @@ fun CreateOrEditSuggestion(
                                         date = startDateObj,
                                         startTime = startTimeObj,
                                         duration = duration.toMinutes().toInt(),
-                                        budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
+                                        budget = if (budget.isEmpty()) 0.0 else budget.toDouble(),
                                         description = description,
                                         geoCords = suggestion.stop.geoCords,
-                                        website = _website,
+                                        website = website,
                                         imageUrl = ""))
                         if (suggestion.suggestionId.isNotEmpty()) {
                           if (viewModel.updateSuggestion(
@@ -433,7 +432,6 @@ fun MyTimePickerDialog(onTimeSelected: (String) -> Unit, onDismiss: () -> Unit) 
       }
 }
 
-// needs to be moved in another file, works for now
 @Composable
 fun TimePickerDialog(
     title: String = "Select Time",
