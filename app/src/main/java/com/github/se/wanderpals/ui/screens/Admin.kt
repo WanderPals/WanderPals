@@ -89,7 +89,6 @@ import com.google.firebase.storage.StorageReference
  *
  * @param adminViewModel The ViewModel that manages the Admin screen.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
   val context = LocalContext.current
@@ -134,32 +133,7 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
   }
 
   Column(modifier = Modifier.fillMaxSize()) {
-    TopAppBar(
-        title = {
-          Text(
-              text = "Members",
-              modifier = Modifier.testTag("MembersTitle"),
-              style =
-                  TextStyle(
-                      fontWeight = FontWeight.Bold,
-                      fontSize = 20.sp,
-                      color = MaterialTheme.colorScheme.onPrimary))
-        },
-        navigationIcon = {
-          IconButton(
-              onClick = { navigationActions.goBack() },
-              modifier = Modifier.testTag("BackButton"),
-              colors =
-                  IconButtonDefaults.iconButtonColors(
-                      contentColor = MaterialTheme.colorScheme.onPrimary)) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-              }
-        },
-        colors =
-            topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                titleContentColor = MaterialTheme.colorScheme.onPrimary),
-    )
+    AdminTopAppBar(title = "Members", onBackClicked = { navigationActions.goBack() })
 
     Column(modifier = Modifier.fillMaxSize().testTag("adminScreen")) {
       Card(
@@ -642,4 +616,35 @@ fun Admin(adminViewModel: AdminViewModel, storageReference: StorageReference?) {
       }
     }
   }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AdminTopAppBar(title: String, onBackClicked: () -> Unit, modifier: Modifier = Modifier) {
+  TopAppBar(
+      title = {
+        Text(
+            text = title,
+            modifier = Modifier.testTag("TopBarTitle"),
+            style =
+                TextStyle(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.onPrimary))
+      },
+      navigationIcon = {
+        IconButton(
+            onClick = onBackClicked,
+            modifier = Modifier.testTag("BackButton"),
+            colors =
+                IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onPrimary)) {
+              Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
+      },
+      colors =
+          topAppBarColors(
+              containerColor = MaterialTheme.colorScheme.primary,
+              titleContentColor = MaterialTheme.colorScheme.onPrimary),
+      modifier = modifier)
 }
