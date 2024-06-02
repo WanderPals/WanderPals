@@ -26,6 +26,12 @@ import com.github.se.wanderpals.model.data.Comment
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 import java.time.format.DateTimeFormatter
 
+/**
+ * Composable function to display a suggestion comment.
+ *
+ * @param comment The comment to be displayed.
+ * @param suggestionsViewModel The view model to handle the interactions with the suggestions.
+ */
 @Composable
 fun SuggestionComment(comment: Comment, suggestionsViewModel: SuggestionsViewModel) {
   Column(

@@ -1,19 +1,11 @@
 package com.github.se.wanderpals.ui.screens.suggestion
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,12 +14,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.model.data.Suggestion
@@ -42,7 +32,7 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
  * selected.
  *
- * @param innerPadding The padding values for the content. view.
+ * @param innerPadding The padding values for the content.
  * @param suggestionList The list of suggestions of a trip to be displayed.
  * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  * @param tripId The ID of the trip.
@@ -103,65 +93,29 @@ fun SuggestionFeedContent(
         suggestionList.none {
           it.stop.stopStatus == CalendarUiState.StopStatus.NONE
         }) { // if there are no suggestions or if all suggestions are added to stops
-      Box(modifier = Modifier.fillMaxSize()) {
-        Text(
-            modifier =
-                Modifier.width(260.dp)
-                    .height(55.dp)
-                    .align(Alignment.Center)
-                    .testTag("noSuggestionsForUserText"),
-            text =
-                when {
-                  SessionManager.getIsNetworkAvailable() ->
-                      "Looks like there is no suggestions yet. "
-                  else -> "Looks like you are offline. Check your connection."
-                },
-            style =
-                TextStyle(
-                    lineHeight = 20.sp,
-                    letterSpacing = 0.5.sp,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight(500),
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface),
-        )
-        IconButton(
-            enabled = SessionManager.getIsNetworkAvailable(),
-            onClick = { suggestionsViewModel.loadSuggestion(tripId) },
-            modifier = Modifier.align(Alignment.Center).padding(top = 60.dp),
-            content = { Icon(Icons.Default.Refresh, contentDescription = "Refresh suggestions") })
-      }
+      EmptyStateMessage(
+          message =
+              if (SessionManager.getIsNetworkAvailable()) {
+                "Looks like there is no suggestions yet."
+              } else {
+                "Looks like you are offline. Check your connection."
+              },
+          onRefresh = { suggestionsViewModel.loadSuggestion(tripId) },
+          testTag = "noSuggestionsForUserText",
+          contentDescription = "Refresh suggestions",
+          color = MaterialTheme.colorScheme.onSurface)
     } else {
       // LazyColumn to display the list of suggestions with sorting and search filtering
       // (Note: can only have one LazyColumn in a composable function)
-      val lazyColumn =
-          @Composable {
-            LazyColumn(modifier = Modifier.testTag("suggestionFeedContentList")) {
-              itemsIndexed(displayList) { index, suggestion ->
-                // Only render items that have not been added to stops
-                val addedToStops =
-                    suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
-                val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
-                if (!isSuggestionAddedToStop &&
-                    suggestion.stop.stopStatus ==
-                        CalendarUiState.StopStatus
-                            .NONE) { // if the suggestion is not added to a stop (stopStatus is
-                  // NONE)
-                  SuggestionItem(
-                      suggestion = suggestion,
-                      onClick = {
-                        navigationActions.setVariablesSuggestion(suggestion)
-                        navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
-                      }, // This lambda is passed to the SuggestionItem composable
-                      modifier = Modifier.testTag("suggestion${index + 1}"),
-                      tripId = tripId,
-                      viewModel = suggestionsViewModel)
-                }
-              }
-            }
-          }
       PullToRefreshLazyColumn(
-          inputLazyColumn = lazyColumn, onRefresh = { suggestionsViewModel.loadSuggestion(tripId) })
+          inputLazyColumn = {
+            SuggestionList(
+                suggestions = displayList,
+                suggestionsViewModel = suggestionsViewModel,
+                navigationActions = navigationActions,
+                testTag = "suggestionFeedContentList")
+          },
+          onRefresh = { suggestionsViewModel.loadSuggestion(tripId) })
     }
 
     SuggestionBottomSheet(
@@ -170,5 +124,44 @@ fun SuggestionFeedContent(
           navigationActions.setVariablesSuggestion(it)
           navigationActions.navigateTo(Route.CREATE_SUGGESTION)
         })
+  }
+}
+
+/**
+ * Composable function to display the list of suggestions.
+ *
+ * @param suggestions The list of suggestions to be displayed.
+ * @param suggestionsViewModel The ViewModel for managing suggestions.
+ * @param navigationActions The navigation actions used to navigate to different screens.
+ * @param modifier The modifier for the list.
+ * @param testTag The test tag for the list.
+ */
+@Composable
+fun SuggestionList(
+    suggestions: List<Suggestion>,
+    suggestionsViewModel: SuggestionsViewModel,
+    navigationActions: NavigationActions,
+    modifier: Modifier = Modifier,
+    testTag: String
+) {
+  LazyColumn(modifier = modifier.testTag(testTag)) {
+    itemsIndexed(suggestions) { index, suggestion ->
+      val addedToStops = suggestionsViewModel.addedSuggestionsToStops.collectAsState().value
+      val isSuggestionAddedToStop = addedToStops.contains(suggestion.suggestionId)
+      if (!isSuggestionAddedToStop &&
+          suggestion.stop.stopStatus ==
+              CalendarUiState.StopStatus
+                  .NONE) { // if the suggestion is not added to a stop (stopStatus is
+        // NONE)
+        SuggestionItem(
+            suggestion = suggestion,
+            onClick = {
+              navigationActions.setVariablesSuggestion(suggestion)
+              navigationActions.navigateTo(Route.SUGGESTION_DETAIL)
+            },
+            viewModel = suggestionsViewModel,
+            modifier = Modifier.testTag("suggestion${index + 1}"))
+      }
+    }
   }
 }

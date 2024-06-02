@@ -135,9 +135,7 @@ class SuggestionDetailTest {
   fun testSuggestionDetailsVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)), navActions = mockNavActions)
     }
 
     composeTestRule.waitForIdle()
@@ -154,16 +152,14 @@ class SuggestionDetailTest {
   fun testSuggestionDetailIconsAreVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)), navActions = mockNavActions)
     }
 
     composeTestRule.waitForIdle()
 
     composeTestRule.onNodeWithTag("upIcon").assertIsDisplayed()
     composeTestRule.onNodeWithTag("CommentButton").assertIsDisplayed()
-    composeTestRule.onNodeWithTag("BackButton").assertIsDisplayed()
+    composeTestRule.onNodeWithTag("goBackButton").assertIsDisplayed()
     composeTestRule.onNodeWithTag("LocationIcon").assertIsDisplayed()
     composeTestRule.onNodeWithTag("WebsiteIcon").assertIsDisplayed()
     composeTestRule.onNodeWithTag("SendButton").assertIsDisplayed()
@@ -173,9 +169,7 @@ class SuggestionDetailTest {
   fun testSuggestionDetailCommentsAreVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)), navActions = mockNavActions)
     }
 
     composeTestRule.waitForIdle()
@@ -193,7 +187,6 @@ class SuggestionDetailTest {
 
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestionNoComments.suggestionId,
           viewModel = FakeViewModelDetails(listOf(mockSuggestionNoComments)),
           navActions = mockNavActions)
     }
@@ -207,9 +200,7 @@ class SuggestionDetailTest {
   fun testAddCommentButtonIsVisible() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)), navActions = mockNavActions)
     }
 
     composeTestRule.waitForIdle()
@@ -222,9 +213,7 @@ class SuggestionDetailTest {
   fun testUpButtonIncrementsLikes() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)), navActions = mockNavActions)
     }
 
     composeTestRule.waitForIdle()
@@ -239,9 +228,7 @@ class SuggestionDetailTest {
   fun testAddComment() {
     composeTestRule.setContent {
       SuggestionDetail(
-          suggestionId = mockSuggestion.suggestionId,
-          viewModel = FakeViewModelDetails(listOf(mockSuggestion)),
-          navActions = mockNavActions)
+          viewModel = FakeViewModelDetails(listOf(mockSuggestion)), navActions = mockNavActions)
     }
 
     composeTestRule.waitForIdle()

@@ -39,6 +39,12 @@ private suspend fun fetchUsersAndThreshold(
   return Pair(allUsers, threshold)
 }
 
+/**
+ * The ViewModel class for managing suggestions.
+ *
+ * @property suggestionRepository The repository for managing suggestions.
+ * @property tripId The ID of the trip to manage suggestions for.
+ */
 open class SuggestionsViewModel(
     private val suggestionRepository: TripsRepository?,
     val tripId: String
@@ -110,11 +116,21 @@ open class SuggestionsViewModel(
     return _voteIconClicked.value.contains(suggestionId)
   }
 
+  /**
+   * Returns the number of likes for a suggestion.
+   *
+   * @param suggestionId The ID of the suggestion to get the number of likes for.
+   * @return The number of likes for the suggestion.
+   */
   open fun getNbrLiked(suggestionId: String): Int {
     return _state.value.find { it.suggestionId == suggestionId }?.userLikes?.size ?: 0
   }
 
-  /** Fetches all trips from the repository and updates the state flow accordingly. */
+  /**
+   * Fetches all trips from the repository and updates the state flow accordingly.
+   *
+   * @param tripId The ID of the trip to fetch suggestions for.
+   */
   open fun loadSuggestion(tripId: String) {
     viewModelScope.launch {
       _isLoading.value = true
@@ -139,6 +155,11 @@ open class SuggestionsViewModel(
     }
   }
 
+  /**
+   * Sets the selected suggestion to be displayed in the bottom sheet.
+   *
+   * @param suggestion The suggestion to be displayed.
+   */
   open fun setSelectedSuggestion(suggestion: Suggestion) {
     _selectedSuggestion.value = suggestion
   }
@@ -146,8 +167,7 @@ open class SuggestionsViewModel(
   /**
    * Toggles the like status of a suggestion and updates the backend and local state accordingly.
    *
-   * Note: open keyword is used to allow overriding this function in a subclass of
-   * SuggestionsViewModel, namely the MockSuggestionsViewModel class when testing.
+   * @param suggestion The suggestion to toggle the like status for.
    */
   open fun toggleLikeSuggestion(suggestion: Suggestion) {
 
@@ -209,6 +229,12 @@ open class SuggestionsViewModel(
     }
   }
 
+  /**
+   * Returns the remaining time for a suggestion to reach the majority of likes.
+   *
+   * @param suggestionId The ID of the suggestion to get the remaining time for.
+   * @return The remaining time for the suggestion to reach the majority of likes.
+   */
   open fun getRemainingTimeFlow(suggestionId: String): MutableStateFlow<String> {
     val startTime = _voteStartTimeMap[suggestionId]
     val remainingTimeFlow = MutableStateFlow("23:59:59")
@@ -231,6 +257,12 @@ open class SuggestionsViewModel(
     return remainingTimeFlow
   }
 
+  /**
+   * Toggles the vote icon clicked status of a suggestion and updates the backend and local state
+   * accordingly.
+   *
+   * @param suggestion The suggestion to toggle the vote icon clicked status for.
+   */
   open fun toggleVoteIconClicked(suggestion: Suggestion) {
     viewModelScope.launch {
       val currentSuggestion =
@@ -240,13 +272,14 @@ open class SuggestionsViewModel(
       if (!getVoteIconClicked(currentSuggestion.suggestionId)) {
         // Store the start time when the vote icon is clicked
         val startTime = LocalDateTime.now()
-        _voteStartTimeMap[currentSuggestion.suggestionId] = startTime
 
         // Add the suggestion ID to the list of clicked vote icons
         _voteIconClicked.value += currentSuggestion.suggestionId
 
         // Prepare the updated suggestion for backend update
-        val updatedSuggestion = currentSuggestion.copy(voteIconClicked = true)
+        val updatedSuggestion =
+            currentSuggestion.copy(voteIconClicked = true, voteStartTime = startTime)
+
         val wasUpdateSuccessful =
             suggestionRepository.updateSuggestionInTrip(tripId, updatedSuggestion)
 
@@ -262,9 +295,15 @@ open class SuggestionsViewModel(
     }
   }
 
-  // Add a new function to get the start time for a suggestion
+  /**
+   * Returns the start time of a suggestion.
+   *
+   * @param suggestionId The ID of the suggestion to get the start time for.
+   * @return The start time of the suggestion.
+   */
   open fun getStartTime(suggestionId: String): LocalDateTime? {
-    return _voteStartTimeMap[suggestionId]
+    val suggestion = _state.value.find { it.suggestionId == suggestionId }
+    return suggestion?.voteStartTime
   }
 
   /**
@@ -315,6 +354,11 @@ open class SuggestionsViewModel(
     _editingComment.value = false
   }
 
+  /**
+   * Shows the bottom sheet with the selected comment.
+   *
+   * @param comment The comment to be displayed in the bottom sheet.
+   */
   open fun showBottomSheet(comment: Comment) {
     viewModelScope.launch {
       _bottomSheetVisible.value = true
@@ -322,10 +366,17 @@ open class SuggestionsViewModel(
     }
   }
 
+  /** Hides the bottom sheet. */
   open fun hideBottomSheet() {
     _bottomSheetVisible.value = false
   }
 
+  /**
+   * Deletes the selected comment from the suggestion and updates the backend and local state
+   * accordingly.
+   *
+   * @param suggestion The suggestion to which the comment belongs.
+   */
   open fun deleteComment(suggestion: Suggestion) {
     // delete selected comment logic
     val updatedSuggestion =
@@ -341,14 +392,21 @@ open class SuggestionsViewModel(
     hideBottomSheet()
   }
 
+  /** Shows the delete dialog. */
   open fun showDeleteDialog() {
     _showDeleteDialog.value = true
   }
 
+  /** Hides the delete dialog. */
   open fun hideDeleteDialog() {
     _showDeleteDialog.value = false
   }
 
+  /**
+   * Confirms the deletion of the selected comment.
+   *
+   * @param suggestion The suggestion to which the comment belongs.
+   */
   open fun confirmDeleteComment(suggestion: Suggestion) {
     deleteComment(suggestion) // Assuming deleteComment handles all necessary logic
     cancelEditComment()
@@ -360,6 +418,8 @@ open class SuggestionsViewModel(
    * Checks if a suggestion of a trip has reached the majority of likes and adds it as a stop if so.
    *
    * @param suggestion The suggestion of a trip to check and add as a stop.
+   * @param allUsers The list of all users in the trip.
+   * @param threshold The threshold for majority of likes.
    */
   open fun checkAndAddSuggestionAsStop(
       suggestion: Suggestion,
@@ -411,30 +471,43 @@ open class SuggestionsViewModel(
           if (selectedSuggestion.value?.suggestionId == suggestion.suggestionId) {
             _selectedSuggestion.value = null
           }
-          //          // Go back to suggestion list
-          //          navigationActions.goBack()
         }
       }
     }
   }
 
+  /**
+   * Deletes a suggestion from the trip and updates the backend and local state accordingly.
+   *
+   * @param suggestion The suggestion to be deleted.
+   */
   open fun deleteSuggestion(suggestion: Suggestion) {
     viewModelScope.launch {
       NotificationsManager.removeSuggestionPath(tripId, suggestion.suggestionId)
       val wasDeleteSuccessful =
           suggestionRepository?.removeSuggestionFromTrip(tripId, suggestion.suggestionId)!!
       if (wasDeleteSuccessful) {
-        loadSuggestion(tripId)
+        loadSuggestion(tripId) // Reload the suggestions list
       }
     }
   }
 
+  /**
+   * Confirms the deletion of the selected suggestion.
+   *
+   * @param suggestion The suggestion to be deleted.
+   */
   open fun confirmDeleteSuggestion(suggestion: Suggestion) {
-    deleteSuggestion(suggestion) // Assuming deleteComment handles all necessary logic
+    deleteSuggestion(suggestion)
     hideDeleteDialog()
     hideBottomSheet()
   }
 
+  /**
+   * Shows the suggestion bottom sheet with the selected suggestion.
+   *
+   * @param suggestion The suggestion to be displayed with the bottom sheet.
+   */
   open fun showSuggestionBottomSheet(suggestion: Suggestion) {
     viewModelScope.launch {
       _bottomSheetVisible.value = true
@@ -442,21 +515,32 @@ open class SuggestionsViewModel(
     }
   }
 
+  /** Edits the comment option. */
   open fun editCommentOption() {
     _editingComment.value = true
     hideBottomSheet()
   }
 
+  /** Cancels the edit comment option. */
   open fun cancelEditComment() {
     _editingComment.value = false
   }
 
+  /**
+   * Returns the role of the current user.
+   *
+   * @return The role of the current user.
+   */
   open fun getCurrentUserRole(): Role {
     val currentUser = SessionManager.getCurrentUser()
     return currentUser?.role ?: Role.MEMBER
   }
 
-  /** Transforms a suggestion to a stop and updates the backend and local state accordingly. */
+  /**
+   * Transforms a suggestion to a stop and updates the backend and local state accordingly.
+   *
+   * @param suggestion The suggestion to be transformed to a stop.
+   */
   open fun transformToStop(suggestion: Suggestion) {
     viewModelScope.launch {
       suggestionRepository?.addStopToTrip(tripId, suggestion.stop)
@@ -480,11 +564,23 @@ open class SuggestionsViewModel(
     hideBottomSheet()
   }
 
+  /**
+   * Factory for creating a SuggestionsViewModel.
+   *
+   * @property tripsRepository The repository for managing trips.
+   * @property tripId The ID of the trip to manage suggestions for.
+   */
   class SuggestionsViewModelFactory(
       private val tripsRepository: TripsRepository,
       private val tripId: String
   ) : ViewModelProvider.Factory {
 
+    /**
+     * Creates a new instance of the SuggestionsViewModel.
+     *
+     * @param modelClass The class of the ViewModel to create.
+     * @return The created SuggestionsViewModel.
+     */
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       if (modelClass.isAssignableFrom(SuggestionsViewModel::class.java)) {
         @Suppress("UNCHECKED_CAST") return SuggestionsViewModel(tripsRepository, tripId) as T

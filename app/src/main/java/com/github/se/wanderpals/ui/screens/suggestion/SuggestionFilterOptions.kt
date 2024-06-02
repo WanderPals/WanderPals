@@ -14,6 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 
+/**
+ * Composable function to display the filter options for suggestions.
+ *
+ * @param onFilterSelected The callback function for when a filter is selected.
+ */
 @Composable
 fun SuggestionFilterOptions(onFilterSelected: (String) -> Unit) {
   // Possible sorting options

@@ -30,7 +30,7 @@ import com.github.se.wanderpals.ui.navigation.NavigationActions
 import com.github.se.wanderpals.ui.navigation.Route
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionFeedContent
 import com.github.se.wanderpals.ui.screens.suggestion.SuggestionSearchBar
-import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBar
+import com.github.se.wanderpals.ui.screens.suggestion.SuggestionTopBarWithHistory
 
 /**
  * The Suggestion screen.
@@ -67,7 +67,8 @@ fun Suggestion(
       modifier = Modifier.testTag("suggestionFeedScreen"),
       topBar = {
         Column {
-          SuggestionTopBar(onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
+          SuggestionTopBarWithHistory(
+              onHistoryClick = { oldNavActions.navigateTo(Route.SUGGESTION_HISTORY) })
           Spacer(modifier = Modifier.padding(top = 4.dp))
           // Top bar with search functionality based on the title of the trips
           SuggestionSearchBar(

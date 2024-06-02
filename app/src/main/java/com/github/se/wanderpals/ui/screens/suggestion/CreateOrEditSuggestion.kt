@@ -43,15 +43,17 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /**
- * CreateSuggestion composable responsible for adding a suggestion to a trip
+ * CreateSuggestion composable responsible for creating or editing a suggestion within a trip
  *
  * @param tripId the id of the trip
  * @param viewModel a CreateSuggestionViewModel that needs to be initialized beforehand
  * @param suggestion the suggestion to be created (default is an empty suggestion)
- * @param onSuccess additional code to execute after the successful creation of the suggestion (can
- *   be empty)
- * @param onFailure code to execute if the creation of the suggestion fails (can be empty)
- * @param onCancel code to execute if the user cancels the creation of the suggestion (can be empty)
+ * @param onSuccess additional code to execute after the successful creation or editing of the
+ *   suggestion (can be empty)
+ * @param onFailure code to execute if the creation or editing of the suggestion fails (can be
+ *   empty)
+ * @param onCancel code to execute if the user cancels the creation or editing of the suggestion
+ *   (can be empty)
  */
 @Composable
 fun CreateOrEditSuggestion(
@@ -65,9 +67,9 @@ fun CreateOrEditSuggestion(
 
   var description by remember { mutableStateOf(suggestion.stop.description) }
   var address by remember { mutableStateOf(suggestion.stop.address) }
-  var _website by remember { mutableStateOf(suggestion.stop.website) }
+  var website by remember { mutableStateOf(suggestion.stop.website) }
   var suggestionText by remember { mutableStateOf(suggestion.stop.title) }
-  var _budget by remember {
+  var budget by remember {
     mutableStateOf(if (suggestion.stop.budget.isNaN()) "" else suggestion.stop.budget.toString())
   }
   var startDate by remember {
@@ -140,7 +142,6 @@ fun CreateOrEditSuggestion(
                   isError = titleErr,
                   singleLine = true)
 
-              //                Spacer(Modifier.height(4.dp))
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
@@ -157,12 +158,11 @@ fun CreateOrEditSuggestion(
                   singleLine = false,
                   placeholder = { Text("Describe the suggestion") })
 
-              //                Spacer(Modifier.height(4.dp))
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
-                  value = _budget,
-                  onValueChange = { _budget = it },
+                  value = budget,
+                  onValueChange = { budget = it },
                   keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                   label = { Text("Budget") },
                   modifier =
@@ -173,7 +173,6 @@ fun CreateOrEditSuggestion(
                   singleLine = true,
                   placeholder = { Text("Budget") })
 
-              //                Spacer(Modifier.height(8.dp))
               Spacer(Modifier.height(12.dp))
 
               Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
@@ -201,7 +200,6 @@ fun CreateOrEditSuggestion(
                     interactionSource = DateInteractionSource { showTimePickerStart = true })
               }
 
-              //                Spacer(Modifier.height(8.dp))
               Spacer(Modifier.height(12.dp))
 
               Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
@@ -276,12 +274,11 @@ fun CreateOrEditSuggestion(
                 }
               }
 
-              //                Spacer(Modifier.height(4.dp))
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
-                  value = _website,
-                  onValueChange = { _website = it },
+                  value = website,
+                  onValueChange = { website = it },
                   label = { Text("Website") },
                   modifier =
                       Modifier.fillMaxWidth()
@@ -291,14 +288,13 @@ fun CreateOrEditSuggestion(
                   singleLine = true,
                   placeholder = { Text("Website") })
 
-              //                Spacer(modifier = Modifier.height(224.dp))
               Spacer(modifier = Modifier.height(178.dp))
 
               Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {
                 ExtendedFloatingActionButton(
                     onClick = {
                       titleErr = suggestionText.trim().isEmpty()
-                      budgetErr = _budget.isNotEmpty() && !isConvertibleToDouble(_budget)
+                      budgetErr = budget.isNotEmpty() && !isConvertibleToDouble(budget)
                       descErr = description.trim().isEmpty()
                       startDErr = !isStringInFormat(startDate, dateRegexPattern)
                       startTErr = !isStringInFormat(startTime, timeRegexPattern)
@@ -341,10 +337,10 @@ fun CreateOrEditSuggestion(
                                         date = startDateObj,
                                         startTime = startTimeObj,
                                         duration = duration.toMinutes().toInt(),
-                                        budget = if (_budget.isEmpty()) 0.0 else _budget.toDouble(),
+                                        budget = if (budget.isEmpty()) 0.0 else budget.toDouble(),
                                         description = description,
                                         geoCords = suggestion.stop.geoCords,
-                                        website = _website,
+                                        website = website,
                                         imageUrl = ""))
                         if (suggestion.suggestionId.isNotEmpty()) {
                           if (viewModel.updateSuggestion(
@@ -433,7 +429,6 @@ fun MyTimePickerDialog(onTimeSelected: (String) -> Unit, onDismiss: () -> Unit) 
       }
 }
 
-// needs to be moved in another file, works for now
 @Composable
 fun TimePickerDialog(
     title: String = "Select Time",
