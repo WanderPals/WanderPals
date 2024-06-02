@@ -9,6 +9,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import com.github.se.wanderpals.service.SessionManager
 
+/**
+ * A dialog that asks the user to confirm deletion of an item.
+ *
+ * @param onDismissRequest The callback to be invoked when the dialog is dismissed.
+ * @param onConfirm The callback to be invoked when the user confirms the deletion.
+ * @param modifier The modifier to be applied to the dialog.
+ * @param confirmTestTag The test tag for the confirm button.
+ * @param cancelTestTag The test tag for the cancel button.
+ * @param dialogTestTag The test tag for the dialog.
+ */
 @Composable
 fun ConfirmDeleteDialog(
     onDismissRequest: () -> Unit,

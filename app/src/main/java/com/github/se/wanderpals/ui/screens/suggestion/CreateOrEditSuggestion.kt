@@ -43,15 +43,17 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /**
- * CreateSuggestion composable responsible for adding a suggestion to a trip
+ * CreateSuggestion composable responsible for creating or editing a suggestion within a trip
  *
  * @param tripId the id of the trip
  * @param viewModel a CreateSuggestionViewModel that needs to be initialized beforehand
  * @param suggestion the suggestion to be created (default is an empty suggestion)
- * @param onSuccess additional code to execute after the successful creation of the suggestion (can
- *   be empty)
- * @param onFailure code to execute if the creation of the suggestion fails (can be empty)
- * @param onCancel code to execute if the user cancels the creation of the suggestion (can be empty)
+ * @param onSuccess additional code to execute after the successful creation or editing of the
+ *   suggestion (can be empty)
+ * @param onFailure code to execute if the creation or editing of the suggestion fails (can be
+ *   empty)
+ * @param onCancel code to execute if the user cancels the creation or editing of the suggestion
+ *   (can be empty)
  */
 @Composable
 fun CreateOrEditSuggestion(
@@ -156,7 +158,6 @@ fun CreateOrEditSuggestion(
                   singleLine = false,
                   placeholder = { Text("Describe the suggestion") })
 
-              //                Spacer(Modifier.height(4.dp))
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
@@ -172,7 +173,6 @@ fun CreateOrEditSuggestion(
                   singleLine = true,
                   placeholder = { Text("Budget") })
 
-              //                Spacer(Modifier.height(8.dp))
               Spacer(Modifier.height(12.dp))
 
               Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
@@ -200,7 +200,6 @@ fun CreateOrEditSuggestion(
                     interactionSource = DateInteractionSource { showTimePickerStart = true })
               }
 
-              //                Spacer(Modifier.height(8.dp))
               Spacer(Modifier.height(12.dp))
 
               Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp)) {
@@ -275,7 +274,6 @@ fun CreateOrEditSuggestion(
                 }
               }
 
-              //                Spacer(Modifier.height(4.dp))
               Spacer(Modifier.height(12.dp))
 
               OutlinedTextField(
@@ -290,7 +288,6 @@ fun CreateOrEditSuggestion(
                   singleLine = true,
                   placeholder = { Text("Website") })
 
-              //                Spacer(modifier = Modifier.height(224.dp))
               Spacer(modifier = Modifier.height(178.dp))
 
               Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.BottomCenter) {

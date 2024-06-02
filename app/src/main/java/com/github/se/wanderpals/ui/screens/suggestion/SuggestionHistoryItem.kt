@@ -27,10 +27,12 @@ import com.github.se.wanderpals.model.data.Suggestion
 import com.github.se.wanderpals.model.viewmodel.SuggestionsViewModel
 
 /**
- * Composable function that represents a single suggestion item in the suggestion feed.
+ * Composable function that represents a single suggestion history item in the suggestion history
+ * feed screen.
  *
  * @param suggestion The suggestion object to be displayed.
- * @param modifier The modifier to be applied to the suggestion item.
+ * @param viewModel The ViewModel for managing suggestions.
+ * @param modifier The modifier to be applied to the suggestion history item.
  */
 @SuppressLint("UnrememberedMutableState")
 @Composable

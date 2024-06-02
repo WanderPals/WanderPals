@@ -22,6 +22,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.se.wanderpals.service.SessionManager
 
+/**
+ * Composable function to display a message when the list is empty
+ *
+ * @param message The message to display
+ * @param onRefresh The action to perform when the refresh button is clicked
+ * @param testTag The test tag for the message
+ * @param contentDescription The content description for the refresh button
+ * @param color The color of the message
+ */
 @Composable
 fun EmptyStateMessage(
     message: String,

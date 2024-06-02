@@ -18,6 +18,7 @@ import com.github.se.wanderpals.service.SessionManager
  *
  * @param viewModel The view model to handle the interactions with the suggestions.
  * @param suggestion The suggestion to which the comment belongs.
+ * @param onEdit The function to call when the user wants to edit a comment.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,8 +51,6 @@ fun CommentBottomSheet(
               editTestTag = "editCommentOption",
               transformTestTag = "" // Not used in this context
               )
-          //        CommentOptions(viewModel, selectedComment!!.userId, selectedComment!!.text,
-          // onEdit)
         }
   }
   if (showDeleteDialog) {
@@ -69,41 +68,3 @@ fun CommentBottomSheet(
         dialogTestTag = "deleteCommentDialog")
   }
 }
-
-/// **
-// * Composable function to display the options for a comment.
-// *
-// * @param viewModel The view model to handle the interactions with the suggestions.
-// * @param commentUserId The user id of the comment.
-// * @param commentText The text of the comment.
-// * @param onEdit The callback function for editing a comment.
-// */
-// @Composable
-// fun CommentOptions(
-//    viewModel: SuggestionsViewModel,
-//    commentUserId: String,
-//    commentText: String,
-//    onEdit: (String) -> Unit
-// ) {
-//    Column(modifier = Modifier.navigationBarsPadding()) {
-//        if (SessionManager.canRemove(commentUserId)) {
-//            CommentOption(
-//                icon = Icons.Outlined.Delete,
-//                text = "Delete comment",
-//                enabled = true,
-//                onClick = { viewModel.showDeleteDialog() },
-//                testTag = "deleteCommentOption"
-//            )
-//            CommentOption(
-//                icon = Icons.Outlined.Create,
-//                text = "Edit comment",
-//                enabled = SessionManager.getIsNetworkAvailable(),
-//                onClick = {
-//                    viewModel.editCommentOption()
-//                    onEdit(commentText)
-//                },
-//                testTag = "editCommentOption"
-//            )
-//        }
-//    }
-// }

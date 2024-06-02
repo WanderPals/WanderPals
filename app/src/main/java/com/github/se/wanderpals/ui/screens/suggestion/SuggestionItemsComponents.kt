@@ -79,8 +79,7 @@ fun SuggestionHeader(suggestion: Suggestion, testTagPrefix: String = "") {
                   letterSpacing = 0.14.sp,
               ),
           modifier = Modifier.testTag(testTagPrefix + "Start" + suggestion.suggestionId))
-      //                        modifier = Modifier.testTag("suggestionStart" +
-      // suggestion.suggestionId))
+
       Spacer(modifier = Modifier.height(4.dp))
       Text(
           text = suggestionEndTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
@@ -92,9 +91,7 @@ fun SuggestionHeader(suggestion: Suggestion, testTagPrefix: String = "") {
                   color = MaterialTheme.colorScheme.secondary,
                   letterSpacing = 0.14.sp,
               ),
-          modifier = Modifier.testTag(testTagPrefix + "End" + suggestion.suggestionId)
-          //                modifier = Modifier.testTag("suggestionEnd" + suggestion.suggestionId)
-          )
+          modifier = Modifier.testTag(testTagPrefix + "End" + suggestion.suggestionId))
     }
   }
 }

@@ -17,6 +17,7 @@ import com.github.se.wanderpals.service.SessionManager
  * Composable function to display the bottom sheet with options for a suggestion.
  *
  * @param viewModel The view model to handle the interactions with the suggestions.
+ * @param onEdit The callback function for editing a suggestion.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -17,6 +17,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * Composable function to display a suggestion filter button.
+ *
+ * @param text The text to display on the button.
+ * @param isSelected A boolean indicating whether the button is selected.
+ * @param onSelect The callback function for when the button is selected.
+ */
 @Composable
 fun SuggestionFilterButton(text: String, isSelected: Boolean, onSelect: () -> Unit) {
   val backgroundColor =

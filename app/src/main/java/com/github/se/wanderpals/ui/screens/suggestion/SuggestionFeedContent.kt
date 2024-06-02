@@ -32,7 +32,7 @@ import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
  * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
  * selected.
  *
- * @param innerPadding The padding values for the content. view.
+ * @param innerPadding The padding values for the content.
  * @param suggestionList The list of suggestions of a trip to be displayed.
  * @param searchSuggestionText The text used for filtering suggestions of a trip by title.
  * @param tripId The ID of the trip.
@@ -127,6 +127,15 @@ fun SuggestionFeedContent(
   }
 }
 
+/**
+ * Composable function to display the list of suggestions.
+ *
+ * @param suggestions The list of suggestions to be displayed.
+ * @param suggestionsViewModel The ViewModel for managing suggestions.
+ * @param navigationActions The navigation actions used to navigate to different screens.
+ * @param modifier The modifier for the list.
+ * @param testTag The test tag for the list.
+ */
 @Composable
 fun SuggestionList(
     suggestions: List<Suggestion>,

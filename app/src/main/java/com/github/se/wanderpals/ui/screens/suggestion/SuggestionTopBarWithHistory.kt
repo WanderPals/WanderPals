@@ -31,9 +31,7 @@ import com.github.se.wanderpals.R
  * @param onHistoryClick Callback function for handling history button click.
  */
 @Composable
-fun SuggestionTopBarWithHistory(
-    onHistoryClick: () -> Unit // Callback function for handling history button click
-) {
+fun SuggestionTopBarWithHistory(onHistoryClick: () -> Unit) {
   Column(
       modifier = Modifier.testTag("suggestionTopBar"),
       verticalArrangement = Arrangement.Center,

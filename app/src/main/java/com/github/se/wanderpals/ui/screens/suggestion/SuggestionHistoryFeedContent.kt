@@ -26,8 +26,7 @@ import com.github.se.wanderpals.ui.PullToRefreshLazyColumn
 import com.github.se.wanderpals.ui.screens.trip.agenda.CalendarUiState
 
 /**
- * The Suggestion feed screen content of a trip. A popup is displayed when a suggestion item is
- * selected.
+ * The Suggestion history feed screen content of a trip.
  *
  * @param suggestionsViewModel The ViewModel for managing suggestions.
  */

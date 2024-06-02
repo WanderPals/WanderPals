@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Composable function for displaying the top bar in any screen related to suggestions that requires
- * a back button and a title in the top bar.
+ * a go-back button and a title in the top bar.
  *
  * @param title The title of the screen.
  * @param onBack Callback function for handling the back button click.
@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun GoBackSuggestionTopBar(title: String, onBack: () -> Unit) {
   Column(
-      modifier = Modifier.testTag("goBackSuggestionTopBar"), // todo: create test for this
+      modifier = Modifier.testTag("goBackSuggestionTopBar"),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
@@ -47,8 +47,7 @@ fun GoBackSuggestionTopBar(title: String, onBack: () -> Unit) {
                         }
                     Text(
                         text = title,
-                        modifier =
-                            Modifier.testTag("SuggestionTitle"), // todo: create test for this
+                        modifier = Modifier.testTag("SuggestionTitle"),
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onPrimary)
                   }

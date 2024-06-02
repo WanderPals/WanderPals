@@ -10,6 +10,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.github.se.wanderpals.service.SessionManager
 
+/**
+ * Composable function to display the options available in the bottom sheet.
+ *
+ * @param canRemove Whether the user can remove the suggestion.
+ * @param onDelete The action to perform when the delete option is selected.
+ * @param onEdit The action to perform when the edit option is selected.
+ * @param onTransform The action to perform when the transform option is selected.
+ * @param deleteTestTag The test tag for the delete option.
+ * @param editTestTag The test tag for the edit option.
+ * @param transformTestTag The test tag for the transform option.
+ */
 @Composable
 fun BottomSheetOptions(
     canRemove: Boolean,

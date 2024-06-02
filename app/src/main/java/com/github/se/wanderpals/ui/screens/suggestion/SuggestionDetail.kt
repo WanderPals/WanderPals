@@ -276,7 +276,16 @@ fun SuggestionDetail(viewModel: SuggestionsViewModel, navActions: NavigationActi
   }
 }
 
-// Function to handle remove duplication of code for adding and editing comments
+/**
+ * Function to handle remove duplication of code for adding and editing comments
+ *
+ * @param cond The condition to check if the comment is being edited.
+ * @param string The string to add or edit.
+ * @param viewModel The view model to handle the interactions with the suggestions.
+ * @param suggestion The suggestion to add or edit the comment for.
+ * @param selectedComment The selected comment to edit.
+ * @param exec The function to execute after adding or editing the comment.
+ */
 private fun onDone(
     cond: Boolean,
     string: String,
